@@ -96,3 +96,28 @@
 - **CI**: GitHub Actions — static-checks → unit-tests → integration-tests 3단.
 - **스펙 추적**: 모든 스펙(`docs/specs/*.md`) 끝에 BR ↔ 테스트 매핑 표. BR 추가 시 매핑 동시 추가.
 - **재검토 시점**: 출시 후 6개월 또는 사용자 수가 늘어 안정성 이슈 발생 시.
+
+
+## ADR-016: 수용된 보안 트레이드오프 (2인 앱 전제, honest-client 가정)
+- **결정**: 아래 3가지 한계를 *알면서* 현 설계로 수용한다. 보안 규칙 동작은 변경하지 않고, 한계를 명시하고 구현 함정만 경고한다.
+- **배경**: 둘만 쓰는 앱(memberIds 최대 2)이라 일부 위협은 비용 대비 효익이 낮아 honest-client 가정을 채택 (cf. vote `BR-4`).
+
+### (1) invitations `get` 브루트포스
+- 현 규칙: `allow get: if isSignedIn()` — 인증된 사용자가 코드(=문서 ID)를 알면 `get` 가능, `list: false` 로 열거만 차단.
+- **위협**: 인증된 공격자가 6자리 코드를 24h 윈도 안에 추측 → 타 커플 coupleId 노출 가능 (이론상).
+- **수용 이유**: 인증 필요 + TTL 24h + 발급된 코드만 유효(미발급 코드는 문서 없음) → 실효 위험 낮음. 레이트리밋은 규칙으로 불가.
+- **완화책(미적용, 필요 시)**: 코드 6→8자리, 앱단 입력 시도 횟수 제한, 발급 시 만료 단축.
+- **재검토 트리거**: 외부(친구 등) 사용자가 늘어 "둘만" 전제가 깨질 때.
+
+### (2) moodChecks 문서 ID ↔ 필드 무결성
+- 문서 ID 규약 `{coupleId}_{userId}_{YYYY-MM-DD}` 는 **규칙으로 강제하지 않음**. 규칙은 `coupleId` 일치 + `userId == auth.uid` 만 검증.
+- **한계**: 정직하지 않은 클라이언트가 docId 를 규약과 다르게 써서 "당일 1회" 제약(같은 docId 덮어쓰기)을 우회할 수 있음.
+- **수용 이유**: 데이터 격리(타 커플 접근)는 규칙으로 막혀 있고, "당일 1회"는 본인 데이터 정합성 문제일 뿐 → honest-client 가정(vote BR-4 와 동일 원칙).
+- **구현 규칙**: docId 생성은 반드시 `core/utils/date.ts` 의 KST 유틸 + 표준 헬퍼로만 (ADR-009 연계).
+
+### (3) users 문서 생성 순서 (chicken-and-egg) — stage-1 구현 함정
+- `isMyCouple()` 등 다수 규칙이 `users/{uid}.coupleId` 를 `get` 으로 읽어 판정함.
+- **함정**: 가입 직후~커플 생성 전에는 `users` 문서가 없거나 `coupleId` 가 비어 있어, 이 시점에 coupleId 의존 규칙은 모두 거부됨.
+- **올바른 순서**: ① Auth 가입 → ② `users/{uid}` 생성(coupleId 비움) → ③ `couples` 생성(또는 join) → ④ `users.coupleId` 갱신. 이후부터 coupleId 컬렉션 접근 가능.
+- **주의**: 커플 생성/조인 트랜잭션과 `users.coupleId` 갱신의 순서를 stage-1 에서 위 순서로 고정 (역순이면 규칙 거부로 디버깅 난해).
+- **재검토 시점**: 인증 흐름 변경(소셜 로그인 추가 등) 시.

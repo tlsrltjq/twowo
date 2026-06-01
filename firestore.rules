@@ -94,9 +94,11 @@ service cloud.firestore {
 
     // ---------- invitations (초대 코드 임시 보관) ----------
     // 문서 ID = 6자리 inviteCode. 짧은 TTL(예: 24h) 권장.
+    // [ADR-016(1)] get 은 인증만 요구 → 코드를 아는 사용자는 조회 가능. list:false 로 열거만 차단.
+    //   6자리 브루트포스는 (인증+24h TTL+발급된 코드만 유효) 전제로 수용. 레이트리밋은 규칙 불가.
     match /invitations/{inviteCode} {
       allow get: if isSignedIn();
-      allow list: if false; // brute-force 방지
+      allow list: if false; // brute-force(열거) 방지
 
       allow create: if isSignedIn()
                     && request.resource.data.createdBy == request.auth.uid
@@ -151,6 +153,8 @@ service cloud.firestore {
 
     // ---------- moodChecks (3b 오늘의 컨디션) ----------
     // 문서 ID = {coupleId}_{userId}_{YYYY-MM-DD}
+    // [ADR-016(2)] docId↔필드 일치는 규칙으로 강제하지 않음(honest-client 가정, cf. vote BR-4).
+    //   격리는 coupleId/userId 로 보장. "당일 1회"는 본인 데이터 정합성 → docId 생성은 core/utils/date.ts KST 유틸로만.
     match /moodChecks/{docId} {
       allow read: if isMyCouple(resource.data.coupleId);
       allow create: if isMyCouple(request.resource.data.coupleId)
