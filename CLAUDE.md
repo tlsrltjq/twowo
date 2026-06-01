@@ -34,14 +34,12 @@
 
 그 외는 멈추지 않고 진행. 완료 후 결과 보고.
 
-## 코딩 룰 (핵심만 — 디테일은 룰북)
-- 데이터 모델: `architecture.md`. 동작 명세: `specs/*.md` 의 BR-* 반드시 반영.
-- `features/` 간 직접 import 금지. `core/` 거쳐서만.
-- Firestore 직접 `onSnapshot` 금지. `core/firestore-hooks/` 만.
-- UI 는 `design-system/tokens.ts` 만 사용 (직접 HEX/숫자 X).
-- 폼은 `react-hook-form` + `zod`. BR-* 의 길이/포맷 제한은 zod 로 강제.
-- 새 컬렉션 추가 시 `firestore.rules` 매칭 블록 반드시 추가.
-- 새 BR-* 추가 시 해당 스펙의 BR↔테스트 매핑 표 + 테스트 같이.
+## 코딩 룰 (핵심만)
+- 데이터 모델은 `architecture.md`, 동작 명세는 `specs/*.md` 의 BR-* 를 반드시 반영.
+- 새 컬렉션 추가 시 `firestore.rules` 매칭 블록 반드시 추가 (없으면 기본 `match /{document=**}` 가 차단).
+- 새 BR-* 추가 시 해당 스펙의 BR↔테스트 매핑 표 + 테스트를 같은 커밋에 (빈 행 금지).
+- **프론트엔드 규칙**(토큰/onSnapshot/폼/UI 4상태/features 격리 등)은 `FRONTEND_RULES.md` 가 진실 소스.
+- **테스트 규칙**(강제 매트릭스/명명/작성 시점)은 `TEST_STRATEGY.md` 가 진실 소스.
 
 ## 커밋 규칙
 - **작업 단위 끝나면 자동 커밋**. 단위 = `stage-N.md` 체크박스 1개 이상 / 새 모듈 동작 가능 / 버그 1건 / 문서 변경 1건.

@@ -48,22 +48,9 @@
 
 ## 어떤 모듈에 *얼마나* 테스트할지 (강제 매트릭스)
 
-| 모듈 | 단위 강제 | 통합 강제 | 컴포넌트 강제 |
-|------|:--------:|:---------:|:-------------:|
-| `core/couple/` (invite, join, disconnect) | YES | YES | - |
-| `core/storage/` (사진 업로드/삭제/cleanup) | YES | YES | - |
-| `core/calendar/deleteEvent` | YES | YES | - |
-| `core/calendar/*` (CRUD 나머지) | 권장 | - | - |
-| `core/auth/` | 권장 | YES | - |
-| `core/notifications/` | 권장 | - | - |
-| `core/utils/*` (date, validation, formatter) | YES | - | - |
-| `core/firestore-hooks/` | 권장 | YES | - |
-| `core/stores/` (Zustand) | 권장 | - | - |
-| `features/*` | 권장 | - | 선택 |
-| `design-system/` (시각 컴포넌트) | - | - | - |
-| `app/(tabs)/*` 화면 | - | - | 선택 |
+> 강제 매트릭스(어떤 모듈에 단위/통합/컴포넌트 테스트를 강제하는지)는 **룰북 `TEST_STRATEGY.md` 가 단일 진실 소스**. 여기서 중복 보관하지 않는다.
 
-**원칙**:
+원칙만 (판단 기준):
 - "데이터 꼬이면 복구 어려운 모듈" = YES (강제)
 - 비즈니스 로직이 들어간 pure 함수 = YES (강제) — 예: `checkLines`, `getTodayKST`
 - UI 표현 = 강제 X (수동 점검)
