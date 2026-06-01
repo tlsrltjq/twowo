@@ -1,0 +1,57 @@
+rules_version = '2';
+
+// =============================================================================
+// 커플 앱 — Firebase Storage Security Rules
+// -----------------------------------------------------------------------------
+// 경로 규칙 (architecture.md 와 일치)
+//   couples/{coupleId}/events/{eventId}/{photoId}_original.jpg
+//   couples/{coupleId}/events/{eventId}/{photoId}_thumb.jpg
+//
+// 원칙
+//   1) 인증된 사용자 중, Firestore users 문서의 coupleId 가 경로의 coupleId 와
+//      일치할 때만 read/write 허용.
+//   2) 업로드 크기는 10MB 이하로 제한 (architecture.md: 평균 500KB 목표).
+//   3) 이미지 MIME 타입만 허용.
+//   4) 그 외 모든 경로는 차단.
+// =============================================================================
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function myCoupleId() {
+      return firestore.get(
+        /databases/(default)/documents/users/$(request.auth.uid)
+      ).data.coupleId;
+    }
+
+    function isMyCouple(coupleId) {
+      return isSignedIn() && coupleId != null && myCoupleId() == coupleId;
+    }
+
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+
+    function isReasonableSize() {
+      return request.resource.size < 10 * 1024 * 1024; // 10MB
+    }
+
+    // 커플 사진 공간
+    match /couples/{coupleId}/events/{eventId}/{photoFile} {
+      allow read: if isMyCouple(coupleId);
+      allow create, update: if isMyCouple(coupleId)
+                            && isImage()
+                            && isReasonableSize();
+      allow delete: if isMyCouple(coupleId);
+    }
+
+    // 기본 차단
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

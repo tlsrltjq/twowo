@@ -1,0 +1,42 @@
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+*.orig.*
+
+# Native
+ios/
+android/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Env / secrets (커밋 금지 — .env.example 만 추적)
+.env
+.env.*
+!.env.example
+google-services.json
+GoogleService-Info.plist
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# Build / cache
+*.log
+coverage/
+.firebase/
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+
+# 바이너리 기획 문서 (md SSOT 로 이관됨 — 참고용 보관, 추적 제외)
+*.docx

@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  static-checks:
+    name: 타입 + 린트
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: TypeScript 타입 체크
+        run: npx tsc --noEmit
+      - name: ESLint
+        run: npx eslint . --max-warnings=0
+
+  unit-tests:
+    name: 단위 테스트 (Jest mock)
+    runs-on: ubuntu-latest
+    needs: static-checks
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Jest (단위)
+        run: npm test -- --ci --coverage --maxWorkers=2
+
+  integration-tests:
+    name: 통합 테스트 (Firebase Emulator)
+    runs-on: ubuntu-latest
+    needs: static-checks
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - run: npm ci
+      - name: Firebase CLI 설치
+        run: npm i -g firebase-tools
+      - name: 에뮬레이터 + 통합 테스트
+        run: |
+          firebase emulators:exec \
+            --only firestore,storage \
+            --project demo-coupleapp \
+            "npm run test:integration -- --ci"
+        env:
+          FIRESTORE_EMULATOR_HOST: localhost:8080
+          FIREBASE_STORAGE_EMULATOR_HOST: localhost:9199

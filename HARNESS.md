@@ -1,0 +1,52 @@
+# 커플 앱 (가칭: 둘다좋아)
+
+여자친구와 단둘이 쓰는 커플 앱. Feature Sandbox 구조.
+
+## 기술 스택
+Expo (React Native / TypeScript) · Firebase (Auth/Firestore/Storage) · Zustand · EAS Build → TestFlight
+
+## 디렉토리
+```
+app/                  Expo Router 화면 ((auth)/(tabs)/event/disconnected)
+core/                 공통 모듈 (auth, couple, calendar, storage, notifications, stores, utils, firestore-hooks, features)
+features/             실험 기능 (각 폴더 독립, registry 등록 필수)
+feature-registry/     기능 ON/OFF (registry.ts, types.ts)
+design-system/        tokens.ts (진실 소스) + 공통 컴포넌트
+hooks/                공통 커스텀 훅
+assets/               Pretendard 폰트, 이미지, lottie
+docs/                 architecture / decisions / specs / qa-checklist (디테일 참고용)
+tasks/                current.md (진행 SSOT) + stage-N.md (계획서)
+__mocks__/, __tests__/, .github/workflows/
+```
+
+## 로드맵
+> 정확한 진행 상태는 `tasks/current.md` 가 SSOT. 아이콘은 사람 요약.
+
+| 단계 | 이름 | 상태 |
+|------|------|------|
+| 0 | 초기 세팅 | 🔄 |
+| 1 | 인증 + 커플 연결 | ⬜ |
+| 2 | 캘린더 + 사진 | ⬜ |
+| 3a | 둘다좋아 (투표) | ⬜ |
+| 3b | 오늘의 컨디션 | ⬜ |
+| 3c | 데이트 빙고 | ⬜ |
+| 4 | 홈 + 알림 | ⬜ |
+| 5 | 실험실 탭 | ⬜ |
+| 6 | 설정 + 커플 해제 | ⬜ |
+| 7 | 마무리 + 배포 | ⬜ |
+
+## 룰북 진입점 (AI 자동 작업 시 우선 참고)
+- 행동 규칙: **CLAUDE.md** ← 세션 시작 시 자동 로딩
+- 프론트엔드 룰: **FRONTEND_RULES.md**
+- 테스트 룰: **TEST_STRATEGY.md**
+- 새 기능 양식: **FEATURE_SPEC_TEMPLATE.md**
+
+## 참고 (디테일이 필요할 때만)
+- 데이터 모델: `docs/architecture.md`
+- 기술 결정 사유: `docs/decisions.md` (ADR-001~015)
+- 기능별 명세: `docs/specs/README.md`
+- 디자인 디테일: `docs/design-system.md`
+- 프론트엔드 디테일: `docs/frontend.md`
+- 개발 환경 디테일: `docs/dev-environment.md`
+- 테스트 디테일: `docs/testing.md`
+- 수동 E2E: `docs/qa-checklist.md`

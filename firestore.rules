@@ -1,0 +1,190 @@
+rules_version = '2';
+
+// =============================================================================
+// 커플 앱 — Firestore Security Rules
+// -----------------------------------------------------------------------------
+// 원칙
+//   1) 모든 데이터는 인증 필수.
+//   2) coupleId 기반 컬렉션은 "내 coupleId == 문서의 coupleId" 일 때만 접근.
+//   3) couples 문서는 memberIds 안에 있는 사람만 접근. 단, 초대 코드 join은 예외.
+//   4) 초대 코드는 별도 invitations/{code} 컬렉션 사용 (ADR-007 참고).
+//   5) 삭제는 가급적 막고, 30일 유예/Scheduled Function 으로만 정리.
+// =============================================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- helpers ----------
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isMe(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function myUser() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function myCoupleId() {
+      return myUser().coupleId;
+    }
+
+    function isMyCouple(coupleId) {
+      return isSignedIn() && coupleId != null && myCoupleId() == coupleId;
+    }
+
+    function isMemberOf(coupleData) {
+      return isSignedIn() && request.auth.uid in coupleData.memberIds;
+    }
+
+    // 같은 커플 상대방 user 문서 식별용
+    function shareCoupleWith(otherUserId) {
+      let other = get(/databases/$(database)/documents/users/$(otherUserId)).data;
+      return isSignedIn()
+             && myCoupleId() != null
+             && other.coupleId == myCoupleId();
+    }
+
+    // ---------- users ----------
+    match /users/{userId} {
+      allow get: if isMe(userId) || shareCoupleWith(userId);
+      allow list: if false;
+      allow create: if isMe(userId)
+                    && request.resource.data.id == userId;
+      allow update: if isMe(userId)
+                    && request.resource.data.id == userId; // id 위변조 금지
+      allow delete: if false;
+    }
+
+    // ---------- couples ----------
+    match /couples/{coupleId} {
+      allow get: if isMemberOf(resource.data);
+      allow list: if false; // inviteCode 기반 list 쿼리 금지 (invitations 사용)
+
+      // 생성: 본인을 memberIds[0] 로 단독 시작, status active
+      allow create: if isSignedIn()
+                    && request.resource.data.memberIds.size() == 1
+                    && request.resource.data.memberIds[0] == request.auth.uid
+                    && request.resource.data.status == 'active';
+
+      // 업데이트:
+      //   (a) 기존 멤버: memberIds·createdAt 불변 보장. status/disconnect 필드는 6단계에서 추가 조임.
+      //   (b) 초대 join: size 1 → 2, 기존 멤버 유지, 본인이 두 번째로 추가, status active 유지
+      allow update: if isSignedIn() && (
+        (
+          isMemberOf(resource.data)
+          && request.resource.data.memberIds == resource.data.memberIds
+          && request.resource.data.createdAt == resource.data.createdAt
+        )
+        || (
+          resource.data.memberIds.size() == 1
+          && request.resource.data.memberIds.size() == 2
+          && resource.data.memberIds[0] == request.resource.data.memberIds[0]
+          && request.resource.data.memberIds[1] == request.auth.uid
+          && resource.data.status == 'active'
+          && request.resource.data.status == 'active'
+        )
+      );
+
+      // 삭제: 클라이언트 불가. 30일 경과 후 Scheduled Function 만.
+      allow delete: if false;
+    }
+
+    // ---------- invitations (초대 코드 임시 보관) ----------
+    // 문서 ID = 6자리 inviteCode. 짧은 TTL(예: 24h) 권장.
+    match /invitations/{inviteCode} {
+      allow get: if isSignedIn();
+      allow list: if false; // brute-force 방지
+
+      allow create: if isSignedIn()
+                    && request.resource.data.createdBy == request.auth.uid
+                    && request.resource.data.coupleId == myCoupleId();
+
+      allow update: if false;
+
+      // 발급자 본인, 또는 join 시도자 (트랜잭션 시점엔 users.coupleId가 아직 null이므로
+      //   myCoupleId() 대신 couples 문서 크기로 판별 — 아직 1명이면 join 대기 중)
+      allow delete: if isSignedIn() && (
+        resource.data.createdBy == request.auth.uid
+        || get(/databases/$(database)/documents/couples/$(resource.data.coupleId)).data.memberIds.size() == 1
+      );
+    }
+
+    // ---------- calendarEvents ----------
+    match /calendarEvents/{eventId} {
+      allow read: if isMyCouple(resource.data.coupleId);
+      allow create: if isMyCouple(request.resource.data.coupleId)
+                    && request.resource.data.createdBy == request.auth.uid;
+      allow update: if isMyCouple(resource.data.coupleId)
+                    && request.resource.data.coupleId == resource.data.coupleId;
+      allow delete: if isMyCouple(resource.data.coupleId);
+    }
+
+    // ---------- photos (메타데이터) ----------
+    match /photos/{photoId} {
+      allow read: if isMyCouple(resource.data.coupleId);
+      allow create: if isMyCouple(request.resource.data.coupleId);
+      allow update: if isMyCouple(resource.data.coupleId)
+                    && request.resource.data.coupleId == resource.data.coupleId;
+      allow delete: if isMyCouple(resource.data.coupleId);
+    }
+
+    // ---------- featureSettings ----------
+    match /featureSettings/{settingId} {
+      allow read: if isMyCouple(resource.data.coupleId);
+      allow create: if isMyCouple(request.resource.data.coupleId);
+      allow update: if isMyCouple(resource.data.coupleId)
+                    && request.resource.data.coupleId == resource.data.coupleId;
+      allow delete: if false;
+    }
+
+    // ---------- dateCandidates (3a 둘다좋아) ----------
+    match /dateCandidates/{docId} {
+      allow read: if isMyCouple(resource.data.coupleId);
+      allow create: if isMyCouple(request.resource.data.coupleId);
+      allow update: if isMyCouple(resource.data.coupleId)
+                    && request.resource.data.coupleId == resource.data.coupleId;
+      allow delete: if isMyCouple(resource.data.coupleId);
+    }
+
+    // ---------- moodChecks (3b 오늘의 컨디션) ----------
+    // 문서 ID = {coupleId}_{userId}_{YYYY-MM-DD}
+    match /moodChecks/{docId} {
+      allow read: if isMyCouple(resource.data.coupleId);
+      allow create: if isMyCouple(request.resource.data.coupleId)
+                    && request.resource.data.userId == request.auth.uid;
+      allow update: if isMyCouple(resource.data.coupleId)
+                    && resource.data.userId == request.auth.uid
+                    && request.resource.data.userId == resource.data.userId;
+      allow delete: if false;
+    }
+
+    // ---------- bingoBoards (3c 데이트 빙고) ----------
+    match /bingoBoards/{docId} {
+      allow read: if isMyCouple(resource.data.coupleId);
+      allow create: if isMyCouple(request.resource.data.coupleId);
+      allow update: if isMyCouple(resource.data.coupleId)
+                    && request.resource.data.coupleId == resource.data.coupleId;
+      allow delete: if isMyCouple(resource.data.coupleId);
+    }
+
+    // ---------- voteSessions (3a 둘다좋아) ----------
+    match /voteSessions/{sessionId} {
+      allow read: if isMyCouple(resource.data.coupleId);
+      allow create: if isMyCouple(request.resource.data.coupleId)
+                    && request.resource.data.status == 'in_progress';
+      // 투표(choices 갱신) + reveal(status 변경) 허용. coupleId·startedAt 불변.
+      allow update: if isMyCouple(resource.data.coupleId)
+                    && request.resource.data.coupleId == resource.data.coupleId
+                    && request.resource.data.startedAt == resource.data.startedAt;
+      allow delete: if false;
+    }
+
+    // ---------- 기본 차단 ----------
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
