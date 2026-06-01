@@ -15,6 +15,7 @@
 - 모든 화면이 **로딩 / 정상 / 빈 / 에러** 4개 모두 처리. 빠뜨리면 PR 거부.
 - 첫 진입 로딩 = `Skeleton`, 액션 로딩 = `Spinner`/버튼 `loading`, 빈·오류 = `EmptyState`.
   → 컴포넌트 시그니처·권한 거부 처리: **`frontend.md` 로딩/에러/빈 상태 표**
+- **레이아웃은 즉흥 금지** → 해당 스펙(`docs/specs/*.md`)의 "와이어프레임" 섹션을 따른다. 와이어프레임이 레이아웃 진실 소스.
 
 ## 네비게이션 (Expo Router)
 - `(auth)` ↔ `(tabs)` 상호배타. `app/index.tsx` 가 auth+coupleId 로 분기.
