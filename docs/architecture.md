@@ -147,6 +147,19 @@ enabled: boolean
 > **향후 확장**: 구글 캘린더 / 노션 연동은 externalId, externalSource 필드로 대비.
 > 연동 기능 자체는 Feature Registry에 experimental로 추가 예정.
 
+## Feature 명명 / 레지스트리 매핑 (단일 진실 소스)
+> **규칙**: `featureId` (registry 키) === `features/{폴더}` 폴더명 === **kebab-case 영문**. 셋은 항상 동일 문자열.
+> 새 feature 추가 시 **이 표에 먼저 한 줄** 등록 → 그 다음 폴더/스펙 생성. 폴더명을 즉흥적으로 짓지 않는다.
+
+| 기능(한글) | `features/` 폴더 = featureId | 단계 | 탭/진입점 | Firestore 컬렉션 | status 초기값 |
+|------------|------------------------------|:----:|-----------|------------------|:-------------:|
+| 둘다좋아     | `date-decision`              | 3a   | `(tabs)/vote.tsx` | dateCandidates, voteSessions | experimental |
+| 오늘의 컨디션 | `mood-share`                | 3b   | 홈 카드 + 자체 화면 | moodChecks | experimental |
+| 데이트 빙고  | `couple-bingo`               | 3c   | 실험실에서 진입 | bingoBoards | experimental |
+
+> 홈 / 캘린더 / 설정 / 실험실은 feature 가 아니라 **고정 탭**(`app/(tabs)/`) — registry 미등록.
+> 합산 화면(홈)은 각 feature 의 순수 함수 API(`getXxxForCouple`)만 호출 (CLAUDE.md: features 직접 import 금지).
+
 ## 기능별 서브컬렉션 (features가 직접 관리)
 | 기능 | 컬렉션 | 주요 필드 |
 |------|--------|----------|
