@@ -39,6 +39,7 @@
 - 새 feature 폴더명 = `featureId` = **kebab-case 영문**. 짓기 전에 `architecture.md` 의 "Feature 명명/레지스트리 매핑" 표에 먼저 등록 (즉흥 작명 금지).
 - 새 컬렉션 추가 시 `firestore.rules` 매칭 블록 반드시 추가 (없으면 기본 `match /{document=**}` 가 차단).
 - 새 BR-* 추가 시 해당 스펙의 BR↔테스트 매핑 표 + 테스트를 같은 커밋에 (빈 행 금지).
+  - 단 `experimental` feature 는 테스트 완화 적용 (TEST_STRATEGY "단계적 엄격도"). `active` 승격 시 매핑 표 완성 필수. `core/*` 는 완화 없음.
 - **프론트엔드 규칙**(토큰/onSnapshot/폼/UI 4상태/features 격리 등)은 `FRONTEND_RULES.md` 가 진실 소스.
 - **테스트 규칙**(강제 매트릭스/명명/작성 시점)은 `TEST_STRATEGY.md` 가 진실 소스.
 

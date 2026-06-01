@@ -24,6 +24,11 @@
 
 원칙: 데이터 꼬이면 복구 어려운 모듈 + 비즈니스 로직 pure 함수 = YES. UI 표현 = 강제 X(수동 점검).
 
+### 단계적 엄격도 (experimental → active)
+- registry `status: 'experimental'` 인 feature 의 `features/{name}/` 코드는 **단위 YES 만 적용, 통합·컴포넌트·BR 전수 매핑은 면제**(빠른 실험 우선). 단 pure 함수(checkLines 등) 단위 테스트와 핵심 BR 1~2개는 유지.
+- `active` 승격(실험실에서 정식화) **조건**: 매트릭스 full 적용 + 해당 스펙 모든 BR↔테스트 매핑 표 완성.
+- **예외 없음**: `core/*` 는 feature status 와 무관하게 항상 매트릭스 그대로. 완화는 `features/` 폴더 안 코드에만.
+
 ## 위치 / 명명
 - 단위: 코드 옆 `<대상>.test.ts(x)`. 통합: `__tests__/integration/<flow>.test.ts`. Rules 검증: `security-rules.test.ts`.
 - describe = 대상 이름 그대로. it = `'[BR-N] 동사 + 결과'` (예: `'[BR-4] 만료된 코드 거부'`).
