@@ -19,9 +19,10 @@
 - **결정**: Zustand
 - **이유**: 소규모 프로젝트에 Redux는 과함. Zustand는 보일러플레이트 적고 Claude Code가 오류 없이 생성함.
 
-## ADR-005: EAS Build
-- **결정**: EAS Build → TestFlight
-- **이유**: App Store 배포 없이 두 명(나 + 여자친구)만 설치하면 됨. TestFlight가 가장 간단.
+## ADR-005: EAS Build → TestFlight → (8단계) App Store 공개 출시
+- **결정**: EAS Build. 1차는 TestFlight 내부 검증(7단계), 이후 **App Store 공개 출시**(8단계, ADR-017).
+- **이유**: 개발/둘만 검증은 TestFlight가 가장 간단. "잘 되면 공개 런칭" 목표가 생겨 공개 배포를 8단계로 분리.
+- **갱신(2026-06-01)**: 초기엔 "둘만 설치"였으나 공개 출시로 확장. 공개 시 Apple 심사 요건은 `tasks/stage-8.md` + ADR-017.
 
 ## ADR-006: 2인 커플 기능과 다인 그룹 기능 분리
 - **결정**: 커플(2인) 기능과 그룹(3인+) 기능을 완전히 분리된 데이터 모델로 운영
@@ -121,3 +122,26 @@
 - **올바른 순서**: ① Auth 가입 → ② `users/{uid}` 생성(coupleId 비움) → ③ `couples` 생성(또는 join) → ④ `users.coupleId` 갱신. 이후부터 coupleId 컬렉션 접근 가능.
 - **주의**: 커플 생성/조인 트랜잭션과 `users.coupleId` 갱신의 순서를 stage-1 에서 위 순서로 고정 (역순이면 규칙 거부로 디버깅 난해).
 - **재검토 시점**: 인증 흐름 변경(소셜 로그인 추가 등) 시.
+
+
+## ADR-017: App Store 공개 출시 정책 (8단계)
+- **결정**: TestFlight 내부 검증을 넘어 App Store 공개 출시를 목표로 한다. 공개에 필요한 Apple 심사 요건을 8단계(`tasks/stage-8.md`)에서 충족한다.
+- **배경**: "잘 되면 런칭" 목표. 신뢰 경계는 여전히 커플(2인)이라 honest-client 가정(vote BR-4, ADR-016-2)은 유효하나, 공개 배포 특유의 정책 요건이 추가된다.
+
+### (1) 인앱 계정 삭제 (Guideline 5.1.1(v) — 필수)
+- 계정 생성이 있는 앱은 인앱에서 *계정+데이터 삭제* 경로를 제공해야 함.
+- **"커플 해제"와 별개**: 해제는 status='disconnected' + 30일 유예(재연결 가능). 개인 **계정 삭제**는 즉시 영구 처리.
+- **구현 방식**: 클라이언트 직접 delete 금지 유지(`firestore.rules` 의 `allow delete: if false` 불변) → **callable Cloud Function** 이 본인 데이터 purge + `admin.auth().deleteUser()`. 보안 모델 그대로, 삭제는 서버 권한으로만.
+
+### (2) Sign in with Apple (Guideline 4.8 — Google 로그인 제공 시 필수)
+- 제3자 로그인(Google)을 제공하므로 **Sign in with Apple 도 반드시 함께** 제공해야 심사 통과.
+- `expo-apple-authentication` + `core/auth/signInWithApple()`. `auth-couple.md` 에 BR 추가 + 매핑.
+
+### (3) 개인정보 처리방침 + App Privacy 라벨
+- 공개 호스팅된 개인정보 처리방침 URL 필수(App Store Connect + 앱 내 설정 링크).
+- App Privacy "영양정보 라벨": 이메일(계정)/사진(콘텐츠)/사용 데이터 수집 신고. 제3자 추적 없음.
+
+### (4) invite 코드 길이 재검토
+- 공개로 라이브 코드가 늘면 ADR-016-1 의 브루트포스 표면 확대 → 6→8자리 격상을 출시 전 검토(stage-8 체크리스트).
+
+- **재검토 시점**: 분석/광고 SDK 도입(ATT 필요) 또는 그룹 기능(ADR-006) 추가 시.

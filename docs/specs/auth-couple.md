@@ -128,6 +128,7 @@ await runTransaction(db, async (tx) => {
 ## 다른 기능과의 연계
 - **2단계 이후 전부**: 모든 coupleId 기반 쿼리는 `core/couple/getCoupleId()` 한 곳에서 가져옴.
 - **6단계 (커플 해제)**: 같은 `couples` 문서의 `status: 'disconnected'` 로 전환. 재연결 30일 유예는 6단계에서.
+- **8단계 (공개 출시)**: Google 로그인 제공 시 **Sign in with Apple 의무 추가**(ADR-017-2). 인앱 **계정 삭제**(해제와 별개, Cloud Function purge)도 8단계. 신규 BR/매핑은 그때 보강.
 - **홈 화면**: 로그인 직후 BR-1 의 `ensureUserDoc` 이 끝난 뒤에만 진입.
 
 ## 테스트 (Jest)
