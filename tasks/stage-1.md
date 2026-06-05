@@ -4,10 +4,12 @@
 
 ## 목표
 - [ ] Firebase Auth 이메일 로그인 화면 구현 (app/(auth)/login.tsx)
-- [ ] 구글 로그인 추가 (expo-auth-session)
+- [ ] 비밀번호 재설정 흐름 (이메일 로그인 기본, ADR-018)
+- [ ] ~~구글 로그인 추가~~ → **2차 (ADR-018)**. 구글 넣으면 Apple 로그인 의무 동반되므로 1차 제외
 - [ ] 로그인 후 coupleId 유무 분기 처리
 - [ ] 커플 연결 화면 구현 (app/(auth)/couple-connect.tsx)
-- [ ] 초대 코드 생성 → `invitations/{code}` 문서 생성 (TTL 24h, ADR-007)
+- [ ] `ensureCouple(uid)` — 발급 전 커플 선생성 + users.coupleId 설정 (BR-0)
+- [ ] 초대 코드 생성 → `invitations/{code}` 문서 생성 (TTL 24h, ADR-007). 재발급은 `getDocs` + `writeBatch`(트랜잭션 내 쿼리 금지, BR-3)
 - [ ] 초대 코드 입력 → invitations get → 트랜잭션으로 couples.memberIds 추가 + invitations 삭제
 - [ ] core/auth/, core/couple/ 모듈 구현
 - [ ] **Jest 단위 테스트**: `core/couple/createInvite.test.ts`, `core/couple/joinByCode.test.ts` — 트랜잭션 성공/실패/만료 케이스 (Firebase 에뮬레이터 또는 mock)

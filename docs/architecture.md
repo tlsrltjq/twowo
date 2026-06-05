@@ -27,7 +27,8 @@ hidden → deprecated (완전 제거 예정)
 ```
 id: string
 memberIds: string[1..2]   // 생성 직후 [userId1], 초대 완료 후 [userId1, userId2]
-createdAt: Timestamp
+createdAt: Timestamp       // 커플 연결(문서 생성) 시각
+anniversaryDate?: Timestamp // 사용자 지정 기념일(사귄 날). 디데이 기준 (home BR-2). 미설정 시 createdAt 폴백
 
 // 커플 연결 해제 관련 (6단계)
 status: 'active' | 'disconnected'  // 기본값: 'active'
@@ -54,7 +55,8 @@ expiresAt: Timestamp      // TTL (권장 24시간)
 id: string
 coupleId: string
 displayName: string
-fcmToken: string          // 푸시 알림용
+expoPushToken?: string    // 푸시 알림용 (Expo Push). 앱 첫 실행/토큰 변경 시 저장 (home BR-5)
+                          // ⚠️ 'fcmToken' 아님 — Expo Push API 사용. 원격 발송은 Cloud Function 만(2차, home BR-8)
 ```
 
 ### calendarEvents
@@ -122,6 +124,7 @@ enabled: boolean
 - **라이브러리 선택** (expo-image-picker): 선택 후 expo-image-manipulator로 리사이즈 + 압축
   - 긴 쪽 최대 1440px로 리사이즈
   - quality: 0.75 (용량 약 70~80% 절감)
+- **EXIF(GPS 등) 제거 필수**(1차 MVP, ADR-018): expo-image-manipulator 의 리사이즈/재인코딩 과정에서 메타데이터가 떨어지도록 처리 → 사진에 박힌 위치정보가 Storage 에 업로드되지 않게 한다 (개인정보 보호).
 - **썸네일 자동 생성**: 업로드 시 400px 썸네일 별도 저장 → 리스트/그리드 로딩 속도 확보
 - Storage 경로 규칙: `couples/{coupleId}/events/{eventId}/{photoId}_original.jpg`
 - 썸네일 경로: `couples/{coupleId}/events/{eventId}/{photoId}_thumb.jpg`

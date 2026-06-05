@@ -8,7 +8,7 @@
 연결되지 않은 사용자는 메인 앱에 진입하지 못한다.
 
 ## 사용자 스토리
-- **US-1**: 처음 가입한 A는 이메일/구글로 로그인하고, 6자리 초대 코드를 발급받아 B에게 공유한다.
+- **US-1**: 처음 가입한 A는 **이메일로** 로그인하고, 6자리 초대 코드를 발급받아 B에게 공유한다. (구글 로그인은 **2차** — ADR-018. 구글을 넣으면 Apple 로그인 의무가 동반되므로 1차에서는 제외)
 - **US-2**: B는 같은 방식으로 로그인한 뒤 코드를 입력하면 즉시 메인 화면에 진입한다.
 - **US-3**: 이미 연결된 사용자는 다음 실행 시 로그인 화면을 건너뛰고 메인으로 간다.
 - **US-4**: 잘못된 코드/만료된 코드를 입력하면 명확한 에러 메시지를 본다.
@@ -53,9 +53,10 @@
 - 코드 표시 후 공유 시트(Share). 연결 성공 → 햅틱 success → `/(tabs)` replace.
 
 ## 비즈니스 룰
+- **BR-0**: 코드 발급 전 본인 `coupleId` 가 반드시 존재해야 한다. 최초 발급자는 `ensureCouple(uid)` 로 `couples/{id}`(`memberIds:[uid]`, `status:'active'`) 생성 + `users/{uid}.coupleId` 설정을 **먼저** 끝낸다. 이유: `firestore.rules` 의 invitations create 규칙이 `request.resource.data.coupleId == myCoupleId()` 를 요구하므로, coupleId 가 null 인 상태에서는 코드 발급 자체가 거부된다 (ADR-016-3 의 생성 순서와 연계).
 - **BR-1**: `users/{uid}` 문서는 로그인 직후 무조건 존재 (없으면 자동 생성, `coupleId: null`).
 - **BR-2**: 초대 코드는 6자리 영숫자(`A-Z0-9` 중 대문자만, 가독성 위해 `0OI1` 제외).
-- **BR-3**: 같은 사용자가 코드 발급을 반복 요청하면 기존 코드를 무효화하고 새 코드 발급. `invitations` 컬렉션에는 항상 본인 발급 코드 1개만 유효.
+- **BR-3**: 같은 사용자가 코드 발급을 반복 요청하면 기존 코드를 무효화하고 새 코드 발급. `invitations` 컬렉션에는 항상 본인 발급 코드 1개만 유효. **구현 주의**: Firestore 트랜잭션은 쿼리(`tx.get(query(...))`)를 지원하지 않으므로, 기존 코드 조회는 트랜잭션 **밖** `getDocs` 로 하고 삭제+생성은 `writeBatch` 로 묶는다 (아래 쓰기 패턴 참고).
 - **BR-4**: 초대 코드 TTL = 24시간 (`expiresAt = createdAt + 24h`). 만료된 코드 입력 시 거부.
 - **BR-5**: B가 코드 입력 시 트랜잭션으로 ① `couples/{coupleId}.memberIds` 에 본인 추가, ② `users/{B}.coupleId` 설정, ③ `invitations/{code}` 삭제 — 세 작업이 모두 성공해야 연결 완료.
 - **BR-6**: 본인이 만든 코드를 본인이 입력하는 시도는 거부 (`createdBy == auth.uid` 이면 에러).
@@ -78,12 +79,14 @@
 // core/auth/
 export async function signInWithEmail(email: string, password: string): Promise<User>
 export async function signUpWithEmail(email: string, password: string, displayName: string): Promise<User>
-export async function signInWithGoogle(): Promise<User>
+export async function signInWithGoogle(): Promise<User>   // 2차 (ADR-018) — 1차 MVP 미구현
 export async function signOut(): Promise<void>
 export function subscribeAuthState(cb: (user: User | null) => void): () => void
 
 // core/couple/
 export async function ensureUserDoc(uid: string, displayName: string): Promise<void>
+export async function ensureCouple(uid: string): Promise<{ coupleId: string }>
+//   - BR-0: couples 문서 없으면 생성(memberIds:[uid], status:'active') + users.coupleId 설정. 이미 있으면 그대로 반환.
 export async function createInvite(uid: string): Promise<{ code: string; expiresAt: Date }>
 export async function joinByCode(uid: string, code: string): Promise<{ coupleId: string }>
 //   - 트랜잭션 실패 시 throws JoinError({ reason: 'expired' | 'not_found' | 'self' | 'already_joined' | 'couple_full' })
@@ -93,21 +96,29 @@ export function subscribeCouple(coupleId: string, cb: (couple: Couple) => void):
 
 ## Firestore 쓰기 패턴
 ```ts
-// 코드 생성
+// 코드 생성 (BR-0 → BR-2 → BR-3)
+// ⚠️ Firestore 트랜잭션은 '쿼리'를 지원하지 않는다 (tx.get 은 DocumentReference 만).
+//    따라서 "기존 본인 코드 조회" 는 트랜잭션 밖 getDocs 로, 삭제+생성은 writeBatch 로 묶는다.
+
+// 0) 본인 coupleId 확보 — 최초 발급자는 여기서 커플 문서가 생성된다 (BR-0)
+const { coupleId } = await ensureCouple(uid);   // couples 생성 + users.coupleId 설정 (이미 있으면 그대로)
+
+// 1) 기존 본인 코드 조회 (트랜잭션 밖 — 쿼리이므로)
+const prevSnap = await getDocs(query(invitations, where('createdBy', '==', uid)));
+
+// 2) 배치로 기존 무효화 + 새 코드 생성 (BR-3)
 const code = generateCode();                    // 6자리, BR-2
-const now = serverTimestamp();
-await runTransaction(db, async (tx) => {
-  // 1) 기존 본인 코드 무효화
-  const prev = await tx.get(query(invitations, where('createdBy', '==', uid)));
-  prev.forEach(d => tx.delete(d.ref));
-  // 2) 새 코드 생성
-  tx.set(doc(invitations, code), {
-    coupleId: myCoupleId,                       // 발급 시점에 본인의 coupleId (없으면 새로 생성한 것)
-    createdBy: uid,
-    createdAt: now,
-    expiresAt: Timestamp.fromMillis(Date.now() + 24*3600*1000),
-  });
+const batch = writeBatch(db);
+prevSnap.forEach(d => batch.delete(d.ref));
+batch.set(doc(invitations, code), {
+  coupleId,                                     // BR-0 에서 확보한 본인 coupleId
+  createdBy: uid,
+  createdAt: serverTimestamp(),
+  expiresAt: Timestamp.fromMillis(Date.now() + 24*3600*1000),
 });
+await batch.commit();
+// 주의: getDocs(읽기)와 batch.commit(쓰기) 사이에 동시 발급이 끼어들 수 있으나,
+//   "본인이 본인 코드를 발급" 하는 단일 사용자 동작이라 실효 경합 없음 (honest-client, ADR-016).
 
 // 코드 입력 (B 입장)
 await runTransaction(db, async (tx) => {

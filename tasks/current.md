@@ -19,7 +19,11 @@
 (첫 세션 — 없음)
 
 ## 다음 단계 예고
-1단계: Firebase Auth 로그인 + 커플 초대 코드 + Security Rules 배포
+1단계: Firebase Auth **이메일** 로그인(구글은 2차, ADR-018) + 커플 초대 코드 + Security Rules 배포
+- 발급 전 `ensureCouple` 로 커플 선생성(auth-couple BR-0)
+- 코드 재발급은 `getDocs` + `writeBatch`(트랜잭션 내 쿼리 금지, BR-3)
+
+> **범위 기준: ADR-018** — 1차 MVP 6개(인증·캘린더·컨디션·홈/로컬알림·단순해제·TestFlight 게이트)만 먼저. 투표/빙고/원격푸시/실험실/30일유예/공개출시는 2차.
 
 ---
 <!-- 새 단계 시작 시 위 내용을 아래 템플릿으로 교체 -->
