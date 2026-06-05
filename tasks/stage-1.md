@@ -13,7 +13,7 @@
 - [ ] 초대 코드 입력 → invitations get → 트랜잭션으로 couples.memberIds 추가 + invitations 삭제
 - [ ] core/auth/, core/couple/ 모듈 구현
 - [ ] **Jest 단위 테스트**: `core/couple/createInvite.test.ts`, `core/couple/joinByCode.test.ts` — 트랜잭션 성공/실패/만료 케이스 (Firebase 에뮬레이터 또는 mock)
-- [ ] **firestore.rules / storage.rules 배포** (`firebase deploy --only firestore:rules,storage`)
+- [ ] **firestore.rules / storage.rules / 인덱스 배포** (`firebase deploy --only firestore:rules,firestore:indexes,storage`) — 인덱스는 architecture.md "복합 인덱스" 표 참고(빈 컬렉션이라 즉시 빌드)
 - [ ] Firebase 콘솔에서 규칙 활성 상태 확인
 
 ## 완료 기준

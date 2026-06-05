@@ -194,6 +194,24 @@ coupleId 있음? → 메인 화면
 ```
 
 
+## Firestore 복합 인덱스 (`firestore.indexes.json`)
+> 단일 필드(예: `invitations.createdBy`, `photos.eventId`)는 자동 인덱싱 → 복합 인덱스 불필요.
+> 아래는 **복합 인덱스만** 정의. 빈 컬렉션에는 즉시 빌드되므로 1차에 2차 인덱스를 함께 배포해도 무해.
+> 배포: `firebase deploy --only firestore:indexes` (rules 배포와 함께, stage-1/2).
+
+| 인덱스 (필드 순서) | 쓰는 쿼리 | 범위 |
+|--------------------|-----------|:----:|
+| `calendarEvents` (coupleId ASC, date ASC) | 월간 뷰 날짜 범위(`date >= from && date <= to`) + 홈 다가오는 일정(`date >= 오늘`, asc, limit 3) | 1차 |
+| `calendarEvents` (coupleId ASC, date DESC) | 사진 뷰 정렬(`event.date` desc, calendar BR-10) | 1차 |
+| `moodChecks` (coupleId ASC, userId ASC, date DESC) | 컨디션 최근 7일(`getRecent7Days`, mood US-4) | 1차 |
+| `calendarEvents` (coupleId ASC, type ASC, date DESC) | 운동 뷰(`type=='exercise'`) / 데이트 뷰(`type=='date'`) | 2차 |
+| `voteSessions` (coupleId ASC, status ASC, startedAt DESC) | 활성 세션 조회(`status=='in_progress'`, 최신) | 2차 |
+| `bingoBoards` (coupleId ASC, status ASC) | 활성 보드 조회(`status=='active'`) | 2차 |
+| `dateCandidates` (coupleId ASC, createdAt ASC) | 후보 목록(coupleId + 생성순) | 2차 |
+
+> 컨디션 "오늘/상대" 조회는 docId(`{coupleId}_{userId}_{YYYY-MM-DD}`) 직접 get → 인덱스 불필요(ADR-009).
+> 새 쿼리에서 `FAILED_PRECONDITION (requires an index)` 가 나오면 콘솔 링크로 추가 후 이 표에 한 줄 기록.
+
 ## Security Rules (요약)
 세부 규칙은 루트의 `firestore.rules`, `storage.rules` 파일이 진실 소스.
 
