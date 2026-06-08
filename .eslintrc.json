@@ -14,7 +14,59 @@
     "simple-import-sort/exports": "warn",
     "import/no-default-export": "off",
     "import/order": "off",
-    "no-console": ["warn", { "allow": ["warn", "error"] }]
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+
+    "no-restricted-imports": ["error", {
+      "paths": [
+        {
+          "name": "firebase/firestore",
+          "importNames": ["onSnapshot"],
+          "message": "onSnapshot 직접 사용 금지. core/firestore-hooks의 useFirestoreDoc/useFirestoreQuery를 사용하세요 (FRONTEND_RULES)."
+        }
+      ]
+    }],
+
+    "no-restricted-properties": ["error", {
+      "object": "Constants",
+      "property": "expoConfig",
+      "message": "Constants.expoConfig 금지. process.env.EXPO_PUBLIC_* 를 직접 사용하세요."
+    }],
+
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "Literal[value=/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/]",
+        "message": "직접 HEX 색상 금지. design-system/tokens.ts 토큰을 사용하세요 (FRONTEND_RULES)."
+      }
+    ]
   },
+  "overrides": [
+    {
+      "files": ["design-system/tokens.ts"],
+      "rules": {
+        "no-restricted-syntax": "off"
+      }
+    },
+    {
+      "files": ["features/**/*.ts", "features/**/*.tsx"],
+      "rules": {
+        "no-restricted-imports": ["error", {
+          "paths": [
+            {
+              "name": "firebase/firestore",
+              "importNames": ["onSnapshot"],
+              "message": "onSnapshot 직접 사용 금지. core/firestore-hooks의 useFirestoreDoc/useFirestoreQuery를 사용하세요 (FRONTEND_RULES)."
+            }
+          ],
+          "patterns": [
+            {
+              "group": ["@/features/*", "features/*"],
+              "message": "features 끼리 직접 import 금지. core/ 를 통해서만 (FRONTEND_RULES)."
+            }
+          ]
+        }]
+      }
+    }
+  ],
   "ignorePatterns": ["node_modules", "dist", "android", "ios", ".expo"]
 }

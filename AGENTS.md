@@ -1,4 +1,4 @@
-# CLAUDE.md
+# AGENTS.md
 # 세션 시작 시 자동 로딩. 다른 모든 규칙의 진입점.
 
 ## 진실 소스 (SSOT)
@@ -15,7 +15,7 @@
 | 새 기능 추가 양식 | `FEATURE_SPEC_TEMPLATE.md` |
 | 변경 이력 | `CHANGELOG.md` |
 
-충돌 시 위 순서대로 우선. 디테일 참고는 `docs/_archive/` (frontend.md / testing.md / design-system.md / dev-environment.md / qa-checklist.md).
+충돌 시 위 순서대로 우선. 디테일 참고는 `docs/frontend.md`, `docs/testing.md`, `docs/design-system.md`, `docs/dev-environment.md`.
 
 ## 세션 시작 (3줄)
 1. HARNESS.md → `tasks/current.md` → 현재 단계의 `tasks/stage-N.md` 읽기

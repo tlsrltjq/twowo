@@ -49,10 +49,7 @@ __mocks__/, __tests__/, .github/workflows/
 
 ## 참고 (디테일이 필요할 때만)
 - 데이터 모델: `docs/architecture.md`
-- 기술 결정 사유: `docs/decisions.md` (ADR-001~015)
+- 기술 결정 사유: `docs/decisions.md` (ADR-001~018)
 - 기능별 명세: `docs/specs/README.md`
-- 디자인 디테일: `docs/design-system.md`
-- 프론트엔드 디테일: `docs/frontend.md`
-- 개발 환경 디테일: `docs/dev-environment.md`
-- 테스트 디테일: `docs/testing.md`
-- 수동 E2E: `docs/qa-checklist.md`
+- 디자인/프론트/테스트/환경/E2E 디테일: `docs/_archive/` (룰북으로 대체됨)
+  - `design-system.md` / `frontend.md` / `testing.md` / `dev-environment.md` / `qa-checklist.md`
