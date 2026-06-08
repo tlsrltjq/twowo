@@ -7,7 +7,7 @@ interface TextFieldProps {
   value: string;
   onChangeText: (v: string) => void;
   placeholder?: string;
-  error?: string;
+  error?: string | undefined;
   multiline?: boolean;
   maxLength?: number;
   keyboardType?: 'default' | 'email-address' | 'number-pad';

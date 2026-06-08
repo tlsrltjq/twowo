@@ -4,40 +4,40 @@ import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { signInWithEmail } from '../../core/auth';
-import { loginSchema, LoginInput } from '../../core/auth/schema';
+import { signUpWithEmail } from '../../core/auth';
+import { signUpSchema, SignUpInput } from '../../core/auth/schema';
 import { Button } from '../../design-system/Button';
 import { TextField } from '../../design-system/TextField';
 import { Toast } from '../../design-system/Toast';
 import { colors, space, typography } from '../../design-system/tokens';
 
-export default function LoginScreen() {
+export default function SignUpScreen() {
   const router = useRouter();
   const [toast, setToast] = useState<{ message: string; type: 'error' | 'success'; visible: boolean }>({
     message: '', type: 'error', visible: false,
   });
 
-  const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginInput>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: { email: '', password: '' },
+  const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<SignUpInput>({
+    resolver: zodResolver(signUpSchema),
+    defaultValues: { displayName: '', email: '', password: '' },
   });
 
   const showError = (message: string) => setToast({ message, type: 'error', visible: true });
 
-  const onSubmit = async (data: LoginInput) => {
+  const onSubmit = async (data: SignUpInput) => {
     try {
-      await signInWithEmail(data.email, data.password);
+      await signUpWithEmail(data.email, data.password, data.displayName);
       // _layout.tsx의 subscribeAuthState가 상태 업데이트 → index.tsx가 리다이렉트
     } catch (e: any) {
       const code: string = e?.code ?? '';
-      if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') {
-        showError('이메일 또는 비밀번호가 올바르지 않습니다');
+      if (code === 'auth/email-already-in-use') {
+        showError('이미 사용 중인 이메일입니다');
+      } else if (code === 'auth/weak-password') {
+        showError('비밀번호가 너무 약합니다. 6자 이상으로 설정해주세요');
       } else if (code === 'auth/invalid-email') {
         showError('올바른 이메일 형식이 아닙니다');
-      } else if (code === 'auth/too-many-requests') {
-        showError('로그인 시도가 너무 많습니다. 잠시 후 다시 시도해주세요');
       } else {
-        showError('로그인에 실패했습니다. 다시 시도해주세요');
+        showError('회원가입에 실패했습니다. 다시 시도해주세요');
       }
     }
   };
@@ -45,10 +45,23 @@ export default function LoginScreen() {
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.flex}>
       <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-        <Text style={styles.title}>둘다좋아</Text>
-        <Text style={styles.subtitle}>함께하는 모든 순간</Text>
+        <Text style={styles.title}>회원가입</Text>
 
         <View style={styles.form}>
+          <Controller
+            control={control}
+            name="displayName"
+            render={({ field }) => (
+              <TextField
+                label="이름"
+                value={field.value}
+                onChangeText={field.onChange}
+                placeholder="앱에서 사용할 이름"
+                maxLength={20}
+                error={errors.displayName?.message}
+              />
+            )}
+          />
           <Controller
             control={control}
             name="email"
@@ -80,15 +93,15 @@ export default function LoginScreen() {
             )}
           />
           <Button
-            label="로그인"
+            label="가입하기"
             onPress={handleSubmit(onSubmit)}
             loading={isSubmitting}
             size="lg"
           />
         </View>
 
-        <Pressable onPress={() => router.push('/(auth)/signup')} style={styles.link}>
-          <Text style={styles.linkText}>아직 계정이 없나요? <Text style={styles.linkBold}>회원가입</Text></Text>
+        <Pressable onPress={() => router.back()} style={styles.link}>
+          <Text style={styles.linkText}>이미 계정이 있나요? <Text style={styles.linkBold}>로그인</Text></Text>
         </Pressable>
       </ScrollView>
 
@@ -105,8 +118,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   flex:      { flex: 1, backgroundColor: colors.bg.base },
   container: { flexGrow: 1, justifyContent: 'center', padding: space[6], gap: space[6] },
-  title:     { ...typography.display, color: colors.text.primary, textAlign: 'center' },
-  subtitle:  { ...typography.body, color: colors.text.secondary, textAlign: 'center', marginTop: -space[4] },
+  title:     { ...typography.title1, color: colors.text.primary, textAlign: 'center' },
   form:      { gap: space[4] },
   link:      { alignItems: 'center' },
   linkText:  { ...typography.caption, color: colors.text.secondary },

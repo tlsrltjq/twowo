@@ -92,6 +92,17 @@ export const deleteField = () => ({ __op: 'deleteField' });
 export const where = (field: string, op: string, value: any) => [field, op, value];
 export const query = (ref: QueryRef, ...filters: any[]) => ({ ...ref, __filters: filters });
 
+export const writeBatch = jest.fn((_db: any) => {
+  const ops: Array<() => Promise<void>> = [];
+  const batch = {
+    set:    (ref: DocRef, data: any, opts?: any) => { ops.push(() => setDoc(ref, data, opts)); return batch; },
+    update: (ref: DocRef, patch: any)            => { ops.push(() => updateDoc(ref, patch));   return batch; },
+    delete: (ref: DocRef)                        => { ops.push(() => deleteDoc(ref));           return batch; },
+    commit: async () => { for (const op of ops) await op(); },
+  };
+  return batch;
+});
+
 export const getDocs = jest.fn(async (q: QueryRef) => {
   const docs: any[] = [];
   for (const [path, data] of store.entries()) {
