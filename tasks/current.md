@@ -8,15 +8,25 @@
 > 상세 계획은 `tasks/stage-0.md` 참고
 
 ## 진행 체크 (stage-0.md의 목표를 복사해서 ✅로 마킹)
-- [ ] Expo 프로젝트 초기화
-- [ ] Firebase 프로젝트 연결
-- [ ] `firebase init` (기존 .rules 파일 유지)
-- [ ] 폴더 구조 생성
-- [ ] `feature-registry/types.ts`, `registry.ts` 작성
-- [ ] 시뮬레이터 실행 확인
+- ✅ Expo 프로젝트 초기화 (SDK 56, React 19)
+- ✅ 폴더 구조 생성 (app/core/features/feature-registry/design-system/hooks/assets)
+- ✅ `feature-registry/types.ts`, `registry.ts` 작성
+- ✅ `core/utils/date.ts` — `getTodayKST()`, `nowKST()` + 단위 테스트 5종 green
+- ✅ `design-system/tokens.ts` — 색상/타이포/간격/radius/shadow
+- ✅ `design-system/` 공통 컴포넌트 7종 뼈대 (Button/Card/TextField/Spinner/Skeleton/EmptyState/Toast)
+- ✅ `core/firestore-hooks/` — `useFirestoreDoc`, `useFirestoreQuery`
+- ✅ `core/config/firebase.ts` — Firebase 초기화 (EXPO_PUBLIC_* 환경변수)
+- ✅ `app/_layout.tsx` 진입점 (Pretendard 폰트 로드 구조)
+- ✅ `tsconfig.json` strict 모드 ON + paths 설정
+- ✅ `babel.config.js`, `app.json` 설정
+- ✅ `.env` Firebase 설정값 입력 완료
+- [ ] Pretendard 폰트 파일 4종 `assets/fonts/` 추가 (수동 — 아래 참고)
+- [ ] Firebase 프로젝트 연결 (`firebase login` 후 `firebase use pair-38a4e`)
+- [ ] 시뮬레이터 실행 확인 (`npx expo start --ios`)
 
 ## 이전 세션에서 멈춘 곳
-(첫 세션 — 없음)
+Pretendard 폰트 파일이 없어 앱 실행 불가. 폰트 추가 후 `npx expo start --ios` 실행 필요.
+폰트 다운로드: https://github.com/orioncactus/pretendard/releases → Pretendard-{Regular,Medium,SemiBold,Bold}.otf → assets/fonts/ 에 복사
 
 ## 다음 단계 예고
 1단계: Firebase Auth **이메일** 로그인(구글은 2차, ADR-018) + 커플 초대 코드 + Security Rules 배포

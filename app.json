@@ -1,0 +1,49 @@
+{
+  "expo": {
+    "name": "둘다좋아",
+    "slug": "twowo",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "twowo",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFFBF7"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.shingiseop.twowo",
+      "buildNumber": "1"
+    },
+    "android": {
+      "package": "com.shingiseop.twowo",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "backgroundColor": "#FFFBF7"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-image-picker",
+      "expo-camera",
+      "expo-notifications",
+      "expo-sqlite",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#FFFBF7"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
