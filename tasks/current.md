@@ -20,13 +20,14 @@
 - ✅ `tsconfig.json` strict 모드 ON + paths 설정
 - ✅ `babel.config.js`, `app.json` 설정
 - ✅ `.env` Firebase 설정값 입력 완료
-- [ ] Pretendard 폰트 파일 4종 `assets/fonts/` 추가 (수동 — 아래 참고)
+- ✅ Pretendard 폰트 파일 4종 `assets/fonts/` 추가
 - [ ] Firebase 프로젝트 연결 (`firebase login` 후 `firebase use pair-38a4e`)
-- [ ] 시뮬레이터 실행 확인 (`npx expo start --ios`)
+- [ ] 시뮬레이터 실행 확인 (`npx expo start --ios`) — Xcode 설치 후 사용자가 직접 실행
 
 ## 이전 세션에서 멈춘 곳
-Pretendard 폰트 파일이 없어 앱 실행 불가. 폰트 추가 후 `npx expo start --ios` 실행 필요.
-폰트 다운로드: https://github.com/orioncactus/pretendard/releases → Pretendard-{Regular,Medium,SemiBold,Bold}.otf → assets/fonts/ 에 복사
+0단계 세팅 완료. TypeScript 에러 0, 테스트 5/5 green.
+시뮬레이터 실행은 Xcode 설치 후 `npx expo start --ios` 로 직접 확인 필요.
+Firebase CLI 연결(`firebase login && firebase use pair-38a4e`) 후 1단계 시작.
 
 ## 다음 단계 예고
 1단계: Firebase Auth **이메일** 로그인(구글은 2차, ADR-018) + 커플 초대 코드 + Security Rules 배포
