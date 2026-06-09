@@ -8,16 +8,16 @@
 > 상세 계획은 `tasks/stage-2.md` 참고
 
 ## 진행 체크 (stage-2.md의 1차 목표를 복사)
-- [ ] core/calendar/: calendarEvents CRUD (Firestore)
-- [ ] core/calendar/deleteEvent.ts: 이벤트 삭제 시 photos + Storage 정리
-- [ ] core/storage/: 라이브러리 사진 업로드 + 압축 + EXIF 제거 + 썸네일 생성
-- [ ] core/storage/cleanupOrphans: 고아 Storage 객체 정리
-- [ ] core/memory/: 이벤트 + 사진 조합 조회 훅
-- [ ] **Jest 단위 테스트**: upload.test.ts, deleteEvent.test.ts
-- [ ] 월간 달력 화면 (app/(tabs)/calendar.tsx) — react-native-calendars
-- [ ] 이벤트 추가/수정/삭제 화면 (RHF+zod)
-- [ ] 사진 선택 + 압축 + EXIF 제거 (expo-image-picker + expo-image-manipulator)
-- [ ] 사진 뷰: 그리드 + 원본 전체화면
+- ✅ core/calendar/: calendarEvents CRUD (Firestore)
+- ✅ core/calendar/deleteEvent.ts: 이벤트 삭제 시 photos + Storage 정리 (BR-8)
+- ✅ core/storage/: 라이브러리 사진 업로드 + 압축 + EXIF 제거 + 썸네일 생성 (BR-6/7)
+- ✅ core/storage/cleanupOrphans: 고아 Storage 객체 정리
+- ✅ core/memory/: useCalendarEvents 훅
+- ✅ **Jest 단위 테스트**: schema.test.ts(BR-2/3/4), upload.test.ts(BR-5) — 30/30 green
+- ✅ 월간 달력 화면 (app/(tabs)/calendar.tsx) — react-native-calendars
+- ✅ 이벤트 추가/수정/삭제 화면 (event/new.tsx, event/[id].tsx)
+- [ ] 사진 실제 업로드 + Storage 배포 (Blaze 업그레이드 필요)
+- [ ] 사진 뷰: 실제 썸네일 표시 (현재 플레이스홀더)
 
 ## 이전 세션에서 멈춘 곳
 1단계 완료 + E2E 검증 완료 (Firebase Auth REST + Firestore Rules 실제 프로젝트 통과 확인).
