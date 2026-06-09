@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-06-09 | 3b단계 완료 | feat(stage-3b): mood-share 구현 완료. fix(auth): firebase/auth → @firebase/auth RN 빌드로 AsyncStorage persistence 수정. 시뮬레이터 E2E 확인.
 ## 2026-06-09 | 3b단계 | feat(stage-3b): mood-share 구현 — schema/API/MoodScreen/탭/registry. 50/50 green.
 ## 2026-06-09 | 2단계 완료(Storage 대기) | feat(stage-2): deleteEvent BR-8 테스트 + 사진 전체화면 뷰어 + useEventPhotos 훅 + 이벤트 수정 화면. 33/33 green. Storage 배포는 Blaze 업그레이드 후.
 ## 2026-06-09 | 2단계(진행) | feat(stage-2): core/calendar + core/storage + 캘린더 화면 + 이벤트 CRUD 화면 구현. 단위 테스트 30/30 green.
