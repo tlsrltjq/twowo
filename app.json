@@ -7,11 +7,6 @@
     "icon": "./assets/icon.png",
     "scheme": "twowo",
     "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#FFFBF7"
-    },
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.shingiseop.twowo",
@@ -42,7 +37,9 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#FFFBF7"
+          "backgroundColor": "#FFFBF7",
+          "image": "./assets/splash-icon.png",
+          "resizeMode": "contain"
         }
       ]
     ],

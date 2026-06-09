@@ -8,8 +8,8 @@ const mockDoc       = jest.fn((_, col, id) => ({ col, id }));
 const mockServerTs  = jest.fn(() => 'SERVER_TIMESTAMP');
 
 jest.mock('firebase/firestore', () => ({
-  updateDoc:       (...a: unknown[]) => mockUpdateDoc(...a),
-  doc:             (...a: unknown[]) => mockDoc(...a),
+  updateDoc:       (...a: unknown[]) => (mockUpdateDoc as (...x: unknown[]) => unknown)(...a),
+  doc:             (...a: unknown[]) => (mockDoc as (...x: unknown[]) => unknown)(...a),
   serverTimestamp: () => mockServerTs(),
 }));
 jest.mock('../config/firebase', () => ({ db: {} }));
