@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { subscribeAuthState } from '../core/auth';
-import { ensureUserDoc, getUserCoupleId } from '../core/couple';
+import { ensureUserDoc, getUserCoupleId, subscribeCouple } from '../core/couple';
 import { ensurePermissionAndToken } from '../core/notifications';
 import { useAuthStore } from '../core/stores/auth.store';
 
@@ -21,7 +21,15 @@ export default function RootLayout() {
     'Pretendard-Bold':     require('../assets/fonts/Pretendard-Bold.otf'),
   });
 
-  const { setUser, setCoupleId, setLoading } = useAuthStore();
+  const { coupleId, setUser, setCoupleId, setLoading } = useAuthStore();
+
+  // BR-D2: couples.status 구독 — disconnected 되면 coupleId null로 전환 → couple-connect로 이동
+  useEffect(() => {
+    if (!coupleId) return;
+    return subscribeCouple(coupleId, (couple) => {
+      if (couple.status === 'disconnected') setCoupleId(null);
+    });
+  }, [coupleId, setCoupleId]);
 
   useEffect(() => {
     const unsub = subscribeAuthState(async (user) => {

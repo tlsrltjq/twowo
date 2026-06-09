@@ -18,7 +18,7 @@ jest.mock('firebase/firestore', () => ({
 jest.mock('../../config/firebase', () => ({ db: {} }));
 
 import * as Notifications from 'expo-notifications';
-import { ensurePermissionAndToken, scheduleMoodReminderIfNeeded } from '..';
+import { ensurePermissionAndToken } from '..';
 
 describe('[BR-4] 알림 권한 거부 시 no-op', () => {
   beforeEach(() => jest.clearAllMocks());

@@ -116,3 +116,4 @@ export function subscribeCouple(coupleId: string, cb: (couple: Couple) => void):
 }
 
 export type { Couple, JoinError, JoinErrorReason } from './types';
+export { disconnectCouple, reconnectCouple } from './disconnect';
