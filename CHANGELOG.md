@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-06-09 | 3b단계 | feat(stage-3b): mood-share 구현 — schema/API/MoodScreen/탭/registry. 50/50 green.
 ## 2026-06-09 | 2단계 완료(Storage 대기) | feat(stage-2): deleteEvent BR-8 테스트 + 사진 전체화면 뷰어 + useEventPhotos 훅 + 이벤트 수정 화면. 33/33 green. Storage 배포는 Blaze 업그레이드 후.
 ## 2026-06-09 | 2단계(진행) | feat(stage-2): core/calendar + core/storage + 캘린더 화면 + 이벤트 CRUD 화면 구현. 단위 테스트 30/30 green.
 ## 2026-06-09 | 1단계 완료 | chore(stage-1): E2E 검증 완료 — Firebase Auth REST + Firestore Rules 실 프로젝트 통과. current.md 2단계 전환.
