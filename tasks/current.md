@@ -19,8 +19,8 @@
 - ✅ core/auth/, core/couple/ 모듈 구현
 - ✅ **Jest 단위 테스트**: generateCode(BR-2), ensureUserDoc(BR-1), joinByCode(BR-4/6/7/8) — 13/13 green
 - ✅ 통합 테스트 파일 생성 (에뮬레이터 준비 후 실행 가능)
-- [ ] **firestore.rules / storage.rules / 인덱스 배포** — rules 이미 작성됨, firebase deploy 미실행
-- [ ] Firebase 콘솔에서 규칙 활성 상태 확인
+- ✅ **firestore.rules + indexes 배포 완료** (storage는 Blaze 플랜 필요 → 2단계 시작 전 업그레이드 후 배포)
+- ✅ 시뮬레이터 실행 확인 — iPhone 17 Pro iOS 26.5, 로그인 화면 정상 렌더링
 
 ## 이전 세션에서 멈춘 곳
 1단계 코드 작업 완료. TypeScript 에러 0, 단위 테스트 18/18 green.
