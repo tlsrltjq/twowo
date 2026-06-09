@@ -91,6 +91,7 @@ export default function LoginScreen() {
         <Pressable onPress={() => router.push('/(auth)/signup')} style={styles.link}>
           <Text style={styles.linkText}>아직 계정이 없나요? <Text style={styles.linkBold}>회원가입</Text></Text>
         </Pressable>
+
       </ScrollView>
 
       <Toast
