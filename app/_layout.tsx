@@ -58,6 +58,7 @@ export default function RootLayout() {
         <Stack.Screen name="(auth)" />
         <Stack.Screen name="event/new" options={{ presentation: 'modal' }} />
         <Stack.Screen name="event/[id]" />
+        <Stack.Screen name="event/edit/[id]" />
       </Stack>
     </GestureHandlerRootView>
   );

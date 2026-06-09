@@ -137,9 +137,14 @@ export default function EventDetailScreen() {
         <Pressable onPress={() => router.back()}>
           <Text style={styles.backText}>‹ 뒤로</Text>
         </Pressable>
-        <Pressable onPress={handleDelete}>
-          <Text style={styles.deleteText}>삭제</Text>
-        </Pressable>
+        <View style={styles.headerRight}>
+          <Pressable onPress={() => router.push(`/event/edit/${id}`)}>
+            <Text style={styles.editText}>수정</Text>
+          </Pressable>
+          <Pressable onPress={handleDelete}>
+            <Text style={styles.deleteText}>삭제</Text>
+          </Pressable>
+        </View>
       </View>
 
       <ScrollView contentContainerStyle={styles.body}>
@@ -249,7 +254,9 @@ const styles = StyleSheet.create({
   center:           { flex: 1, alignItems: 'center', justifyContent: 'center' },
   notFound:         { ...typography.body, color: colors.text.secondary },
   header:           { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: space[4], borderBottomWidth: 1, borderBottomColor: colors.border.subtle, backgroundColor: colors.bg.surface },
+  headerRight:      { flexDirection: 'row', gap: space[4] },
   backText:         { ...typography.body, color: colors.accent.primary },
+  editText:         { ...typography.body, color: colors.text.secondary },
   deleteText:       { ...typography.body, color: colors.status.danger },
   body:             { padding: space[5], gap: space[4] },
   typeLabel:        { ...typography.caption, color: colors.text.secondary },
