@@ -10,18 +10,20 @@
 ## 진행 체크 (stage-2.md의 1차 목표를 복사)
 - ✅ core/calendar/: calendarEvents CRUD (Firestore)
 - ✅ core/calendar/deleteEvent.ts: 이벤트 삭제 시 photos + Storage 정리 (BR-8)
+- ✅ core/calendar/__tests__/deleteEvent.test.ts: BR-8 cascade delete 3케이스 (37/37 green)
 - ✅ core/storage/: 라이브러리 사진 업로드 + 압축 + EXIF 제거 + 썸네일 생성 (BR-6/7)
 - ✅ core/storage/cleanupOrphans: 고아 Storage 객체 정리
-- ✅ core/memory/: useCalendarEvents 훅
-- ✅ **Jest 단위 테스트**: schema.test.ts(BR-2/3/4), upload.test.ts(BR-5) — 30/30 green
+- ✅ core/memory/: useCalendarEvents 훅 + useEventPhotos 훅
+- ✅ **Jest 단위 테스트**: schema.test.ts(BR-2/3/4), upload.test.ts(BR-5), deleteEvent.test.ts(BR-8) — 33/33 green
 - ✅ 월간 달력 화면 (app/(tabs)/calendar.tsx) — react-native-calendars
-- ✅ 이벤트 추가/수정/삭제 화면 (event/new.tsx, event/[id].tsx)
-- [ ] 사진 실제 업로드 + Storage 배포 (Blaze 업그레이드 필요)
-- [ ] 사진 뷰: 실제 썸네일 표시 (현재 플레이스홀더)
+- ✅ 이벤트 추가/수정/삭제 화면 (event/new.tsx, event/[id].tsx, event/edit/[id].tsx)
+- ✅ 사진 전체화면 스와이프 뷰어 (event/[id].tsx Modal + FlatList)
+- ⏳ 사진 실제 업로드 + Storage 배포 (Blaze 업그레이드 후 `firebase deploy --only storage`)
+- ⏳ 사진 뷰: 실제 썸네일 표시 — useEventPhotos 훅 연결 완료, Storage 배포 시 자동 동작
 
 ## 이전 세션에서 멈춘 곳
-1단계 완료 + E2E 검증 완료 (Firebase Auth REST + Firestore Rules 실제 프로젝트 통과 확인).
-Storage 배포는 Blaze 플랜 업그레이드 후 2단계 시작 전 배포 필요.
+2단계 코드 100% 완료. Storage 배포는 Blaze 플랜 업그레이드 후 `firebase deploy --only storage` 실행 필요.
+그 이후 3단계(3b 오늘의 컨디션) 시작.
 
 ## 다음 단계 예고
 3b 오늘의 컨디션 (컨디션만 1차)
