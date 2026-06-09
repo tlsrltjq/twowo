@@ -27,6 +27,7 @@ export default function SignUpScreen() {
   const onSubmit = async (data: SignUpInput) => {
     try {
       await signUpWithEmail(data.email, data.password, data.displayName);
+      setToast({ message: '가입 완료! 잠시 기다려 주세요 🎉', type: 'success', visible: true });
       // _layout.tsx의 subscribeAuthState가 상태 업데이트 → index.tsx가 리다이렉트
     } catch (e: any) {
       const code: string = e?.code ?? '';

@@ -26,14 +26,21 @@ export default function RootLayout() {
     const unsub = subscribeAuthState(async (user) => {
       setLoading(true);
       setUser(user);
-      if (user) {
-        await ensureUserDoc(user.uid, user.displayName ?? '');
-        const coupleId = await getUserCoupleId(user.uid);
-        setCoupleId(coupleId);
-      } else {
-        setCoupleId(null);
+      try {
+        if (user) {
+          await ensureUserDoc(user.uid, user.displayName ?? '');
+          const coupleId = await getUserCoupleId(user.uid);
+          setCoupleId(coupleId);
+        } else {
+          setCoupleId(null);
+        }
+      } catch (e) {
+        // Firestore 실패 시에도 로딩 해제 — 빈 coupleId로 화면 전환 허용
+        console.error('[auth] ensureUserDoc/getCoupleId failed:', e);
+        if (user) setCoupleId(null);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     });
     return unsub;
   }, [setUser, setCoupleId, setLoading]);

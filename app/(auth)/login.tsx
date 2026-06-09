@@ -27,6 +27,7 @@ export default function LoginScreen() {
   const onSubmit = async (data: LoginInput) => {
     try {
       await signInWithEmail(data.email, data.password);
+      setToast({ message: '로그인 중...', type: 'success', visible: true });
       // _layout.tsx의 subscribeAuthState가 상태 업데이트 → index.tsx가 리다이렉트
     } catch (e: any) {
       const code: string = e?.code ?? '';
