@@ -119,3 +119,5 @@ export async function getRecent7Days(coupleId: string, userId: string): Promise<
     .map(d => fromFirestore(d.id, d.data() as Record<string, any>))
     .slice(0, 7);
 }
+
+export type { MoodCheck, MoodCheckInput } from './schema';

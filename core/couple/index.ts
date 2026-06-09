@@ -114,3 +114,5 @@ export function subscribeCouple(coupleId: string, cb: (couple: Couple) => void):
     if (snap.exists()) cb({ id: snap.id, ...snap.data() } as Couple);
   });
 }
+
+export type { Couple, JoinError, JoinErrorReason } from './types';

@@ -8,6 +8,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { subscribeAuthState } from '../core/auth';
 import { ensureUserDoc, getUserCoupleId } from '../core/couple';
+import { ensurePermissionAndToken } from '../core/notifications';
 import { useAuthStore } from '../core/stores/auth.store';
 
 SplashScreen.preventAutoHideAsync();
@@ -31,6 +32,8 @@ export default function RootLayout() {
           await ensureUserDoc(user.uid, user.displayName ?? '');
           const coupleId = await getUserCoupleId(user.uid);
           setCoupleId(coupleId);
+          // 알림 권한 요청 + Expo Push Token 저장 (BR-4/5 — 거부해도 크래시 없음)
+          ensurePermissionAndToken(user.uid).catch(() => {});
         } else {
           setCoupleId(null);
         }

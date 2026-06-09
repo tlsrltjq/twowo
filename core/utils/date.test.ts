@@ -1,4 +1,4 @@
-import { getTodayKST, nowKST } from './date';
+import { getTodayKST, nowKST, getDaysSince } from './date';
 
 describe('getTodayKST', () => {
   const RealDate = global.Date;
@@ -39,5 +39,25 @@ describe('getTodayKST', () => {
     mockUTC('2026-05-21T15:00:00Z'); // KST 2026-05-22 00:00
     const kst = nowKST();
     expect(kst.getUTCDate()).toBe(22);
+  });
+});
+
+describe('getDaysSince', () => {
+  const RealDate2 = global.Date;
+  afterEach(() => { global.Date = RealDate2; });
+
+  function mockUTC2(isoString: string) {
+    const fixed = new RealDate2(isoString).getTime();
+    const MockDate = class extends RealDate2 {
+      static now() { return fixed; }
+    } as unknown as typeof Date;
+    global.Date = MockDate;
+  }
+
+  it('[BR-2] 기준일부터 오늘까지 경과 일수를 반환한다', () => {
+    mockUTC2('2026-06-09T01:00:00Z'); // KST 2026-06-09 10:00
+    expect(getDaysSince('2026-06-09')).toBe(0);
+    expect(getDaysSince('2026-06-08')).toBe(1);
+    expect(getDaysSince('2026-01-01')).toBe(159);
   });
 });

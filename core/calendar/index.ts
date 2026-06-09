@@ -69,3 +69,5 @@ export function subscribeEvents(
     cb(snap.docs.map(d => fromFirestore(d.id, d.data() as Record<string, unknown>)));
   });
 }
+
+export type { CalendarEvent, CalendarEventInput } from './schema';
