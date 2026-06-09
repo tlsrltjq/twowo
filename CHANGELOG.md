@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-06-09 | 7단계 진행 | chore(eas): EAS 프로젝트 초기화(projectId 연결). Expo Go 실기기 QR 스캔 확인. TestFlight는 Apple Developer Program 가입 후 진행.
 ## 2026-06-09 | 5단계 완료 | feat(stage-5): 설정 탭(닉네임/기념일/로그아웃/커플 해제) + core/couple/disconnect(BR-D1/D4) + _layout BR-D2 구독. 테스트 3종 green. tsc 0 errors.
 ## 2026-06-09 | 4단계 완료 | feat(stage-4): 홈 화면(D+N일/컨디션/일정) + core/notifications(권한/Push Token/로컬 알림). 테스트 13종 green. 시뮬레이터 E2E 확인.
 ## 2026-06-09 | 3b단계 완료 | feat(stage-3b): mood-share 구현 완료. fix(auth): firebase/auth → @firebase/auth RN 빌드로 AsyncStorage persistence 수정. 시뮬레이터 E2E 확인.

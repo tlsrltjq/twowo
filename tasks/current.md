@@ -21,7 +21,8 @@
 - [ ] TestFlight 내부 테스터 초대 + 설치 확인
 
 ## 이전 세션에서 멈춘 곳
-5단계 완료. 6단계(TestFlight 게이트) 시작 전.
+EAS 프로젝트 연결 완료 (projectId: b2876cc9). Expo Go 실기기 QR 스캔 확인.
+다음: Apple Developer Program 가입 후 eas build --platform ios --profile preview → TestFlight 제출.
 
 ## 다음 단계 예고
 6단계: EAS Build → TestFlight 제출 (ADR-018 1차 MVP 완료)
