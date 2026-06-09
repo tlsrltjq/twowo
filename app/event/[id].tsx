@@ -1,10 +1,13 @@
 import * as ImagePicker from 'expo-image-picker';
 import { router, useLocalSearchParams } from 'expo-router';
 import { doc } from 'firebase/firestore';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import {
   Alert,
+  Dimensions,
   FlatList,
+  Image,
+  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -19,8 +22,12 @@ import { deleteEvent } from '../../core/calendar';
 import { CalendarEvent } from '../../core/calendar/schema';
 import { db } from '../../core/config/firebase';
 import { useFirestoreDoc } from '../../core/firestore-hooks';
+import { useEventPhotos, EventPhoto } from '../../core/memory';
 import { guardPhotoLimit, uploadPhoto } from '../../core/storage';
 import { useAuthStore } from '../../core/stores/auth.store';
+
+const SCREEN_W = Dimensions.get('window').width;
+const SCREEN_H = Dimensions.get('window').height;
 
 type ToastState = { message: string; type: 'success' | 'error' | 'info'; visible: boolean };
 
@@ -43,6 +50,10 @@ export default function EventDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { user } = useAuthStore();
   const [toast, setToast] = useState<ToastState>({ message: '', type: 'success', visible: false });
+  const [viewerIndex, setViewerIndex] = useState<number | null>(null);
+  const viewerRef = useRef<FlatList<EventPhoto>>(null);
+
+  const { photos } = useEventPhotos(id);
 
   const show = (message: string, type: ToastState['type']) =>
     setToast({ message, type, visible: true });
@@ -157,22 +168,26 @@ export default function EventDetailScreen() {
           </Pressable>
         </View>
 
-        {event.photoIds.length === 0 ? (
+        {photos.length === 0 ? (
           <View style={styles.photoEmpty}>
             <Text style={styles.photoEmptyText}>아직 사진이 없어요</Text>
           </View>
         ) : (
           <FlatList
-            data={event.photoIds}
-            keyExtractor={pid => pid}
+            data={photos}
+            keyExtractor={p => p.id}
             numColumns={3}
             scrollEnabled={false}
-            renderItem={() => (
-              <View style={styles.photoCell}>
-                <View style={styles.photoPlaceholder}>
-                  <Text>🖼️</Text>
-                </View>
-              </View>
+            renderItem={({ item, index }) => (
+              <Pressable style={styles.photoCell} onPress={() => setViewerIndex(index)}>
+                {item.thumbUrl ? (
+                  <Image source={{ uri: item.thumbUrl }} style={styles.photoThumb} resizeMode="cover" />
+                ) : (
+                  <View style={styles.photoPlaceholder}>
+                    <Text>🖼️</Text>
+                  </View>
+                )}
+              </Pressable>
             )}
           />
         )}
@@ -184,6 +199,47 @@ export default function EventDetailScreen() {
         visible={toast.visible}
         onHide={() => setToast(t => ({ ...t, visible: false }))}
       />
+
+      <Modal
+        visible={viewerIndex !== null}
+        animationType="fade"
+        statusBarTranslucent
+        onRequestClose={() => setViewerIndex(null)}
+      >
+        <View style={styles.viewer}>
+          <Pressable style={styles.viewerClose} onPress={() => setViewerIndex(null)}>
+            <Text style={styles.viewerCloseText}>✕</Text>
+          </Pressable>
+          <FlatList
+            ref={viewerRef}
+            data={photos}
+            keyExtractor={p => p.id}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            initialScrollIndex={viewerIndex ?? 0}
+            getItemLayout={(_, index) => ({ length: SCREEN_W, offset: SCREEN_W * index, index })}
+            renderItem={({ item }) => (
+              <View style={styles.viewerPage}>
+                {item.originalUrl ? (
+                  <Image
+                    source={{ uri: item.originalUrl }}
+                    style={styles.viewerImage}
+                    resizeMode="contain"
+                  />
+                ) : (
+                  <View style={styles.viewerPlaceholder}>
+                    <Text style={styles.viewerPlaceholderText}>🖼️</Text>
+                  </View>
+                )}
+              </View>
+            )}
+          />
+          <Text style={styles.viewerCounter}>
+            {viewerIndex !== null ? `${viewerIndex + 1} / ${photos.length}` : ''}
+          </Text>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -210,5 +266,14 @@ const styles = StyleSheet.create({
   photoEmpty:       { height: 80, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.bg.subtle, borderRadius: radius.md },
   photoEmptyText:   { ...typography.caption, color: colors.text.muted },
   photoCell:        { flex: 1, aspectRatio: 1, padding: space[1] },
+  photoThumb:       { flex: 1, borderRadius: radius.sm },
   photoPlaceholder: { flex: 1, backgroundColor: colors.bg.subtle, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center' },
+  viewer:               { flex: 1, backgroundColor: '#000' },
+  viewerClose:          { position: 'absolute', top: 56, right: space[5], zIndex: 10, padding: space[2] },
+  viewerCloseText:      { fontSize: 24, color: '#fff' },
+  viewerPage:           { width: SCREEN_W, height: SCREEN_H, alignItems: 'center', justifyContent: 'center' },
+  viewerImage:          { width: SCREEN_W, height: SCREEN_H },
+  viewerPlaceholder:    { alignItems: 'center', justifyContent: 'center' },
+  viewerPlaceholderText: { fontSize: 64 },
+  viewerCounter:        { position: 'absolute', bottom: 48, width: '100%', textAlign: 'center', color: '#fff', ...typography.caption },
 });
