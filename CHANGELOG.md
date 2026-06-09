@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-06-09 | 1단계 완료 | chore(stage-1): E2E 검증 완료 — Firebase Auth REST + Firestore Rules 실 프로젝트 통과. current.md 2단계 전환.
 ## 2026-06-09 | 1단계 | feat(stage-1): core/auth, core/couple, auth store, 로그인/회원가입/커플연결 화면, 단위 테스트 13종 green
 ## 2026-05-15 | 0단계 | 프로젝트 시작. 하네스 파일 초기화.
 ## 2026-05-21 | 계획 | docs: 전체 단계 로드맵 수립 (0~7단계), 캘린더 스키마 확장, 3단계 3a/3b/3c 분리, 4단계 푸시 알림 구조 명세, 6단계 30일 유예 로직 설계, ADR-006 추가

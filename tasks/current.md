@@ -4,30 +4,27 @@
 > 단계별 "계획서"는 `stage-N.md`에 있고 거의 수정되지 않습니다.
 > 이 파일은 매 세션마다 자유롭게 갱신됩니다.
 
-## 지금 단계: 1단계 — 인증 + 커플 연결
-> 상세 계획은 `tasks/stage-1.md` 참고
+## 지금 단계: 2단계 — 캘린더 + 사진
+> 상세 계획은 `tasks/stage-2.md` 참고
 
-## 진행 체크 (stage-1.md의 목표를 복사해서 ✅로 마킹)
-- ✅ Firebase Auth 이메일 로그인 화면 구현 (app/(auth)/login.tsx)
-- ✅ 회원가입 화면 (app/(auth)/signup.tsx)
-- [ ] 비밀번호 재설정 흐름 — `sendPasswordReset` 함수 구현됨, UI 미연결
-- ✅ 로그인 후 coupleId 유무 분기 처리 (app/index.tsx)
-- ✅ 커플 연결 화면 구현 (app/(auth)/couple-connect.tsx)
-- ✅ `ensureCouple(uid)` — 발급 전 커플 선생성 + users.coupleId 설정 (BR-0)
-- ✅ 초대 코드 생성 → `invitations/{code}` 문서 생성 (TTL 24h, ADR-007). 재발급은 `getDocs` + `writeBatch`(BR-3)
-- ✅ 초대 코드 입력 → 트랜잭션으로 couples.memberIds 추가 + invitations 삭제
-- ✅ core/auth/, core/couple/ 모듈 구현
-- ✅ **Jest 단위 테스트**: generateCode(BR-2), ensureUserDoc(BR-1), joinByCode(BR-4/6/7/8) — 13/13 green
-- ✅ 통합 테스트 파일 생성 (에뮬레이터 준비 후 실행 가능)
-- ✅ **firestore.rules + indexes 배포 완료** (storage는 Blaze 플랜 필요 → 2단계 시작 전 업그레이드 후 배포)
-- ✅ 시뮬레이터 실행 확인 — iPhone 17 Pro iOS 26.5, 로그인 화면 정상 렌더링
+## 진행 체크 (stage-2.md의 1차 목표를 복사)
+- [ ] core/calendar/: calendarEvents CRUD (Firestore)
+- [ ] core/calendar/deleteEvent.ts: 이벤트 삭제 시 photos + Storage 정리
+- [ ] core/storage/: 라이브러리 사진 업로드 + 압축 + EXIF 제거 + 썸네일 생성
+- [ ] core/storage/cleanupOrphans: 고아 Storage 객체 정리
+- [ ] core/memory/: 이벤트 + 사진 조합 조회 훅
+- [ ] **Jest 단위 테스트**: upload.test.ts, deleteEvent.test.ts
+- [ ] 월간 달력 화면 (app/(tabs)/calendar.tsx) — react-native-calendars
+- [ ] 이벤트 추가/수정/삭제 화면 (RHF+zod)
+- [ ] 사진 선택 + 압축 + EXIF 제거 (expo-image-picker + expo-image-manipulator)
+- [ ] 사진 뷰: 그리드 + 원본 전체화면
 
 ## 이전 세션에서 멈춘 곳
-1단계 코드 작업 완료. TypeScript 에러 0, 단위 테스트 18/18 green.
-남은 것: firebase deploy --only firestore:rules,firestore:indexes,storage + 시뮬레이터 실행 확인(Xcode 다운로드 중)
+1단계 완료 + E2E 검증 완료 (Firebase Auth REST + Firestore Rules 실제 프로젝트 통과 확인).
+Storage 배포는 Blaze 플랜 업그레이드 후 2단계 시작 전 배포 필요.
 
 ## 다음 단계 예고
-2단계: 캘린더 화면, 일정 CRUD, 사진 첨부
+3b 오늘의 컨디션 (컨디션만 1차)
 
 > **범위 기준: ADR-018** — 1차 MVP 6개(인증·캘린더·컨디션·홈/로컬알림·단순해제·TestFlight 게이트)만 먼저. 투표/빙고/원격푸시/실험실/30일유예/공개출시는 2차.
 

@@ -5,8 +5,8 @@
   "private": true,
   "scripts": {
     "start": "expo start",
-    "ios": "expo start --ios",
-    "android": "expo start --android",
+    "ios": "expo run:ios",
+    "android": "expo run:android",
     "test": "jest --watchAll=false",
     "test:integration": "FIRESTORE_EMULATOR_HOST=localhost:8080 jest --testPathPattern='__tests__/integration' --watchAll=false",
     "lint": "eslint . --ext .ts,.tsx",
