@@ -6,11 +6,12 @@ interface TextFieldProps {
   label: string;
   value: string;
   onChangeText: (v: string) => void;
+  onBlur?: () => void;
   placeholder?: string;
   error?: string | undefined;
   multiline?: boolean;
   maxLength?: number;
-  keyboardType?: 'default' | 'email-address' | 'number-pad';
+  keyboardType?: 'default' | 'email-address' | 'number-pad' | 'numbers-and-punctuation';
   secureTextEntry?: boolean;
   autoCapitalize?: 'none' | 'sentences' | 'words';
 }
@@ -19,6 +20,7 @@ export function TextField({
   label,
   value,
   onChangeText,
+  onBlur,
   placeholder,
   error,
   multiline,
@@ -33,6 +35,7 @@ export function TextField({
       <TextInput
         value={value}
         onChangeText={onChangeText}
+        onBlur={onBlur}
         placeholder={placeholder}
         placeholderTextColor={colors.text.muted}
         multiline={multiline}

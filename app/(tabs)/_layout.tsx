@@ -12,7 +12,8 @@ export default function TabsLayout() {
         tabBarStyle: { backgroundColor: colors.bg.surface, borderTopColor: colors.border.subtle },
       }}
     >
-      <Tabs.Screen name="index" options={{ title: '홈' }} />
+      <Tabs.Screen name="index"    options={{ title: '홈' }} />
+      <Tabs.Screen name="calendar" options={{ title: '캘린더' }} />
     </Tabs>
   );
 }
