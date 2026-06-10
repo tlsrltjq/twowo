@@ -39,7 +39,7 @@
 | 데이트 빙고 | couple-bingo | ✅ | ⬜ 매핑 미완 | experimental |
 
 ## 이전 세션에서 멈춘 곳
-신규 기능 5종 모두 완료. 모든 기능 experimental로 실험실/사이드바에서 접근 가능.
+신규 기능 5종 UX 개선 완료 (파트너 이름 표시, FlatList→ScrollView, 롱프레스 힌트).
 
 ## 진행 중인 작업 (시뮬레이터 전용)
 > **보류 항목 (비용 발생)**: Apple Developer Program · Firebase Storage Blaze · TestFlight 등. 언급하지 않음.
