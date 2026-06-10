@@ -15,6 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft, RefreshCw } from 'lucide-react-native';
 
 import { useAuthStore } from '../../core/stores/auth.store';
+import { Spinner } from '../../design-system/Spinner';
 import { colors, radius, space, typography } from '../../design-system/tokens';
 import {
   BingoBoard,
@@ -74,9 +75,7 @@ export default function BingoScreen() {
     return (
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <Header onBack={() => router.back()} onNewBoard={undefined} />
-        <View style={styles.center}>
-          <Text style={styles.loadingText}>불러오는 중...</Text>
-        </View>
+        <View style={styles.center}><Spinner /></View>
       </SafeAreaView>
     );
   }
@@ -282,7 +281,6 @@ const styles = StyleSheet.create({
   safeArea:          { flex: 1, backgroundColor: colors.bg.base },
   flex:              { flex: 1 },
   center:            { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  loadingText:       { ...typography.body, color: colors.text.muted },
 
   header:            { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space[4], paddingVertical: space[4], borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
   backBtn:           { padding: space[1] },
