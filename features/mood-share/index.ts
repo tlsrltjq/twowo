@@ -106,6 +106,19 @@ export function subscribePartnerMoodToday(
   });
 }
 
+// 내 오늘 컨디션 실시간 구독 (홈 화면에서 즉시 반영용)
+export function subscribeMyMoodToday(
+  coupleId: string,
+  userId: string,
+  cb: (m: MoodCheck | null) => void,
+): () => void {
+  const today = getTodayKST();
+  const ref   = doc(db, 'moodChecks', docId(coupleId, userId, today));
+  return onSnapshot(ref, (snap) => {
+    cb(snap.exists() ? fromFirestore(snap.id, snap.data() as Record<string, any>) : null);
+  });
+}
+
 // BR-7: 최근 7일 컨디션 조회 (읽기 전용)
 export async function getRecent7Days(coupleId: string, userId: string): Promise<MoodCheck[]> {
   const q = query(

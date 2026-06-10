@@ -12,7 +12,7 @@ import { useAuthStore } from '../../core/stores/auth.store';
 import { getDaysSince, getTodayKST } from '../../core/utils/date';
 import { Spinner } from '../../design-system/Spinner';
 import { colors, space, typography } from '../../design-system/tokens';
-import { getTodayMood, subscribePartnerMoodToday, MoodCheck } from '../../features/mood-share';
+import { subscribeMyMoodToday, subscribePartnerMoodToday, MoodCheck } from '../../features/mood-share';
 
 const MOOD_LABELS: Record<string, string> = {
   great: '최고 🌟',
@@ -55,20 +55,12 @@ export default function HomeScreen() {
     return subscribeCouple(coupleId, setCouple);
   }, [coupleId]);
 
-  // 내 컨디션 로드
-  const loadMyMood = async () => {
-    if (!coupleId || !user) return;
-    try {
-      const m = await getTodayMood(coupleId, user.uid);
-      setMyMood(m);
-    } catch {
-      setMyMood(null);
-    }
-  };
-
+  // 내 컨디션 실시간 구독 (컨디션 탭에서 입력 후 홈으로 돌아와도 즉시 반영)
   useEffect(() => {
-    loadMyMood();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (!coupleId || !user) return;
+    return subscribeMyMoodToday(coupleId, user.uid, (m) => {
+      setMyMood(m);
+    });
   }, [coupleId, user?.uid]);
 
   // 알림 스케줄 — 내 컨디션 상태 확정 후
@@ -97,7 +89,8 @@ export default function HomeScreen() {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await loadMyMood();
+    // myMood는 onSnapshot 구독이라 별도 새로고침 불필요 — 잠깐 UX용 딜레이만
+    await new Promise(r => setTimeout(r, 500));
     setRefreshing(false);
   };
 
