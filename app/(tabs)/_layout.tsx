@@ -25,7 +25,7 @@ interface SidebarItem {
 }
 
 const SIDEBAR_ITEMS: SidebarItem[] = [
-  { label: '데이트 빙고',  emoji: '🎯', route: '/(features)/bingo',     comingSoon: true },
+  { label: '데이트 빙고',  emoji: '🎯', route: '/(features)/bingo' },
   { label: '둘다좋아',     emoji: '💑', route: '/(features)/vote' },
 ];
 
