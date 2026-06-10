@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-06-10 | 홈+캘린더 | fix(calendar): addDoc undefined 필드 오류(placeName/memo) 수정. feat(home): NextEventCard(D-Day 배지/타입 이모지/장소명). feat(assets): 앱 아이콘·스플래시 — 두 하트 커플 모티프.
 ## 2026-06-10 | 빙고+둘다좋아 | feat(couple-bingo): 5x5 빙고판(설정/게임/빙고감지/완성). feat(date-decision): 후보관리+투표+자동공개. 사이드바에서 두 기능 모두 진입 가능.
 ## 2026-06-10 | 채팅+사이드바 | feat(chat): 실시간 채팅(서브컬렉션, 말풍선 UI) + 우측 사이드바(햄버거 메뉴) 추가. 탭 5개(홈|채팅|캘린더|컨디션|설정). 보조기능은 사이드바에서 진입.
 ## 2026-06-10 | 버그 수정 | fix(couple): createInvite Firestore LIST 쿼리→activeInviteCode GET 방식. fix(tabs): 로그아웃 후 로그인 리다이렉트. testID 추가(E2E 검증). Maestro 코드 생성 PASS / 로그아웃 리다이렉트 PASS.

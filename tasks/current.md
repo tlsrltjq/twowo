@@ -35,7 +35,8 @@
 - ✅ E2E 시뮬레이터 검증: 채팅 전송 / 사이드바 슬라이드 / 둘다좋아 진입 / 빙고 설정 뷰 모두 PASS
 
 ## 이전 세션에서 멈춘 곳
-2차 기능(채팅·사이드바·둘다좋아·빙고) 구현 + E2E 검증 완료.
+앱 아이콘/스플래시 생성(두 하트 커플 모티프), 홈 NextEventCard(D-Day/타입/장소) 추가,
+calendarEvent 저장 오류(addDoc undefined 필드) 수정 완료.
 다음: Apple Developer Program 가입 후 eas build --platform ios --profile preview → TestFlight 제출.
 (Storage 규칙 미배포 — Firebase Storage 활성화 후 배포 필요. 이미지 전송 end-to-end는 그 이후 테스트.)
 
