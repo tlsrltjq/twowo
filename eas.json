@@ -1,5 +1,8 @@
 {
-  "cli": { "version": ">= 11.0.0" },
+  "cli": {
+    "version": ">= 11.0.0",
+    "appVersionSource": "local"
+  },
   "build": {
     "development": {
       "developmentClient": true,
@@ -10,13 +13,11 @@
     "preview": {
       "distribution": "store",
       "ios": { "buildConfiguration": "Release" },
-      "env": { "EXPO_PUBLIC_APP_ENV": "preview" },
-      "channel": "preview"
+      "env": { "EXPO_PUBLIC_APP_ENV": "preview" }
     },
     "production": {
       "ios": { "buildConfiguration": "Release" },
       "env": { "EXPO_PUBLIC_APP_ENV": "production" },
-      "channel": "production",
       "autoIncrement": true
     }
   },
