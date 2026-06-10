@@ -1,10 +1,12 @@
+import { Menu } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
-import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { subscribeEvents, CalendarEvent } from '../../core/calendar';
 import { subscribeCouple, Couple } from '../../core/couple';
 import { scheduleMoodReminderIfNeeded } from '../../core/notifications';
+import { useSidebar } from '../../core/sidebar.context';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { getDaysSince, getTodayKST } from '../../core/utils/date';
 import { Spinner } from '../../design-system/Spinner';
@@ -20,6 +22,7 @@ const MOOD_LABELS: Record<string, string> = {
 
 export default function HomeScreen() {
   const { user, coupleId } = useAuthStore();
+  const { open: openSidebar } = useSidebar();
   const [couple, setCouple]           = useState<Couple | null>(null);
   const [myMood, setMyMood]           = useState<MoodCheck | null | 'loading'>('loading');
   const [partnerMood, setPartnerMood] = useState<MoodCheck | null>(null);
@@ -112,12 +115,17 @@ export default function HomeScreen() {
       contentContainerStyle={styles.container}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
     >
-      {/* 헤더: 인사말 + D-Day */}
+      {/* 헤더: 인사말 + D-Day + 햄버거 */}
       <View style={styles.header}>
-        <Text style={styles.greeting}>안녕하세요 👋</Text>
-        {dDay !== null && (
-          <Text style={styles.dday}>함께한 지 D+{dDay}일</Text>
-        )}
+        <View style={styles.headerLeft}>
+          <Text style={styles.greeting}>안녕하세요 👋</Text>
+          {dDay !== null && (
+            <Text style={styles.dday}>함께한 지 D+{dDay}일</Text>
+          )}
+        </View>
+        <TouchableOpacity onPress={openSidebar} style={styles.hamburger} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+          <Menu size={24} color={colors.text.secondary} strokeWidth={1.8} />
+        </TouchableOpacity>
       </View>
 
       {/* 오늘의 컨디션 카드 */}
@@ -190,9 +198,11 @@ const styles = StyleSheet.create({
   container:    { padding: space[4], gap: space[5] },
   center:       { flex: 1, backgroundColor: colors.bg.base, alignItems: 'center', justifyContent: 'center' },
 
-  header:       { gap: space[1] },
+  header:       { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
+  headerLeft:   { gap: space[1], flex: 1 },
   greeting:     { ...typography.title1, color: colors.text.primary },
   dday:         { ...typography.body, color: colors.accent.primary },
+  hamburger:    { padding: space[2], marginTop: space[1] },
 
   section:      { gap: space[3] },
   sectionTitle: { ...typography.caption, color: colors.text.muted, textTransform: 'uppercase', letterSpacing: 0.5 },

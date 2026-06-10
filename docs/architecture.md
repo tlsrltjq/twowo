@@ -119,6 +119,16 @@ featureId: string
 enabled: boolean
 ```
 
+### couples/{coupleId}/messages (서브컬렉션)
+```
+id: string                // 자동 생성 문서 ID
+senderId: string          // 작성자 userId
+text: string              // 메시지 본문 (1~1000자)
+createdAt: Timestamp
+```
+> 서브컬렉션으로 coupleId를 부모에서 상속. 최신 50개만 onSnapshot 구독.
+> Security Rule: isMyCouple(coupleId) + senderId == 본인 uid.
+
 ## 사진 업로드 전략
 - **인앱 카메라** (expo-camera): 촬영 시 최대 1080p 제한, 바로 업로드
 - **라이브러리 선택** (expo-image-picker): 선택 후 expo-image-manipulator로 리사이즈 + 압축
@@ -156,11 +166,13 @@ enabled: boolean
 
 | 기능(한글) | `features/` 폴더 = featureId | 단계 | 탭/진입점 | Firestore 컬렉션 | status 초기값 |
 |------------|------------------------------|:----:|-----------|------------------|:-------------:|
-| 둘다좋아     | `date-decision`              | 3a   | `(tabs)/vote.tsx` | dateCandidates, voteSessions | experimental |
+| 채팅         | `chat`                       | 3    | `(tabs)/chat.tsx` | couples/{id}/messages | active |
+| 둘다좋아     | `date-decision`              | 3a   | 사이드바 → 별도 화면 | dateCandidates, voteSessions | experimental |
 | 오늘의 컨디션 | `mood-share`                | 3b   | 홈 카드 + 자체 화면 | moodChecks | experimental |
-| 데이트 빙고  | `couple-bingo`               | 3c   | 실험실에서 진입 | bingoBoards | experimental |
+| 데이트 빙고  | `couple-bingo`               | 3c   | 사이드바 → 별도 화면 | bingoBoards | experimental |
 
-> 홈 / 캘린더 / 설정 / 실험실은 feature 가 아니라 **고정 탭**(`app/(tabs)/`) — registry 미등록.
+> 홈 / 채팅 / 캘린더 / 컨디션 / 설정은 **고정 탭**(`app/(tabs)/`) — registry 미등록.
+> 실험/보조 기능은 사이드바(햄버거 메뉴)로 진입 — 탭에 등록하지 않음.
 > 합산 화면(홈)은 각 feature 의 순수 함수 API(`getXxxForCouple`)만 호출 (CLAUDE.md: features 직접 import 금지).
 
 ## 기능별 서브컬렉션 (features가 직접 관리)
@@ -174,11 +186,13 @@ enabled: boolean
 ## 메인 탭 구조
 | 탭 | 화면 | 주요 기능 |
 |----|------|----------|
-| 홈 | 오늘 요약 | 컨디션 공유, 다가오는 일정 |
+| 홈 | 오늘 요약 | 컨디션 공유, 다가오는 일정, 사이드바 진입 |
+| 채팅 | 실시간 채팅 | 커플 메시지, 말풍선 UI |
 | 캘린더 | 뷰 전환형 캘린더 | 일정/사진/운동/데이트 뷰 |
-| 둘다좋아 | 후보 선택 | 각자 몰래, 매칭 공개 |
-| 실험실 | 기능 목록 | ON/OFF 토글 |
+| 컨디션 | 오늘의 컨디션 | 에너지/기분 입력, 상대방 확인 |
 | 설정 | 앱 설정 | 커플 정보, 기능 관리 |
+
+> 보조 기능(빙고, 둘다좋아 등)은 홈 화면 우상단 햄버거(≡) → 우측 사이드바에서 진입.
 
 ## 온보딩 플로우
 ```

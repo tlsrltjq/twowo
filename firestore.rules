@@ -90,6 +90,18 @@ service cloud.firestore {
 
       // 삭제: 클라이언트 불가. 30일 경과 후 Scheduled Function 만.
       allow delete: if false;
+
+      // ---------- messages (채팅) ----------
+      match /messages/{messageId} {
+        allow read: if isMyCouple(coupleId);
+        allow create: if isMyCouple(coupleId)
+                      && request.resource.data.senderId == request.auth.uid
+                      && request.resource.data.text is string
+                      && request.resource.data.text.size() > 0
+                      && request.resource.data.text.size() <= 1000;
+        allow update: if false;
+        allow delete: if false;
+      }
     }
 
     // ---------- invitations (초대 코드 임시 보관) ----------
