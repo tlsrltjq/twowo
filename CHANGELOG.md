@@ -5,6 +5,8 @@
 
 ---
 
+## 2026-06-10 | 계획 갱신 | chore(plan): 비용 발생 항목(TestFlight·Storage·Apple Developer) 보류(ADR-019). 시뮬레이터 전용 계획 수립 — 실험실 탭→UI 완성도→캘린더 추가 뷰. HARNESS·decisions 갱신.
+## 2026-06-10 | 컨디션 실시간 | fix(home): 내 컨디션 getTodayMood(일회성)→subscribeMyMoodToday(onSnapshot) 전환. 컨디션 탭 입력 후 홈 탭 돌아오면 즉시 반영.
 ## 2026-06-10 | UI 버그 | fix(ui): event 3화면 SafeAreaView — 상태바 겹침·뒤로가기 수정. fix(router): _layout (features) 등록 — 사이드바 빙고/투표 진입 수정. fix(firestore): photoIds undefined→[] 정규화 — 이벤트 상세 크래시 수정.
 ## 2026-06-10 | auth 레이스 수정 | fix(auth): signup/login setUser+setCoupleId 명시적 동기화 후 navigate. fix(auth): couple-connect user!.uid null-assertion 제거. docs: current.md 7단계 수정, HARNESS 아이콘 갱신, stage-7 링크 수정, auth-couple.md createInvite 반환 타입+Google 2차 표시.
 ## 2026-06-10 | E2E 두계정 | fix(rules): moodChecks 등 미존재 문서 read permission-denied 수정(canReadCoupleDoc). fix(auth): signup/login 명시적 navigate. feat(e2e): Maestro 5종 플로우. testID 추가(screen-*/btn-*). 컨디션/캘린더/채팅 동기화 1초 이내 확인.
