@@ -8,7 +8,7 @@
       "env": { "EXPO_PUBLIC_APP_ENV": "development" }
     },
     "preview": {
-      "distribution": "internal",
+      "distribution": "store",
       "ios": { "buildConfiguration": "Release" },
       "env": { "EXPO_PUBLIC_APP_ENV": "preview" },
       "channel": "preview"
@@ -21,6 +21,9 @@
     }
   },
   "submit": {
+    "preview": {
+      "ios": {}
+    },
     "production": {
       "ios": {}
     }
