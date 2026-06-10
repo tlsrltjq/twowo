@@ -1,0 +1,37 @@
+appId: host.exp.Exponent
+---
+# Dev1 (Account A, iPhone 14 Pro) — 컨디션 저장
+- launchApp
+- tapOn:
+    text: "둘다좋아"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 90000
+# 탭바: 컨디션 탭 (4번째, x=70%, y=93%)
+- tapOn:
+    point: "70%,93%"
+- extendedWaitUntil:
+    visible:
+      id: "screen-mood"
+    timeout: 10000
+# 이미 저장된 경우 수정 버튼으로 폼 열기
+- runFlow:
+    when:
+      visible: "수정"
+    commands:
+      - tapOn: "수정"
+      - waitForAnimationToEnd
+- tapOn:
+    id: "btn-energy-3"
+- waitForAnimationToEnd
+- tapOn:
+    id: "btn-mood-good"
+- waitForAnimationToEnd
+- tapOn:
+    id: "btn-mood-save"
+- extendedWaitUntil:
+    visible: "수정"
+    timeout: 10000
+- takeScreenshot: "mood_save_a_success"

@@ -14,6 +14,7 @@ interface ButtonProps {
   loading?: boolean;
   disabled?: boolean;
   accessibilityLabel?: string;
+  testID?: string;
 }
 
 const variantStyle = {
@@ -37,6 +38,7 @@ export function Button({
   loading = false,
   disabled = false,
   accessibilityLabel,
+  testID,
 }: ButtonProps) {
   const v = variantStyle[variant];
   const s = sizeStyle[size];
@@ -48,6 +50,7 @@ export function Button({
 
   return (
     <Pressable
+      testID={testID}
       onPress={handlePress}
       disabled={disabled || loading}
       accessibilityLabel={accessibilityLabel ?? label}

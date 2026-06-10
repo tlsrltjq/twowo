@@ -5,6 +5,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { signInWithEmail } from '../../core/auth';
+import { getUserCoupleId } from '../../core/couple';
 import { loginSchema, LoginInput } from '../../core/auth/schema';
 import { Button } from '../../design-system/Button';
 import { TextField } from '../../design-system/TextField';
@@ -26,9 +27,9 @@ export default function LoginScreen() {
 
   const onSubmit = async (data: LoginInput) => {
     try {
-      await signInWithEmail(data.email, data.password);
-      setToast({ message: '로그인 중...', type: 'success', visible: true });
-      // _layout.tsx의 subscribeAuthState가 상태 업데이트 → index.tsx가 리다이렉트
+      const user = await signInWithEmail(data.email, data.password);
+      const coupleId = await getUserCoupleId(user.uid);
+      router.replace(coupleId ? '/(tabs)' : '/(auth)/couple-connect');
     } catch (e: any) {
       const code: string = e?.code ?? '';
       if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') {

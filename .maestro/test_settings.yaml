@@ -1,0 +1,11 @@
+appId: host.exp.Exponent
+---
+# Dev1 (Account A) — 설정 탭: 상대방 닉네임/커플 정보 확인
+- launchApp
+- tapOn:
+    text: "설정"
+- waitForAnimationToEnd
+- takeScreenshot: "settings_a"
+# 상대방 닉네임이 표시되어야 함
+- assertVisible: "커플 정보"
+- takeScreenshot: "settings_a_couple_info"

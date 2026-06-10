@@ -1,0 +1,35 @@
+appId: host.exp.Exponent
+---
+# Dev1 (Account A, iPhone 14 Pro) — 캘린더 이벤트 생성
+- launchApp
+- tapOn:
+    text: "둘다좋아"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 90000
+- tapOn:
+    point: "50%,93%"
+- extendedWaitUntil:
+    visible:
+      id: "screen-calendar"
+    timeout: 10000
+- takeScreenshot: "calendar_a_before"
+- tapOn: "새 일정 추가"
+- waitForAnimationToEnd
+- tapOn:
+    id: "input-event-title"
+- eraseText: 30
+- inputText: "Test Event"
+# 키보드 닫기: 타입 선택 영역 탭 (15%)
+- tapOn:
+    point: "30%,15%"
+- waitForAnimationToEnd
+- tapOn:
+    id: "btn-event-save"
+- extendedWaitUntil:
+    visible:
+      id: "screen-calendar"
+    timeout: 15000
+- takeScreenshot: "calendar_a_event_created"

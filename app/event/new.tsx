@@ -111,6 +111,7 @@ export default function NewEventScreen() {
           name="title"
           render={({ field: { onChange, onBlur, value } }) => (
             <TextField
+              testID="input-event-title"
               label="제목"
               placeholder="무슨 일이 있었나요?"
               value={value}
@@ -174,6 +175,7 @@ export default function NewEventScreen() {
 
         <View style={styles.submitBtn}>
           <Button
+            testID="btn-event-save"
             label={isSubmitting ? '저장 중...' : '저장'}
             onPress={handleSubmit(onSubmit)}
             disabled={isSubmitting}

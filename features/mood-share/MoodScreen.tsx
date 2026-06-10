@@ -131,7 +131,7 @@ export default function MoodScreen() {
   const showForm = !myMood || editing;
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView testID="screen-mood" style={styles.safeArea} edges={['top']}>
     <ScrollView style={styles.container} contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
       <Text style={styles.screenTitle}>오늘의 컨디션</Text>
 
@@ -154,6 +154,7 @@ export default function MoodScreen() {
               {([1, 2, 3, 4, 5] as const).map(v => (
                 <TouchableOpacity
                   key={v}
+                  testID={`btn-energy-${v}`}
                   style={[styles.energyBtn, energy === v && styles.energyBtnActive]}
                   onPress={() => setEnergy(v)}
                 >
@@ -169,6 +170,7 @@ export default function MoodScreen() {
               {(['great', 'good', 'okay', 'bad'] as Mood[]).map(m => (
                 <TouchableOpacity
                   key={m}
+                  testID={`btn-mood-${m}`}
                   style={[styles.moodChip, mood === m && { backgroundColor: MOOD_COLORS[m] }]}
                   onPress={() => setMood(m)}
                 >
@@ -203,7 +205,7 @@ export default function MoodScreen() {
             />
 
             <View style={styles.saveBtn}>
-              <Button label={saving ? '저장 중...' : '저장'} onPress={handleSave} disabled={saving} />
+              <Button testID="btn-mood-save" label={saving ? '저장 중...' : '저장'} onPress={handleSave} disabled={saving} />
             </View>
           </>
         ) : (

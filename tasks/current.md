@@ -35,12 +35,13 @@
 - ✅ E2E 시뮬레이터 검증: 채팅 전송 / 사이드바 슬라이드 / 둘다좋아 진입 / 빙고 설정 뷰 모두 PASS
 
 ## 이전 세션에서 멈춘 곳
-UI 완성도 작업 완료:
-- fix(calendar): createEvent/updateEvent undefined 필드 → deleteField/omit 처리
-- feat(home): NextEventCard TouchableOpacity → 이벤트 상세 네비게이션
-- feat(chat): 읽음 배지 (subscribeUnreadCount, 채팅 포커스 시 초기화)
-- feat(settings): 상대방 닉네임 표시
-시뮬레이터 E2E 검증: 일정 저장·달력·NextEventCard탭·이벤트상세 모두 PASS.
+두 계정 E2E 전체 플로우 테스트 완료:
+- fix(auth): signup/login 후 명시적 navigate 추가 (couple-connect / tabs)
+- fix(rules): Firestore moodChecks/calendarEvents 등 read rule — 미존재 문서 onSnapshot 시 permission-denied 버그 수정 (canReadCoupleDoc helper 추가, 배포 완료)
+- fix(rules): couples allow get — join 시 1-member 커플 조회 허용 (배포 완료)
+- feat(e2e): Maestro 5종 테스트 플로우 작성 (.maestro/)
+- testID 추가: screen-home/mood/chat/calendar, btn-energy-N, btn-mood-N, btn-mood-save, input-event-title, btn-event-save, input-chat, btn-chat-send
+동기화 측정 결과: 컨디션/캘린더/채팅 모두 Firestore onSnapshot 1초 이내 전파 확인.
 다음: Apple Developer Program 가입 후 eas build --platform ios --profile preview → TestFlight 제출.
 (Storage 규칙 미배포 — Firebase Storage Blaze 업그레이드 후 배포 필요.)
 

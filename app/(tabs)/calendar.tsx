@@ -87,7 +87,7 @@ export default function CalendarScreen() {
   if (!coupleId) return <Spinner />;
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView testID="screen-calendar" style={styles.container} edges={['top']}>
       {/* 뷰 전환 탭바 */}
       <View style={styles.viewTabBar}>
         {(['calendar', 'photos'] as ViewTab[]).map(v => (

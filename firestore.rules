@@ -39,6 +39,14 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid in coupleData.memberIds;
     }
 
+    // 존재하지 않는 문서(resource == null)에 대한 읽기도 허용 — onSnapshot/tx.get이
+    // 비어있는 문서에 접근할 때 resource.data.coupleId가 null이 되어 permission-denied가
+    // 나는 버그를 방지. 실제 데이터가 없으면 클라이언트는 "not found"만 받음.
+    function canReadCoupleDoc() {
+      return (resource == null && isSignedIn() && myCoupleId() != null)
+        || isMyCouple(resource.data.coupleId);
+    }
+
     // 같은 커플 상대방 user 문서 식별용
     function shareCoupleWith(otherUserId) {
       let other = get(/databases/$(database)/documents/users/$(otherUserId)).data;
@@ -60,7 +68,11 @@ service cloud.firestore {
 
     // ---------- couples ----------
     match /couples/{coupleId} {
-      allow get: if isMemberOf(resource.data);
+      // 멤버이거나, 아직 1명만 있는(join 대기 중) 오픈 커플은 인증 사용자가 읽을 수 있음 (join 트랜잭션 필요)
+      allow get: if isMemberOf(resource.data)
+                 || (isSignedIn()
+                     && resource.data.memberIds.size() == 1
+                     && resource.data.status == 'active');
       allow list: if false; // inviteCode 기반 list 쿼리 금지 (invitations 사용)
 
       // 생성: 본인을 memberIds[0] 로 단독 시작, status active
@@ -131,7 +143,7 @@ service cloud.firestore {
 
     // ---------- calendarEvents ----------
     match /calendarEvents/{eventId} {
-      allow read: if isMyCouple(resource.data.coupleId);
+      allow read: if canReadCoupleDoc();
       allow create: if isMyCouple(request.resource.data.coupleId)
                     && request.resource.data.createdBy == request.auth.uid;
       allow update: if isMyCouple(resource.data.coupleId)
@@ -141,7 +153,7 @@ service cloud.firestore {
 
     // ---------- photos (메타데이터) ----------
     match /photos/{photoId} {
-      allow read: if isMyCouple(resource.data.coupleId);
+      allow read: if canReadCoupleDoc();
       allow create: if isMyCouple(request.resource.data.coupleId);
       allow update: if isMyCouple(resource.data.coupleId)
                     && request.resource.data.coupleId == resource.data.coupleId;
@@ -150,7 +162,7 @@ service cloud.firestore {
 
     // ---------- featureSettings ----------
     match /featureSettings/{settingId} {
-      allow read: if isMyCouple(resource.data.coupleId);
+      allow read: if canReadCoupleDoc();
       allow create: if isMyCouple(request.resource.data.coupleId);
       allow update: if isMyCouple(resource.data.coupleId)
                     && request.resource.data.coupleId == resource.data.coupleId;
@@ -159,7 +171,7 @@ service cloud.firestore {
 
     // ---------- dateCandidates (3a 둘다좋아) ----------
     match /dateCandidates/{docId} {
-      allow read: if isMyCouple(resource.data.coupleId);
+      allow read: if canReadCoupleDoc();
       allow create: if isMyCouple(request.resource.data.coupleId);
       allow update: if isMyCouple(resource.data.coupleId)
                     && request.resource.data.coupleId == resource.data.coupleId;
@@ -171,7 +183,7 @@ service cloud.firestore {
     // [ADR-016(2)] docId↔필드 일치는 규칙으로 강제하지 않음(honest-client 가정, cf. vote BR-4).
     //   격리는 coupleId/userId 로 보장. "당일 1회"는 본인 데이터 정합성 → docId 생성은 core/utils/date.ts KST 유틸로만.
     match /moodChecks/{docId} {
-      allow read: if isMyCouple(resource.data.coupleId);
+      allow read: if canReadCoupleDoc();
       allow create: if isMyCouple(request.resource.data.coupleId)
                     && request.resource.data.userId == request.auth.uid;
       allow update: if isMyCouple(resource.data.coupleId)
@@ -182,7 +194,7 @@ service cloud.firestore {
 
     // ---------- bingoBoards (3c 데이트 빙고) ----------
     match /bingoBoards/{docId} {
-      allow read: if isMyCouple(resource.data.coupleId);
+      allow read: if canReadCoupleDoc();
       allow create: if isMyCouple(request.resource.data.coupleId);
       allow update: if isMyCouple(resource.data.coupleId)
                     && request.resource.data.coupleId == resource.data.coupleId;
@@ -191,7 +203,7 @@ service cloud.firestore {
 
     // ---------- voteSessions (3a 둘다좋아) ----------
     match /voteSessions/{sessionId} {
-      allow read: if isMyCouple(resource.data.coupleId);
+      allow read: if canReadCoupleDoc();
       allow create: if isMyCouple(request.resource.data.coupleId)
                     && request.resource.data.status == 'in_progress';
       // 투표(choices 갱신) + reveal(status 변경) 허용. coupleId·startedAt 불변.

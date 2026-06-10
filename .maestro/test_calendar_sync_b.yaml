@@ -1,0 +1,19 @@
+appId: host.exp.Exponent
+---
+# Dev2 (Account B, iPhone 16) — A가 만든 이벤트 동기화 확인
+- launchApp
+- tapOn:
+    text: "둘다좋아"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 90000
+# 탭바: 캘린더 탭 (3번째, x=50%, y=93%)
+- tapOn:
+    point: "50%,93%"
+- extendedWaitUntil:
+    visible:
+      id: "screen-calendar"
+    timeout: 10000
+- takeScreenshot: "calendar_sync_b"

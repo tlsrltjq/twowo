@@ -1,0 +1,25 @@
+appId: host.exp.Exponent
+---
+# Dev2 (Account B, iPhone 16) — 채팅 메시지 전송
+- launchApp
+- tapOn:
+    text: "둘다좋아"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 90000
+# 탭바: 채팅 탭 (2번째, x=30%, y=93%)
+- tapOn:
+    point: "30%,93%"
+- extendedWaitUntil:
+    visible:
+      id: "screen-chat"
+    timeout: 10000
+- tapOn:
+    id: "input-chat"
+- inputText: "E2E 테스트 메시지"
+- tapOn:
+    id: "btn-chat-send"
+- waitForAnimationToEnd
+- takeScreenshot: "chat_b_sent"

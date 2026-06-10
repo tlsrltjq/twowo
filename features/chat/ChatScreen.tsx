@@ -242,7 +242,7 @@ export default function ChatScreen() {
   const isEmpty = messages.length === 0 && pendingImages.length === 0;
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView testID="screen-chat" style={styles.safeArea} edges={['top']}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>채팅</Text>
       </View>
@@ -274,6 +274,7 @@ export default function ChatScreen() {
           </TouchableOpacity>
           <TextInput
             ref={inputRef}
+            testID="input-chat"
             style={styles.input}
             value={inputText}
             onChangeText={setInputText}
@@ -283,6 +284,7 @@ export default function ChatScreen() {
             maxLength={1000}
           />
           <TouchableOpacity
+            testID="btn-chat-send"
             style={[styles.sendBtn, (!inputText.trim() || sending) && styles.sendBtnDisabled]}
             onPress={handleSend}
             disabled={!inputText.trim() || sending}

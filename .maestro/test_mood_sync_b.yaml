@@ -1,0 +1,22 @@
+appId: host.exp.Exponent
+---
+# Dev2 (Account B, iPhone 16) — A가 저장한 컨디션이 보이는지 확인
+- launchApp
+- tapOn:
+    text: "둘다좋아"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 90000
+# 탭바: 컨디션 탭 (4번째, x=70%, y=93%)
+- tapOn:
+    point: "70%,93%"
+- extendedWaitUntil:
+    visible:
+      id: "screen-mood"
+    timeout: 10000
+- takeScreenshot: "mood_sync_b"
+# 상대방 컨디션 섹션에 A의 데이터가 보여야 함
+- assertVisible: "상대방 컨디션"
+- takeScreenshot: "mood_sync_b_partner_section"
