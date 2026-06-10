@@ -1,4 +1,4 @@
-import { Menu } from 'lucide-react-native';
+import { Calendar, Menu } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -82,15 +82,15 @@ export default function HomeScreen() {
     return subscribePartnerMoodToday(coupleId, partnerUid, setPartnerMood);
   }, [coupleId, partnerUid]);
 
-  // 다가오는 일정 구독 (오늘~+7일, BR-3)
+  // 다가오는 일정 구독 (오늘~+90일, 최대 5개)
   useEffect(() => {
     if (!coupleId) return;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const until = new Date(today);
-    until.setDate(until.getDate() + 7);
+    until.setDate(until.getDate() + 90);
     return subscribeEvents(coupleId, { from: today, to: until }, (evs) => {
-      setEvents(evs.slice(0, 3)); // 최대 3개
+      setEvents(evs.slice(0, 5));
     });
   }, [coupleId]);
 
@@ -137,17 +137,103 @@ export default function HomeScreen() {
         </View>
       </View>
 
-      {/* 다가오는 일정 */}
-      {events.length > 0 && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>다가오는 일정</Text>
-          {events.map(ev => (
-            <EventRow key={ev.id} event={ev} />
-          ))}
-        </View>
-      )}
+      {/* 다음 일정 카드 */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>다음 일정</Text>
+        {events.length === 0 ? (
+          <EmptyEventCard />
+        ) : (
+          <>
+            <NextEventCard event={events[0]!} />
+            {events.slice(1).map(ev => (
+              <EventRow key={ev.id} event={ev} />
+            ))}
+          </>
+        )}
+      </View>
     </ScrollView>
     </SafeAreaView>
+  );
+}
+
+// ─── 이벤트 타입 이모지 ───────────────────────────────────────────────────────
+const TYPE_EMOJI: Record<string, string> = { date: '💕', exercise: '🏃', general: '📅' };
+
+// ─── 날짜 → KST YYYY-MM-DD ────────────────────────────────────────────────────
+function toKSTDateStr(date: Date): string {
+  const kst = new Date(date.getTime() + 9 * 60 * 60 * 1000);
+  const y = kst.getUTCFullYear();
+  const m = String(kst.getUTCMonth() + 1).padStart(2, '0');
+  const d = String(kst.getUTCDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+// ─── D-Day 라벨 ───────────────────────────────────────────────────────────────
+function getDdayLabel(date: Date): string {
+  const eventStr = toKSTDateStr(date);
+  const todayStr = getTodayKST();
+  const diff = Math.round(
+    (new Date(eventStr).getTime() - new Date(todayStr).getTime()) / 86400000,
+  );
+  if (diff === 0) return 'D-Day';
+  if (diff === 1) return 'D-1';
+  return `D-${diff}`;
+}
+
+// ─── 날짜 표시 문자열 ─────────────────────────────────────────────────────────
+const DAY_KO = ['일', '월', '화', '수', '목', '금', '토'];
+function formatEventDate(date: Date): string {
+  const eventStr = toKSTDateStr(date);
+  const todayStr = getTodayKST();
+  const kst = new Date(date.getTime() + 9 * 60 * 60 * 1000);
+  const dayOfWeek = DAY_KO[kst.getUTCDay()]!;
+  if (eventStr === todayStr) return `오늘 (${dayOfWeek})`;
+  const diff = Math.round(
+    (new Date(eventStr).getTime() - new Date(todayStr).getTime()) / 86400000,
+  );
+  if (diff === 1) return `내일 (${dayOfWeek})`;
+  const m = kst.getUTCMonth() + 1;
+  const d = kst.getUTCDate();
+  return `${m}월 ${d}일 (${dayOfWeek})`;
+}
+
+// ─── NextEventCard ────────────────────────────────────────────────────────────
+function NextEventCard({ event }: { event: CalendarEvent }) {
+  const ddayLabel  = getDdayLabel(event.date instanceof Date ? event.date : new Date((event.date as any).seconds * 1000));
+  const dateStr    = formatEventDate(event.date instanceof Date ? event.date : new Date((event.date as any).seconds * 1000));
+  const emoji      = TYPE_EMOJI[event.type] ?? '📅';
+  const isToday    = ddayLabel === 'D-Day';
+
+  return (
+    <View style={[styles.nextCard, isToday && styles.nextCardToday]}>
+      <View style={styles.nextCardTop}>
+        <View style={styles.nextCardTypeBadge}>
+          <Text style={styles.nextCardTypeEmoji}>{emoji}</Text>
+        </View>
+        <View style={[styles.ddayBadge, isToday && styles.ddayBadgeToday]}>
+          <Text style={[styles.ddayText, isToday && styles.ddayTextToday]}>{ddayLabel}</Text>
+        </View>
+      </View>
+
+      <Text style={styles.nextCardTitle} numberOfLines={2}>{event.title}</Text>
+
+      {event.placeName ? (
+        <Text style={styles.nextCardPlace} numberOfLines={1}>📍 {event.placeName}</Text>
+      ) : null}
+
+      <Text style={styles.nextCardDate}>{dateStr}</Text>
+    </View>
+  );
+}
+
+// ─── EmptyEventCard ───────────────────────────────────────────────────────────
+function EmptyEventCard() {
+  return (
+    <View style={styles.emptyCard}>
+      <Calendar size={28} color={colors.text.muted} strokeWidth={1.5} />
+      <Text style={styles.emptyCardText}>아직 예정된 일정이 없어요</Text>
+      <Text style={styles.emptyCardSub}>캘린더에서 일정을 추가해보세요</Text>
+    </View>
   );
 }
 
@@ -171,23 +257,14 @@ function MoodCard({ label, mood, loading }: { label: string; mood: MoodCheck | n
 }
 
 function EventRow({ event }: { event: CalendarEvent }) {
-  const dateStr = (() => {
-    const d = event.date instanceof Date ? event.date : new Date((event.date as any).seconds * 1000);
-    const todayKST = getTodayKST();
-    const evKST = (() => {
-      const kst = new Date(d.getTime() + 9 * 60 * 60 * 1000);
-      const y = kst.getUTCFullYear();
-      const m = String(kst.getUTCMonth() + 1).padStart(2, '0');
-      const dy = String(kst.getUTCDate()).padStart(2, '0');
-      return `${y}-${m}-${dy}`;
-    })();
-    return evKST === todayKST ? '오늘' : evKST.slice(5).replace('-', '/');
-  })();
+  const date    = event.date instanceof Date ? event.date : new Date((event.date as any).seconds * 1000);
+  const dateStr = formatEventDate(date);
+  const emoji   = TYPE_EMOJI[event.type] ?? '📅';
 
   return (
     <View style={styles.eventRow}>
       <Text style={styles.eventDate}>{dateStr}</Text>
-      <Text style={styles.eventTitle} numberOfLines={1}>{event.title}</Text>
+      <Text style={styles.eventTitle} numberOfLines={1}>{emoji} {event.title}</Text>
     </View>
   );
 }
@@ -220,6 +297,55 @@ const styles = StyleSheet.create({
   moodMeet:     { ...typography.body, color: colors.text.secondary, fontSize: 11 },
   moodEmpty:    { ...typography.caption, color: colors.text.muted, textAlign: 'center' },
 
+  // next event card
+  nextCard: {
+    backgroundColor: colors.bg.surface,
+    borderRadius: 16,
+    padding: space[4],
+    gap: space[2],
+    borderWidth: 1,
+    borderColor: colors.border.subtle,
+  },
+  nextCardToday: {
+    borderColor: colors.accent.primary,
+    backgroundColor: colors.accent.primary + '0D', // 5% tint
+  },
+  nextCardTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  nextCardTypeBadge: {
+    width: 36, height: 36,
+    borderRadius: 10,
+    backgroundColor: colors.bg.subtle,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  nextCardTypeEmoji: { fontSize: 18 },
+  ddayBadge: {
+    paddingHorizontal: space[3], paddingVertical: space[1],
+    backgroundColor: colors.bg.subtle,
+    borderRadius: 20,
+  },
+  ddayBadgeToday: { backgroundColor: colors.accent.primary },
+  ddayText:  { ...typography.caption, color: colors.accent.primary, fontFamily: 'Pretendard-SemiBold' },
+  ddayTextToday: { color: colors.text.inverse },
+  nextCardTitle: { ...typography.title2, color: colors.text.primary, lineHeight: 28 },
+  nextCardPlace: { ...typography.caption, color: colors.text.secondary },
+  nextCardDate:  { ...typography.caption, color: colors.text.muted },
+
+  // empty event card
+  emptyCard: {
+    backgroundColor: colors.bg.surface,
+    borderRadius: 16, padding: space[5],
+    alignItems: 'center', gap: space[2],
+    borderWidth: 1, borderColor: colors.border.subtle,
+    borderStyle: 'dashed',
+  },
+  emptyCardText: { ...typography.body, color: colors.text.secondary },
+  emptyCardSub:  { ...typography.caption, color: colors.text.muted },
+
+  // compact event rows (2nd~ events)
   eventRow:     {
     flexDirection: 'row', gap: space[3], alignItems: 'center',
     backgroundColor: colors.bg.surface, borderRadius: 10, padding: space[3],
