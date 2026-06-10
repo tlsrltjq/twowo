@@ -1,6 +1,7 @@
 import { doc, setDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { signOut } from '../../core/auth';
 import { subscribeCouple, disconnectCouple } from '../../core/couple';
@@ -133,6 +134,7 @@ export default function SettingsScreen() {
     : couple?.createdAt ? timestampToKST(couple.createdAt) : '';
 
   return (
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
     <ScrollView style={styles.scroll} contentContainerStyle={styles.container}>
       {/* 커플 정보 */}
       <Section title="커플 정보">
@@ -212,6 +214,7 @@ export default function SettingsScreen() {
         </TouchableOpacity>
       </Section>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -234,7 +237,8 @@ function Row({ label, value }: { label: string; value: string }) {
 }
 
 const styles = StyleSheet.create({
-  scroll:        { flex: 1, backgroundColor: colors.bg.base },
+  safeArea:      { flex: 1, backgroundColor: colors.bg.base },
+  scroll:        { flex: 1 },
   container:     { padding: space[4], gap: space[5] },
 
   section:       { gap: space[2] },

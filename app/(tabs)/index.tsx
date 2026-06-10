@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { subscribeEvents, CalendarEvent } from '../../core/calendar';
 import { subscribeCouple, Couple } from '../../core/couple';
@@ -105,6 +106,7 @@ export default function HomeScreen() {
   }
 
   return (
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
     <ScrollView
       style={styles.scroll}
       contentContainerStyle={styles.container}
@@ -137,6 +139,7 @@ export default function HomeScreen() {
         </View>
       )}
     </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -182,7 +185,8 @@ function EventRow({ event }: { event: CalendarEvent }) {
 }
 
 const styles = StyleSheet.create({
-  scroll:       { flex: 1, backgroundColor: colors.bg.base },
+  safeArea:     { flex: 1, backgroundColor: colors.bg.base },
+  scroll:       { flex: 1 },
   container:    { padding: space[4], gap: space[5] },
   center:       { flex: 1, backgroundColor: colors.bg.base, alignItems: 'center', justifyContent: 'center' },
 

@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Button } from '../../design-system/Button';
 import { EmptyState } from '../../design-system/EmptyState';
@@ -130,6 +131,7 @@ export default function MoodScreen() {
   const showForm = !myMood || editing;
 
   return (
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
     <ScrollView style={styles.container} contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
       <Text style={styles.screenTitle}>오늘의 컨디션</Text>
 
@@ -242,6 +244,7 @@ export default function MoodScreen() {
         onHide={() => setToast(t => ({ ...t, visible: false }))}
       />
     </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -272,7 +275,8 @@ function HistoryRow({ check, isToday }: { check: MoodCheck; isToday: boolean }) 
 }
 
 const styles = StyleSheet.create({
-  container:          { flex: 1, backgroundColor: colors.bg.base },
+  safeArea:           { flex: 1, backgroundColor: colors.bg.base },
+  container:          { flex: 1 },
   body:               { padding: space[5], gap: space[4], paddingBottom: space[12] },
   screenTitle:        { ...typography.title2, color: colors.text.primary },
   card:               { backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[5], gap: space[3], shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 },

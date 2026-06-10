@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import { Calendar, DateData } from 'react-native-calendars';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { EmptyState } from '../../design-system/EmptyState';
 import { Skeleton } from '../../design-system/Skeleton';
@@ -86,7 +87,7 @@ export default function CalendarScreen() {
   if (!coupleId) return <Spinner />;
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       {/* 뷰 전환 탭바 */}
       <View style={styles.viewTabBar}>
         {(['calendar', 'photos'] as ViewTab[]).map(v => (
@@ -167,7 +168,7 @@ export default function CalendarScreen() {
       >
         <Text style={styles.fabText}>＋</Text>
       </Pressable>
-    </View>
+    </SafeAreaView>
   );
 }
 
