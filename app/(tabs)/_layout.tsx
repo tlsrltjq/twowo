@@ -1,4 +1,4 @@
-import { Calendar, Heart, Home, MessageCircle, Settings } from 'lucide-react-native';
+import { Calendar, FlaskConical, Heart, Home, MessageCircle, Settings } from 'lucide-react-native';
 import { router, Redirect, Tabs, usePathname } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -12,6 +12,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { subscribeUnreadCount } from '../../features/chat';
+import { subscribeFeatureSettings } from '../../core/features';
 import { SidebarContext } from '../../core/sidebar.context';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { colors, radius, space, typography } from '../../design-system/tokens';
@@ -25,9 +26,9 @@ interface SidebarItem {
   comingSoon?: boolean;
 }
 
-const SIDEBAR_ITEMS: SidebarItem[] = [
-  { label: '데이트 빙고',  emoji: '🎯', route: '/(features)/bingo' },
-  { label: '둘다좋아',     emoji: '💑', route: '/(features)/vote' },
+const ALL_SIDEBAR_ITEMS: (SidebarItem & { featureId: string })[] = [
+  { label: '데이트 빙고', emoji: '🎯', route: '/(features)/bingo', featureId: 'couple-bingo' },
+  { label: '둘다좋아',    emoji: '💑', route: '/(features)/vote',  featureId: 'date-decision' },
 ];
 
 export default function TabsLayout() {
@@ -37,12 +38,18 @@ export default function TabsLayout() {
 
   // 채팅 읽음 배지
   const chatSeenAt = useRef(new Date());
-  const [unreadChat, setUnreadChat] = useState(0);
+  const [unreadChat, setUnreadChat]             = useState(0);
+  const [featureSettings, setFeatureSettings]   = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     if (!coupleId || !user) return;
     return subscribeUnreadCount(coupleId, user.uid, chatSeenAt.current, setUnreadChat);
   }, [coupleId, user?.uid]);
+
+  useEffect(() => {
+    if (!coupleId) return;
+    return subscribeFeatureSettings(coupleId, setFeatureSettings);
+  }, [coupleId]);
 
   useEffect(() => {
     if (pathname === '/chat') {
@@ -72,6 +79,10 @@ export default function TabsLayout() {
       Animated.timing(backdropOpacity, { toValue: 0, duration: 200, useNativeDriver: true }),
     ]).start(() => setSidebarOpen(false));
   };
+
+  const enabledSidebarItems = ALL_SIDEBAR_ITEMS.filter(
+    item => featureSettings[item.featureId] === true,
+  );
 
   const handleSidebarItem = (item: SidebarItem) => {
     if (item.comingSoon) return;
@@ -123,6 +134,13 @@ export default function TabsLayout() {
             }}
           />
           <Tabs.Screen
+            name="lab"
+            options={{
+              title: '실험실',
+              tabBarIcon: ({ color, size }) => <FlaskConical size={size} color={color as string} strokeWidth={1.8} />,
+            }}
+          />
+          <Tabs.Screen
             name="settings"
             options={{
               title: '설정',
@@ -155,24 +173,25 @@ export default function TabsLayout() {
                 </TouchableOpacity>
               </View>
 
-              {SIDEBAR_ITEMS.map(item => (
-                <TouchableOpacity
-                  key={item.route}
-                  style={[styles.sidebarItem, item.comingSoon && styles.sidebarItemDisabled]}
-                  onPress={() => handleSidebarItem(item)}
-                  activeOpacity={item.comingSoon ? 1 : 0.7}
-                >
-                  <Text style={styles.sidebarEmoji}>{item.emoji}</Text>
-                  <View style={styles.sidebarItemText}>
-                    <Text style={[styles.sidebarItemLabel, item.comingSoon && styles.sidebarItemLabelDisabled]}>
-                      {item.label}
-                    </Text>
-                    {item.comingSoon && (
-                      <Text style={styles.sidebarItemSub}>준비 중</Text>
-                    )}
-                  </View>
-                </TouchableOpacity>
-              ))}
+              {enabledSidebarItems.length === 0 ? (
+                <View style={styles.sidebarEmpty}>
+                  <Text style={styles.sidebarEmptyText}>
+                    실험실 탭에서 기능을 켜면{'\n'}여기에 나타나요
+                  </Text>
+                </View>
+              ) : (
+                enabledSidebarItems.map(item => (
+                  <TouchableOpacity
+                    key={item.route}
+                    style={styles.sidebarItem}
+                    onPress={() => handleSidebarItem(item)}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={styles.sidebarEmoji}>{item.emoji}</Text>
+                    <Text style={styles.sidebarItemLabel}>{item.label}</Text>
+                  </TouchableOpacity>
+                ))
+              )}
             </Animated.View>
           </>
         )}
@@ -231,8 +250,7 @@ const styles = StyleSheet.create({
   },
   sidebarItemDisabled:   { opacity: 0.5 },
   sidebarEmoji:          { fontSize: 24, width: 32, textAlign: 'center' },
-  sidebarItemText:       { flex: 1, gap: 2 },
-  sidebarItemLabel:      { ...typography.body, color: colors.text.primary },
-  sidebarItemLabelDisabled: { color: colors.text.secondary },
-  sidebarItemSub:        { ...typography.tiny, color: colors.text.muted },
+  sidebarItemLabel:      { ...typography.body, color: colors.text.primary, flex: 1 },
+  sidebarEmpty:          { paddingVertical: space[6], alignItems: 'center' },
+  sidebarEmptyText:      { ...typography.caption, color: colors.text.muted, textAlign: 'center', lineHeight: 20 },
 });

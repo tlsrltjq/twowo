@@ -5,6 +5,18 @@ const registry: AppFeature[] = [
     id:          'mood-share',
     name:        '오늘의 컨디션',
     description: '매일 서로의 에너지·기분·만남 가능 여부를 공유',
+    status:      'active',
+  },
+  {
+    id:          'couple-bingo',
+    name:        '데이트 빙고',
+    description: '함께 하고 싶은 것들을 빙고판에 채우고 달성해보세요',
+    status:      'experimental',
+  },
+  {
+    id:          'date-decision',
+    name:        '둘다좋아',
+    description: '서로 원하는 데이트 장소를 투표로 정해요',
     status:      'experimental',
   },
 ];

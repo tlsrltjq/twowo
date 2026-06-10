@@ -69,10 +69,24 @@ export const runTransaction = jest.fn(async (_db: any, updateFn: (tx: any) => Pr
   return updateFn(tx);
 });
 
-export const onSnapshot = jest.fn((ref: DocRef, cb: (snap: any) => void) => {
+export const onSnapshot = jest.fn((ref: DocRef | QueryRef, cb: (snap: any) => void) => {
+  if ('__collection' in ref) {
+    // 쿼리 스냅샷 (subscribeFeatureSettings 등)
+    const docs: any[] = [];
+    for (const [path, data] of store.entries()) {
+      if (!path.startsWith(ref.__collection + '/')) continue;
+      const matches = (ref.__filters as any[]).every(([field, op, value]: any[]) => {
+        if (op === '==') return data[field] === value;
+        return false;
+      });
+      if (matches) docs.push({ data: () => data, id: path.split('/').pop() });
+    }
+    cb({ docs });
+    return () => {};
+  }
+  // 단일 문서 스냅샷 (기존 동작 유지)
   if (!listeners.has(ref.path)) listeners.set(ref.path, new Set());
   listeners.get(ref.path)!.add(cb);
-  // 초기 호출
   const data = store.get(ref.path);
   cb({ exists: () => data !== undefined, data: () => data, id: ref.id });
   return () => { listeners.get(ref.path)?.delete(cb); };
