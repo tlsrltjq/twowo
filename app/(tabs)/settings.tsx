@@ -199,7 +199,7 @@ export default function SettingsScreen() {
 
       {/* 계정 */}
       <Section title="계정">
-        <TouchableOpacity onPress={handleSignOut} style={styles.actionRow}>
+        <TouchableOpacity testID="btn-signout" onPress={handleSignOut} style={styles.actionRow}>
           <Text style={styles.actionText}>로그아웃</Text>
         </TouchableOpacity>
       </Section>
