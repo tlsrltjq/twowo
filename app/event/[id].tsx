@@ -39,6 +39,7 @@ function toCalendarEvent(id: string, data: Record<string, unknown>): CalendarEve
     endDate:   data.endDate ? (data.endDate as { toDate(): Date }).toDate() : undefined,
     createdAt: (data.createdAt as { toDate(): Date }).toDate(),
     updatedAt: (data.updatedAt as { toDate(): Date }).toDate(),
+    photoIds:  Array.isArray(data.photoIds) ? (data.photoIds as string[]) : [],
   };
 }
 
