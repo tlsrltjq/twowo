@@ -39,17 +39,25 @@
 | 데이트 빙고 | couple-bingo | ✅ | ⬜ 매핑 미완 | experimental |
 
 ## 이전 세션에서 멈춘 곳
-UI 버그 수정 세션:
-- fix(ui): event/[id].tsx — SafeAreaView edges=['top'] 추가 (상태바 겹침, 뒤로가기 버튼 수정)
-- fix(ui): event/new.tsx — SafeAreaView 추가 (모달이어도 상단 inset 필요)
-- fix(ui): event/edit/[id].tsx — SafeAreaView 추가
-- fix(router): app/_layout.tsx — Stack.Screen (features) 등록 (사이드바 빙고/투표 네비 수정)
-- fix(firestore): core/calendar/index.ts — photoIds undefined → [] 정규화 (이벤트 상세 크래시 수정)
-다음: Apple Developer Program 가입 후 eas build --platform ios --profile preview → TestFlight 제출.
-(Storage 규칙 미배포 — Firebase Storage Blaze 업그레이드 후 배포 필요.)
+UI 버그 수정 + 컨디션 실시간 구독 전환 완료.
+다음 작업은 아래 "시뮬레이터 전용 계획" 참고. 시작은 사용자가 지시할 때.
 
-## 다음 단계 예고
-7단계 남은 항목: Apple Developer Program 가입 → `eas build --platform ios --profile preview` → TestFlight 제출 (ADR-018 1차 MVP 완료)
+## 시뮬레이터 전용 계획 (비용 없음, 사용자 지시 시 시작)
+> **보류 항목 (비용 발생)**: Apple Developer Program($99/년) · Firebase Storage Blaze · TestFlight · 원격 푸시 Cloud Function · 30일 유예 Scheduled Function · App Store 공개 출시. 언급하지 않음.
+
+### 1순위 — 실험실 탭 (stage-5)
+사이드바 임시 진입 → 정식 탭 + 커플 단위 ON/OFF 토글로 교체.
+- `app/(tabs)/lab.tsx` 신규 (feature-registry experimental 목록 + 토글)
+- `couples` 컬렉션에 `featureSettings` 필드로 ON/OFF 동기화 (상대방도 실시간 반영)
+- 빙고·투표·채팅이 탭에서 ON 되면 나타나고 OFF 되면 사라지는 구조
+
+### 2순위 — UI 완성도 (stage-7 중 비용 없는 항목)
+- 빈 상태(empty state) UI — 일정 없음, 빙고 항목 없음, 컨디션 미입력
+- 에러 상태 처리 — 네트워크 오류, Firestore 실패 시 사용자 메시지
+- 로딩 처리 통일 — 스피너 vs 스켈레톤
+
+### 3순위 — 캘린더 추가 뷰 (stage-2′)
+- 운동 뷰, 데이트 뷰 (현재 월간 뷰만 있음)
 
 > **범위 기준: ADR-018** — 1차 MVP 6개(인증·캘린더·컨디션·홈/로컬알림·단순해제·TestFlight 게이트)만 먼저. 투표/빙고/원격푸시/실험실/30일유예/공개출시는 2차.
 
