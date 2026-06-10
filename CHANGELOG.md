@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-06-10 | 빙고+둘다좋아 | feat(couple-bingo): 5x5 빙고판(설정/게임/빙고감지/완성). feat(date-decision): 후보관리+투표+자동공개. 사이드바에서 두 기능 모두 진입 가능.
 ## 2026-06-10 | 채팅+사이드바 | feat(chat): 실시간 채팅(서브컬렉션, 말풍선 UI) + 우측 사이드바(햄버거 메뉴) 추가. 탭 5개(홈|채팅|캘린더|컨디션|설정). 보조기능은 사이드바에서 진입.
 ## 2026-06-10 | 버그 수정 | fix(couple): createInvite Firestore LIST 쿼리→activeInviteCode GET 방식. fix(tabs): 로그아웃 후 로그인 리다이렉트. testID 추가(E2E 검증). Maestro 코드 생성 PASS / 로그아웃 리다이렉트 PASS.
 ## 2026-06-09 | 7단계 진행 | chore(eas): EAS 프로젝트 초기화(projectId 연결). Expo Go 실기기 QR 스캔 확인. TestFlight는 Apple Developer Program 가입 후 진행.
