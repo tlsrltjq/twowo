@@ -1,0 +1,20 @@
+# 커플 연결 화면에서 초대 코드 생성 테스트
+# 전제: 로그인됨, 커플 미연결 상태
+appId: host.exp.Exponent
+---
+- launchApp
+- tapOn: "둘다좋아"
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+
+- assertVisible: "커플 연결"
+- assertVisible: "내 코드 만들기"
+- takeScreenshot: e2e/screenshots/04-couple-connect
+
+# createInvite (activeInviteCode 방식) 검증
+- tapOn: "내 코드 만들기"
+- takeScreenshot: e2e/screenshots/04-code-generated
+
+# 6자리 코드 + 23시간 만료 확인
+- assertVisible: "초대 코드"
+- assertVisible: "23시간 후 만료"
