@@ -83,4 +83,21 @@ export function subscribeEvents(
   });
 }
 
+// coupleId+type+date DESC 복합 인덱스 사용 (firestore.indexes.json 4번째 항목)
+export function subscribeEventsByType(
+  coupleId: string,
+  type: string,
+  cb: (events: CalendarEvent[]) => void,
+): () => void {
+  const q = query(
+    collection(db, 'calendarEvents'),
+    where('coupleId', '==', coupleId),
+    where('type', '==', type),
+    orderBy('date', 'desc'),
+  );
+  return onSnapshot(q, (snap) => {
+    cb(snap.docs.map(d => fromFirestore(d.id, d.data() as Record<string, unknown>)));
+  });
+}
+
 export type { CalendarEvent, CalendarEventInput } from './schema';

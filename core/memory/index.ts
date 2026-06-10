@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 
-import { subscribeEvents } from '../calendar';
+import { subscribeEvents, subscribeEventsByType } from '../calendar';
 import { CalendarEvent } from '../calendar/schema';
 import { db } from '../config/firebase';
 
@@ -38,6 +38,29 @@ export function useCalendarEvents(
   // range는 useMemo로 메모이즈된 객체를 기대. 객체 자체가 아닌 from/to 원시값으로 의존
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coupleId, range.from.getTime(), range.to.getTime()]);
+
+  return { events, loading };
+}
+
+export function useCalendarEventsByType(
+  coupleId: string | null,
+  type: string,
+): { events: CalendarEvent[]; loading: boolean } {
+  const [events, setEvents]   = useState<CalendarEvent[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!coupleId) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    const unsub = subscribeEventsByType(coupleId, type, (evs) => {
+      setEvents(evs);
+      setLoading(false);
+    });
+    return unsub;
+  }, [coupleId, type]);
 
   return { events, loading };
 }
