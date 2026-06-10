@@ -84,6 +84,11 @@ export default function FirstMomentsScreen() {
       </View>
 
       {/* 목록 */}
+      {moments !== null && moments.some(m => m.addedBy === user?.uid) && (
+        <View style={styles.hintBar}>
+          <Text style={styles.hintText}>내가 추가한 기록은 길게 누르면 삭제할 수 있어요</Text>
+        </View>
+      )}
       {moments === null ? (
         <View style={styles.skeletonContainer}>
           {[0, 1, 2].map(i => <Skeleton key={i} style={styles.skeletonRow} />)}
@@ -216,6 +221,9 @@ const styles = StyleSheet.create({
   header:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space[4], paddingVertical: space[4], borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
   backBtn:     { padding: space[1] },
   headerTitle: { ...typography.title2, color: colors.text.primary },
+
+  hintBar:     { paddingHorizontal: space[4], paddingVertical: space[2] },
+  hintText:    { ...typography.tiny, color: colors.text.muted },
 
   banner:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space[2], paddingVertical: space[3], backgroundColor: colors.bg.surface, borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
   bannerEmoji: { fontSize: 20 },

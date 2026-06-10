@@ -13,8 +13,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft } from 'lucide-react-native';
+import { doc, getDoc } from 'firebase/firestore';
 
 import { subscribeCouple, Couple } from '../../core/couple';
+import { db } from '../../core/config/firebase';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { Skeleton } from '../../design-system/Skeleton';
 import { colors, radius, space, typography } from '../../design-system/tokens';
@@ -41,12 +43,22 @@ export default function NightMessageScreen() {
   const [sending, setSending] = useState(false);
   const inputRef = useRef<TextInput>(null);
 
+  const [partnerName, setPartnerName] = useState('상대방');
+
   const partnerUid = couple?.memberIds.find((id: string) => id !== user?.uid) ?? null;
 
   useEffect(() => {
     if (!coupleId) return;
     return subscribeCouple(coupleId, setCouple);
   }, [coupleId]);
+
+  useEffect(() => {
+    if (!partnerUid) return;
+    getDoc(doc(db, 'users', partnerUid)).then(snap => {
+      const displayName = snap.data()?.displayName as string | undefined;
+      if (displayName) setPartnerName(displayName);
+    });
+  }, [partnerUid]);
 
   useEffect(() => {
     if (!coupleId || !user || !partnerUid) return;
@@ -110,7 +122,7 @@ export default function NightMessageScreen() {
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
           {/* 상대방 메시지 */}
-          <Text style={styles.sectionLabel}>💬 상대방 메시지</Text>
+          <Text style={styles.sectionLabel}>💬 {partnerName}의 메시지</Text>
           {partner === 'loading' ? (
             <Skeleton style={styles.messageSkeleton} />
           ) : partner === null ? (

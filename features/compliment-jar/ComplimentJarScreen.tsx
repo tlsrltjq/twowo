@@ -13,8 +13,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft } from 'lucide-react-native';
+import { doc, getDoc } from 'firebase/firestore';
 
 import { subscribeCouple, Couple } from '../../core/couple';
+import { db } from '../../core/config/firebase';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { EmptyState } from '../../design-system/EmptyState';
 import { Skeleton } from '../../design-system/Skeleton';
@@ -37,12 +39,22 @@ export default function ComplimentJarScreen() {
   const [sending, setSending]       = useState(false);
   const inputRef = useRef<TextInput>(null);
 
+  const [partnerName, setPartnerName] = useState('상대방');
+
   const partnerUid = couple?.memberIds.find((id: string) => id !== user?.uid) ?? null;
 
   useEffect(() => {
     if (!coupleId) return;
     return subscribeCouple(coupleId, setCouple);
   }, [coupleId]);
+
+  useEffect(() => {
+    if (!partnerUid) return;
+    getDoc(doc(db, 'users', partnerUid)).then(snap => {
+      const displayName = snap.data()?.displayName as string | undefined;
+      if (displayName) setPartnerName(displayName);
+    });
+  }, [partnerUid]);
 
   useEffect(() => {
     if (!coupleId) return;
@@ -97,7 +109,7 @@ export default function ComplimentJarScreen() {
       {/* 탭 */}
       <View style={styles.tabBar}>
         {([
-          { key: 'received' as ViewTab, label: '💝 받은 칭찬' },
+          { key: 'received' as ViewTab, label: `💝 ${partnerName}에게 받은` },
           { key: 'sent'     as ViewTab, label: '✏️ 내가 쓴 칭찬' },
         ]).map(tab => (
           <TouchableOpacity
@@ -120,7 +132,7 @@ export default function ComplimentJarScreen() {
       ) : displayed.length === 0 ? (
         <EmptyState
           title={activeTab === 'received' ? '아직 받은 칭찬이 없어요' : '아직 쓴 칭찬이 없어요'}
-          description={activeTab === 'received' ? '상대방이 칭찬을 보내면 여기 나타나요' : '+ 버튼을 눌러 칭찬을 써보세요'}
+          description={activeTab === 'received' ? `${partnerName}이(가) 칭찬을 보내면 여기 나타나요` : '+ 버튼을 눌러 칭찬을 써보세요'}
         />
       ) : (
         <FlatList

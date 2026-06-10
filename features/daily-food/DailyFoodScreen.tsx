@@ -2,9 +2,11 @@ import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
   Alert,
-  FlatList,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -13,8 +15,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft } from 'lucide-react-native';
+import { doc, getDoc } from 'firebase/firestore';
 
 import { subscribeCouple, Couple } from '../../core/couple';
+import { db } from '../../core/config/firebase';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { Skeleton } from '../../design-system/Skeleton';
 import { colors, radius, space, typography } from '../../design-system/tokens';
@@ -35,6 +39,7 @@ export default function DailyFoodScreen() {
   const { user, coupleId }        = useAuthStore();
   const [couple, setCouple]       = useState<Couple | null>(null);
   const [logs, setLogs]           = useState<FoodLog[] | null>(null);
+  const [partnerName, setPartnerName] = useState('상대방');
   const [modalVisible, setModal]  = useState(false);
   const [mealType, setMealType]   = useState<MealType>(suggestMealType());
   const [name, setName]           = useState('');
@@ -51,6 +56,14 @@ export default function DailyFoodScreen() {
     if (!coupleId) return;
     return subscribeTodayFood(coupleId, setLogs);
   }, [coupleId]);
+
+  useEffect(() => {
+    if (!partnerUid) return;
+    getDoc(doc(db, 'users', partnerUid)).then(snap => {
+      const displayName = snap.data()?.displayName as string | undefined;
+      if (displayName) setPartnerName(displayName);
+    });
+  }, [partnerUid]);
 
   const myLogs      = logs?.filter(l => l.userId === user?.uid)      ?? [];
   const partnerLogs = logs?.filter(l => l.userId === partnerUid)     ?? [];
@@ -98,48 +111,46 @@ export default function DailyFoodScreen() {
 
       <Text style={styles.dateLabel}>{formatDate(new Date())}</Text>
 
-      <FlatList
-        data={[]}
-        renderItem={null}
-        ListHeaderComponent={() => (
-          <View style={styles.body}>
-            {/* 상대방 */}
-            <Text style={styles.sectionLabel}>
-              {couple ? `💬 ${couple.memberIds.find(id => id !== user?.uid) ? '상대방' : '상대방'}의 기록` : '💬 상대방의 기록'}
-            </Text>
-            {logs === null ? (
-              <View style={styles.skeletonGroup}>
-                {[0, 1].map(i => <Skeleton key={i} style={styles.skeletonRow} />)}
-              </View>
-            ) : partnerLogs.length === 0 ? (
-              <View style={styles.emptyCard}>
-                <Text style={styles.emptyText}>아직 기록이 없어요</Text>
-              </View>
-            ) : (
-              partnerLogs.map(log => (
-                <FoodCard key={log.id} log={log} onDelete={undefined} />
-              ))
-            )}
+      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
+          {/* 상대방 */}
+          <Text style={styles.sectionLabel}>💬 {partnerName}의 기록</Text>
+          {logs === null ? (
+            <View style={styles.skeletonGroup}>
+              {[0, 1].map(i => <Skeleton key={i} style={styles.skeletonRow} />)}
+            </View>
+          ) : partnerLogs.length === 0 ? (
+            <View style={styles.emptyCard}>
+              <Text style={styles.emptyText}>아직 기록이 없어요</Text>
+            </View>
+          ) : (
+            partnerLogs.map(log => (
+              <FoodCard key={log.id} log={log} onDelete={undefined} />
+            ))
+          )}
 
-            {/* 나 */}
-            <Text style={[styles.sectionLabel, { marginTop: space[5] }]}>✏️ 내 기록</Text>
-            {logs === null ? (
-              <View style={styles.skeletonGroup}>
-                {[0, 1].map(i => <Skeleton key={i} style={styles.skeletonRow} />)}
-              </View>
-            ) : myLogs.length === 0 ? (
-              <TouchableOpacity style={styles.addCard} onPress={openModal}>
-                <Text style={styles.addCardText}>+ 오늘 뭐 먹었어?</Text>
-              </TouchableOpacity>
-            ) : (
-              myLogs.map(log => (
-                <FoodCard key={log.id} log={log} onDelete={() => handleDelete(log)} />
-              ))
+          {/* 나 */}
+          <View style={styles.sectionRow}>
+            <Text style={[styles.sectionLabel, styles.sectionLabelMy]}>✏️ 내 기록</Text>
+            {myLogs.length > 0 && (
+              <Text style={styles.deleteHint}>길게 누르면 삭제</Text>
             )}
           </View>
-        )}
-        contentContainerStyle={styles.listContent}
-      />
+          {logs === null ? (
+            <View style={styles.skeletonGroup}>
+              {[0, 1].map(i => <Skeleton key={i} style={styles.skeletonRow} />)}
+            </View>
+          ) : myLogs.length === 0 ? (
+            <TouchableOpacity style={styles.addCard} onPress={openModal}>
+              <Text style={styles.addCardText}>+ 오늘 뭐 먹었어?</Text>
+            </TouchableOpacity>
+          ) : (
+            myLogs.map(log => (
+              <FoodCard key={log.id} log={log} onDelete={() => handleDelete(log)} />
+            ))
+          )}
+        </ScrollView>
+      </KeyboardAvoidingView>
 
       {/* FAB */}
       <Pressable style={styles.fab} onPress={openModal} accessibilityLabel="식사 기록 추가">
@@ -230,6 +241,7 @@ function FoodCard({
 
 const styles = StyleSheet.create({
   safeArea:       { flex: 1, backgroundColor: colors.bg.base },
+  flex:           { flex: 1 },
 
   header:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space[4], paddingVertical: space[4], borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
   backBtn:        { padding: space[1] },
@@ -237,10 +249,12 @@ const styles = StyleSheet.create({
 
   dateLabel:      { ...typography.caption, color: colors.text.muted, textAlign: 'center', paddingVertical: space[2], backgroundColor: colors.bg.surface, borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
 
-  listContent:    { flexGrow: 1 },
   body:           { padding: space[4], gap: space[3], paddingBottom: space[10] },
 
+  sectionRow:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   sectionLabel:   { ...typography.caption, color: colors.text.muted, fontFamily: 'Pretendard-SemiBold', letterSpacing: 0.5 },
+  sectionLabelMy: {},
+  deleteHint:     { ...typography.tiny, color: colors.text.muted },
 
   skeletonGroup:  { gap: space[2] },
   skeletonRow:    { height: 56, borderRadius: radius.md },

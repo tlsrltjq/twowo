@@ -13,8 +13,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft } from 'lucide-react-native';
+import { doc, getDoc } from 'firebase/firestore';
 
 import { subscribeCouple, Couple } from '../../core/couple';
+import { db } from '../../core/config/firebase';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { EmptyState } from '../../design-system/EmptyState';
 import { Skeleton } from '../../design-system/Skeleton';
@@ -40,12 +42,22 @@ export default function GiftWishlistScreen() {
   const [price, setPrice]         = useState('');
   const [saving, setSaving]       = useState(false);
 
+  const [partnerName, setPartnerName] = useState('상대방');
+
   const partnerUid = couple?.memberIds.find((id: string) => id !== user?.uid) ?? null;
 
   useEffect(() => {
     if (!coupleId) return;
     return subscribeCouple(coupleId, setCouple);
   }, [coupleId]);
+
+  useEffect(() => {
+    if (!partnerUid) return;
+    getDoc(doc(db, 'users', partnerUid)).then(snap => {
+      const displayName = snap.data()?.displayName as string | undefined;
+      if (displayName) setPartnerName(displayName);
+    });
+  }, [partnerUid]);
 
   useEffect(() => {
     if (!coupleId) return;
@@ -97,7 +109,7 @@ export default function GiftWishlistScreen() {
       {/* 탭 */}
       <View style={styles.tabBar}>
         {([
-          { key: 'partner' as ViewTab, label: '🎁 상대방 위시리스트' },
+          { key: 'partner' as ViewTab, label: `🎁 ${partnerName} 위시리스트` },
           { key: 'mine'    as ViewTab, label: '✏️ 내 목록' },
         ]).map(tab => (
           <TouchableOpacity
@@ -112,6 +124,13 @@ export default function GiftWishlistScreen() {
         ))}
       </View>
 
+      {/* 내 목록 롱프레스 힌트 */}
+      {activeTab === 'mine' && myItems.length > 0 && (
+        <View style={styles.hintBar}>
+          <Text style={styles.hintText}>길게 누르면 삭제할 수 있어요</Text>
+        </View>
+      )}
+
       {/* 목록 */}
       {all === null ? (
         <View style={styles.skeletonContainer}>
@@ -120,7 +139,7 @@ export default function GiftWishlistScreen() {
       ) : displayed.length === 0 ? (
         <EmptyState
           title={activeTab === 'partner' ? '상대방 목록이 비어있어요' : '내 목록이 비어있어요'}
-          description={activeTab === 'partner' ? '상대방이 원하는 것을 기다리고 있어요' : '+ 버튼으로 갖고 싶은 것을 추가해보세요'}
+          description={activeTab === 'partner' ? `${partnerName}이(가) 원하는 것을 기다리고 있어요` : '+ 버튼으로 갖고 싶은 것을 추가해보세요'}
         />
       ) : (
         <FlatList
@@ -266,6 +285,9 @@ const styles = StyleSheet.create({
   tabActive:   { borderBottomWidth: 2, borderBottomColor: colors.accent.primary },
   tabText:     { ...typography.caption, color: colors.text.secondary },
   tabTextActive: { ...typography.caption, color: colors.accent.primary, fontFamily: 'Pretendard-SemiBold' },
+
+  hintBar:      { paddingHorizontal: space[4], paddingVertical: space[2] },
+  hintText:     { ...typography.tiny, color: colors.text.muted },
 
   skeletonContainer: { padding: space[4], gap: space[3] },
   skeletonRow:  { height: 72, borderRadius: radius.lg },
