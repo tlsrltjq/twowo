@@ -39,7 +39,7 @@
 | 데이트 빙고 | couple-bingo | ✅ | ⬜ 매핑 미완 | experimental |
 
 ## 이전 세션에서 멈춘 곳
-실험실 탭 구현 완료. 다음: 빙고 EmptyState → 캘린더 운동/데이트 뷰
+신규 기능 5종 모두 완료. 모든 기능 experimental로 실험실/사이드바에서 접근 가능.
 
 ## 진행 중인 작업 (시뮬레이터 전용)
 > **보류 항목 (비용 발생)**: Apple Developer Program · Firebase Storage Blaze · TestFlight 등. 언급하지 않음.
@@ -57,12 +57,12 @@
 - ✅ 운동 뷰 (subscribeEventsByType + TypeEventCard)
 - ✅ 데이트 뷰 (같은 패턴, 탭 4종: 달력|운동|데이트|사진)
 
-### 🔄 신규 기능 구현 (사용자 요청, 매일 쓸 이유가 생기는 것 우선)
-- [ ] 자기 전 한 마디 / 기상 메시지 (night-message)
-- [ ] 칭찬 저금통 (compliment-jar)
-- [ ] 오늘 뭐 먹었어 (daily-food)
-- [ ] 우리가 처음 한 것들 (first-moments)
-- [ ] 선물 위시리스트 (gift-wishlist)
+### ✅ 신규 기능 구현 (5종 완료)
+- ✅ 자기 전 한 마디 (night-message) — 잘자/아침 메시지 탭, 실시간 동기화
+- ✅ 칭찬 저금통 (compliment-jar) — 받은/쓴 탭, 모달 입력
+- ✅ 오늘 뭐 먹었어 (daily-food) — 식사타입 4종, 상대/나 섹션
+- ✅ 우리가 처음 한 것들 (first-moments) — date ASC 목록, 롱프레스 삭제
+- ✅ 선물 위시리스트 (gift-wishlist) — 상대/내 탭, 받았어 토글
 
 > **범위 기준: ADR-018** — 1차 MVP 6개(인증·캘린더·컨디션·홈/로컬알림·단순해제·TestFlight 게이트)만 먼저. 투표/빙고/원격푸시/실험실/30일유예/공개출시는 2차.
 

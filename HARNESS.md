@@ -38,6 +38,11 @@ __mocks__/, __tests__/, .github/workflows/
 | 3c | 데이트 빙고 | 2차 | 🔄 선구현 |
 | — | 실시간 채팅 (사이드바 진입) | 2차 | 🔄 선구현 |
 | 2′ | 캘린더 운동/데이트 뷰 | 2차 | ✅ |
+| — | 자기 전 한 마디 (night-message) | 2차 | ✅ |
+| — | 칭찬 저금통 (compliment-jar) | 2차 | ✅ |
+| — | 오늘 뭐 먹었어 (daily-food) | 2차 | ✅ |
+| — | 우리가 처음 한 것들 (first-moments) | 2차 | ✅ |
+| — | 선물 위시리스트 (gift-wishlist) | 2차 | ✅ |
 | 4′ | 원격 푸시 Cloud Function *(Blaze 필요)* | 2차 | ⬜ |
 | 6 | 커플 해제 30일 유예 + Scheduled Function *(Blaze 필요)* | 2차 | ⬜ |
 | 8 | App Store 공개 출시 *(Apple Developer 필요)* | 2차 | ⬜ |
