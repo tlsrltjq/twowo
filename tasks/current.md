@@ -39,14 +39,12 @@
 | 데이트 빙고 | couple-bingo | ✅ | ⬜ 매핑 미완 | experimental |
 
 ## 이전 세션에서 멈춘 곳
-auth 레이스 수정 + 문서 SSOT 정리 완료:
-- fix(auth): signup.tsx — setUser(user) 명시적 동기화 후 navigate
-- fix(auth): login.tsx — setUser + setCoupleId 명시적 동기화 후 navigate
-- fix(auth): couple-connect.tsx — user!.uid null-assertion 제거, 훅 완료 후 guard
-- HARNESS.md 로드맵 아이콘 갱신 (1차 ✅, 7단계 🔄, 2차 선구현 🔄)
-- current.md 단계 6→7, stage-7.md 링크, 2차 선구현 상태표 추가
-- stage-7.md qa-checklist 경로 수정, Blaze 노트 수정
-- auth-couple.md createInvite 반환 타입, Google 와이어프레임/엣지케이스 2차 표시
+UI 버그 수정 세션:
+- fix(ui): event/[id].tsx — SafeAreaView edges=['top'] 추가 (상태바 겹침, 뒤로가기 버튼 수정)
+- fix(ui): event/new.tsx — SafeAreaView 추가 (모달이어도 상단 inset 필요)
+- fix(ui): event/edit/[id].tsx — SafeAreaView 추가
+- fix(router): app/_layout.tsx — Stack.Screen (features) 등록 (사이드바 빙고/투표 네비 수정)
+- fix(firestore): core/calendar/index.ts — photoIds undefined → [] 정규화 (이벤트 상세 크래시 수정)
 다음: Apple Developer Program 가입 후 eas build --platform ios --profile preview → TestFlight 제출.
 (Storage 규칙 미배포 — Firebase Storage Blaze 업그레이드 후 배포 필요.)
 
