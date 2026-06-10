@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { z } from 'zod';
 
 import { Button } from '../../design-system/Button';
@@ -75,6 +76,7 @@ export default function NewEventScreen() {
   };
 
   return (
+    <SafeAreaView style={styles.flex} edges={['top']}>
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={styles.header}>
         <Pressable onPress={() => router.back()} style={styles.cancelBtn}>
@@ -190,6 +192,7 @@ export default function NewEventScreen() {
         onHide={() => setToast(t => ({ ...t, visible: false }))}
       />
     </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 

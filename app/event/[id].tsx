@@ -14,6 +14,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Spinner } from '../../design-system/Spinner';
 import { Toast } from '../../design-system/Toast';
@@ -133,7 +134,7 @@ export default function EventDetailScreen() {
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <Pressable onPress={() => router.back()}>
           <Text style={styles.backText}>‹ 뒤로</Text>
@@ -246,7 +247,7 @@ export default function EventDetailScreen() {
           </Text>
         </View>
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 }
 
