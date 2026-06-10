@@ -37,6 +37,7 @@
 ## 이전 세션에서 멈춘 곳
 앱 아이콘/스플래시 생성(두 하트 커플 모티프), 홈 NextEventCard(D-Day/타입/장소) 추가,
 calendarEvent 저장 오류(addDoc undefined 필드) 수정 완료.
+시뮬레이터 E2E 검증 완료 — 일정 저장(장소 포함) PASS, 달력 탭 표시 PASS, 홈 NextEventCard D-Day 카드 PASS.
 다음: Apple Developer Program 가입 후 eas build --platform ios --profile preview → TestFlight 제출.
 (Storage 규칙 미배포 — Firebase Storage 활성화 후 배포 필요. 이미지 전송 end-to-end는 그 이후 테스트.)
 
