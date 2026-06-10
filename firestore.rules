@@ -97,8 +97,11 @@ service cloud.firestore {
         allow create: if isMyCouple(coupleId)
                       && request.resource.data.senderId == request.auth.uid
                       && request.resource.data.text is string
-                      && request.resource.data.text.size() > 0
-                      && request.resource.data.text.size() <= 1000;
+                      && request.resource.data.text.size() <= 1000
+                      && (
+                        request.resource.data.text.size() > 0
+                        || ('imageUrl' in request.resource.data && request.resource.data.imageUrl is string)
+                      );
         allow update: if false;
         allow delete: if false;
       }
