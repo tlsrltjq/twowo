@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-06-10 | auth 레이스 수정 | fix(auth): signup/login setUser+setCoupleId 명시적 동기화 후 navigate. fix(auth): couple-connect user!.uid null-assertion 제거. docs: current.md 7단계 수정, HARNESS 아이콘 갱신, stage-7 링크 수정, auth-couple.md createInvite 반환 타입+Google 2차 표시.
 ## 2026-06-10 | E2E 두계정 | fix(rules): moodChecks 등 미존재 문서 read permission-denied 수정(canReadCoupleDoc). fix(auth): signup/login 명시적 navigate. feat(e2e): Maestro 5종 플로우. testID 추가(screen-*/btn-*). 컨디션/캘린더/채팅 동기화 1초 이내 확인.
 ## 2026-06-10 | UI 완성도 | feat(chat): 읽음 배지(최대9, 포커스시 초기화). feat(home): NextEventCard→이벤트상세 네비. feat(settings): 상대방 닉네임 표시. fix(calendar): updateEvent undefined→deleteField. fix(calendar): createEvent undefined placeName/memo 수정.
 ## 2026-06-10 | 홈+캘린더 | fix(calendar): addDoc undefined 필드 오류(placeName/memo) 수정. feat(home): NextEventCard(D-Day 배지/타입 이모지/장소명). feat(assets): 앱 아이콘·스플래시 — 두 하트 커플 모티프.

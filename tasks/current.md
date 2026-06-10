@@ -39,13 +39,14 @@
 | 데이트 빙고 | couple-bingo | ✅ | ⬜ 매핑 미완 | experimental |
 
 ## 이전 세션에서 멈춘 곳
-두 계정 E2E 전체 플로우 테스트 완료:
-- fix(auth): signup/login 후 명시적 navigate 추가 (couple-connect / tabs)
-- fix(rules): Firestore moodChecks/calendarEvents 등 read rule — 미존재 문서 onSnapshot 시 permission-denied 버그 수정 (canReadCoupleDoc helper 추가, 배포 완료)
-- fix(rules): couples allow get — join 시 1-member 커플 조회 허용 (배포 완료)
-- feat(e2e): Maestro 5종 테스트 플로우 작성 (.maestro/)
-- testID 추가: screen-home/mood/chat/calendar, btn-energy-N, btn-mood-N, btn-mood-save, input-event-title, btn-event-save, input-chat, btn-chat-send
-동기화 측정 결과: 컨디션/캘린더/채팅 모두 Firestore onSnapshot 1초 이내 전파 확인.
+auth 레이스 수정 + 문서 SSOT 정리 완료:
+- fix(auth): signup.tsx — setUser(user) 명시적 동기화 후 navigate
+- fix(auth): login.tsx — setUser + setCoupleId 명시적 동기화 후 navigate
+- fix(auth): couple-connect.tsx — user!.uid null-assertion 제거, 훅 완료 후 guard
+- HARNESS.md 로드맵 아이콘 갱신 (1차 ✅, 7단계 🔄, 2차 선구현 🔄)
+- current.md 단계 6→7, stage-7.md 링크, 2차 선구현 상태표 추가
+- stage-7.md qa-checklist 경로 수정, Blaze 노트 수정
+- auth-couple.md createInvite 반환 타입, Google 와이어프레임/엣지케이스 2차 표시
 다음: Apple Developer Program 가입 후 eas build --platform ios --profile preview → TestFlight 제출.
 (Storage 규칙 미배포 — Firebase Storage Blaze 업그레이드 후 배포 필요.)
 
