@@ -31,6 +31,7 @@ const ALL_SIDEBAR_ITEMS: (SidebarItem & { featureId: string })[] = [
   { label: '둘다좋아',        emoji: '💑', route: '/(features)/vote',           featureId: 'date-decision' },
   { label: '자기 전 한 마디', emoji: '🌙', route: '/(features)/night-message',   featureId: 'night-message' },
   { label: '칭찬 저금통',     emoji: '🫙', route: '/(features)/compliment-jar', featureId: 'compliment-jar' },
+  { label: '오늘 뭐 먹었어', emoji: '🍽️', route: '/(features)/daily-food',    featureId: 'daily-food' },
 ];
 
 export default function TabsLayout() {

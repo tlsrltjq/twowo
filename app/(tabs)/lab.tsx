@@ -13,6 +13,7 @@ const FEATURE_ROUTES: Record<string, string> = {
   'date-decision': '/(features)/vote',
   'night-message':  '/(features)/night-message',
   'compliment-jar': '/(features)/compliment-jar',
+  'daily-food':     '/(features)/daily-food',
 };
 
 const experimentalFeatures = getRegistry().filter(f => f.status === 'experimental');

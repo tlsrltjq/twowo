@@ -31,6 +31,12 @@ const registry: AppFeature[] = [
     description: '서로에게 칭찬을 쌓아두고 언제든 꺼내 읽어요',
     status:      'experimental',
   },
+  {
+    id:          'daily-food',
+    name:        '오늘 뭐 먹었어?',
+    description: '오늘 먹은 것을 기록하고 상대방과 공유해요',
+    status:      'experimental',
+  },
 ];
 
 export default registry;

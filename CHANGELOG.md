@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-06-10 | 오늘 뭐 먹었어 | feat(daily-food): logFood(BR-DF1/2/5)+subscribeTodayFood(BR-DF3/4)+deleteFood. DailyFoodScreen(식사타입 4종·상대/나 섹션·롱프레스삭제·모달). 테스트 8종 green.
 ## 2026-06-10 | 칭찬 저금통 | feat(compliment-jar): addCompliment(BR-CJ1/2/3) + subscribeCompliments(BR-CJ4/5 orderBy DESC). ComplimentJarScreen(받은/쓴 탭·모달·FAB). mock addDoc+orderBy 추가. 테스트 8종 green.
 ## 2026-06-10 | 자기 전 한 마디 | feat(night-message): sendNightMessage(upsert BR-NM1/2/5) + subscribeTodayMessages(실시간 BR-NM3/4). NightMessageScreen(탭 2종·수정·상대방카드). firestore.rules nightMessages 블록. 테스트 9종 green.
 ## 2026-06-10 | 캘린더 추가 뷰 | feat(calendar): 운동(🏃)/데이트(💑) 뷰 추가. subscribeEventsByType(coupleId+type+date복합인덱스) + useCalendarEventsByType 훅. ViewTab 4종(달력|운동|데이트|사진). TypeEventCard UI.
