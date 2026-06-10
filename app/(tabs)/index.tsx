@@ -2,6 +2,7 @@ import { Calendar, Menu } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
 
 import { subscribeEvents, CalendarEvent } from '../../core/calendar';
 import { subscribeCouple, Couple } from '../../core/couple';
@@ -205,7 +206,11 @@ function NextEventCard({ event }: { event: CalendarEvent }) {
   const isToday    = ddayLabel === 'D-Day';
 
   return (
-    <View style={[styles.nextCard, isToday && styles.nextCardToday]}>
+    <TouchableOpacity
+      style={[styles.nextCard, isToday && styles.nextCardToday]}
+      onPress={() => router.push(`/event/${event.id}`)}
+      activeOpacity={0.85}
+    >
       <View style={styles.nextCardTop}>
         <View style={styles.nextCardTypeBadge}>
           <Text style={styles.nextCardTypeEmoji}>{emoji}</Text>
@@ -222,7 +227,7 @@ function NextEventCard({ event }: { event: CalendarEvent }) {
       ) : null}
 
       <Text style={styles.nextCardDate}>{dateStr}</Text>
-    </View>
+    </TouchableOpacity>
   );
 }
 

@@ -1,6 +1,7 @@
 import {
   addDoc,
   collection,
+  deleteField,
   doc,
   onSnapshot,
   orderBy,
@@ -51,9 +52,14 @@ export async function createEvent(input: CalendarEventInput): Promise<string> {
 }
 
 export async function updateEvent(id: string, patch: Partial<CalendarEventInput>): Promise<void> {
-  const data: Record<string, unknown> = { ...patch, updatedAt: Timestamp.now() };
-  if (patch.date)    data.date    = Timestamp.fromDate(patch.date);
-  if (patch.endDate) data.endDate = Timestamp.fromDate(patch.endDate);
+  const data: Record<string, unknown> = { updatedAt: Timestamp.now() };
+  if (patch.type      !== undefined) data.type      = patch.type;
+  if (patch.title     !== undefined) data.title     = patch.title;
+  if (patch.date      !== undefined) data.date      = Timestamp.fromDate(patch.date);
+  if (patch.endDate   !== undefined) data.endDate   = patch.endDate ? Timestamp.fromDate(patch.endDate) : null;
+  // 'key' in patch 로 의도적 undefined(필드 삭제) 감지
+  if ('placeName' in patch) data.placeName = patch.placeName ?? deleteField();
+  if ('memo'      in patch) data.memo      = patch.memo      ?? deleteField();
   await updateDoc(doc(db, 'calendarEvents', id), data);
 }
 

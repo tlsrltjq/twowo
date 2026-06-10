@@ -1,6 +1,6 @@
 import { Calendar, Heart, Home, MessageCircle, Settings } from 'lucide-react-native';
-import { router, Redirect, Tabs } from 'expo-router';
-import { useRef, useState } from 'react';
+import { router, Redirect, Tabs, usePathname } from 'expo-router';
+import { useEffect, useRef, useState } from 'react';
 import {
   Animated,
   Pressable,
@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { subscribeUnreadCount } from '../../features/chat';
 import { SidebarContext } from '../../core/sidebar.context';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { colors, radius, space, typography } from '../../design-system/tokens';
@@ -32,6 +33,23 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
 export default function TabsLayout() {
   const { user, coupleId } = useAuthStore();
   const insets = useSafeAreaInsets();
+  const pathname = usePathname();
+
+  // 채팅 읽음 배지
+  const chatSeenAt = useRef(new Date());
+  const [unreadChat, setUnreadChat] = useState(0);
+
+  useEffect(() => {
+    if (!coupleId || !user) return;
+    return subscribeUnreadCount(coupleId, user.uid, chatSeenAt.current, setUnreadChat);
+  }, [coupleId, user?.uid]);
+
+  useEffect(() => {
+    if (pathname === '/chat') {
+      chatSeenAt.current = new Date();
+      setUnreadChat(0);
+    }
+  }, [pathname]);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const slideAnim = useRef(new Animated.Value(SIDEBAR_WIDTH)).current;
@@ -87,6 +105,7 @@ export default function TabsLayout() {
             options={{
               title: '채팅',
               tabBarIcon: ({ color, size }) => <MessageCircle size={size} color={color as string} strokeWidth={1.8} />,
+              ...(unreadChat > 0 ? { tabBarBadge: Math.min(unreadChat, 9) } : {}),
             }}
           />
           <Tabs.Screen

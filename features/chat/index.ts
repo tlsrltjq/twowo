@@ -8,6 +8,8 @@ import {
   query,
   serverTimestamp,
   setDoc,
+  Timestamp,
+  where,
 } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
@@ -49,6 +51,22 @@ export async function sendMessage(
     senderId,
     text: text.trim(),
     createdAt: serverTimestamp(),
+  });
+}
+
+export function subscribeUnreadCount(
+  coupleId: string,
+  myUid: string,
+  since: Date,
+  cb: (n: number) => void,
+): () => void {
+  const q = query(
+    collection(db, 'couples', coupleId, 'messages'),
+    where('createdAt', '>', Timestamp.fromDate(since)),
+    limit(10),
+  );
+  return onSnapshot(q, snap => {
+    cb(snap.docs.filter(d => d.data().senderId !== myUid).length);
   });
 }
 

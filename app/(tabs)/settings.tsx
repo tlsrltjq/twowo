@@ -1,4 +1,4 @@
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -25,6 +25,7 @@ export default function SettingsScreen() {
   const { user, coupleId } = useAuthStore();
 
   const [couple, setCouple]             = useState<Couple | null>(null);
+  const [partnerName, setPartnerName]   = useState('');
   const [nickname, setNickname]         = useState('');
   const [nicknameEditing, setNicknameEditing] = useState(false);
   const [anniversaryInput, setAnniversaryInput] = useState('');
@@ -33,8 +34,20 @@ export default function SettingsScreen() {
 
   useEffect(() => {
     if (!coupleId) return;
-    return subscribeCouple(coupleId, setCouple);
-  }, [coupleId]);
+    return subscribeCouple(coupleId, async (c) => {
+      setCouple(c);
+      const partnerUid = (c.memberIds as string[]).find(id => id !== user?.uid);
+      if (partnerUid) {
+        try {
+          const snap = await getDoc(doc(db, 'users', partnerUid));
+          const name = snap.data()?.displayName as string | undefined;
+          setPartnerName(name || '상대방');
+        } catch {
+          setPartnerName('상대방');
+        }
+      }
+    });
+  }, [coupleId, user?.uid]);
 
   useEffect(() => {
     if (user?.displayName) setNickname(user.displayName);
@@ -141,6 +154,7 @@ export default function SettingsScreen() {
         {dDay !== null && (
           <Row label="함께한 날" value={`D+${dDay}일`} />
         )}
+        {partnerName ? <Row label="상대방" value={partnerName} /> : null}
 
         {/* 기념일 설정 */}
         <View style={styles.row}>
