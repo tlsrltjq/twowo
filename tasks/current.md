@@ -26,9 +26,18 @@
 - ✅ testID 추가 (input-email/password/go-signup/btn-signout) — Maestro E2E 검증 완료
 - ✅ Maestro E2E: 코드 생성(XLS5MP) PASS / 로그아웃 리다이렉트 PASS
 
+## 2차 기능 구현 완료 (세션 중)
+- ✅ feat(chat): 실시간 채팅 (couples/{id}/messages 서브컬렉션, 말풍선 UI, 날짜 구분선, 이미지 전송)
+- ✅ feat(sidebar): 우측 사이드바 (햄버거 ≡ → 슬라이드인, 데이트 빙고 + 둘다좋아 진입)
+- ✅ feat(date-decision): 둘다좋아 (후보 관리, 투표, 트랜잭션 자동 공개)
+- ✅ feat(couple-bingo): 데이트 빙고 (5×5 설정/게임/빙고 감지/완성)
+- ✅ Firestore 규칙 배포 완료 (messages 서브컬렉션)
+- ✅ E2E 시뮬레이터 검증: 채팅 전송 / 사이드바 슬라이드 / 둘다좋아 진입 / 빙고 설정 뷰 모두 PASS
+
 ## 이전 세션에서 멈춘 곳
-EAS 프로젝트 연결 완료 (projectId: b2876cc9). 버그 수정 + E2E 검증 완료.
+2차 기능(채팅·사이드바·둘다좋아·빙고) 구현 + E2E 검증 완료.
 다음: Apple Developer Program 가입 후 eas build --platform ios --profile preview → TestFlight 제출.
+(Storage 규칙 미배포 — Firebase Storage 활성화 후 배포 필요. 이미지 전송 end-to-end는 그 이후 테스트.)
 
 ## 다음 단계 예고
 6단계: EAS Build → TestFlight 제출 (ADR-018 1차 MVP 완료)
