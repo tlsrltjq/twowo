@@ -9,8 +9,9 @@ import { useAuthStore } from '../../core/stores/auth.store';
 import { getRegistry, setFeatureEnabled, subscribeFeatureSettings } from '../../core/features';
 
 const FEATURE_ROUTES: Record<string, string> = {
-  'couple-bingo': '/(features)/bingo',
+  'couple-bingo':  '/(features)/bingo',
   'date-decision': '/(features)/vote',
+  'night-message': '/(features)/night-message',
 };
 
 const experimentalFeatures = getRegistry().filter(f => f.status === 'experimental');

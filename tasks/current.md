@@ -50,13 +50,19 @@
 - _layout.tsx: FlaskConical 탭 추가, 사이드바 활성 기능만 표시
 - 테스트 8종 green (BR-L1/L2/L3)
 
-### 🔄 UI 완성도 (진행 중)
-- [ ] BingoScreen empty state 추가
-- [ ] 채팅 키보드 밀림 확인
+### ✅ UI 완성도
+- ✅ BingoScreen 로딩 텍스트 → Spinner 교체
 
-### ⬜ 캘린더 추가 뷰 (stage-2′)
-- [ ] 운동 뷰 (type === 'exercise' 목록)
-- [ ] 데이트 뷰 (type === 'date' 목록)
+### ✅ 캘린더 추가 뷰 (stage-2′)
+- ✅ 운동 뷰 (subscribeEventsByType + TypeEventCard)
+- ✅ 데이트 뷰 (같은 패턴, 탭 4종: 달력|운동|데이트|사진)
+
+### 🔄 신규 기능 구현 (사용자 요청, 매일 쓸 이유가 생기는 것 우선)
+- [ ] 자기 전 한 마디 / 기상 메시지 (night-message)
+- [ ] 칭찬 저금통 (compliment-jar)
+- [ ] 오늘 뭐 먹었어 (daily-food)
+- [ ] 우리가 처음 한 것들 (first-moments)
+- [ ] 선물 위시리스트 (gift-wishlist)
 
 > **범위 기준: ADR-018** — 1차 MVP 6개(인증·캘린더·컨디션·홈/로컬알림·단순해제·TestFlight 게이트)만 먼저. 투표/빙고/원격푸시/실험실/30일유예/공개출시는 2차.
 

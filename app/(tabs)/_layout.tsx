@@ -27,8 +27,9 @@ interface SidebarItem {
 }
 
 const ALL_SIDEBAR_ITEMS: (SidebarItem & { featureId: string })[] = [
-  { label: '데이트 빙고', emoji: '🎯', route: '/(features)/bingo', featureId: 'couple-bingo' },
-  { label: '둘다좋아',    emoji: '💑', route: '/(features)/vote',  featureId: 'date-decision' },
+  { label: '데이트 빙고',     emoji: '🎯', route: '/(features)/bingo',         featureId: 'couple-bingo' },
+  { label: '둘다좋아',        emoji: '💑', route: '/(features)/vote',           featureId: 'date-decision' },
+  { label: '자기 전 한 마디', emoji: '🌙', route: '/(features)/night-message',  featureId: 'night-message' },
 ];
 
 export default function TabsLayout() {

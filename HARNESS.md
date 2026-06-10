@@ -37,7 +37,7 @@ __mocks__/, __tests__/, .github/workflows/
 | 3a | 둘다좋아 (투표) | 2차 | 🔄 선구현 |
 | 3c | 데이트 빙고 | 2차 | 🔄 선구현 |
 | — | 실시간 채팅 (사이드바 진입) | 2차 | 🔄 선구현 |
-| 2′ | 캘린더 운동/데이트 뷰 | 2차 | ⬜ |
+| 2′ | 캘린더 운동/데이트 뷰 | 2차 | ✅ |
 | 4′ | 원격 푸시 Cloud Function *(Blaze 필요)* | 2차 | ⬜ |
 | 6 | 커플 해제 30일 유예 + Scheduled Function *(Blaze 필요)* | 2차 | ⬜ |
 | 8 | App Store 공개 출시 *(Apple Developer 필요)* | 2차 | ⬜ |

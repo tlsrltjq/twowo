@@ -18,6 +18,7 @@
 | 3c 빙고 | [`bingo.md`](./bingo.md) | bingoBoards |
 | 4단계 홈/알림 | [`home.md`](./home.md) | (합성 view) |
 | 5+6단계 실험실/설정 | [`lab-settings.md`](./lab-settings.md) | featureSettings / couples |
+| 신규 자기전 한마디 | [`night-message.md`](./night-message.md) | nightMessages |
 
 ## 공통 형식 (모든 스펙 파일)
 - **개요** — 한 문단

@@ -19,6 +19,12 @@ const registry: AppFeature[] = [
     description: '서로 원하는 데이트 장소를 투표로 정해요',
     status:      'experimental',
   },
+  {
+    id:          'night-message',
+    name:        '자기 전 한 마디',
+    description: '잠들기 전·아침에 일어나서 상대방에게 메시지를 남겨요',
+    status:      'experimental',
+  },
 ];
 
 export default registry;
