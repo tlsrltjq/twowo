@@ -213,6 +213,16 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // ---------- firstMoments (우리가 처음 한 것들) ----------
+    match /firstMoments/{docId} {
+      allow read:   if isMyCouple(resource.data.coupleId);
+      allow create: if isMyCouple(request.resource.data.coupleId)
+                    && request.resource.data.addedBy == request.auth.uid
+                    && request.resource.data.title.size() <= 60;
+      allow update: if false;
+      allow delete: if resource.data.addedBy == request.auth.uid;
+    }
+
     // ---------- foodLogs (오늘 뭐 먹었어) ----------
     match /foodLogs/{docId} {
       allow read:   if isMyCouple(resource.data.coupleId);

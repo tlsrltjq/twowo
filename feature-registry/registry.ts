@@ -37,6 +37,12 @@ const registry: AppFeature[] = [
     description: '오늘 먹은 것을 기록하고 상대방과 공유해요',
     status:      'experimental',
   },
+  {
+    id:          'first-moments',
+    name:        '우리가 처음 한 것들',
+    description: '처음 함께 한 특별한 순간들을 기록해요',
+    status:      'experimental',
+  },
 ];
 
 export default registry;

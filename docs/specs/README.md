@@ -21,6 +21,7 @@
 | 신규 자기전 한마디 | [`night-message.md`](./night-message.md) | nightMessages |
 | 신규 칭찬 저금통 | [`compliment-jar.md`](./compliment-jar.md) | compliments |
 | 신규 오늘 뭐 먹었어 | [`daily-food.md`](./daily-food.md) | foodLogs |
+| 신규 처음 한 것들 | [`first-moments.md`](./first-moments.md) | firstMoments |
 
 ## 공통 형식 (모든 스펙 파일)
 - **개요** — 한 문단
