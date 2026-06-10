@@ -145,10 +145,10 @@ export const cleanupExpiredCouples = onSchedule('every day 00:00', async () => {
 ## BR ↔ 테스트 매핑
 | BR | 종류 | 위치 | 테스트 이름 |
 |----|------|------|-------------|
-| BR-L1 | 단위 | core/features/getRegistry.test.ts | '[BR-L1] experimental 만 실험실 목록에 포함' |
-| BR-L2 | 단위 | core/features/setFeatureEnabled.test.ts | '[BR-L2] 문서 없으면 OFF 기본값' |
-| BR-L3 | 통합 | __tests__/integration/feature-toggle-sync.test.ts | '[BR-L3] 토글 변경 양쪽 동시 반영' |
-| BR-L4 | 통합 | __tests__/integration/feature-hidden-data.test.ts | '[BR-L4] hidden 전환 시 데이터 보존' |
+| BR-L1 | 단위 | core/features/__tests__/getRegistry.test.ts | '[BR-L1] experimental 만 실험실 목록에 포함' |
+| BR-L2 | 단위 | core/features/__tests__/setFeatureEnabled.test.ts | '[BR-L2] 문서 없으면 빈 객체 반환 — 모든 기능 OFF 기본값' |
+| BR-L3 | 단위 | core/features/__tests__/setFeatureEnabled.test.ts | '[BR-L3] 저장된 featureSettings를 featureId→enabled 맵으로 반환' |
+| BR-L4 | 통합 | __tests__/integration/feature-hidden-data.test.ts | '[BR-L4] hidden 전환 시 데이터 보존' *(2차 에뮬레이터 필요)* |
 | BR-S1 | 통합 | __tests__/integration/security-rules.test.ts | '[BR-S1] 다른 사용자 닉네임 수정 → DENIED' |
 | BR-S2 | 단위 | core/auth/signOut.test.ts | '[BR-S2] signOut 후 Zustand store clear' |
 | BR-D1 | 통합 | __tests__/integration/disconnect-flow.test.ts | '[BR-D1] disconnect 트랜잭션 status/At/By' |

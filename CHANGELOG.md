@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-06-10 | 실험실 탭 | feat(lab): core/features(getRegistry/setFeatureEnabled/subscribeFeatureSettings) + app/(tabs)/lab.tsx + 탭바 FlaskConical 추가 + 사이드바 활성 기능만 표시. 테스트 8종 green (BR-L1/L2/L3). registry mood-share→active, couple-bingo/date-decision experimental 등록.
 ## 2026-06-10 | 계획 갱신 | chore(plan): 비용 발생 항목(TestFlight·Storage·Apple Developer) 보류(ADR-019). 시뮬레이터 전용 계획 수립 — 실험실 탭→UI 완성도→캘린더 추가 뷰. HARNESS·decisions 갱신.
 ## 2026-06-10 | 컨디션 실시간 | fix(home): 내 컨디션 getTodayMood(일회성)→subscribeMyMoodToday(onSnapshot) 전환. 컨디션 탭 입력 후 홈 탭 돌아오면 즉시 반영.
 ## 2026-06-10 | UI 버그 | fix(ui): event 3화면 SafeAreaView — 상태바 겹침·뒤로가기 수정. fix(router): _layout (features) 등록 — 사이드바 빙고/투표 진입 수정. fix(firestore): photoIds undefined→[] 정규화 — 이벤트 상세 크래시 수정.

@@ -39,25 +39,24 @@
 | 데이트 빙고 | couple-bingo | ✅ | ⬜ 매핑 미완 | experimental |
 
 ## 이전 세션에서 멈춘 곳
-UI 버그 수정 + 컨디션 실시간 구독 전환 완료.
-다음 작업은 아래 "시뮬레이터 전용 계획" 참고. 시작은 사용자가 지시할 때.
+실험실 탭 구현 완료. 다음: 빙고 EmptyState → 캘린더 운동/데이트 뷰
 
-## 시뮬레이터 전용 계획 (비용 없음, 사용자 지시 시 시작)
-> **보류 항목 (비용 발생)**: Apple Developer Program($99/년) · Firebase Storage Blaze · TestFlight · 원격 푸시 Cloud Function · 30일 유예 Scheduled Function · App Store 공개 출시. 언급하지 않음.
+## 진행 중인 작업 (시뮬레이터 전용)
+> **보류 항목 (비용 발생)**: Apple Developer Program · Firebase Storage Blaze · TestFlight 등. 언급하지 않음.
 
-### 1순위 — 실험실 탭 (stage-5)
-사이드바 임시 진입 → 정식 탭 + 커플 단위 ON/OFF 토글로 교체.
-- `app/(tabs)/lab.tsx` 신규 (feature-registry experimental 목록 + 토글)
-- `couples` 컬렉션에 `featureSettings` 필드로 ON/OFF 동기화 (상대방도 실시간 반영)
-- 빙고·투표·채팅이 탭에서 ON 되면 나타나고 OFF 되면 사라지는 구조
+### ✅ 실험실 탭 (stage-5)
+- core/features/: getRegistry / setFeatureEnabled / subscribeFeatureSettings
+- app/(tabs)/lab.tsx: experimental 목록 + Switch + 화면 열기
+- _layout.tsx: FlaskConical 탭 추가, 사이드바 활성 기능만 표시
+- 테스트 8종 green (BR-L1/L2/L3)
 
-### 2순위 — UI 완성도 (stage-7 중 비용 없는 항목)
-- 빈 상태(empty state) UI — 일정 없음, 빙고 항목 없음, 컨디션 미입력
-- 에러 상태 처리 — 네트워크 오류, Firestore 실패 시 사용자 메시지
-- 로딩 처리 통일 — 스피너 vs 스켈레톤
+### 🔄 UI 완성도 (진행 중)
+- [ ] BingoScreen empty state 추가
+- [ ] 채팅 키보드 밀림 확인
 
-### 3순위 — 캘린더 추가 뷰 (stage-2′)
-- 운동 뷰, 데이트 뷰 (현재 월간 뷰만 있음)
+### ⬜ 캘린더 추가 뷰 (stage-2′)
+- [ ] 운동 뷰 (type === 'exercise' 목록)
+- [ ] 데이트 뷰 (type === 'date' 목록)
 
 > **범위 기준: ADR-018** — 1차 MVP 6개(인증·캘린더·컨디션·홈/로컬알림·단순해제·TestFlight 게이트)만 먼저. 투표/빙고/원격푸시/실험실/30일유예/공개출시는 2차.
 
