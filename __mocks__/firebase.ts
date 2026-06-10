@@ -22,7 +22,7 @@ const emitDoc = (path: string) => {
   }));
 };
 
-export const resetMockDb = () => { store.clear(); listeners.clear(); };
+export const resetMockDb = () => { store.clear(); listeners.clear(); _autoId = 1; };
 export const seedMockDb  = (path: string, data: Record<string, any>) => { store.set(path, data); emitDoc(path); };
 export const getMockDb   = () => new Map(store);
 
@@ -37,6 +37,15 @@ export const collection = jest.fn((_db: any, name: string): QueryRef => ({
 export const getDoc = jest.fn(async (ref: DocRef) => {
   const data = store.get(ref.path);
   return { exists: () => data !== undefined, data: () => data, id: ref.id };
+});
+
+let _autoId = 1;
+export const addDoc = jest.fn(async (colRef: QueryRef, data: Record<string, any>) => {
+  const id   = `auto_${_autoId++}`;
+  const path = `${colRef.__collection}/${id}`;
+  store.set(path, data);
+  emitDoc(path);
+  return { id, path };
 });
 
 export const setDoc = jest.fn(async (ref: DocRef, data: Record<string, any>, opts?: { merge?: boolean }) => {
@@ -71,15 +80,33 @@ export const runTransaction = jest.fn(async (_db: any, updateFn: (tx: any) => Pr
 
 export const onSnapshot = jest.fn((ref: DocRef | QueryRef, cb: (snap: any) => void) => {
   if ('__collection' in ref) {
-    // 쿼리 스냅샷 (subscribeFeatureSettings 등)
+    // 쿼리 스냅샷
+    const orderByClauses: Array<{ field: string; dir: string }> = [];
+    const whereClauses:   Array<[string, string, any]>          = [];
+    for (const f of (ref.__filters as any[])) {
+      if (f && '__orderBy' in f) orderByClauses.push({ field: f.__orderBy, dir: f.__dir ?? 'asc' });
+      else if (Array.isArray(f)) whereClauses.push(f as [string, string, any]);
+    }
     const docs: any[] = [];
     for (const [path, data] of store.entries()) {
       if (!path.startsWith(ref.__collection + '/')) continue;
-      const matches = (ref.__filters as any[]).every(([field, op, value]: any[]) => {
+      const matches = whereClauses.every(([field, op, value]) => {
         if (op === '==') return data[field] === value;
         return false;
       });
-      if (matches) docs.push({ data: () => data, id: path.split('/').pop() });
+      if (matches) docs.push({ data: () => data, id: path.split('/').pop(), __raw: data });
+    }
+    // orderBy 적용
+    if (orderByClauses.length > 0) {
+      docs.sort((a, b) => {
+        for (const { field, dir } of orderByClauses) {
+          const av = a.__raw[field]; const bv = b.__raw[field];
+          if (av === bv) continue;
+          const cmp = av < bv ? -1 : 1;
+          return dir === 'desc' ? -cmp : cmp;
+        }
+        return 0;
+      });
     }
     cb({ docs });
     return () => {};
@@ -103,8 +130,9 @@ export const arrayUnion = (...vals: any[]) => ({ __op: 'arrayUnion', vals });
 export const arrayRemove = (...vals: any[]) => ({ __op: 'arrayRemove', vals });
 export const deleteField = () => ({ __op: 'deleteField' });
 
-export const where = (field: string, op: string, value: any) => [field, op, value];
-export const query = (ref: QueryRef, ...filters: any[]) => ({ ...ref, __filters: filters });
+export const where   = (field: string, op: string, value: any) => [field, op, value];
+export const orderBy = (field: string, dir: 'asc' | 'desc' = 'asc') => ({ __orderBy: field, __dir: dir });
+export const query   = (ref: QueryRef, ...filters: any[]) => ({ ...ref, __filters: filters });
 
 export const writeBatch = jest.fn((_db: any) => {
   const ops: Array<() => Promise<void>> = [];

@@ -213,6 +213,16 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // ---------- compliments (칭찬 저금통) ----------
+    match /compliments/{docId} {
+      allow read:   if isMyCouple(resource.data.coupleId);
+      allow create: if isMyCouple(request.resource.data.coupleId)
+                    && request.resource.data.fromUid == request.auth.uid
+                    && request.resource.data.text.size() <= 150;
+      allow update: if false;
+      allow delete: if false;
+    }
+
     // ---------- nightMessages (자기 전 한 마디) ----------
     match /nightMessages/{docId} {
       allow read:   if isMyCouple(resource.data.coupleId);

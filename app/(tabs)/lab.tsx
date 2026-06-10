@@ -11,7 +11,8 @@ import { getRegistry, setFeatureEnabled, subscribeFeatureSettings } from '../../
 const FEATURE_ROUTES: Record<string, string> = {
   'couple-bingo':  '/(features)/bingo',
   'date-decision': '/(features)/vote',
-  'night-message': '/(features)/night-message',
+  'night-message':  '/(features)/night-message',
+  'compliment-jar': '/(features)/compliment-jar',
 };
 
 const experimentalFeatures = getRegistry().filter(f => f.status === 'experimental');

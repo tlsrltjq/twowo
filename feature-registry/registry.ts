@@ -25,6 +25,12 @@ const registry: AppFeature[] = [
     description: '잠들기 전·아침에 일어나서 상대방에게 메시지를 남겨요',
     status:      'experimental',
   },
+  {
+    id:          'compliment-jar',
+    name:        '칭찬 저금통',
+    description: '서로에게 칭찬을 쌓아두고 언제든 꺼내 읽어요',
+    status:      'experimental',
+  },
 ];
 
 export default registry;

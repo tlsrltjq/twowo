@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-06-10 | 칭찬 저금통 | feat(compliment-jar): addCompliment(BR-CJ1/2/3) + subscribeCompliments(BR-CJ4/5 orderBy DESC). ComplimentJarScreen(받은/쓴 탭·모달·FAB). mock addDoc+orderBy 추가. 테스트 8종 green.
 ## 2026-06-10 | 자기 전 한 마디 | feat(night-message): sendNightMessage(upsert BR-NM1/2/5) + subscribeTodayMessages(실시간 BR-NM3/4). NightMessageScreen(탭 2종·수정·상대방카드). firestore.rules nightMessages 블록. 테스트 9종 green.
 ## 2026-06-10 | 캘린더 추가 뷰 | feat(calendar): 운동(🏃)/데이트(💑) 뷰 추가. subscribeEventsByType(coupleId+type+date복합인덱스) + useCalendarEventsByType 훅. ViewTab 4종(달력|운동|데이트|사진). TypeEventCard UI.
 ## 2026-06-10 | 실험실 탭 | feat(lab): core/features(getRegistry/setFeatureEnabled/subscribeFeatureSettings) + app/(tabs)/lab.tsx + 탭바 FlaskConical 추가 + 사이드바 활성 기능만 표시. 테스트 8종 green (BR-L1/L2/L3). registry mood-share→active, couple-bingo/date-decision experimental 등록.
