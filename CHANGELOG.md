@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-06-10 | 선물 위시리스트 | feat(gift-wishlist): addWishlistItem(BR-GW1/2/3)+toggleReceived(BR-GW4)+subscribeWishlist(BR-GW5)+deleteWishlistItem(BR-GW6). GiftWishlistScreen(상대/내 탭·받았어·롱프레스삭제·모달). 테스트 9종 green.
 ## 2026-06-10 | 처음 한 것들 | feat(first-moments): addFirstMoment(BR-FM1/2/3/5)+subscribeFirstMoments(BR-FM4/6). FirstMomentsScreen(추억 목록·모달·롱프레스삭제). 테스트 10종 green.
 ## 2026-06-10 | 오늘 뭐 먹었어 | feat(daily-food): logFood(BR-DF1/2/5)+subscribeTodayFood(BR-DF3/4)+deleteFood. DailyFoodScreen(식사타입 4종·상대/나 섹션·롱프레스삭제·모달). 테스트 8종 green.
 ## 2026-06-10 | 칭찬 저금통 | feat(compliment-jar): addCompliment(BR-CJ1/2/3) + subscribeCompliments(BR-CJ4/5 orderBy DESC). ComplimentJarScreen(받은/쓴 탭·모달·FAB). mock addDoc+orderBy 추가. 테스트 8종 green.

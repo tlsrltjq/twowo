@@ -43,6 +43,12 @@ const registry: AppFeature[] = [
     description: '처음 함께 한 특별한 순간들을 기록해요',
     status:      'experimental',
   },
+  {
+    id:          'gift-wishlist',
+    name:        '선물 위시리스트',
+    description: '갖고 싶은 것을 적어두면 상대방이 선물 아이디어를 얻어요',
+    status:      'experimental',
+  },
 ];
 
 export default registry;

@@ -213,6 +213,18 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // ---------- wishlistItems (선물 위시리스트) ----------
+    match /wishlistItems/{docId} {
+      allow read:   if isMyCouple(resource.data.coupleId);
+      allow create: if isMyCouple(request.resource.data.coupleId)
+                    && request.resource.data.addedBy == request.auth.uid
+                    && request.resource.data.name.size() <= 60;
+      allow update: if isMyCouple(resource.data.coupleId)
+                    && request.resource.data.addedBy == resource.data.addedBy
+                    && request.resource.data.name == resource.data.name;
+      allow delete: if resource.data.addedBy == request.auth.uid;
+    }
+
     // ---------- firstMoments (우리가 처음 한 것들) ----------
     match /firstMoments/{docId} {
       allow read:   if isMyCouple(resource.data.coupleId);
