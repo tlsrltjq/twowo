@@ -35,11 +35,14 @@
 - ✅ E2E 시뮬레이터 검증: 채팅 전송 / 사이드바 슬라이드 / 둘다좋아 진입 / 빙고 설정 뷰 모두 PASS
 
 ## 이전 세션에서 멈춘 곳
-앱 아이콘/스플래시 생성(두 하트 커플 모티프), 홈 NextEventCard(D-Day/타입/장소) 추가,
-calendarEvent 저장 오류(addDoc undefined 필드) 수정 완료.
-시뮬레이터 E2E 검증 완료 — 일정 저장(장소 포함) PASS, 달력 탭 표시 PASS, 홈 NextEventCard D-Day 카드 PASS.
+UI 완성도 작업 완료:
+- fix(calendar): createEvent/updateEvent undefined 필드 → deleteField/omit 처리
+- feat(home): NextEventCard TouchableOpacity → 이벤트 상세 네비게이션
+- feat(chat): 읽음 배지 (subscribeUnreadCount, 채팅 포커스 시 초기화)
+- feat(settings): 상대방 닉네임 표시
+시뮬레이터 E2E 검증: 일정 저장·달력·NextEventCard탭·이벤트상세 모두 PASS.
 다음: Apple Developer Program 가입 후 eas build --platform ios --profile preview → TestFlight 제출.
-(Storage 규칙 미배포 — Firebase Storage 활성화 후 배포 필요. 이미지 전송 end-to-end는 그 이후 테스트.)
+(Storage 규칙 미배포 — Firebase Storage Blaze 업그레이드 후 배포 필요.)
 
 ## 다음 단계 예고
 6단계: EAS Build → TestFlight 제출 (ADR-018 1차 MVP 완료)
