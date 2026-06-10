@@ -54,6 +54,7 @@ export default function SignUpScreen() {
             name="displayName"
             render={({ field }) => (
               <TextField
+                testID="input-name"
                 label="이름"
                 value={field.value}
                 onChangeText={field.onChange}
@@ -68,6 +69,7 @@ export default function SignUpScreen() {
             name="email"
             render={({ field }) => (
               <TextField
+                testID="input-email"
                 label="이메일"
                 value={field.value}
                 onChangeText={field.onChange}
@@ -83,6 +85,7 @@ export default function SignUpScreen() {
             name="password"
             render={({ field }) => (
               <TextField
+                testID="input-password"
                 label="비밀번호"
                 value={field.value}
                 onChangeText={field.onChange}

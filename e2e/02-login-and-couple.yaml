@@ -1,0 +1,38 @@
+appId: host.exp.Exponent
+---
+- launchApp
+
+# 혹시 남아있는 시스템 팝업 처리
+- runFlow:
+    when:
+      visible: "허용"
+    commands:
+      - tapOn: "허용"
+- runFlow:
+    when:
+      visible: "허용 안 함"
+    commands:
+      - tapOn: "허용"
+
+# Expo Go 홈 → 앱 열기
+- tapOn: "둘다좋아"
+- assertVisible: "로그인"
+
+# 로그인
+- tapOn:
+    id: "input-email"
+- inputText: "e2e_1781049282@mailinator.com"
+- tapOn:
+    id: "input-password"
+- inputText: "test1234!"
+- tapOn: "로그인"
+- takeScreenshot: e2e/screenshots/02-after-login
+
+# 로그인 후 화면 확인 (커플 연결 or 홈)
+- runFlow:
+    when:
+      visible: "허용"
+    commands:
+      - tapOn: "허용"
+
+- takeScreenshot: e2e/screenshots/02-post-login-screen

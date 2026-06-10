@@ -14,6 +14,7 @@ interface TextFieldProps {
   keyboardType?: 'default' | 'email-address' | 'number-pad' | 'numbers-and-punctuation';
   secureTextEntry?: boolean;
   autoCapitalize?: 'none' | 'sentences' | 'words';
+  testID?: string;
 }
 
 export function TextField({
@@ -28,11 +29,13 @@ export function TextField({
   keyboardType = 'default',
   secureTextEntry,
   autoCapitalize = 'sentences',
+  testID,
 }: TextFieldProps) {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
       <TextInput
+        testID={testID}
         value={value}
         onChangeText={onChangeText}
         onBlur={onBlur}

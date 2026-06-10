@@ -1,0 +1,21 @@
+appId: host.exp.Exponent
+---
+- launchApp
+
+# 시스템 팝업 처리
+- runFlow:
+    when:
+      visible: "허용"
+    commands:
+      - tapOn: "허용"
+
+- tapOn: "둘다좋아"
+
+# 커플 연결 화면 확인
+- assertVisible: "커플 연결"
+- assertVisible: "내 코드 만들기"
+- takeScreenshot: e2e/screenshots/03-couple-connect
+
+# 코드 생성
+- tapOn: "내 코드 만들기"
+- takeScreenshot: e2e/screenshots/03-code-generated

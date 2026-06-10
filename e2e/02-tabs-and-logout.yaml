@@ -1,0 +1,29 @@
+appId: host.exp.Exponent
+env:
+  TEST_EMAIL: ${TEST_EMAIL}
+  TEST_PASSWORD: ${TEST_PASSWORD}
+---
+# 로그인
+- launchApp
+- tapOn: "example@email.com"
+  optional: true
+- inputText: ${TEST_EMAIL}
+- tapOn: "6자 이상"
+- inputText: ${TEST_PASSWORD}
+- tapOn: "로그인"
+- takeScreenshot: e2e/screenshots/02-after-login
+
+# 탭 네비게이션
+- tapOn: "캘린더"
+- takeScreenshot: e2e/screenshots/02-calendar
+- tapOn: "컨디션"
+- takeScreenshot: e2e/screenshots/02-mood
+- tapOn: "설정"
+- takeScreenshot: e2e/screenshots/02-settings
+
+# 로그아웃 → 로그인 화면 리다이렉트 확인 (버그 수정 검증)
+- tapOn: "로그아웃"
+- tapOn: "로그아웃"  # 확인 Alert
+- takeScreenshot: e2e/screenshots/02-after-logout
+- assertVisible: "둘다좋아"
+- assertVisible: "로그인"

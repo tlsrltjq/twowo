@@ -1,15 +1,12 @@
 import {
   collection,
   doc,
-  getDocs,
   getDoc,
   onSnapshot,
-  query,
   runTransaction,
   serverTimestamp,
   setDoc,
   Timestamp,
-  where,
   writeBatch,
 } from 'firebase/firestore';
 
@@ -53,20 +50,25 @@ export async function ensureCouple(uid: string): Promise<{ coupleId: string }> {
 }
 
 // BR-2, BR-3: 6자리 코드 발급. 기존 코드 무효화 후 재발급.
+// invitations allow list:false → LIST 쿼리 대신 users/{uid}.activeInviteCode(GET)로 이전 코드 삭제.
 export async function createInvite(uid: string): Promise<{ code: string; expiresAt: Date; coupleId: string }> {
   const { coupleId } = await ensureCouple(uid);
+  const userRef = doc(db, 'users', uid);
+  const userSnap = await getDoc(userRef);
+  const oldCode: string | undefined = userSnap.data()?.activeInviteCode;
+
   const invRef = collection(db, 'invitations');
-  const prevSnap = await getDocs(query(invRef, where('createdBy', '==', uid)));
   const code = generateCode();
   const expiresAt = new Date(Date.now() + 24 * 3600 * 1000);
   const batch = writeBatch(db);
-  prevSnap.forEach(d => batch.delete(d.ref));
+  if (oldCode) batch.delete(doc(invRef, oldCode));
   batch.set(doc(invRef, code), {
     coupleId,
     createdBy: uid,
     createdAt: serverTimestamp(),
     expiresAt: Timestamp.fromDate(expiresAt),
   });
+  batch.update(userRef, { activeInviteCode: code });
   await batch.commit();
   return { code, expiresAt, coupleId };
 }

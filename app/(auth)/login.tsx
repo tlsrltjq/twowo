@@ -55,6 +55,7 @@ export default function LoginScreen() {
             name="email"
             render={({ field }) => (
               <TextField
+                testID="input-email"
                 label="이메일"
                 value={field.value}
                 onChangeText={field.onChange}
@@ -70,6 +71,7 @@ export default function LoginScreen() {
             name="password"
             render={({ field }) => (
               <TextField
+                testID="input-password"
                 label="비밀번호"
                 value={field.value}
                 onChangeText={field.onChange}
@@ -88,7 +90,7 @@ export default function LoginScreen() {
           />
         </View>
 
-        <Pressable onPress={() => router.push('/(auth)/signup')} style={styles.link}>
+        <Pressable testID="go-signup" onPress={() => router.push('/(auth)/signup')} style={styles.link}>
           <Text style={styles.linkText}>아직 계정이 없나요? <Text style={styles.linkBold}>회원가입</Text></Text>
         </Pressable>
 

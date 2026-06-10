@@ -1,0 +1,28 @@
+appId: host.exp.Exponent
+---
+- launchApp
+- tapOn: "둘다좋아"
+- assertVisible: "둘다좋아"
+- assertVisible: "로그인"
+- takeScreenshot: e2e/screenshots/01-login-screen
+
+- tapOn:
+    id: "go-signup"
+- assertVisible: "회원가입"
+
+- tapOn:
+    id: "input-name"
+- inputText: "E2E테스터"
+- tapOn:
+    id: "input-email"
+- inputText: "e2e_1781049282@mailinator.com"
+- tapOn:
+    id: "input-password"
+- inputText: "test1234!"
+- tapOn: "가입하기"
+- takeScreenshot: e2e/screenshots/01-after-signup
+
+# 알림 권한 팝업 → 허용
+- tapOn: "허용"
+  optional: true
+- takeScreenshot: e2e/screenshots/01-couple-connect
