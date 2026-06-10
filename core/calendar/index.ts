@@ -15,12 +15,18 @@ import { deleteEvent } from './deleteEvent';
 import { CalendarEvent, CalendarEventInput } from './schema';
 
 function toFirestore(input: CalendarEventInput) {
-  return {
-    ...input,
-    date:     Timestamp.fromDate(input.date),
-    endDate:  input.endDate ? Timestamp.fromDate(input.endDate) : null,
-    photoIds: [],
+  const doc: Record<string, unknown> = {
+    coupleId:  input.coupleId,
+    createdBy: input.createdBy,
+    type:      input.type,
+    title:     input.title,
+    date:      Timestamp.fromDate(input.date),
+    endDate:   input.endDate ? Timestamp.fromDate(input.endDate) : null,
+    photoIds:  [],
   };
+  if (input.placeName != null) doc.placeName = input.placeName;
+  if (input.memo      != null) doc.memo      = input.memo;
+  return doc;
 }
 
 function fromFirestore(id: string, data: Record<string, unknown>): CalendarEvent {
