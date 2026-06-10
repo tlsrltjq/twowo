@@ -4,8 +4,8 @@
 > 단계별 "계획서"는 `stage-N.md`에 있고 거의 수정되지 않습니다.
 > 이 파일은 매 세션마다 자유롭게 갱신됩니다.
 
-## 지금 단계: 6단계 — TestFlight 게이트 (EAS Build)
-> 상세 계획은 `tasks/stage-6.md` 참고 (ADR-018 1차 MVP 마지막 단계)
+## 지금 단계: 7단계 — 마무리 + 배포
+> 상세 계획은 `tasks/stage-7.md` 참고 (ADR-018 1차 MVP 마지막 단계)
 
 ## 5단계 완료 기록
 - ✅ app/(tabs)/settings.tsx — 커플 정보/닉네임/기념일/로그아웃/커플 해제 UI
@@ -15,7 +15,7 @@
 - ✅ 단위 테스트 3종 green (disconnect.test.ts BR-D1/D4)
 - ✅ tsc --noEmit 0 errors
 
-## 진행 체크 (stage-6.md 목표)
+## 진행 체크 (stage-7.md 목표)
 - [ ] EAS Build 설정 (eas.json 확인 / EAS CLI 로그인)
 - [ ] iOS TestFlight 빌드 제출
 - [ ] TestFlight 내부 테스터 초대 + 설치 확인
@@ -26,13 +26,17 @@
 - ✅ testID 추가 (input-email/password/go-signup/btn-signout) — Maestro E2E 검증 완료
 - ✅ Maestro E2E: 코드 생성(XLS5MP) PASS / 로그아웃 리다이렉트 PASS
 
-## 2차 기능 구현 완료 (세션 중)
-- ✅ feat(chat): 실시간 채팅 (couples/{id}/messages 서브컬렉션, 말풍선 UI, 날짜 구분선, 이미지 전송)
-- ✅ feat(sidebar): 우측 사이드바 (햄버거 ≡ → 슬라이드인, 데이트 빙고 + 둘다좋아 진입)
-- ✅ feat(date-decision): 둘다좋아 (후보 관리, 투표, 트랜잭션 자동 공개)
-- ✅ feat(couple-bingo): 데이트 빙고 (5×5 설정/게임/빙고 감지/완성)
-- ✅ Firestore 규칙 배포 완료 (messages 서브컬렉션)
-- ✅ E2E 시뮬레이터 검증: 채팅 전송 / 사이드바 슬라이드 / 둘다좋아 진입 / 빙고 설정 뷰 모두 PASS
+## 2차 기능 선구현 상태
+> ADR-018 기준 이 기능들은 **2차** (TestFlight 게이트 통과 후 진입). 코드는 이미 존재하고 동작하지만,
+> 스펙 BR↔테스트 매핑 완성·`active` 승격은 2차 단계에서 한다.
+> 현재는 `experimental` 상태로 간주하고 7단계(TestFlight) 완료 기준에 포함하지 않는다.
+
+| 기능 | featureId | 구현 | 테스트 | 상태 |
+|------|-----------|------|--------|------|
+| 실시간 채팅 | (core 수준, sidebar 진입) | ✅ | ⬜ 매핑 미완 | experimental |
+| 우측 사이드바 | — | ✅ | ⬜ | experimental |
+| 둘다좋아(투표) | date-decision | ✅ | ⬜ 매핑 미완 | experimental |
+| 데이트 빙고 | couple-bingo | ✅ | ⬜ 매핑 미완 | experimental |
 
 ## 이전 세션에서 멈춘 곳
 두 계정 E2E 전체 플로우 테스트 완료:
@@ -46,7 +50,7 @@
 (Storage 규칙 미배포 — Firebase Storage Blaze 업그레이드 후 배포 필요.)
 
 ## 다음 단계 예고
-6단계: EAS Build → TestFlight 제출 (ADR-018 1차 MVP 완료)
+7단계 남은 항목: Apple Developer Program 가입 → `eas build --platform ios --profile preview` → TestFlight 제출 (ADR-018 1차 MVP 완료)
 
 > **범위 기준: ADR-018** — 1차 MVP 6개(인증·캘린더·컨디션·홈/로컬알림·단순해제·TestFlight 게이트)만 먼저. 투표/빙고/원격푸시/실험실/30일유예/공개출시는 2차.
 

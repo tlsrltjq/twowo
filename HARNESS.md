@@ -14,7 +14,7 @@ feature-registry/     기능 ON/OFF (registry.ts, types.ts)
 design-system/        tokens.ts (진실 소스) + 공통 컴포넌트
 hooks/                공통 커스텀 훅
 assets/               Pretendard 폰트, 이미지, lottie
-docs/                 architecture / decisions / specs / qa-checklist (디테일 참고용)
+docs/                 architecture / decisions / specs / _archive/qa-checklist (디테일 참고용)
 tasks/                current.md (진행 SSOT) + stage-N.md (계획서)
 __mocks__/, __tests__/, .github/workflows/
 ```
@@ -25,16 +25,17 @@ __mocks__/, __tests__/, .github/workflows/
 
 | 단계 | 이름 | 범위 | 상태 |
 |------|------|:----:|------|
-| 0 | 초기 세팅 | 1차 | 🔄 |
-| 1 | 인증 + 커플 연결 (**이메일만**, 구글 2차) | 1차 | ⬜ |
-| 2 | 캘린더(월간+사진 2뷰) + 사진(EXIF제거) | 1차 | ⬜ |
-| 3b | 오늘의 컨디션 | 1차 | ⬜ |
-| 4 | 홈 + 기념일 디데이 + **로컬 알림** | 1차 | ⬜ |
-| 6′ | 단순 커플 해제(유예 X) | 1차 | ⬜ |
-| 7 | 마무리 + TestFlight **실사용 게이트** | 1차 | ⬜ |
+| 0 | 초기 세팅 | 1차 | ✅ |
+| 1 | 인증 + 커플 연결 (**이메일만**, 구글 2차) | 1차 | ✅ |
+| 2 | 캘린더(월간+사진 2뷰) + 사진(EXIF제거) | 1차 | ✅ |
+| 3b | 오늘의 컨디션 | 1차 | ✅ |
+| 4 | 홈 + 기념일 디데이 + **로컬 알림** | 1차 | ✅ |
+| 6′ | 단순 커플 해제(유예 X) | 1차 | ✅ |
+| 7 | 마무리 + TestFlight **실사용 게이트** | 1차 | 🔄 |
 | — | ─── 게이트 통과 후 2차 ─── | | |
-| 3a | 둘다좋아 (투표) | 2차 | ⬜ |
-| 3c | 데이트 빙고 | 2차 | ⬜ |
+| 3a | 둘다좋아 (투표) | 2차 | 🔄 선구현 |
+| 3c | 데이트 빙고 | 2차 | 🔄 선구현 |
+| — | 실시간 채팅 (사이드바 진입) | 2차 | 🔄 선구현 |
 | 4′ | 원격 푸시 (Cloud Function) | 2차 | ⬜ |
 | 5 | 실험실 탭 | 2차 | ⬜ |
 | 6 | 커플 해제 30일 유예 + Scheduled Function | 2차 | ⬜ |

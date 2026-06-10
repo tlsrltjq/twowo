@@ -6,6 +6,7 @@ import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text
 
 import { signUpWithEmail } from '../../core/auth';
 import { signUpSchema, SignUpInput } from '../../core/auth/schema';
+import { useAuthStore } from '../../core/stores/auth.store';
 import { Button } from '../../design-system/Button';
 import { TextField } from '../../design-system/TextField';
 import { Toast } from '../../design-system/Toast';
@@ -26,7 +27,8 @@ export default function SignUpScreen() {
 
   const onSubmit = async (data: SignUpInput) => {
     try {
-      await signUpWithEmail(data.email, data.password, data.displayName);
+      const user = await signUpWithEmail(data.email, data.password, data.displayName);
+      useAuthStore.getState().setUser(user);
       router.replace('/(auth)/couple-connect');
     } catch (e: any) {
       const code: string = e?.code ?? '';

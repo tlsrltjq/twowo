@@ -29,7 +29,7 @@ Expo Go 없이 독립 앱으로 설치. 무료 Apple ID로 가능하지만 **7�
 - [ ] App Store Connect에서 앱 등록 (Bundle ID: com.yourname.coupleapp)
 - [ ] APNs (Apple Push Notification service) 키 발급 → Firebase 콘솔에 등록
   - Firebase Console → 프로젝트 설정 → 클라우드 메시징 → APNs 인증 키 업로드
-- [ ] Firebase 플랜이 Blaze(종량제)인지 확인 (6단계 Scheduled Function 때문)
+- [ ] Firebase 플랜이 Blaze(종량제)인지 확인 (Storage 규칙 배포 + 2차 Cloud Function 준비용)
 - [ ] EAS CLI 로그인 확인 (`eas whoami`)
 
 ## 목표
@@ -62,7 +62,7 @@ Expo Go 없이 독립 앱으로 설치. 무료 Apple ID로 가능하지만 **7�
 - [ ] 두 기기에서 앱 설치 확인
 
 ### 실기기 전체 플로우 테스트
-> **`docs/qa-checklist.md` 의 모든 항목을 두 기기에서 한 번씩 통과**시킨다.
+> **`docs/_archive/qa-checklist.md` 의 모든 항목을 두 기기에서 한 번씩 통과**시킨다.
 > 아래는 그 중 *반드시 확인* 해야 하는 핵심 시나리오 요약.
 - [ ] 온보딩 → 로그인 → 커플 연결 코드 생성/입력
 - [ ] 캘린더: 일정 추가/수정/삭제, 사진 업로드, 뷰 전환
@@ -75,7 +75,7 @@ Expo Go 없이 독립 앱으로 설치. 무료 Apple ID로 가능하지만 **7�
 - 전체 플로우 크래시 없이 10분 이상 사용
 - 푸시 알림 실기기 수신 확인
 - 사진 업로드 후 썸네일 1초 이내 로딩
-- **`docs/qa-checklist.md` 전 항목 통과** (체크박스 100%)
+- **`docs/_archive/qa-checklist.md` 전 항목 통과** (체크박스 100%)
 - CI 가 green 인 상태에서만 production 빌드 (`.github/workflows/ci.yml` 결과 확인)
 - 모든 스펙의 BR ↔ 테스트 매핑 표가 빠진 BR 없이 채워져 있음
 

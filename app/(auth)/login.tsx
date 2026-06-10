@@ -6,6 +6,7 @@ import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text
 
 import { signInWithEmail } from '../../core/auth';
 import { getUserCoupleId } from '../../core/couple';
+import { useAuthStore } from '../../core/stores/auth.store';
 import { loginSchema, LoginInput } from '../../core/auth/schema';
 import { Button } from '../../design-system/Button';
 import { TextField } from '../../design-system/TextField';
@@ -29,6 +30,8 @@ export default function LoginScreen() {
     try {
       const user = await signInWithEmail(data.email, data.password);
       const coupleId = await getUserCoupleId(user.uid);
+      useAuthStore.getState().setUser(user);
+      useAuthStore.getState().setCoupleId(coupleId);
       router.replace(coupleId ? '/(tabs)' : '/(auth)/couple-connect');
     } catch (e: any) {
       const code: string = e?.code ?? '';

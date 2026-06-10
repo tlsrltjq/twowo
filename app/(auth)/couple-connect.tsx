@@ -22,7 +22,7 @@ function formatExpiry(expiresAt: Date): string {
 
 export default function CoupleConnectScreen() {
   const router = useRouter();
-  const uid = useAuthStore(s => s.user!.uid);
+  const user = useAuthStore(s => s.user);
   const setCoupleId = useAuthStore(s => s.setCoupleId);
 
   const [myCode, setMyCode] = useState<string | null>(null);
@@ -49,6 +49,10 @@ export default function CoupleConnectScreen() {
       router.replace('/(tabs)');
     }
   }, [coupleData, createdCoupleId, setCoupleId, router]);
+
+  // Guard: signup.tsx sets user in store before navigating here, but defend against any race
+  if (!user) return null;
+  const uid = user.uid;
 
   const handleCreateCode = async () => {
     setCreateLoading(true);

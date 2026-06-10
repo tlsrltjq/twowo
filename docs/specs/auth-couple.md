@@ -31,11 +31,11 @@
 │  [이메일]       (TextField)   │
 │  [비밀번호]     (TextField sec)│
 │  [로그인]       (Button pri)  │
-│  [Google 로 계속](Button sec) │
 │  회원가입 → signup            │
 │  오류 = 필드 하단 + Toast     │
 └──────────────────────────────┘
 ```
+> Google 로그인은 **2차** (ADR-018). 1차 MVP는 이메일 전용.
 ### 커플 연결 (`(auth)/couple-connect.tsx`)
 ```text
 ┌─ 커플 연결 ──────────────────┐
@@ -70,7 +70,7 @@
 | 24h 지난 코드 입력 | "만료된 코드입니다" 에러 + 발급자에게 새 코드 요청 안내 |
 | 코드 자체가 존재하지 않음 | "잘못된 코드입니다" 에러 (오타 가능성 명시) |
 | Firebase Auth 로그아웃 후 재로그인 | `users/{uid}.coupleId` 가 있으면 자동 메인 진입 |
-| 구글 로그인 취소 | 로그인 화면 그대로, 에러 표시 없음 |
+| 구글 로그인 취소 | (2차, ADR-018 미구현) |
 | 동일 이메일로 다른 기기에서 동시 로그인 | Auth 가 처리, 우리는 추가 처리 없음 |
 | 앱 강제 종료 후 재실행 | `auth.onAuthStateChanged` + `users/{uid}` 한 번에 조회 후 분기 |
 
@@ -87,7 +87,7 @@ export function subscribeAuthState(cb: (user: User | null) => void): () => void
 export async function ensureUserDoc(uid: string, displayName: string): Promise<void>
 export async function ensureCouple(uid: string): Promise<{ coupleId: string }>
 //   - BR-0: couples 문서 없으면 생성(memberIds:[uid], status:'active') + users.coupleId 설정. 이미 있으면 그대로 반환.
-export async function createInvite(uid: string): Promise<{ code: string; expiresAt: Date }>
+export async function createInvite(uid: string): Promise<{ code: string; expiresAt: Date; coupleId: string }>
 export async function joinByCode(uid: string, code: string): Promise<{ coupleId: string }>
 //   - 트랜잭션 실패 시 throws JoinError({ reason: 'expired' | 'not_found' | 'self' | 'already_joined' | 'couple_full' })
 export function subscribeCouple(coupleId: string, cb: (couple: Couple) => void): () => void
@@ -143,7 +143,7 @@ await runTransaction(db, async (tx) => {
 - **홈 화면**: 로그인 직후 BR-1 의 `ensureUserDoc` 이 끝난 뒤에만 진입.
 
 ## 테스트 (Jest)
-- `createInvite`: 기존 코드 무효화 + 새 코드 발급 (트랜잭션 한 번에).
+- `createInvite`: 기존 코드 무효화 + 새 코드 발급 (`writeBatch` 한 번에, BR-3 쿼리 제약으로 트랜잭션 불가).
 - `joinByCode`: 정상 / 만료 / 본인 코드 / 이미 가입 / 정원 초과 5가지 시나리오.
 - Firebase 에뮬레이터 권장 (`firebase emulators:start --only firestore`).
 
