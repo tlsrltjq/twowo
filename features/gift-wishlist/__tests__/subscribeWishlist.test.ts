@@ -1,9 +1,8 @@
 import { resetMockDb, seedMockDb } from '../../../__mocks__/firebase';
+import { subscribeWishlist } from '../index';
 
 jest.mock('firebase/firestore', () => require('../../../__mocks__/firebase'));
 jest.mock('../../../core/config/firebase', () => ({ db: {} }));
-
-import { subscribeWishlist } from '../index';
 
 beforeEach(() => resetMockDb());
 

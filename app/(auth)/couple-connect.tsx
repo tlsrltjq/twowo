@@ -2,15 +2,15 @@ import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { doc, DocumentReference } from 'firebase/firestore';
 import LottieView from 'lottie-react-native';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { db } from '../../core/config/firebase';
 import { createInvite, joinByCode } from '../../core/couple';
 import { Couple, JoinError } from '../../core/couple/types';
-import { useAuthStore } from '../../core/stores/auth.store';
 import { useFirestoreDoc } from '../../core/firestore-hooks';
+import { useAuthStore } from '../../core/stores/auth.store';
 import { Button } from '../../design-system/Button';
 import { TextField } from '../../design-system/TextField';
 import { Toast } from '../../design-system/Toast';
@@ -46,18 +46,18 @@ export default function CoupleConnectScreen() {
     : null;
   const { data: coupleData } = useFirestoreDoc<Couple>(coupleRef);
 
-  const handleSuccess = (coupleId: string) => {
+  const handleSuccess = useCallback((coupleId: string) => {
     setCoupleId(coupleId);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setShowConfetti(true);
     setTimeout(() => router.replace('/(tabs)'), 2000);
-  };
+  }, [setCoupleId, router]);
 
   useEffect(() => {
     if (coupleData?.memberIds?.length === 2) {
       handleSuccess(createdCoupleId!);
     }
-  }, [coupleData, createdCoupleId]);
+  }, [coupleData, createdCoupleId, handleSuccess]);
 
   // Guard: signup.tsx sets user in store before navigating here, but defend against any race
   if (!user) return null;

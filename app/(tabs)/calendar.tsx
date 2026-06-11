@@ -3,8 +3,8 @@ import { useCallback, useMemo, useState } from 'react';
 import {
   FlatList,
   Pressable,
-  SectionList,
   ScrollView,
+  SectionList,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -13,13 +13,13 @@ import {
 import { Calendar, DateData } from 'react-native-calendars';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { CalendarEvent } from '../../core/calendar/schema';
+import { useCalendarEvents, useCalendarEventsByType } from '../../core/memory';
+import { useAuthStore } from '../../core/stores/auth.store';
 import { EmptyState } from '../../design-system/EmptyState';
 import { Skeleton } from '../../design-system/Skeleton';
 import { Spinner } from '../../design-system/Spinner';
 import { black, colors, radius, space, typography } from '../../design-system/tokens';
-import { CalendarEvent } from '../../core/calendar/schema';
-import { useCalendarEvents, useCalendarEventsByType } from '../../core/memory';
-import { useAuthStore } from '../../core/stores/auth.store';
 
 type ViewTab = 'calendar' | 'exercise' | 'date' | 'photos';
 

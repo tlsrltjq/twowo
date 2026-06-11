@@ -1,3 +1,5 @@
+import { guardPhotoLimit } from '../upload';
+
 jest.mock('firebase/firestore', () => require('../../../__mocks__/firebase'));
 jest.mock('firebase/storage', () => ({
   getDownloadURL: jest.fn(),
@@ -7,8 +9,6 @@ jest.mock('firebase/storage', () => ({
 jest.mock('expo-file-system', () => ({ readAsStringAsync: jest.fn(), EncodingType: { Base64: 'base64' } }));
 jest.mock('expo-image-manipulator', () => ({ manipulateAsync: jest.fn(), SaveFormat: { JPEG: 'jpeg' } }));
 jest.mock('../../config/firebase', () => ({ db: {}, storage: {} }));
-
-import { guardPhotoLimit } from '../upload';
 
 describe('guardPhotoLimit', () => {
   test('[BR-5] 19장은 허용', () => {

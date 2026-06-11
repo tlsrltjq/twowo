@@ -15,13 +15,13 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { z } from 'zod';
 
+import { createEvent } from '../../core/calendar';
+import { EventType } from '../../core/calendar/schema';
+import { useAuthStore } from '../../core/stores/auth.store';
 import { Button } from '../../design-system/Button';
 import { TextField } from '../../design-system/TextField';
 import { Toast } from '../../design-system/Toast';
 import { colors, radius, space, typography } from '../../design-system/tokens';
-import { createEvent } from '../../core/calendar';
-import { EventType } from '../../core/calendar/schema';
-import { useAuthStore } from '../../core/stores/auth.store';
 
 const formSchema = z.object({
   title:     z.string().min(1, '제목을 입력해주세요').max(100),

@@ -1,12 +1,12 @@
 import {
   collection,
   doc,
+  DocumentData,
   onSnapshot,
   query,
   serverTimestamp,
   setDoc,
   where,
-  DocumentData,
 } from 'firebase/firestore' ;
 
 import { db } from '../../core/config/firebase';

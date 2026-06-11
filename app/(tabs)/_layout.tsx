@@ -1,5 +1,5 @@
+import { Href, Redirect, router, Tabs, usePathname } from 'expo-router';
 import { Calendar, FlaskConical, Heart, Home, MessageCircle, Settings } from 'lucide-react-native';
-import { Href, router, Redirect, Tabs, usePathname } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
   Animated,
@@ -11,11 +11,11 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { subscribeUnreadCount } from '../../features/chat';
 import { subscribeFeatureSettings } from '../../core/features';
 import { SidebarContext } from '../../core/sidebar.context';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { black, colors, radius, space, typography } from '../../design-system/tokens';
+import { subscribeUnreadCount } from '../../features/chat';
 
 const SIDEBAR_WIDTH = 280;
 
@@ -49,7 +49,7 @@ export default function TabsLayout() {
   useEffect(() => {
     if (!coupleId || !user) return;
     return subscribeUnreadCount(coupleId, user.uid, chatSeenAt.current, setUnreadChat);
-  }, [coupleId, user?.uid]);
+  }, [coupleId, user?.uid]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!coupleId) return;

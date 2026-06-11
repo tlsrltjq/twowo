@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router, useLocalSearchParams } from 'expo-router';
-import { DocumentData, doc } from 'firebase/firestore';
+import { doc,DocumentData } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
@@ -16,15 +16,15 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { z } from 'zod';
 
+import { updateEvent } from '../../../core/calendar';
+import { EventType } from '../../../core/calendar/schema';
+import { db } from '../../../core/config/firebase';
+import { useFirestoreDoc } from '../../../core/firestore-hooks';
 import { Button } from '../../../design-system/Button';
 import { Spinner } from '../../../design-system/Spinner';
 import { TextField } from '../../../design-system/TextField';
 import { Toast } from '../../../design-system/Toast';
 import { colors, radius, space, typography } from '../../../design-system/tokens';
-import { updateEvent } from '../../../core/calendar';
-import { EventType } from '../../../core/calendar/schema';
-import { db } from '../../../core/config/firebase';
-import { useFirestoreDoc } from '../../../core/firestore-hooks';
 
 const formSchema = z.object({
   title:     z.string().min(1, '제목을 입력해주세요').max(100),

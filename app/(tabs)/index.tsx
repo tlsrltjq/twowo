@@ -1,11 +1,11 @@
+import { router } from 'expo-router';
 import { Calendar, Menu } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
 
-import { subscribeEvents, CalendarEvent } from '../../core/calendar';
-import { subscribeCouple, Couple } from '../../core/couple';
+import { CalendarEvent,subscribeEvents } from '../../core/calendar';
+import { Couple,subscribeCouple } from '../../core/couple';
 import { scheduleMoodReminderIfNeeded } from '../../core/notifications';
 import { useSidebar } from '../../core/sidebar.context';
 import { useAuthStore } from '../../core/stores/auth.store';
@@ -13,7 +13,7 @@ import { getDaysSince, getTodayKST } from '../../core/utils/date';
 import { Skeleton } from '../../design-system/Skeleton';
 import { Spinner } from '../../design-system/Spinner';
 import { colors, space, typography } from '../../design-system/tokens';
-import { subscribeMyMoodToday, subscribePartnerMoodToday, MoodCheck } from '../../features/mood-share';
+import { MoodCheck,subscribeMyMoodToday, subscribePartnerMoodToday } from '../../features/mood-share';
 
 const MOOD_LABELS: Record<string, string> = {
   great: '최고 🌟',
@@ -62,7 +62,7 @@ export default function HomeScreen() {
     return subscribeMyMoodToday(coupleId, user.uid, (m) => {
       setMyMood(m);
     });
-  }, [coupleId, user?.uid]);
+  }, [coupleId, user?.uid]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 알림 스케줄 — 내 컨디션 상태 확정 후
   useEffect(() => {

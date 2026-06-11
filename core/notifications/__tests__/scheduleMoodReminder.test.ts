@@ -2,6 +2,10 @@
  * [BR-6] 미입력 시 오늘 20:00 KST 스케줄, 입력 후 cancel
  */
 
+import * as Notifications from 'expo-notifications';
+
+import { cancelMoodReminder,scheduleMoodReminderIfNeeded } from '..';
+
 jest.mock('expo-notifications', () => ({
   setNotificationHandler:           jest.fn(),
   requestPermissionsAsync:          jest.fn(),
@@ -12,9 +16,6 @@ jest.mock('expo-notifications', () => ({
 }));
 jest.mock('firebase/firestore', () => ({ doc: jest.fn(), setDoc: jest.fn() }));
 jest.mock('../../config/firebase', () => ({ db: {} }));
-
-import * as Notifications from 'expo-notifications';
-import { scheduleMoodReminderIfNeeded, cancelMoodReminder } from '..';
 
 describe('[BR-6] 로컬 알림 스케줄', () => {
   beforeEach(() => jest.clearAllMocks());

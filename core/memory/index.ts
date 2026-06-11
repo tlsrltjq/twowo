@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
 
 import { subscribeEvents, subscribeEventsByType } from '../calendar';
 import { CalendarEvent } from '../calendar/schema';

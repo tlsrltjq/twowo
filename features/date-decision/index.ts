@@ -1,5 +1,4 @@
 import {
-  QueryDocumentSnapshot,
   addDoc,
   collection,
   deleteDoc,
@@ -8,6 +7,7 @@ import {
   onSnapshot,
   orderBy,
   query,
+  QueryDocumentSnapshot,
   runTransaction,
   serverTimestamp,
   where,
@@ -16,7 +16,7 @@ import {
 import { db } from '../../core/config/firebase';
 import type { DateCandidate, VoteCategory, VoteSession } from './types';
 
-export type { DateCandidate, VoteSession, VoteCategory };
+export type { DateCandidate, VoteCategory,VoteSession };
 export { CATEGORY_LABELS } from './types';
 
 // ─── helpers ──────────────────────────────────────────────────────────────────

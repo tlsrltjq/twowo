@@ -1,10 +1,9 @@
 import { resetMockDb, seedMockDb } from '../../../__mocks__/firebase';
+import { subscribeTodayMessages } from '../index';
 
 jest.mock('firebase/firestore', () => require('../../../__mocks__/firebase'));
 jest.mock('../../../core/config/firebase', () => ({ db: {} }));
 jest.mock('../../../core/utils/date', () => ({ getTodayKST: () => '2026-06-10' }));
-
-import { subscribeTodayMessages } from '../index';
 
 beforeEach(() => resetMockDb());
 

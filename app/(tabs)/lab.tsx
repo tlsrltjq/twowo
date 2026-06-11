@@ -1,12 +1,12 @@
+import { Href, router } from 'expo-router';
 import { FlaskConical } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Href, router } from 'expo-router';
 
-import { colors, radius, space, typography } from '../../design-system/tokens';
-import { useAuthStore } from '../../core/stores/auth.store';
 import { getRegistry, setFeatureEnabled, subscribeFeatureSettings } from '../../core/features';
+import { useAuthStore } from '../../core/stores/auth.store';
+import { colors, radius, space, typography } from '../../design-system/tokens';
 
 const FEATURE_ROUTES: Record<string, string> = {
   'couple-bingo':  '/(features)/bingo',

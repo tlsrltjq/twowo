@@ -5,9 +5,7 @@
  */
 
 if (process.env.FIRESTORE_EMULATOR_HOST) {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const firebase = require('firebase/app');
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const fs = require('firebase/firestore');
 
   let db: ReturnType<typeof fs.getFirestore>;

@@ -1,8 +1,8 @@
 import { Redirect } from 'expo-router';
 import { View } from 'react-native';
 
-import { Spinner } from '../design-system/Spinner';
 import { useAuthStore } from '../core/stores/auth.store';
+import { Spinner } from '../design-system/Spinner';
 import { colors } from '../design-system/tokens';
 
 export default function Index() {

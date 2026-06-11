@@ -1,9 +1,8 @@
-import { resetMockDb, getMockDb } from '../../../__mocks__/firebase';
+import { getMockDb,resetMockDb } from '../../../__mocks__/firebase';
+import { addWishlistItem, deleteWishlistItem,toggleReceived } from '../index';
 
 jest.mock('firebase/firestore', () => require('../../../__mocks__/firebase'));
 jest.mock('../../../core/config/firebase', () => ({ db: {} }));
-
-import { addWishlistItem, toggleReceived, deleteWishlistItem } from '../index';
 
 beforeEach(() => resetMockDb());
 

@@ -1,8 +1,8 @@
 import {
   DocumentData,
   DocumentReference,
-  Query,
   onSnapshot,
+  Query,
 } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 
@@ -35,7 +35,7 @@ export function useFirestoreDoc<T = DocumentData>(
       error => setState({ data: null, loading: false, error }),
     );
     return unsub;
-  }, [ref?.path]);
+  }, [ref?.path]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return state;
 }
@@ -57,7 +57,7 @@ export function useFirestoreQuery<T = DocumentData>(
       error => setState({ data: [], loading: false, error }),
     );
     return unsub;
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return state;
 }

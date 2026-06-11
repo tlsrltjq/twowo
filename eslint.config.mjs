@@ -1,6 +1,6 @@
 import expoConfig from 'eslint-config-expo/flat.js';
-import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import reactHooks from 'eslint-plugin-react-hooks';
+import simpleImportSort from 'eslint-plugin-simple-import-sort';
 
 // eslint-plugin-react 가 ESLint v10 context API와 호환 안 됨 → react 플러그인 config 제외.
 // react-hooks는 별도 패키지이므로 유지.
@@ -96,12 +96,13 @@ export default [
     },
   },
 
-  // 테스트/목 파일: any 허용, onSnapshot 제한 해제
+  // 테스트/목 파일: any 허용, onSnapshot 제한 해제, require() 허용 (jest.mock 패턴)
   {
-    files: ['**/__tests__/**/*.ts', '**/*.test.ts', '**/__mocks__/**/*.ts'],
+    files: ['**/__tests__/**/*.ts', '**/*.test.ts', '**/*.test.tsx', '**/__mocks__/**/*.ts'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       'no-restricted-imports': 'off',
+      '@typescript-eslint/no-require-imports': 'off',
     },
   },
 

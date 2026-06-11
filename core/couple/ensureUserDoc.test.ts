@@ -1,8 +1,8 @@
+import { ensureUserDoc } from './index';
 jest.mock('firebase/firestore', () => require('../../__mocks__/firebase'));
 jest.mock('../config/firebase', () => ({ db: {} }));
 
 const { resetMockDb, seedMockDb, getMockDb } = require('../../__mocks__/firebase');
-import { ensureUserDoc } from './index';
 
 describe('ensureUserDoc', () => {
   beforeEach(() => resetMockDb());

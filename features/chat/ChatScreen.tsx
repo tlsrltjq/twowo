@@ -1,5 +1,6 @@
 import * as ImagePicker from 'expo-image-picker';
-import { getDoc, doc } from 'firebase/firestore';
+import { doc,getDoc } from 'firebase/firestore';
+import { ImageIcon, RefreshCw, Send } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -15,13 +16,12 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ImageIcon, RefreshCw, Send } from 'lucide-react-native';
 
 import { db } from '../../core/config/firebase';
 import { subscribeCouple } from '../../core/couple';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { colors, radius, space, typography } from '../../design-system/tokens';
-import { subscribeMessages, sendMessage, sendImageMessage, Message, PendingImage } from './index';
+import { Message, PendingImage,sendImageMessage, sendMessage, subscribeMessages } from './index';
 
 // ─── date helpers ─────────────────────────────────────────────────────────────
 

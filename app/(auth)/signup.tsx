@@ -5,7 +5,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { signUpWithEmail } from '../../core/auth';
-import { signUpSchema, SignUpInput } from '../../core/auth/schema';
+import { SignUpInput,signUpSchema } from '../../core/auth/schema';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { Button } from '../../design-system/Button';
 import { TextField } from '../../design-system/TextField';

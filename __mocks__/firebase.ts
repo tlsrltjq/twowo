@@ -8,7 +8,7 @@
  */
 
 type DocRef = { path: string; id: string };
-type QueryRef = { __collection: string; __filters: Array<[string, string, any]> };
+type QueryRef = { __collection: string; __filters: [string, string, any][] };
 
 const store = new Map<string, Record<string, any>>();
 const listeners = new Map<string, Set<(snap: any) => void>>();
@@ -81,8 +81,8 @@ export const runTransaction = jest.fn(async (_db: any, updateFn: (tx: any) => Pr
 export const onSnapshot = jest.fn((ref: DocRef | QueryRef, cb: (snap: any) => void) => {
   if ('__collection' in ref) {
     // 쿼리 스냅샷
-    const orderByClauses: Array<{ field: string; dir: string }> = [];
-    const whereClauses:   Array<[string, string, any]>          = [];
+    const orderByClauses: { field: string; dir: string }[] = [];
+    const whereClauses:   [string, string, any][]          = [];
     for (const f of (ref.__filters as any[])) {
       if (f && '__orderBy' in f) orderByClauses.push({ field: f.__orderBy, dir: f.__dir ?? 'asc' });
       else if (Array.isArray(f)) whereClauses.push(f as [string, string, any]);
@@ -135,7 +135,7 @@ export const orderBy = (field: string, dir: 'asc' | 'desc' = 'asc') => ({ __orde
 export const query   = (ref: QueryRef, ...filters: any[]) => ({ ...ref, __filters: filters });
 
 export const writeBatch = jest.fn((_db: any) => {
-  const ops: Array<() => Promise<void>> = [];
+  const ops: (() => Promise<void>)[] = [];
   const batch = {
     set:    (ref: DocRef, data: any, opts?: any) => { ops.push(() => setDoc(ref, data, opts)); return batch; },
     update: (ref: DocRef, patch: any)            => { ops.push(() => updateDoc(ref, patch));   return batch; },

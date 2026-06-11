@@ -5,9 +5,9 @@ import { Controller, useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { signInWithEmail } from '../../core/auth';
+import { LoginInput,loginSchema } from '../../core/auth/schema';
 import { getUserCoupleId } from '../../core/couple';
 import { useAuthStore } from '../../core/stores/auth.store';
-import { loginSchema, LoginInput } from '../../core/auth/schema';
 import { Button } from '../../design-system/Button';
 import { TextField } from '../../design-system/TextField';
 import { Toast } from '../../design-system/Toast';

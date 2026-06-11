@@ -1,4 +1,6 @@
 import { router } from 'expo-router';
+import { doc, getDoc } from 'firebase/firestore';
+import { ChevronLeft } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import {
   Alert,
@@ -12,11 +14,9 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronLeft } from 'lucide-react-native';
-import { doc, getDoc } from 'firebase/firestore';
 
-import { subscribeCouple, Couple } from '../../core/couple';
 import { db } from '../../core/config/firebase';
+import { Couple,subscribeCouple } from '../../core/couple';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { Skeleton } from '../../design-system/Skeleton';
 import { colors, radius, space, typography } from '../../design-system/tokens';
@@ -68,7 +68,7 @@ export default function NightMessageScreen() {
       setMine(m);
       setPartner(p);
     });
-  }, [coupleId, user?.uid, partnerUid, activeType]);
+  }, [coupleId, user?.uid, partnerUid, activeType]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSend = async () => {
     if (!coupleId || !user || sending) return;

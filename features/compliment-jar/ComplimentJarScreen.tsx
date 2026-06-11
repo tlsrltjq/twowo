@@ -1,4 +1,6 @@
 import { router } from 'expo-router';
+import { doc, getDoc } from 'firebase/firestore';
+import { ChevronLeft } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import {
   Alert,
@@ -14,16 +16,14 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronLeft } from 'lucide-react-native';
-import { doc, getDoc } from 'firebase/firestore';
 
-import { subscribeCouple, Couple } from '../../core/couple';
 import { db } from '../../core/config/firebase';
+import { Couple,subscribeCouple } from '../../core/couple';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { EmptyState } from '../../design-system/EmptyState';
 import { Skeleton } from '../../design-system/Skeleton';
 import { black, colors, radius, space, typography } from '../../design-system/tokens';
-import { Compliment, addCompliment, subscribeCompliments } from './index';
+import { addCompliment, Compliment, subscribeCompliments } from './index';
 
 type ViewTab = 'received' | 'sent';
 

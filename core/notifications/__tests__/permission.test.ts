@@ -2,6 +2,10 @@
  * [BR-4] 알림 권한 거부 시 schedule/send 모두 no-op (크래시 없음)
  */
 
+import * as Notifications from 'expo-notifications';
+
+import { ensurePermissionAndToken } from '..';
+
 jest.mock('expo-notifications', () => ({
   setNotificationHandler:             jest.fn(),
   requestPermissionsAsync:            jest.fn(),
@@ -16,9 +20,6 @@ jest.mock('firebase/firestore', () => ({
   setDoc: jest.fn(),
 }));
 jest.mock('../../config/firebase', () => ({ db: {} }));
-
-import * as Notifications from 'expo-notifications';
-import { ensurePermissionAndToken } from '..';
 
 describe('[BR-4] 알림 권한 거부 시 no-op', () => {
   beforeEach(() => jest.clearAllMocks());

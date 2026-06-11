@@ -1,10 +1,9 @@
-import { resetMockDb, getMockDb } from '../../../__mocks__/firebase';
+import { getMockDb,resetMockDb } from '../../../__mocks__/firebase';
+import { addFirstMoment, deleteFirstMoment } from '../index';
 
 jest.mock('firebase/firestore', () => require('../../../__mocks__/firebase'));
 jest.mock('../../../core/config/firebase', () => ({ db: {} }));
 jest.mock('../../../core/utils/date', () => ({ getTodayKST: () => '2026-06-10' }));
-
-import { addFirstMoment, deleteFirstMoment } from '../index';
 
 beforeEach(() => resetMockDb());
 

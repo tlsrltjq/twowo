@@ -1,13 +1,14 @@
+import { deleteObject } from 'firebase/storage';
+
+import { getMockDb,resetMockDb, seedMockDb } from '../../../__mocks__/firebase';
+import { deleteEvent } from '../deleteEvent';
+
 jest.mock('firebase/firestore', () => require('../../../__mocks__/firebase'));
 jest.mock('firebase/storage', () => ({
   deleteObject: jest.fn().mockResolvedValue(undefined),
   ref: jest.fn((_storage: any, path: string) => path),
 }));
 jest.mock('../../config/firebase', () => ({ db: {}, storage: {} }));
-
-import { deleteObject } from 'firebase/storage';
-import { seedMockDb, resetMockDb, getMockDb } from '../../../__mocks__/firebase';
-import { deleteEvent } from '../deleteEvent';
 
 beforeEach(() => {
   resetMockDb();

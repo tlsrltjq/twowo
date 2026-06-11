@@ -3,6 +3,8 @@
  * [BR-D4] reconnectCouple — status:'active' + 메타 필드 제거
  */
 
+import { disconnectCouple, reconnectCouple } from './disconnect';
+
 const mockUpdateDoc = jest.fn();
 const mockDoc       = jest.fn((_, col, id) => ({ col, id }));
 const mockServerTs  = jest.fn(() => 'SERVER_TIMESTAMP');
@@ -13,8 +15,6 @@ jest.mock('firebase/firestore', () => ({
   serverTimestamp: () => mockServerTs(),
 }));
 jest.mock('../config/firebase', () => ({ db: {} }));
-
-import { disconnectCouple, reconnectCouple } from './disconnect';
 
 describe('[BR-D1] disconnectCouple', () => {
   beforeEach(() => jest.clearAllMocks());

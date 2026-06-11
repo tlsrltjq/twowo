@@ -1,4 +1,4 @@
-import { getTodayKST, nowKST, getDaysSince } from './date';
+import { getDaysSince,getTodayKST, nowKST } from './date';
 
 describe('getTodayKST', () => {
   const RealDate = global.Date;

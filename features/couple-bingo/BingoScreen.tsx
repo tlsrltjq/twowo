@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { ChevronLeft, RefreshCw } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
@@ -12,7 +13,6 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronLeft, RefreshCw } from 'lucide-react-native';
 
 import { useAuthStore } from '../../core/stores/auth.store';
 import { Spinner } from '../../design-system/Spinner';

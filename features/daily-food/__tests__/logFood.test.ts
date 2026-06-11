@@ -1,10 +1,9 @@
-import { resetMockDb, getMockDb } from '../../../__mocks__/firebase';
+import { getMockDb,resetMockDb } from '../../../__mocks__/firebase';
+import { deleteFood,logFood } from '../index';
 
 jest.mock('firebase/firestore', () => require('../../../__mocks__/firebase'));
 jest.mock('../../../core/config/firebase', () => ({ db: {} }));
 jest.mock('../../../core/utils/date', () => ({ getTodayKST: () => '2026-06-10' }));
-
-import { logFood, deleteFood } from '../index';
 
 beforeEach(() => resetMockDb());
 

@@ -1,4 +1,6 @@
 import { router } from 'expo-router';
+import { doc, getDoc } from 'firebase/firestore';
+import { ChevronLeft } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import {
   Alert,
@@ -14,17 +16,15 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronLeft } from 'lucide-react-native';
-import { doc, getDoc } from 'firebase/firestore';
 
-import { subscribeCouple, Couple } from '../../core/couple';
 import { db } from '../../core/config/firebase';
+import { Couple,subscribeCouple } from '../../core/couple';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { Skeleton } from '../../design-system/Skeleton';
 import { black, colors, radius, space, typography } from '../../design-system/tokens';
 import {
-  FoodLog, MealType, MEAL_LABEL, MEAL_EMOJI, MEAL_TYPES,
-  logFood, deleteFood, subscribeTodayFood, suggestMealType,
+deleteFood,   FoodLog,   logFood, MEAL_EMOJI, MEAL_LABEL, MEAL_TYPES,
+MealType, subscribeTodayFood, suggestMealType,
 } from './index';
 
 function formatDate(d: Date): string {

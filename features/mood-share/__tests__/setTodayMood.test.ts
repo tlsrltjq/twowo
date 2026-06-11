@@ -1,10 +1,10 @@
-jest.mock('firebase/firestore', () => require('../../../__mocks__/firebase'));
-jest.mock('../../../core/config/firebase', () => ({ db: {} }));
-
+import { resetMockDb,seedMockDb } from '../../../__mocks__/firebase';
 import * as dateUtils from '../../../core/utils/date';
-import { seedMockDb, resetMockDb } from '../../../__mocks__/firebase';
 import { setTodayMood } from '../index';
 import { MoodLockedError } from '../schema';
+
+jest.mock('firebase/firestore', () => require('../../../__mocks__/firebase'));
+jest.mock('../../../core/config/firebase', () => ({ db: {} }));
 
 const BASE_INPUT = {
   coupleId: 'couple1',

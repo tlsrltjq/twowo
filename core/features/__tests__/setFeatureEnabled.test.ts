@@ -1,8 +1,8 @@
+import { getMockDb,resetMockDb, seedMockDb } from '../../../__mocks__/firebase';
+import { setFeatureEnabled, subscribeFeatureSettings } from '../index';
+
 jest.mock('firebase/firestore', () => require('../../../__mocks__/firebase'));
 jest.mock('../../config/firebase', () => ({ db: {} }));
-
-import { setFeatureEnabled, subscribeFeatureSettings } from '../index';
-import { seedMockDb, resetMockDb, getMockDb } from '../../../__mocks__/firebase';
 
 beforeEach(() => resetMockDb());
 

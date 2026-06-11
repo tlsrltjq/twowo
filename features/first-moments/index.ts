@@ -3,12 +3,12 @@ import {
   collection,
   deleteDoc,
   doc,
+  DocumentData,
   onSnapshot,
   orderBy,
   query,
   serverTimestamp,
   where,
-  DocumentData,
 } from 'firebase/firestore' ;
 
 import { db } from '../../core/config/firebase';

@@ -46,6 +46,6 @@ export const db      = getFirestore(app);
 export const storage = getStorage(app);
 
 if (__DEV__) {
-  console.log('[firebase] initialized project:', process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID);
-  console.log('[firebase] auth type:', auth?.constructor?.name ?? typeof auth);
+  console.warn('[firebase] initialized project:', process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID);
+  console.warn('[firebase] auth type:', auth?.constructor?.name ?? typeof auth);
 }

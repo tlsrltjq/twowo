@@ -4,12 +4,12 @@ import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, Te
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { signOut } from '../../core/auth';
-import { subscribeCouple, disconnectCouple } from '../../core/couple';
 import { db } from '../../core/config/firebase';
+import type { Couple } from '../../core/couple';
+import { disconnectCouple,subscribeCouple } from '../../core/couple';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { getDaysSince } from '../../core/utils/date';
 import { colors, space, typography } from '../../design-system/tokens';
-import type { Couple } from '../../core/couple';
 
 function timestampToKST(ts: { seconds: number } | Date | null | undefined): string {
   if (!ts) return '';

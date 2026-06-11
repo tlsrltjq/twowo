@@ -1,9 +1,9 @@
+import { joinByCode } from './index';
+import { JoinError } from './types';
 jest.mock('firebase/firestore', () => require('../../__mocks__/firebase'));
 jest.mock('../config/firebase', () => ({ db: {} }));
 
 const { resetMockDb, seedMockDb, getMockDb } = require('../../__mocks__/firebase');
-import { joinByCode } from './index';
-import { JoinError } from './types';
 
 const FUTURE = { toMillis: () => Date.now() + 86_400_000 };
 const PAST   = { toMillis: () => Date.now() - 1_000 };

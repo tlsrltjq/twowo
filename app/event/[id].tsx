@@ -16,16 +16,16 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Spinner } from '../../design-system/Spinner';
-import { Toast } from '../../design-system/Toast';
-import { black, colors, radius, space, typography } from '../../design-system/tokens';
 import { deleteEvent } from '../../core/calendar';
 import { CalendarEvent } from '../../core/calendar/schema';
 import { db } from '../../core/config/firebase';
 import { useFirestoreDoc } from '../../core/firestore-hooks';
-import { useEventPhotos, EventPhoto } from '../../core/memory';
+import { EventPhoto,useEventPhotos } from '../../core/memory';
 import { guardPhotoLimit, uploadPhoto } from '../../core/storage';
 import { useAuthStore } from '../../core/stores/auth.store';
+import { Spinner } from '../../design-system/Spinner';
+import { Toast } from '../../design-system/Toast';
+import { black, colors, radius, space, typography } from '../../design-system/tokens';
 
 const SCREEN_W = Dimensions.get('window').width;
 const SCREEN_H = Dimensions.get('window').height;

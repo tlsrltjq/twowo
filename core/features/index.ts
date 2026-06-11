@@ -1,8 +1,8 @@
 import { collection, doc, onSnapshot, query, serverTimestamp, setDoc, where } from 'firebase/firestore';
 
-import { db } from '../config/firebase';
 import registry from '../../feature-registry/registry';
 import type { AppFeature } from '../../feature-registry/types';
+import { db } from '../config/firebase';
 
 export function getRegistry(): AppFeature[] {
   return registry;

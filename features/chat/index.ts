@@ -1,3 +1,4 @@
+import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import {
   addDoc,
   collection,
@@ -12,7 +13,6 @@ import {
   where,
 } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 
 import { db, storage } from '../../core/config/firebase';
 import type { Message } from './types';

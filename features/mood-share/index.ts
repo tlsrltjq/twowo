@@ -1,6 +1,7 @@
 import {
   collection,
   doc,
+  DocumentData,
   getDoc,
   getDocs,
   onSnapshot,
@@ -9,7 +10,6 @@ import {
   runTransaction,
   serverTimestamp,
   where,
-  DocumentData,
 } from 'firebase/firestore' ;
 
 import { db } from '../../core/config/firebase';

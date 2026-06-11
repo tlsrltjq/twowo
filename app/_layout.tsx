@@ -7,6 +7,10 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { subscribeAuthState } from '../core/auth';
+import { ensureUserDoc, getUserCoupleId, subscribeCouple } from '../core/couple';
+import { ensurePermissionAndToken } from '../core/notifications';
+import { useAuthStore } from '../core/stores/auth.store';
 import { OfflineBanner } from '../design-system/OfflineBanner';
 
 const routingInstrumentation = Sentry.reactNavigationIntegration();
@@ -18,11 +22,6 @@ Sentry.init({
   integrations: [routingInstrumentation],
   tracesSampleRate: 0.2,
 });
-
-import { subscribeAuthState } from '../core/auth';
-import { ensureUserDoc, getUserCoupleId, subscribeCouple } from '../core/couple';
-import { ensurePermissionAndToken } from '../core/notifications';
-import { useAuthStore } from '../core/stores/auth.store';
 
 SplashScreen.preventAutoHideAsync();
 
