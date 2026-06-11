@@ -38,8 +38,16 @@
 | 둘다좋아(투표) | date-decision | ✅ | ⬜ 매핑 미완 | experimental |
 | 데이트 빙고 | couple-bingo | ✅ | ⬜ 매핑 미완 | experimental |
 
+## UI 다듬기 완료 (stage-7)
+- ✅ 키보드 밀림 — couple-connect/settings KAV 추가, 모달 3종 KAV 추가
+- ✅ 에러 핸들링 — lab.tsx toggle 실패 Alert 추가
+- ✅ SafeAreaView — couple-connect 추가
+- ✅ ScrollView 하단 여백 — calendar/home/date-decision paddingBottom 추가 (FAB 가림 방지)
+- ✅ 로딩 분기 — home 일정 섹션 null→Skeleton
+- ✅ accessibilityLabel — 메뉴/뒤로가기/삭제 아이콘 버튼 5곳
+
 ## 이전 세션에서 멈춘 곳
-ESLint v10 마이그레이션 완료 + 릴리스 게이트 대응 작업 완료.
+UI 다듬기 완료. 다음: 앱 아이콘/스플래시 or husky+lint-staged.
 - `eslint.config.mjs` 신설 (flat config, react 필터, react-hooks 수동 등록)
 - HEX 직접 사용 0건 (black 토큰 추가, status.danger+'20' 패턴)
 - `no-explicit-any` 0건 (catch unknown, DocumentData/QueryDocumentSnapshot 교체)
