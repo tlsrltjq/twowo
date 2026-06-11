@@ -54,11 +54,11 @@
 - ✅ P4: calendar.md 매핑 테이블 이미 완성 상태
 - ✅ P5: 루트 PNG 10개 git 추적 제거 + .gitignore 추가
 
-## 이전 세션에서 멈춘 곳 (2026-06-11 2차)
-- 실험실 품질 감사 + 1차·2차 수정 완료
-- 1차: lab.tsx FEATURE_ROUTES 누락 수정 / onSnapshot 에러 콜백 8종 / date-decision·couple-bingo 단위 테스트 15종
-- 2차: GratitudeScreen KAV / 7개 화면 testID / Maestro E2E 7종 / night-message 스펙 서명 수정
-- 다음: git push 후 시뮬레이터에서 Maestro E2E 확인 (7종) or 추가 기능 구현
+## 이전 세션에서 멈춘 곳 (2026-06-11 3차)
+- Maestro E2E 9종 전부 통과
+  - test_daily_gratitude / test_our_playlist / test_night_message / test_compliment_jar / test_daily_food / test_first_moments / test_gift_wishlist / test_date_decision / test_couple_bingo
+  - first_moments 사이드바 레이블 수정 ("우리가 처음 한 것들" → "처음 한 것들")
+- 다음: TestFlight 제출 (7단계) 또는 추가 기능 구현
 
 ## 진행 중인 작업 (시뮬레이터 전용)
 > **보류 항목 (비용 발생)**: Apple Developer Program · Firebase Storage Blaze · TestFlight 등. 언급하지 않음.
