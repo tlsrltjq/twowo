@@ -28,14 +28,11 @@ appId: host.exp.Exponent
     id: "tab-night"
 - takeScreenshot: "night_message_night_tab"
 
-# 입력창에 메시지 작성
+# 입력창에 메시지 작성 후 바로 보내기 (keyboardShouldPersistTaps="handled")
 - tapOn:
     id: "input-night-message"
 - inputText: "오늘도 수고했어 잘 자"
-- hideKeyboard
 - waitForAnimationToEnd
-
-# 보내기
 - tapOn:
     id: "btn-send-message"
 - waitForAnimationToEnd

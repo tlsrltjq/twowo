@@ -23,12 +23,18 @@ appId: host.exp.Exponent
     timeout: 15000
 - takeScreenshot: "gratitude_screen_empty"
 
+# 이미 오늘 항목이 있으면 "수정" 탭하여 편집 모드 진입
+- runFlow:
+    when:
+      visible: "수정"
+    commands:
+      - tapOn: "수정"
+      - waitForAnimationToEnd
+
 # 고마움 입력
 - tapOn:
     id: "input-gratitude"
 - inputText: "오늘 맛있는 거 사줘서 너무 고마워"
-- waitForAnimationToEnd
-- hideKeyboard
 - waitForAnimationToEnd
 - tapOn:
     id: "btn-gratitude-save"
