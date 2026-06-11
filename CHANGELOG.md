@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-06-11 | 두 계정 E2E 플로우 | test: 탭바 testID 방식 전환 + 한국어 IME 자동완성 차단(날짜 필드 포커스 이동) + netinfo isInternetReachable 오보 수정. Maestro 전체 9종 PASS.
 ## 2026-06-11 | 실험실 2차 품질 | feat: Maestro E2E 7종(night-message/compliment-jar/daily-food/first-moments/gift-wishlist/date-decision/couple-bingo) + 7개 화면 testID + GratitudeScreen KAV + night-message 스펙 서명 수정.
 ## 2026-06-11 | 실험실 1차 품질 | fix: lab.tsx FEATURE_ROUTES 2개 누락(daily-gratitude/our-playlist) + onSnapshot 에러 콜백 8개 기능 + date-decision/couple-bingo 단위 테스트 15종 추가 + mock getDocs empty 수정.
 ## 2026-06-11 | E2E 테스트 + Firestore 배포 | fix: onSnapshot 에러 핸들러, sidebar Lucide 아이콘, rules+indexes 배포. Maestro 3종(sidebar_icons/daily_gratitude/our_playlist) PASS.

@@ -59,13 +59,14 @@
 - ✅ P4: calendar.md 매핑 테이블 이미 완성 상태
 - ✅ P5: 루트 PNG 10개 git 추적 제거 + .gitignore 추가
 
-## 이전 세션에서 멈춘 곳 (2026-06-11 4차)
-- stage-7 체크리스트 소스코드 대조 → 대부분 이미 완료 확인 및 문서 갱신
-- OfflineBanner 이미 구현 완료 확인 (design-system/OfflineBanner.tsx)
-- bingo/vote BR↔테스트 매핑 완성 (신규 테스트 5종 + 기존 보완, 40개 전부 green)
-  - couple-bingo: checkLines.test.ts, schema.test.ts, toggleCell.test.ts 보완, BR-8 50자 검증 추가
-  - date-decision: subscribeCandidates.test.ts, schema.test.ts, removeCandidate.test.ts, castVote.test.ts 보완
-- 다음: TestFlight 제출 (Apple Developer Program 필요) 또는 추가 기능 구현
+## 이전 세션에서 멈춘 곳 (2026-06-11 5차)
+- bingo/vote BR↔테스트 매핑 완성 (신규 테스트 5종 + 기존 보완)
+- OfflineBanner isInternetReachable 오보 수정 (isConnected → isInternetReachable)
+- 두 계정 전체 플로우 Maestro E2E 9종 전부 통과
+  - 탭바 testID 방식 전환 (iOS 탭바 텍스트 접근 불가 우회)
+  - 한국어 IME 자동완성 차단: 날짜 필드 포커스 이동(testID="input-event-date") 추가
+  - mood_save_a / mood_sync_b / calendar_a / calendar_sync_b / chat_b / chat_sync_a 전부 PASS
+- 다음: 추가 기능 구현 또는 TestFlight 제출 (Apple Developer Program 필요)
 
 ## 진행 중인 작업 (시뮬레이터 전용)
 > **보류 항목 (비용 발생)**: Apple Developer Program · Firebase Storage Blaze · TestFlight 등. 언급하지 않음.
