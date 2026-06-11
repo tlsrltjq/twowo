@@ -60,3 +60,4 @@
 ## 2026-06-08 | 하네스 | chore(harness): 폴더명 plan→twowo, 문서 아카이브 분리(docs/_archive/), 린트 보안 규칙 3종, GitHub 연결(main 브랜치), .env Firebase 설정 완료
 ## 2026-06-08 | 0단계 | feat(init): Expo SDK 56 프로젝트 초기화 — 폴더 구조/feature-registry/design-system/tokens/컴포넌트 7종/firestore-hooks/Firebase 초기화/date 유틸 + 단위 테스트 5종 green
 ## 2026-06-11 | 테스트 | test(e2e): 실험실 기능 Maestro E2E 9종 전부 통과 — 사이드바 레이블 수정, hideKeyboard 제거, transparent Modal 스크린샷 우회, runFlow 조건부 분기(멱등성)
+## 2026-06-11 | 테스트 | test(bingo/vote): BR↔테스트 매핑 완성 — checkLines/schema/subscribeCandidates/removeCandidate 신규 + toggleCell/castVote 보완, 40개 green. BR-8 50자 검증 API 추가

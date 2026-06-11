@@ -59,11 +59,13 @@
 - ✅ P4: calendar.md 매핑 테이블 이미 완성 상태
 - ✅ P5: 루트 PNG 10개 git 추적 제거 + .gitignore 추가
 
-## 이전 세션에서 멈춘 곳 (2026-06-11 3차)
-- Maestro E2E 9종 전부 통과
-  - test_daily_gratitude / test_our_playlist / test_night_message / test_compliment_jar / test_daily_food / test_first_moments / test_gift_wishlist / test_date_decision / test_couple_bingo
-  - first_moments 사이드바 레이블 수정 ("우리가 처음 한 것들" → "처음 한 것들")
-- 다음: TestFlight 제출 (7단계) 또는 추가 기능 구현
+## 이전 세션에서 멈춘 곳 (2026-06-11 4차)
+- stage-7 체크리스트 소스코드 대조 → 대부분 이미 완료 확인 및 문서 갱신
+- OfflineBanner 이미 구현 완료 확인 (design-system/OfflineBanner.tsx)
+- bingo/vote BR↔테스트 매핑 완성 (신규 테스트 5종 + 기존 보완, 40개 전부 green)
+  - couple-bingo: checkLines.test.ts, schema.test.ts, toggleCell.test.ts 보완, BR-8 50자 검증 추가
+  - date-decision: subscribeCandidates.test.ts, schema.test.ts, removeCandidate.test.ts, castVote.test.ts 보완
+- 다음: TestFlight 제출 (Apple Developer Program 필요) 또는 추가 기능 구현
 
 ## 진행 중인 작업 (시뮬레이터 전용)
 > **보류 항목 (비용 발생)**: Apple Developer Program · Firebase Storage Blaze · TestFlight 등. 언급하지 않음.
