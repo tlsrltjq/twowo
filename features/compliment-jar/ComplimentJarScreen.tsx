@@ -3,7 +3,9 @@ import { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   FlatList,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -150,6 +152,7 @@ export default function ComplimentJarScreen() {
 
       {/* 작성 모달 */}
       <Modal visible={modalVisible} transparent animationType="fade" onRequestClose={() => setModal(false)}>
+        <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <Pressable style={styles.backdrop} onPress={() => setModal(false)}>
           <Pressable style={styles.modalCard} onPress={() => {}}>
             <Text style={styles.modalTitle}>칭찬 저금하기 🫙</Text>
@@ -181,6 +184,7 @@ export default function ComplimentJarScreen() {
             </View>
           </Pressable>
         </Pressable>
+        </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
   );
@@ -197,6 +201,7 @@ function ComplimentCard({ compliment }: { compliment: Compliment }) {
 
 const styles = StyleSheet.create({
   safeArea:    { flex: 1, backgroundColor: colors.bg.base },
+  flex:        { flex: 1 },
 
   header:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space[4], paddingVertical: space[4], borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
   backBtn:     { padding: space[1] },

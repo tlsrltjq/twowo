@@ -2,7 +2,8 @@ import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { doc, DocumentReference } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
-import { ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { db } from '../../core/config/firebase';
 import { createInvite, joinByCode } from '../../core/couple';
@@ -105,7 +106,8 @@ export default function CoupleConnectScreen() {
   };
 
   return (
-    <View style={styles.flex}>
+    <SafeAreaView style={styles.flex} edges={['top', 'bottom']}>
+    <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
         <Text style={styles.title}>커플 연결</Text>
         <Text style={styles.subtitle}>코드를 공유하거나 입력해서 연결하세요</Text>
@@ -167,12 +169,13 @@ export default function CoupleConnectScreen() {
         visible={toast.visible}
         onHide={() => setToast(t => ({ ...t, visible: false }))}
       />
-    </View>
+    </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  flex:        { flex: 1, backgroundColor: colors.bg.base },
+  flex:        { flex: 1, backgroundColor: colors.bg.base, },
   container:   { flexGrow: 1, padding: space[6], gap: space[6] },
   title:       { ...typography.title1, color: colors.text.primary, textAlign: 'center', marginTop: space[8] },
   subtitle:    { ...typography.body, color: colors.text.secondary, textAlign: 'center' },

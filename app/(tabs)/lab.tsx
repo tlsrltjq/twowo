@@ -1,6 +1,6 @@
 import { FlaskConical } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Href, router } from 'expo-router';
 
@@ -35,6 +35,8 @@ export default function LabScreen() {
     setToggling(featureId);
     try {
       await setFeatureEnabled(coupleId, featureId, value);
+    } catch {
+      Alert.alert('오류', '기능 설정을 저장하지 못했어요. 다시 시도해주세요');
     } finally {
       setToggling(null);
     }
