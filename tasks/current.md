@@ -39,7 +39,13 @@
 | 데이트 빙고 | couple-bingo | ✅ | ⬜ 매핑 미완 | experimental |
 
 ## 이전 세션에서 멈춘 곳
-신규 기능 5종 UX 개선 완료 (파트너 이름 표시, FlatList→ScrollView, 롱프레스 힌트).
+ESLint v10 마이그레이션 완료 + 릴리스 게이트 대응 작업 완료.
+- `eslint.config.mjs` 신설 (flat config, react 필터, react-hooks 수동 등록)
+- HEX 직접 사용 0건 (black 토큰 추가, status.danger+'20' 패턴)
+- `no-explicit-any` 0건 (catch unknown, DocumentData/QueryDocumentSnapshot 교체)
+- `onSnapshot` features/*/index.ts 예외 처리
+- Maestro E2E 8종 추가 (05~12.yaml, 스크린샷 포함)
+- `npx tsc --noEmit` 0 errors, `npm run lint` 0 errors / 107 warnings (정렬·console·exhaustive-deps)
 
 ## 진행 중인 작업 (시뮬레이터 전용)
 > **보류 항목 (비용 발생)**: Apple Developer Program · Firebase Storage Blaze · TestFlight 등. 언급하지 않음.
