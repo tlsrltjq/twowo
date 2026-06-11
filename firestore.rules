@@ -282,6 +282,20 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // ---------- playlistSongs (우리의 플레이리스트) ----------
+    match /playlistSongs/{docId} {
+      allow read:   if canReadCoupleDoc();
+      allow create: if isMyCouple(request.resource.data.coupleId)
+                    && request.resource.data.addedBy == request.auth.uid
+                    && request.resource.data.title.size() >= 1
+                    && request.resource.data.title.size() <= 80
+                    && request.resource.data.artist.size() >= 1
+                    && request.resource.data.artist.size() <= 60;
+      allow update: if false;
+      allow delete: if isMyCouple(resource.data.coupleId)
+                    && resource.data.addedBy == request.auth.uid;
+    }
+
     // ---------- 기본 차단 ----------
     match /{document=**} {
       allow read, write: if false;

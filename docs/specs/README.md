@@ -23,7 +23,8 @@
 | 신규 오늘 뭐 먹었어 | [`daily-food.md`](./daily-food.md) | foodLogs |
 | 신규 처음 한 것들 | [`first-moments.md`](./first-moments.md) | firstMoments |
 | 신규 선물 위시리스트 | [`gift-wishlist.md`](./gift-wishlist.md) | wishlistItems |
-| 신규 오늘의 고마움 *(미구현)* | [`daily-gratitude.md`](./daily-gratitude.md) | gratitudeEntries |
+| 신규 오늘의 고마움 | [`daily-gratitude.md`](./daily-gratitude.md) | gratitudeEntries |
+| 신규 우리의 플레이리스트 | [`our-playlist.md`](./our-playlist.md) | playlistSongs |
 
 ## 공통 형식 (모든 스펙 파일)
 - **개요** — 한 문단

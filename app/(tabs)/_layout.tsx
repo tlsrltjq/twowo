@@ -34,7 +34,8 @@ const ALL_SIDEBAR_ITEMS: (SidebarItem & { featureId: string })[] = [
   { label: '오늘 뭐 먹었어', emoji: '🍽️', route: '/(features)/daily-food',      featureId: 'daily-food' },
   { label: '처음 한 것들',  emoji: '✨',  route: '/(features)/first-moments',  featureId: 'first-moments' },
   { label: '선물 위시리스트', emoji: '🎁', route: '/(features)/gift-wishlist',    featureId: 'gift-wishlist' },
-  { label: '오늘의 고마움',   emoji: '🙏', route: '/(features)/daily-gratitude', featureId: 'daily-gratitude' },
+  { label: '오늘의 고마움',     emoji: '🙏', route: '/(features)/daily-gratitude', featureId: 'daily-gratitude' },
+  { label: '우리의 플레이리스트', emoji: '🎵', route: '/(features)/our-playlist',   featureId: 'our-playlist' },
 ];
 
 export default function TabsLayout() {

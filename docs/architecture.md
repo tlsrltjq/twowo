@@ -175,7 +175,8 @@ createdAt: Timestamp
 | 오늘 뭐 먹었어     | `daily-food`       | 사이드바 → `(features)/daily-food` | foodLogs                          | experimental |
 | 우리가 처음 한 것들 | `first-moments`   | 사이드바 → `(features)/first-moments` | firstMoments                   | experimental |
 | 선물 위시리스트    | `gift-wishlist`    | 사이드바 → `(features)/gift-wishlist` | wishlistItems                  | experimental |
-| 오늘의 고마움      | `daily-gratitude`  | 사이드바 → `(features)/daily-gratitude` | gratitudeEntries *(미구현)*  | experimental |
+| 오늘의 고마움      | `daily-gratitude`  | 사이드바 → `(features)/daily-gratitude` | gratitudeEntries             | experimental |
+| 우리의 플레이리스트 | `our-playlist`    | 사이드바 → `(features)/our-playlist`   | playlistSongs                | experimental |
 
 > 라우트명이 폴더명과 다른 경우: `couple-bingo` → `bingo.tsx`, `date-decision` → `vote.tsx` (Expo Router 경로 제약으로 단축).
 
@@ -195,7 +196,8 @@ createdAt: Timestamp
 | 오늘 뭐 먹었어 | foodLogs | coupleId, userId, mealType, name, date |
 | 우리가 처음 한 것들 | firstMoments | coupleId, addedBy, title, date, memo |
 | 선물 위시리스트 | wishlistItems | coupleId, addedBy, name, url?, received |
-| 오늘의 고마움 *(미구현)* | gratitudeEntries | coupleId, userId, date, message |
+| 오늘의 고마움 | gratitudeEntries | coupleId, userId, date, message |
+| 우리의 플레이리스트 | playlistSongs | coupleId, addedBy, title, artist, period?, memo?, createdAt |
 
 ## 메인 탭 구조
 | 탭 | 화면 | 주요 기능 |

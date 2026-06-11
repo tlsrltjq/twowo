@@ -55,6 +55,12 @@ const registry: AppFeature[] = [
     description: '매일 서로에게 고마운 점을 한 마디로 전해요',
     status:      'experimental',
   },
+  {
+    id:          'our-playlist',
+    name:        '우리의 플레이리스트',
+    description: '그때 자주 듣던 노래들을 기억과 함께 기록해요',
+    status:      'experimental',
+  },
 ];
 
 export default registry;
