@@ -1,7 +1,8 @@
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { doc, DocumentReference } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
+import LottieView from 'lottie-react-native';
+import { useEffect, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -33,6 +34,8 @@ export default function CoupleConnectScreen() {
   const [inputError, setInputError] = useState<string | null>(null);
   const [createLoading, setCreateLoading] = useState(false);
   const [joinLoading, setJoinLoading] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const confettiRef = useRef<LottieView>(null);
   const [toast, setToast] = useState<{ message: string; type: 'error' | 'success'; visible: boolean }>({
     message: '', type: 'error', visible: false,
   });
@@ -43,13 +46,18 @@ export default function CoupleConnectScreen() {
     : null;
   const { data: coupleData } = useFirestoreDoc<Couple>(coupleRef);
 
+  const handleSuccess = (coupleId: string) => {
+    setCoupleId(coupleId);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    setShowConfetti(true);
+    setTimeout(() => router.replace('/(tabs)'), 2000);
+  };
+
   useEffect(() => {
     if (coupleData?.memberIds?.length === 2) {
-      setCoupleId(createdCoupleId!);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      router.replace('/(tabs)');
+      handleSuccess(createdCoupleId!);
     }
-  }, [coupleData, createdCoupleId, setCoupleId, router]);
+  }, [coupleData, createdCoupleId]);
 
   // Guard: signup.tsx sets user in store before navigating here, but defend against any race
   if (!user) return null;
@@ -84,9 +92,7 @@ export default function CoupleConnectScreen() {
     setJoinLoading(true);
     try {
       const { coupleId } = await joinByCode(uid, code);
-      setCoupleId(coupleId);
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      router.replace('/(tabs)');
+      handleSuccess(coupleId);
     } catch (e) {
       if (e instanceof JoinError) {
         const msgs: Record<string, string> = {
@@ -170,6 +176,19 @@ export default function CoupleConnectScreen() {
         onHide={() => setToast(t => ({ ...t, visible: false }))}
       />
     </KeyboardAvoidingView>
+
+    {showConfetti && (
+      <View style={styles.confettiOverlay} pointerEvents="none">
+        <Text style={styles.confettiText}>연결됐어요! 🎉</Text>
+        <LottieView
+          ref={confettiRef}
+          source={require('../../assets/lottie/confetti.json')}
+          autoPlay
+          loop={false}
+          style={styles.confettiAnim}
+        />
+      </View>
+    )}
     </SafeAreaView>
   );
 }
@@ -194,4 +213,21 @@ const styles = StyleSheet.create({
   divider:     { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   dividerLine: { flex: 1, height: 1, backgroundColor: colors.border.subtle },
   dividerText: { ...typography.caption, color: colors.text.muted },
+  confettiOverlay: {
+    ...StyleSheet.absoluteFill,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.overlay,
+    zIndex: 100,
+  },
+  confettiText: {
+    ...typography.title1,
+    color: colors.text.inverse,
+    zIndex: 101,
+  },
+  confettiAnim: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+  },
 });
