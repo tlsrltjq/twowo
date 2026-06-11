@@ -126,11 +126,11 @@ await runTransaction(db, async (tx) => {
 ## BR ↔ 테스트 매핑
 | BR | 종류 | 위치 | 테스트 이름 |
 |----|------|------|-------------|
-| BR-1 | 단위 | features/couple-bingo/startBoard.test.ts | '[BR-1] 새 보드 시작 시 이전 보드 completed' |
-| BR-2 | 단위 | features/couple-bingo/schema.test.ts | '[BR-2] items.length === 25 고정' |
-| BR-3 | 단위 | features/couple-bingo/startBoard.test.ts | '[BR-3] 빈 셀 있으면 시작 거부' |
-| BR-4 | 통합 | __tests__/integration/bingo-toggle.test.ts | '[BR-4] 양쪽 누구나 체크/해제, checkedBy 갱신' |
-| BR-5 | 단위 | features/couple-bingo/checkLines.test.ts | '[BR-5] 12개 라인 인덱스(가로5/세로5/대각2) 정확' |
-| BR-6 | 단위 | features/couple-bingo/toggleCell.test.ts | '[BR-6] 25칸 완성 → status=completed' |
-| BR-7 | 컴포넌트 | features/couple-bingo/CelebrationModal.test.tsx | '[BR-7] 라인 완성 시 본인 햅틱 트리거' |
-| BR-8 | 단위 | features/couple-bingo/schema.test.ts | '[BR-8] 항목 텍스트 50자 초과 거부' |
+| BR-1 | 단위 | features/couple-bingo/__tests__/startBoard.test.ts | '[BR-B1] 기존 active 보드가 있으면 completed로 전환 후 새 보드 생성' |
+| BR-2 | 단위 | features/couple-bingo/__tests__/schema.test.ts | '[BR-2] items.length가 25가 아니면 시작 거부 (26개)', '[BR-2] items.length가 25가 아니면 시작 거부 (24개)' |
+| BR-3 | 단위 | features/couple-bingo/__tests__/startBoard.test.ts | '[BR-B3] 25개 미만이면 에러', '[BR-B3] 빈 항목(공백만) 포함 시 에러' |
+| BR-4 | 단위 | features/couple-bingo/__tests__/toggleCell.test.ts | '[BR-4] 체크 시 checkedBy에 uid와 시각이 기록된다', '[BR-4] 체크 해제 시 checkedBy에서 해당 항목이 제거된다' |
+| BR-5 | 단위 | features/couple-bingo/__tests__/checkLines.test.ts | '[BR-5] LINES 배열은 정확히 12개(가로5 + 세로5 + 대각2)', '[BR-5] 가로/세로/대각선 완성 감지' |
+| BR-6 | 단위 | features/couple-bingo/__tests__/toggleCell.test.ts | '[BR-6] 25칸 모두 체크 시 status가 completed로 전환된다' |
+| BR-7 | 단위 | features/couple-bingo/__tests__/toggleCell.test.ts | '[BR-7] 라인 완성 시 newLines 배열에 해당 라인 인덱스가 포함된다' (active 승격 시 햅틱 컴포넌트 테스트 추가) |
+| BR-8 | 단위 | features/couple-bingo/__tests__/schema.test.ts | '[BR-8] 항목 텍스트 51자 초과 거부', '[BR-8] 항목 텍스트 정확히 50자는 허용' |

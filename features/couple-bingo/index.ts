@@ -69,6 +69,7 @@ export function subscribeActiveBoard(
 export async function startBoard(coupleId: string, items: string[]): Promise<string> {
   if (items.length !== 25) throw new Error('items must be exactly 25');
   if (items.some(t => !t.trim())) throw new Error('items cannot be empty (BR-3)');
+  if (items.some(t => t.trim().length > 50)) throw new Error('items cannot exceed 50 chars (BR-8)');
 
   const activeQ = query(
     collection(db, 'bingoBoards'),

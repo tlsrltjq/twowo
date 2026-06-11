@@ -130,12 +130,12 @@ await runTransaction(db, async (tx) => {
 ## BR ↔ 테스트 매핑
 | BR | 종류 | 위치 | 테스트 이름 |
 |----|------|------|-------------|
-| BR-1 | 통합 | __tests__/integration/vote-candidates.test.ts | '[BR-1] 후보 추가/삭제 즉시 양쪽 반영' |
-| BR-2 | 단위 | features/date-decision/schema.test.ts | '[BR-2] votedBy 구조 검증' |
-| BR-3 | 통합 | __tests__/integration/vote-session.test.ts | '[BR-3] voteSession.choices 구조' |
-| BR-4 | 컴포넌트 | features/date-decision/VotePanel.test.tsx | '[BR-4] 양쪽 미완성 시 상대 choice 노출 X' |
-| BR-5 | 단위 | features/date-decision/castVote.test.ts | '[BR-5] 양쪽 채워지면 status=revealed 트랜잭션' |
-| BR-6 | 단위 | features/date-decision/startNewRound.test.ts | '[BR-6] 새 라운드 시 후보 유지' |
-| BR-7 | 통합 | __tests__/integration/vote-to-calendar.test.ts | '[BR-7] 매칭 성공 → general 이벤트 자동 생성' |
-| BR-8 | 단위 | features/date-decision/removeCandidate.test.ts | '[BR-8] 진행 중 라운드 후보 삭제 시 choices 무효화' |
-| BR-9 | 단위 | features/date-decision/castVote.test.ts | '[BR-9] 같은 후보 두 번 투표 시 마지막 유효' |
+| BR-1 | 단위 | features/date-decision/__tests__/subscribeCandidates.test.ts | '[BR-1] 후보 추가 후 구독 콜백에서 즉시 반영된다', '[BR-1] 다른 커플 후보는 콜백에 포함되지 않는다' |
+| BR-2 | 단위 | features/date-decision/__tests__/schema.test.ts | '[BR-2] choices는 { [uid]: candidateId } 구조로 저장된다' |
+| BR-3 | 단위 | features/date-decision/__tests__/schema.test.ts | '[BR-3] startNewRound이 생성하는 세션의 초기 choices는 빈 객체이다' |
+| BR-4 | 단위 | features/date-decision/__tests__/castVote.test.ts | '[BR-4] 한 명만 투표한 상태에서 상대 choices는 노출되지 않는다 (in_progress 유지)' |
+| BR-5 | 단위 | features/date-decision/__tests__/castVote.test.ts | '양쪽 투표 완료 시 status가 revealed로 전이한다' |
+| BR-6 | 단위 | features/date-decision/__tests__/castVote.test.ts | '[BR-6] 새 라운드 시작 시 dateCandidates는 그대로 유지된다' |
+| BR-7 | — | (active 승격 시 추가 — 캘린더 연계는 UI 레벨, 통합 테스트 필요) | — |
+| BR-8 | 단위 | features/date-decision/__tests__/removeCandidate.test.ts | '[BR-8] 후보 삭제 시 dateCandidates에서 제거된다' |
+| BR-9 | 단위 | features/date-decision/__tests__/castVote.test.ts | '[BR-9] 같은 사람이 재투표 시 마지막 후보가 유효하다' |
