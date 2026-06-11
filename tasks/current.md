@@ -22,7 +22,7 @@
 - [x] app.json 빌드 설정 (version/buildNumber/bundleIdentifier/scheme)
 - [x] eas.json preview 프로필 설정
 - [ ] 빈 상태 일러스트 이미지 (assets/images/empty-states/)
-- [ ] netinfo 오프라인 배너 UI 구현
+- [x] netinfo 오프라인 배너 UI 구현 — 이미 존재 (design-system/OfflineBanner.tsx)
 - [ ] EAS Build + TestFlight 제출 (Apple Developer Program 필요)
 
 ## 버그 수정 완료 (세션 중)

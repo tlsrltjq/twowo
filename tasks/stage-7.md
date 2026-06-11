@@ -51,7 +51,7 @@ Expo Go 없이 독립 앱으로 설치. 무료 Apple ID로 가능하지만 **7�
 ### 빌드/배포 보조
 - [x] husky + lint-staged 도입 — package.json + .husky/pre-commit 설정 완료
 - [ ] Sentry 도입 검토 (선택 사항 — 실 사용 후 필요 시 추가)
-- [ ] `@react-native-community/netinfo` 오프라인 배너 — 패키지 설치됨, UI 미구현
+- [x] `@react-native-community/netinfo` 오프라인 배너 — `design-system/OfflineBanner.tsx` + `_layout.tsx` 연결 완료
 
 ### EAS Build + TestFlight
 - [x] app.json: `name "둘다좋아"`, `version "1.0.0"`, `ios.buildNumber "1"`, `ios.bundleIdentifier "com.shingiseop.twowo"`
