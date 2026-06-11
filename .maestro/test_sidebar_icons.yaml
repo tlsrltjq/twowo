@@ -1,0 +1,61 @@
+appId: host.exp.Exponent
+---
+# 사이드바 Lucide 아이콘 + 신규 기능 2종 테스트
+# 전제: 로그인된 상태, daily-gratitude / our-playlist 실험실에서 ON
+
+# 1. 홈 화면 진입 확인
+- launchApp
+- tapOn:
+    text: "둘다좋아"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 90000
+
+# 2. 실험실 탭 → daily-gratitude / our-playlist ON
+- tapOn:
+    point: "83%,93%"   # 실험실 탭
+- waitForAnimationToEnd
+# 스크롤해서 아래 기능들 노출
+- swipe:
+    direction: UP
+    duration: 800
+- waitForAnimationToEnd
+- swipe:
+    direction: UP
+    duration: 800
+- waitForAnimationToEnd
+- runFlow:
+    when:
+      visible:
+        id: "switch-daily-gratitude"
+    commands:
+      - tapOn:
+          id: "switch-daily-gratitude"
+      - waitForAnimationToEnd
+- runFlow:
+    when:
+      visible:
+        id: "switch-our-playlist"
+    commands:
+      - tapOn:
+          id: "switch-our-playlist"
+      - waitForAnimationToEnd
+- takeScreenshot: "lab_features_on"
+
+# 3. 홈 탭으로 돌아와서 사이드바 열기
+- tapOn:
+    point: "10%,93%"   # 홈 탭
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 10000
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- takeScreenshot: "sidebar_lucide_icons"
+
+# 4. 사이드바에 기능 항목 텍스트 확인
+- assertVisible: "오늘의 고마움"
+- assertVisible: "우리의 플레이리스트"

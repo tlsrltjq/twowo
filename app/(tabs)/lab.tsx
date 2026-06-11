@@ -49,7 +49,7 @@ export default function LabScreen() {
         <Text style={styles.subtitle}>커플만의 기능을 골라서 켜보세요 — 한쪽이 켜면 양쪽에 반영돼요</Text>
       </View>
 
-      <ScrollView contentContainerStyle={styles.body}>
+      <ScrollView testID="scroll-lab" contentContainerStyle={styles.body}>
         {experimentalFeatures.length === 0 ? (
           <View style={styles.empty}>
             <FlaskConical size={40} color={colors.text.muted} strokeWidth={1.5} />

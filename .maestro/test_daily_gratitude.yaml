@@ -1,0 +1,38 @@
+appId: host.exp.Exponent
+---
+# daily-gratitude — 고마움 입력 + 저장 테스트
+# 전제: 사이드바에서 daily-gratitude ON
+
+- launchApp
+- tapOn:
+    text: "둘다좋아"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 90000
+
+# 사이드바 열기
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- tapOn: "오늘의 고마움"
+- extendedWaitUntil:
+    visible:
+      id: "screen-gratitude"
+    timeout: 15000
+- takeScreenshot: "gratitude_screen_empty"
+
+# 고마움 입력
+- tapOn:
+    id: "input-gratitude"
+- inputText: "오늘 맛있는 거 사줘서 너무 고마워"
+- waitForAnimationToEnd
+- hideKeyboard
+- waitForAnimationToEnd
+- tapOn:
+    id: "btn-gratitude-save"
+- extendedWaitUntil:
+    visible: "수정"
+    timeout: 30000
+- takeScreenshot: "gratitude_saved"

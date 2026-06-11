@@ -85,9 +85,11 @@ export function subscribePartnerGratitudeToday(
 ): () => void {
   const today = getTodayKST();
   const ref   = doc(db, 'gratitudeEntries', docId(coupleId, partnerUid, today));
-  return onSnapshot(ref, (snap) => {
-    cb(snap.exists() ? fromFirestore(snap.id, snap.data() as DocumentData) : null);
-  });
+  return onSnapshot(
+    ref,
+    (snap) => { cb(snap.exists() ? fromFirestore(snap.id, snap.data() as DocumentData) : null); },
+    () => { cb(null); },
+  );
 }
 
 // BR-5: 최근 7일 고마움 조회

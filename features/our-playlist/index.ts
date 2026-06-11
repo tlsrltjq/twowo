@@ -65,9 +65,11 @@ export function subscribePlaylist(
     where('coupleId', '==', coupleId),
     orderBy('createdAt', 'desc'),
   );
-  return onSnapshot(q, (snap) => {
-    cb(snap.docs.map(d => fromFirestore(d.id, d.data() as DocumentData)));
-  });
+  return onSnapshot(
+    q,
+    (snap) => { cb(snap.docs.map(d => fromFirestore(d.id, d.data() as DocumentData))); },
+    (_err) => { cb([]); }, // 인덱스 미준비 / 권한 오류 시 빈 배열로 fallback — loading 해제
+  );
 }
 
 export type { PlaylistSong, PlaylistSongInput } from './schema';

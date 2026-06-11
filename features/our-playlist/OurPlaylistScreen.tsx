@@ -106,7 +106,7 @@ export default function OurPlaylistScreen() {
         <Text style={styles.screenTitle}>우리의 플레이리스트</Text>
 
         {loading ? (
-          <View style={styles.skeletonWrap}>
+          <View testID="playlist-loading" style={styles.skeletonWrap}>
             <Skeleton height={72} />
             <Skeleton height={72} />
             <Skeleton height={72} />
@@ -117,7 +117,7 @@ export default function OurPlaylistScreen() {
             description="우리 노래를 추가해보세요 🎵"
           />
         ) : (
-          <View style={styles.list}>
+          <View testID="playlist-list" style={styles.list}>
             {songs.map(song => (
               <TouchableOpacity
                 key={song.id}

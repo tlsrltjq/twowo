@@ -1,0 +1,64 @@
+appId: host.exp.Exponent
+---
+# our-playlist — 노래 추가 테스트
+# 전제: 사이드바에서 our-playlist ON
+
+- launchApp
+- tapOn:
+    text: "둘다좋아"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 90000
+
+# 사이드바 열기
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- tapOn: "우리의 플레이리스트"
+- extendedWaitUntil:
+    visible:
+      id: "screen-our-playlist"
+    timeout: 15000
+# 로딩 완료 대기 (playlist-loading 사라질 때까지)
+- extendedWaitUntil:
+    notVisible:
+      id: "playlist-loading"
+    timeout: 30000
+- takeScreenshot: "playlist_screen_empty"
+
+# FAB 탭 → 모달 열기
+- tapOn:
+    id: "fab-add-song"
+- extendedWaitUntil:
+    visible:
+      id: "input-song-title"
+    timeout: 10000
+
+# 노래 입력
+- tapOn:
+    id: "input-song-title"
+- inputText: "봄날"
+- tapOn:
+    id: "input-song-artist"
+- inputText: "BTS"
+- tapOn:
+    id: "input-song-period"
+- inputText: "2022 겨울"
+- tapOn:
+    id: "input-song-memo"
+- inputText: "드라이브하면서 같이 들었던 노래"
+- takeScreenshot: "playlist_add_modal"
+
+# 저장
+- hideKeyboard
+- waitForAnimationToEnd
+- tapOn:
+    id: "btn-song-add"
+- waitForAnimationToEnd
+- extendedWaitUntil:
+    visible:
+      id: "playlist-list"
+    timeout: 30000
+- takeScreenshot: "playlist_song_added"
