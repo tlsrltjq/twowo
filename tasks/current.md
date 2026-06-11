@@ -47,13 +47,10 @@
 - ✅ accessibilityLabel — 메뉴/뒤로가기/삭제 아이콘 버튼 5곳
 
 ## 이전 세션에서 멈춘 곳
-UI 다듬기 완료. 다음: 앱 아이콘/스플래시 or husky+lint-staged.
-- `eslint.config.mjs` 신설 (flat config, react 필터, react-hooks 수동 등록)
-- HEX 직접 사용 0건 (black 토큰 추가, status.danger+'20' 패턴)
-- `no-explicit-any` 0건 (catch unknown, DocumentData/QueryDocumentSnapshot 교체)
-- `onSnapshot` features/*/index.ts 예외 처리
-- Maestro E2E 8종 추가 (05~12.yaml, 스크린샷 포함)
-- `npx tsc --noEmit` 0 errors, `npm run lint` 0 errors / 107 warnings (정렬·console·exhaustive-deps)
+캘린더 운동/데이트/사진 뷰 개선 완료. 다음: 앱 아이콘/스플래시 스크린.
+- 운동/데이트 탭: TypeStatsBar(전체 N회·이번 달 N회) + 월별 SectionList 그룹핑
+- 사진 탭: general 구독 추가 → 전체 기간 사진 이벤트 통합, 타입별 컬러 카드(3열 그리드), 통계 바
+- Maestro로 4개 탭 스크린샷 검증 완료 (달력/운동/데이트/사진 모두 정상)
 
 ## 진행 중인 작업 (시뮬레이터 전용)
 > **보류 항목 (비용 발생)**: Apple Developer Program · Firebase Storage Blaze · TestFlight 등. 언급하지 않음.

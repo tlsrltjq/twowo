@@ -132,3 +132,4 @@ const styles = StyleSheet.create({
   },
   openBtnText: { ...typography.caption, color: colors.text.inverse, fontFamily: 'Pretendard-SemiBold' },
 });
+

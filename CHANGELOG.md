@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-06-11 | 캘린더 뷰 개선 | feat(calendar): 운동/데이트/사진 탭 — TypeStatsBar(통계 바) + 월별 그룹핑(SectionList/ScrollView) + 사진 타입별 카드 디자인. general 구독 추가로 전체 기간 사진 표시(BR-10). husky+lint-staged 확인.
 ## 2026-06-11 | 화면 UX 개선 | fix(features): 5개 실험실 기능 화면 — DailyFood FlatList→ScrollView 교체, 파트너 닉네임 실명 표시(getDoc), 롱프레스 삭제 힌트 문구 추가.
 ## 2026-06-10 | 선물 위시리스트 | feat(gift-wishlist): addWishlistItem(BR-GW1/2/3)+toggleReceived(BR-GW4)+subscribeWishlist(BR-GW5)+deleteWishlistItem(BR-GW6). GiftWishlistScreen(상대/내 탭·받았어·롱프레스삭제·모달). 테스트 9종 green.
 ## 2026-06-10 | 처음 한 것들 | feat(first-moments): addFirstMoment(BR-FM1/2/3/5)+subscribeFirstMoments(BR-FM4/6). FirstMomentsScreen(추억 목록·모달·롱프레스삭제). 테스트 10종 green.
