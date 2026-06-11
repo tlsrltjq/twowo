@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-06-11 | 오늘의 고마움 | feat(daily-gratitude): setTodayGratitude(BR-1/2/3) + subscribePartnerGratitudeToday(BR-4) + getRecent7DaysGratitude(BR-5). GratitudeScreen. firestore.rules+indexes. 테스트 11종 green.
 ## 2026-06-11 | 정합성 수정 P0~P5 | fix: ESLint 0 warnings, 통합테스트 인프라, security-rules 3테스트, 누락 단위테스트 4종(BR-S2/BR-10/BR-3/BR-7), BR-3 스펙 준수(7d/3), 루트 PNG gitignore
 ## 2026-06-11 | 캘린더 뷰 개선 | feat(calendar): 운동/데이트/사진 탭 — TypeStatsBar(통계 바) + 월별 그룹핑(SectionList/ScrollView) + 사진 타입별 카드 디자인. general 구독 추가로 전체 기간 사진 표시(BR-10). husky+lint-staged 확인.
 ## 2026-06-11 | 화면 UX 개선 | fix(features): 5개 실험실 기능 화면 — DailyFood FlatList→ScrollView 교체, 파트너 닉네임 실명 표시(getDoc), 롱프레스 삭제 힌트 문구 추가.
