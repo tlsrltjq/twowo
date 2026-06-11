@@ -9,9 +9,8 @@ appId: host.exp.Exponent
     visible:
       id: "screen-home"
     timeout: 90000
-# 탭바: 컨디션 탭 (4번째, x=70%, y=93%)
 - tapOn:
-    point: "70%,93%"
+    id: "tab-mood"
 - extendedWaitUntil:
     visible:
       id: "screen-mood"

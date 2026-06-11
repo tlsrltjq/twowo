@@ -129,6 +129,7 @@ export default function NewEventScreen() {
           name="date"
           render={({ field: { onChange, onBlur, value } }) => (
             <TextField
+              testID="input-event-date"
               label="날짜"
               placeholder="YYYY-MM-DD"
               value={value}

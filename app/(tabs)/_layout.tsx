@@ -134,6 +134,7 @@ export default function TabsLayout() {
             name="index"
             options={{
               title: '홈',
+              tabBarButton: (props) => <Pressable {...(props as object)} testID="tab-home" />,
               tabBarIcon: ({ color, size }) => <Home size={size} color={color as string} strokeWidth={1.8} />,
             }}
           />
@@ -141,6 +142,7 @@ export default function TabsLayout() {
             name="chat"
             options={{
               title: '채팅',
+              tabBarButton: (props) => <Pressable {...(props as object)} testID="tab-chat" />,
               tabBarIcon: ({ color, size }) => <MessageCircle size={size} color={color as string} strokeWidth={1.8} />,
               ...(unreadChat > 0 ? { tabBarBadge: Math.min(unreadChat, 9) } : {}),
             }}
@@ -149,6 +151,7 @@ export default function TabsLayout() {
             name="calendar"
             options={{
               title: '캘린더',
+              tabBarButton: (props) => <Pressable {...(props as object)} testID="tab-calendar" />,
               tabBarIcon: ({ color, size }) => <Calendar size={size} color={color as string} strokeWidth={1.8} />,
             }}
           />
@@ -156,6 +159,7 @@ export default function TabsLayout() {
             name="mood"
             options={{
               title: '컨디션',
+              tabBarButton: (props) => <Pressable {...(props as object)} testID="tab-mood" />,
               tabBarIcon: ({ color, size }) => <Heart size={size} color={color as string} strokeWidth={1.8} />,
             }}
           />
@@ -163,6 +167,7 @@ export default function TabsLayout() {
             name="lab"
             options={{
               title: '실험실',
+              tabBarButton: (props) => <Pressable {...(props as object)} testID="tab-lab" />,
               tabBarIcon: ({ color, size }) => <FlaskConical size={size} color={color as string} strokeWidth={1.8} />,
             }}
           />
@@ -170,6 +175,7 @@ export default function TabsLayout() {
             name="settings"
             options={{
               title: '설정',
+              tabBarButton: (props) => <Pressable {...(props as object)} testID="tab-settings" />,
               tabBarIcon: ({ color, size }) => <Settings size={size} color={color as string} strokeWidth={1.8} />,
             }}
           />

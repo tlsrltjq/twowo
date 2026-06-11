@@ -9,9 +9,8 @@ appId: host.exp.Exponent
     visible:
       id: "screen-home"
     timeout: 90000
-# 탭바: 캘린더 탭 (3번째, x=50%, y=93%)
 - tapOn:
-    point: "50%,93%"
+    id: "tab-calendar"
 - extendedWaitUntil:
     visible:
       id: "screen-calendar"

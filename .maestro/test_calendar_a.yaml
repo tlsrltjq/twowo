@@ -10,7 +10,7 @@ appId: host.exp.Exponent
       id: "screen-home"
     timeout: 90000
 - tapOn:
-    point: "50%,93%"
+    id: "tab-calendar"
 - extendedWaitUntil:
     visible:
       id: "screen-calendar"
@@ -21,10 +21,9 @@ appId: host.exp.Exponent
 - tapOn:
     id: "input-event-title"
 - eraseText: 30
-- inputText: "Test Event"
-# 키보드 닫기: 타입 선택 영역 탭 (15%)
+- inputText: "E2E 테스트"
 - tapOn:
-    point: "30%,15%"
+    id: "input-event-date"
 - waitForAnimationToEnd
 - tapOn:
     id: "btn-event-save"
