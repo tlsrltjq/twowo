@@ -49,6 +49,12 @@ const registry: AppFeature[] = [
     description: '갖고 싶은 것을 적어두면 상대방이 선물 아이디어를 얻어요',
     status:      'experimental',
   },
+  {
+    id:          'daily-gratitude',
+    name:        '오늘의 고마움',
+    description: '매일 서로에게 고마운 점을 한 마디로 전해요',
+    status:      'experimental',
+  },
 ];
 
 export default registry;
