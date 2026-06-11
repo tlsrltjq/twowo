@@ -6,6 +6,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { OfflineBanner } from '../design-system/OfflineBanner';
+
 import { subscribeAuthState } from '../core/auth';
 import { ensureUserDoc, getUserCoupleId, subscribeCouple } from '../core/couple';
 import { ensurePermissionAndToken } from '../core/notifications';
@@ -72,6 +74,7 @@ export default function RootLayout() {
         <Stack.Screen name="event/[id]" />
         <Stack.Screen name="event/edit/[id]" />
       </Stack>
+      <OfflineBanner />
     </GestureHandlerRootView>
   );
 }
