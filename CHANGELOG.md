@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-06-11 | E2E 테스트 + Firestore 배포 | fix: onSnapshot 에러 핸들러, sidebar Lucide 아이콘, rules+indexes 배포. Maestro 3종(sidebar_icons/daily_gratitude/our_playlist) PASS.
 ## 2026-06-11 | 우리의 플레이리스트 | feat(our-playlist): addSong(BR-1/2/3/4)+deleteSong(BR-6)+subscribePlaylist(BR-5). OurPlaylistScreen(곡 목록·FAB·모달·롱프레스삭제). 테스트 19종 green.
 ## 2026-06-11 | 오늘의 고마움 | feat(daily-gratitude): setTodayGratitude(BR-1/2/3) + subscribePartnerGratitudeToday(BR-4) + getRecent7DaysGratitude(BR-5). GratitudeScreen. firestore.rules+indexes. 테스트 11종 green.
 ## 2026-06-11 | 정합성 수정 P0~P5 | fix: ESLint 0 warnings, 통합테스트 인프라, security-rules 3테스트, 누락 단위테스트 4종(BR-S2/BR-10/BR-3/BR-7), BR-3 스펙 준수(7d/3), 루트 PNG gitignore

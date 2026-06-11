@@ -54,8 +54,10 @@
 - ✅ P4: calendar.md 매핑 테이블 이미 완성 상태
 - ✅ P5: 루트 PNG 10개 git 추적 제거 + .gitignore 추가
 
-## 이전 세션에서 멈춘 곳
-정합성 수정(P0~P5) 완료. 다음: 앱 아이콘/스플래시 스크린 (stage-7 남은 항목) 또는 TestFlight 빌드.
+## 이전 세션에서 멈춘 곳 (2026-06-11)
+- 사이드바 이모지 → Lucide 아이콘 교체 완료 (Target/Users/Moon/ThumbsUp/Utensils/Sparkles/Gift/HandHeart/Music2/X)
+- daily-gratitude / our-playlist 구현 + Firestore rules+indexes 배포 + Maestro 3종 PASS
+- 다음: 추가 기능 구현 or git push
 - 운동/데이트 탭: TypeStatsBar(전체 N회·이번 달 N회) + 월별 SectionList 그룹핑
 - 사진 탭: general 구독 추가 → 전체 기간 사진 이벤트 통합, 타입별 컬러 카드(3열 그리드), 통계 바
 - Maestro로 4개 탭 스크린샷 검증 완료 (달력/운동/데이트/사진 모두 정상)
