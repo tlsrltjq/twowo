@@ -67,7 +67,7 @@ export default function FirstMomentsScreen() {
   const canSave = title.trim().length > 0 && date.length === 10 && !saving;
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView testID="screen-first-moments" style={styles.safeArea} edges={['top']}>
       {/* 헤더 */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
@@ -116,7 +116,7 @@ export default function FirstMomentsScreen() {
       )}
 
       {/* FAB */}
-      <Pressable style={styles.fab} onPress={() => setModal(true)} accessibilityLabel="처음 기록 추가">
+      <Pressable testID="fab-first-moments" style={styles.fab} onPress={() => setModal(true)} accessibilityLabel="처음 기록 추가">
         <Text style={styles.fabText}>＋</Text>
       </Pressable>
 
@@ -130,6 +130,7 @@ export default function FirstMomentsScreen() {
             <View style={styles.fieldGroup}>
               <Text style={styles.fieldLabel}>어떤 처음이에요?</Text>
               <TextInput
+                testID="input-moment-title"
                 style={styles.fieldInput}
                 placeholder="처음 여행 간 날, 처음 같이 밥 먹은 날..."
                 placeholderTextColor={colors.text.muted}
@@ -174,6 +175,7 @@ export default function FirstMomentsScreen() {
                 <Text style={styles.cancelBtnText}>취소</Text>
               </TouchableOpacity>
               <TouchableOpacity
+                testID="btn-moment-save"
                 style={[styles.saveBtn, !canSave && styles.saveBtnDisabled]}
                 onPress={handleSave}
                 disabled={!canSave}

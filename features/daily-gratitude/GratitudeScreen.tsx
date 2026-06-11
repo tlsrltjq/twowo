@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -108,6 +110,7 @@ export default function GratitudeScreen() {
 
   return (
     <SafeAreaView testID="screen-gratitude" style={styles.safeArea} edges={['top']}>
+    <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
     <ScrollView style={styles.container} contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
       <Text style={styles.screenTitle}>오늘의 고마움</Text>
 
@@ -185,6 +188,7 @@ export default function GratitudeScreen() {
         onHide={() => setToast(t => ({ ...t, visible: false }))}
       />
     </ScrollView>
+    </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -210,6 +214,7 @@ function HistoryRow({ entry, isToday }: { entry: GratitudeEntry; isToday: boolea
 
 const styles = StyleSheet.create({
   safeArea:           { flex: 1, backgroundColor: colors.bg.base },
+  flex:               { flex: 1 },
   container:          { flex: 1 },
   body:               { padding: space[5], gap: space[4], paddingBottom: space[12] },
   screenTitle:        { ...typography.title2, color: colors.text.primary },

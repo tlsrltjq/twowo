@@ -1,0 +1,52 @@
+appId: host.exp.Exponent
+---
+# first-moments — 우리가 처음 한 것들 진입 + 기록 추가 테스트
+# 전제: 사이드바에서 first-moments ON
+
+- launchApp
+- tapOn:
+    text: "둘다좋아"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 90000
+
+# 사이드바 → 처음 한 것들
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- tapOn: "우리가 처음 한 것들"
+- extendedWaitUntil:
+    visible:
+      id: "screen-first-moments"
+    timeout: 15000
+- takeScreenshot: "first_moments_screen"
+
+# FAB → 모달
+- tapOn:
+    id: "fab-first-moments"
+- extendedWaitUntil:
+    visible:
+      id: "input-moment-title"
+    timeout: 10000
+
+# 제목 + 날짜 입력
+- tapOn:
+    id: "input-moment-title"
+- inputText: "처음 같이 여행"
+- hideKeyboard
+- waitForAnimationToEnd
+
+# 날짜 입력 (두 번째 TextInput: YYYY-MM-DD placeholder)
+- tapOn: "YYYY-MM-DD"
+- inputText: "2024-04-05"
+- hideKeyboard
+- waitForAnimationToEnd
+- takeScreenshot: "first_moments_modal_filled"
+
+# 기록하기
+- tapOn:
+    id: "btn-moment-save"
+- waitForAnimationToEnd
+- takeScreenshot: "first_moments_saved"

@@ -99,7 +99,7 @@ export default function DailyFoodScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView testID="screen-daily-food" style={styles.safeArea} edges={['top']}>
       {/* 헤더 */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
@@ -153,7 +153,7 @@ export default function DailyFoodScreen() {
       </KeyboardAvoidingView>
 
       {/* FAB */}
-      <Pressable style={styles.fab} onPress={openModal} accessibilityLabel="식사 기록 추가">
+      <Pressable testID="fab-food" style={styles.fab} onPress={openModal} accessibilityLabel="식사 기록 추가">
         <Text style={styles.fabText}>＋</Text>
       </Pressable>
 
@@ -180,6 +180,7 @@ export default function DailyFoodScreen() {
             </View>
 
             <TextInput
+              testID="input-food-name"
               style={styles.modalInput}
               placeholder="메뉴 이름을 입력하세요"
               placeholderTextColor={colors.text.muted}
@@ -198,6 +199,7 @@ export default function DailyFoodScreen() {
                   <Text style={styles.cancelBtnText}>취소</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
+                  testID="btn-food-save"
                   style={[styles.saveBtn, (!name.trim() || saving) && styles.saveBtnDisabled]}
                   onPress={handleSave}
                   disabled={!name.trim() || saving}

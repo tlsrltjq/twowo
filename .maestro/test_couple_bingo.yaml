@@ -1,0 +1,25 @@
+appId: host.exp.Exponent
+---
+# couple-bingo — 데이트 빙고 진입 + 화면 확인 테스트
+# 전제: 사이드바에서 couple-bingo ON
+# 주의: 빙고 설정은 25개 항목 입력이 필요해 진입/스크린샷만 검증
+
+- launchApp
+- tapOn:
+    text: "둘다좋아"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 90000
+
+# 사이드바 → 데이트 빙고
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- tapOn: "데이트 빙고"
+- extendedWaitUntil:
+    visible:
+      id: "screen-bingo"
+    timeout: 15000
+- takeScreenshot: "couple_bingo_screen"

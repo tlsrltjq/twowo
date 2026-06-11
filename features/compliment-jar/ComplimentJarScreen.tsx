@@ -90,7 +90,7 @@ export default function ComplimentJarScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView testID="screen-compliment-jar" style={styles.safeArea} edges={['top']}>
       {/* 헤더 */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
@@ -146,7 +146,7 @@ export default function ComplimentJarScreen() {
       )}
 
       {/* FAB */}
-      <Pressable style={styles.fab} onPress={openModal} accessibilityLabel="칭찬 쓰기">
+      <Pressable testID="fab-compliment" style={styles.fab} onPress={openModal} accessibilityLabel="칭찬 쓰기">
         <Text style={styles.fabText}>＋</Text>
       </Pressable>
 
@@ -158,6 +158,7 @@ export default function ComplimentJarScreen() {
             <Text style={styles.modalTitle}>칭찬 저금하기 🫙</Text>
             <TextInput
               ref={inputRef}
+              testID="input-compliment"
               style={styles.modalInput}
               placeholder="상대에게 전하고 싶은 칭찬을 써보세요"
               placeholderTextColor={colors.text.muted}
@@ -174,6 +175,7 @@ export default function ComplimentJarScreen() {
                   <Text style={styles.cancelBtnText}>취소</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
+                  testID="btn-compliment-send"
                   style={[styles.saveBtn, (!draft.trim() || sending) && styles.saveBtnDisabled]}
                   onPress={handleSend}
                   disabled={!draft.trim() || sending}

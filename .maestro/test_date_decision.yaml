@@ -1,0 +1,25 @@
+appId: host.exp.Exponent
+---
+# date-decision — 둘다좋아 진입 + 화면 확인 테스트
+# 전제: 사이드바에서 date-decision ON
+# 주의: 투표 플로우는 양쪽 사용자가 필요해 진입/스크린샷만 검증
+
+- launchApp
+- tapOn:
+    text: "둘다좋아"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 90000
+
+# 사이드바 → 둘다좋아
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- tapOn: "둘다좋아"
+- extendedWaitUntil:
+    visible:
+      id: "screen-date-decision"
+    timeout: 15000
+- takeScreenshot: "date_decision_screen"

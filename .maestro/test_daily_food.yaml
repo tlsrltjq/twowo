@@ -1,0 +1,46 @@
+appId: host.exp.Exponent
+---
+# daily-food — 오늘 뭐 먹었어 진입 + 식사 기록 테스트
+# 전제: 사이드바에서 daily-food ON
+
+- launchApp
+- tapOn:
+    text: "둘다좋아"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 90000
+
+# 사이드바 → 오늘 뭐 먹었어
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- tapOn: "오늘 뭐 먹었어"
+- extendedWaitUntil:
+    visible:
+      id: "screen-daily-food"
+    timeout: 15000
+- takeScreenshot: "daily_food_screen"
+
+# FAB → 모달
+- tapOn:
+    id: "fab-food"
+- extendedWaitUntil:
+    visible:
+      id: "input-food-name"
+    timeout: 10000
+
+# 메뉴 입력
+- tapOn:
+    id: "input-food-name"
+- inputText: "된장찌개"
+- hideKeyboard
+- waitForAnimationToEnd
+- takeScreenshot: "daily_food_modal_filled"
+
+# 기록하기
+- tapOn:
+    id: "btn-food-save"
+- waitForAnimationToEnd
+- takeScreenshot: "daily_food_saved"

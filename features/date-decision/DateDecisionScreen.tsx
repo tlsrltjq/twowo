@@ -190,7 +190,7 @@ export default function DateDecisionScreen() {
 
   // ─── 메인 화면 ───────────────────────────────────────────────────────────────
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView testID="screen-date-decision" style={styles.safeArea} edges={['top']}>
       <Header />
 
       {/* 세션 상태 배너 */}

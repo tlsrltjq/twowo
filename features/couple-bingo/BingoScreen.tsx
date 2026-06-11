@@ -81,7 +81,7 @@ export default function BingoScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView testID="screen-bingo" style={styles.safeArea} edges={['top']}>
       <Header
         onBack={() => router.back()}
         onNewBoard={board ? handleStartSetup : undefined}

@@ -98,7 +98,7 @@ export default function GiftWishlistScreen() {
   const openModal = () => { setName(''); setMemo(''); setPrice(''); setModal(true); };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView testID="screen-gift-wishlist" style={styles.safeArea} edges={['top']}>
       {/* 헤더 */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
@@ -116,6 +116,7 @@ export default function GiftWishlistScreen() {
         ]).map(tab => (
           <TouchableOpacity
             key={tab.key}
+            testID={`tab-wishlist-${tab.key}`}
             style={[styles.tab, activeTab === tab.key && styles.tabActive]}
             onPress={() => setActiveTab(tab.key)}
           >
@@ -162,7 +163,7 @@ export default function GiftWishlistScreen() {
 
       {/* FAB — 내 탭에서만 */}
       {activeTab === 'mine' && (
-        <Pressable style={styles.fab} onPress={openModal} accessibilityLabel="위시 추가">
+        <Pressable testID="fab-wishlist" style={styles.fab} onPress={openModal} accessibilityLabel="위시 추가">
           <Text style={styles.fabText}>＋</Text>
         </Pressable>
       )}
@@ -177,6 +178,7 @@ export default function GiftWishlistScreen() {
             <View style={styles.fieldGroup}>
               <Text style={styles.fieldLabel}>이름 *</Text>
               <TextInput
+                testID="input-wishlist-name"
                 style={styles.fieldInput}
                 placeholder="에어팟, 향수, 책..."
                 placeholderTextColor={colors.text.muted}
@@ -219,6 +221,7 @@ export default function GiftWishlistScreen() {
                 <Text style={styles.cancelBtnText}>취소</Text>
               </TouchableOpacity>
               <TouchableOpacity
+                testID="btn-wishlist-save"
                 style={[styles.saveBtn, (!name.trim() || saving) && styles.saveBtnDisabled]}
                 onPress={handleSave}
                 disabled={!name.trim() || saving}

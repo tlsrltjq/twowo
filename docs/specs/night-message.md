@@ -86,8 +86,10 @@ export async function sendNightMessage(
 
 export function subscribeTodayMessages(
   coupleId: string,
+  myUid: string,
+  partnerUid: string,
   type: 'night' | 'morning',
-  cb: (mine: NightMessage | null, partner: NightMessage | null, partnerUid: string) => void,
+  cb: (mine: NightMessage | null, partner: NightMessage | null) => void,
 ): () => void
 ```
 

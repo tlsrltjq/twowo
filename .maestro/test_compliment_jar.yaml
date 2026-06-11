@@ -1,0 +1,46 @@
+appId: host.exp.Exponent
+---
+# compliment-jar — 칭찬 저금통 진입 + 칭찬 저금 테스트
+# 전제: 사이드바에서 compliment-jar ON
+
+- launchApp
+- tapOn:
+    text: "둘다좋아"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 90000
+
+# 사이드바 → 칭찬 저금통
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- tapOn: "칭찬 저금통"
+- extendedWaitUntil:
+    visible:
+      id: "screen-compliment-jar"
+    timeout: 15000
+- takeScreenshot: "compliment_jar_screen"
+
+# FAB 탭 → 모달 열기
+- tapOn:
+    id: "fab-compliment"
+- extendedWaitUntil:
+    visible:
+      id: "input-compliment"
+    timeout: 10000
+
+# 칭찬 입력
+- tapOn:
+    id: "input-compliment"
+- inputText: "항상 밥 잘 먹어줘서 고마워"
+- hideKeyboard
+- waitForAnimationToEnd
+- takeScreenshot: "compliment_jar_modal_filled"
+
+# 저금하기
+- tapOn:
+    id: "btn-compliment-send"
+- waitForAnimationToEnd
+- takeScreenshot: "compliment_jar_saved"

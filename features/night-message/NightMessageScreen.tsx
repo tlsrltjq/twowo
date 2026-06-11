@@ -94,7 +94,7 @@ export default function NightMessageScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView testID="screen-night-message" style={styles.safeArea} edges={['top']}>
       {/* 헤더 */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
@@ -109,6 +109,7 @@ export default function NightMessageScreen() {
         {TABS.map(tab => (
           <TouchableOpacity
             key={tab.key}
+            testID={`tab-${tab.key}`}
             style={[styles.tab, activeType === tab.key && styles.tabActive]}
             onPress={() => setActiveType(tab.key)}
           >
@@ -155,6 +156,7 @@ export default function NightMessageScreen() {
             <View style={styles.inputWrapper}>
               <TextInput
                 ref={inputRef}
+                testID="input-night-message"
                 style={styles.textInput}
                 placeholder="한 마디 남기기..."
                 placeholderTextColor={colors.text.muted}
@@ -168,6 +170,7 @@ export default function NightMessageScreen() {
               <View style={styles.inputFooter}>
                 <Text style={styles.charCount}>{draft.trim().length}/100</Text>
                 <TouchableOpacity
+                  testID="btn-send-message"
                   style={[styles.sendBtn, (!draft.trim() || sending) && styles.sendBtnDisabled]}
                   onPress={handleSend}
                   disabled={!draft.trim() || sending}

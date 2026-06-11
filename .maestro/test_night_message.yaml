@@ -1,0 +1,48 @@
+appId: host.exp.Exponent
+---
+# night-message — 자기 전 한 마디 진입 + 메시지 전송 테스트
+# 전제: 사이드바에서 night-message ON
+
+- launchApp
+- tapOn:
+    text: "둘다좋아"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 90000
+
+# 사이드바 열기 → 자기 전 한 마디
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- tapOn: "자기 전 한 마디"
+- extendedWaitUntil:
+    visible:
+      id: "screen-night-message"
+    timeout: 15000
+- takeScreenshot: "night_message_screen"
+
+# 잘자 탭 확인 (기본)
+- assertVisible:
+    id: "tab-night"
+- takeScreenshot: "night_message_night_tab"
+
+# 입력창에 메시지 작성
+- tapOn:
+    id: "input-night-message"
+- inputText: "오늘도 수고했어 잘 자"
+- hideKeyboard
+- waitForAnimationToEnd
+
+# 보내기
+- tapOn:
+    id: "btn-send-message"
+- waitForAnimationToEnd
+- takeScreenshot: "night_message_sent"
+
+# 아침 탭 전환
+- tapOn:
+    id: "tab-morning"
+- waitForAnimationToEnd
+- takeScreenshot: "night_message_morning_tab"
