@@ -1,12 +1,23 @@
 import '../core/config/firebase';
 
+import * as Sentry from '@sentry/react-native';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Stack, useNavigationContainerRef } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { OfflineBanner } from '../design-system/OfflineBanner';
+
+const routingInstrumentation = Sentry.reactNavigationIntegration();
+
+Sentry.init({
+  dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
+  environment: process.env.EXPO_PUBLIC_APP_ENV ?? 'development',
+  enabled: process.env.EXPO_PUBLIC_APP_ENV !== 'development',
+  integrations: [routingInstrumentation],
+  tracesSampleRate: 0.2,
+});
 
 import { subscribeAuthState } from '../core/auth';
 import { ensureUserDoc, getUserCoupleId, subscribeCouple } from '../core/couple';
@@ -15,7 +26,8 @@ import { useAuthStore } from '../core/stores/auth.store';
 
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
+function RootLayout() {
+  const ref = useNavigationContainerRef();
   const [loaded] = useFonts({
     'Pretendard-Regular':  require('../assets/fonts/Pretendard-Regular.otf'),
     'Pretendard-Medium':   require('../assets/fonts/Pretendard-Medium.otf'),
@@ -59,6 +71,10 @@ export default function RootLayout() {
   }, [setUser, setCoupleId, setLoading]);
 
   useEffect(() => {
+    if (ref) routingInstrumentation.registerNavigationContainer(ref);
+  }, [ref]);
+
+  useEffect(() => {
     if (loaded) SplashScreen.hideAsync();
   }, [loaded]);
 
@@ -66,7 +82,7 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <Stack screenOptions={{ headerShown: false }}>
+      <Stack screenOptions={{ headerShown: false }} ref={ref}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="(auth)" />
         <Stack.Screen name="(features)" />
@@ -78,3 +94,5 @@ export default function RootLayout() {
     </GestureHandlerRootView>
   );
 }
+
+export default Sentry.wrap(RootLayout);
