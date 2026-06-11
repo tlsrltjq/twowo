@@ -12,7 +12,11 @@ export function OfflineBanner() {
 
   useEffect(() => {
     return NetInfo.addEventListener(state => {
-      setIsOffline(state.isConnected === false);
+      // isConnected는 시뮬레이터에서 false 오보 잦음 → isInternetReachable 기준 사용
+      // null이면 아직 판단 중 → 배너 숨김
+      if (state.isInternetReachable !== null) {
+        setIsOffline(state.isInternetReachable === false);
+      }
     });
   }, []);
 
