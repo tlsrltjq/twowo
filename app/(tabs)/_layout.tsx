@@ -1,6 +1,23 @@
 import { Href, Redirect, router, Tabs, usePathname } from 'expo-router';
-import { Calendar, FlaskConical, Heart, Home, MessageCircle, Settings } from 'lucide-react-native';
-import { useEffect, useRef, useState } from 'react';
+import {
+  Calendar,
+  FlaskConical,
+  Gift,
+  HandHeart,
+  Heart,
+  Home,
+  MessageCircle,
+  Moon,
+  Music2,
+  Settings,
+  Sparkles,
+  Target,
+  ThumbsUp,
+  Users,
+  Utensils,
+  X,
+} from 'lucide-react-native';
+import { ComponentType, useEffect, useRef, useState } from 'react';
 import {
   Animated,
   Pressable,
@@ -19,23 +36,25 @@ import { subscribeUnreadCount } from '../../features/chat';
 
 const SIDEBAR_WIDTH = 280;
 
+type LucideIcon = ComponentType<{ size: number; color: string; strokeWidth: number }>;
+
 interface SidebarItem {
   label: string;
-  emoji: string;
+  Icon: LucideIcon;
   route: string;
   comingSoon?: boolean;
 }
 
 const ALL_SIDEBAR_ITEMS: (SidebarItem & { featureId: string })[] = [
-  { label: '데이트 빙고',     emoji: '🎯', route: '/(features)/bingo',         featureId: 'couple-bingo' },
-  { label: '둘다좋아',        emoji: '💑', route: '/(features)/vote',           featureId: 'date-decision' },
-  { label: '자기 전 한 마디', emoji: '🌙', route: '/(features)/night-message',   featureId: 'night-message' },
-  { label: '칭찬 저금통',     emoji: '🫙', route: '/(features)/compliment-jar', featureId: 'compliment-jar' },
-  { label: '오늘 뭐 먹었어', emoji: '🍽️', route: '/(features)/daily-food',      featureId: 'daily-food' },
-  { label: '처음 한 것들',  emoji: '✨',  route: '/(features)/first-moments',  featureId: 'first-moments' },
-  { label: '선물 위시리스트', emoji: '🎁', route: '/(features)/gift-wishlist',    featureId: 'gift-wishlist' },
-  { label: '오늘의 고마움',     emoji: '🙏', route: '/(features)/daily-gratitude', featureId: 'daily-gratitude' },
-  { label: '우리의 플레이리스트', emoji: '🎵', route: '/(features)/our-playlist',   featureId: 'our-playlist' },
+  { label: '데이트 빙고',       Icon: Target,    route: '/(features)/bingo',          featureId: 'couple-bingo' },
+  { label: '둘다좋아',          Icon: Users,     route: '/(features)/vote',            featureId: 'date-decision' },
+  { label: '자기 전 한 마디',   Icon: Moon,      route: '/(features)/night-message',   featureId: 'night-message' },
+  { label: '칭찬 저금통',       Icon: ThumbsUp,  route: '/(features)/compliment-jar',  featureId: 'compliment-jar' },
+  { label: '오늘 뭐 먹었어',    Icon: Utensils,  route: '/(features)/daily-food',      featureId: 'daily-food' },
+  { label: '처음 한 것들',      Icon: Sparkles,  route: '/(features)/first-moments',   featureId: 'first-moments' },
+  { label: '선물 위시리스트',   Icon: Gift,      route: '/(features)/gift-wishlist',   featureId: 'gift-wishlist' },
+  { label: '오늘의 고마움',     Icon: HandHeart, route: '/(features)/daily-gratitude', featureId: 'daily-gratitude' },
+  { label: '우리의 플레이리스트', Icon: Music2,  route: '/(features)/our-playlist',    featureId: 'our-playlist' },
 ];
 
 export default function TabsLayout() {
@@ -176,7 +195,7 @@ export default function TabsLayout() {
               <View style={styles.sidebarHeader}>
                 <Text style={styles.sidebarTitle}>더 많은 기능</Text>
                 <TouchableOpacity onPress={closeSidebar} style={styles.closeBtn}>
-                  <Text style={styles.closeBtnText}>✕</Text>
+                  <X size={20} color={colors.text.muted} strokeWidth={1.8} />
                 </TouchableOpacity>
               </View>
 
@@ -194,7 +213,9 @@ export default function TabsLayout() {
                     onPress={() => handleSidebarItem(item)}
                     activeOpacity={0.7}
                   >
-                    <Text style={styles.sidebarEmoji}>{item.emoji}</Text>
+                    <View style={styles.sidebarIconWrap}>
+                      <item.Icon size={20} color={colors.text.secondary} strokeWidth={1.8} />
+                    </View>
                     <Text style={styles.sidebarItemLabel}>{item.label}</Text>
                   </TouchableOpacity>
                 ))
@@ -256,7 +277,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
   },
   sidebarItemDisabled:   { opacity: 0.5 },
-  sidebarEmoji:          { fontSize: 24, width: 32, textAlign: 'center' },
+  sidebarIconWrap:       { width: 32, alignItems: 'center', justifyContent: 'center' },
   sidebarItemLabel:      { ...typography.body, color: colors.text.primary, flex: 1 },
   sidebarEmpty:          { paddingVertical: space[6], alignItems: 'center' },
   sidebarEmptyText:      { ...typography.caption, color: colors.text.muted, textAlign: 'center', lineHeight: 20 },
