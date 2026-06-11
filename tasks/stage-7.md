@@ -35,29 +35,29 @@ Expo Go 없이 독립 앱으로 설치. 무료 Apple ID로 가능하지만 **7�
 ## 목표
 
 ### UI 다듬기
-- [ ] design-system 색상/타이포 전체 화면 통일 점검
-- [ ] 로딩 상태 처리 (스켈레톤 or 스피너) 전체 화면 확인
-- [ ] 에러 상태 처리 (네트워크 오류, Firestore 실패 시 사용자 메시지)
-- [ ] 빈 상태(empty state) UI (일정 없음, 컨디션 미입력, 빙고 항목 없음 등)
-- [ ] iOS Safe Area, 키보드 올라올 때 입력창 밀림 처리 전체 확인
+- [x] design-system 색상/타이포 전체 화면 통일 점검
+- [x] 로딩 상태 처리 (스켈레톤 or 스피너) 전체 화면 확인 — 전 화면 ActivityIndicator/Skeleton 적용
+- [x] 에러 상태 처리 (네트워크 오류, Firestore 실패 시 사용자 메시지) — 전 화면 onSnapshot 에러 콜백 + Alert 처리
+- [x] 빈 상태(empty state) UI — 전 화면 (일정 없음/컨디션 미입력/빙고 항목 없음 등)
+- [x] iOS Safe Area + 키보드 밀림 처리 — 전 화면 SafeAreaView + KAV (Modal 내부 TextInput은 keyboardShouldPersistTaps로 대체)
 
 ### 자산 (Assets)
-- [ ] `assets/images/icon.png` (1024x1024) → app.json 연결
-- [ ] `assets/images/splash.png` (1242x2436) → backgroundColor #FFFBF7
-- [ ] 빈 상태 일러스트 → `assets/images/empty-states/` (unDraw/Storyset 무료)
-- [ ] `assets/lottie/confetti.json` — 매칭 성공 화면
-- [ ] design-system 토큰만 사용했는지 점검 / accessibilityLabel 부여
+- [x] `assets/icon.png` (1024x1024) → app.json 연결 (경로: `assets/icon.png`)
+- [x] `assets/splash-icon.png` → backgroundColor #FFFBF7 (app.json expo-splash-screen 플러그인)
+- [ ] 빈 상태 일러스트 이미지 → `assets/images/empty-states/` (디렉토리는 존재, 이미지 파일 없음 — unDraw/Storyset 무료)
+- [x] `assets/lottie/confetti.json` — 매칭 성공 화면
+- [x] design-system 토큰만 사용 / accessibilityLabel 아이콘 버튼 5곳 이상 부여
 
 ### 빌드/배포 보조
-- [ ] husky + lint-staged 도입
-- [ ] Sentry 도입 검토
-- [ ] `@react-native-community/netinfo` 오프라인 배너
+- [x] husky + lint-staged 도입 — package.json + .husky/pre-commit 설정 완료
+- [ ] Sentry 도입 검토 (선택 사항 — 실 사용 후 필요 시 추가)
+- [ ] `@react-native-community/netinfo` 오프라인 배너 — 패키지 설치됨, UI 미구현
 
 ### EAS Build + TestFlight
-- [ ] app.json 의 최종 `name`, `version` (1.0.0), `ios.buildNumber` (1), `ios.bundleIdentifier` 확정
-- [ ] (선택) 딥링킹 scheme 활성화 — `dulda://invite/{code}` 흐름
-- [ ] eas.json preview 프로필 설정
-- [ ] `eas build --platform ios --profile preview` 실행
+- [x] app.json: `name "둘다좋아"`, `version "1.0.0"`, `ios.buildNumber "1"`, `ios.bundleIdentifier "com.shingiseop.twowo"`
+- [x] deeplink scheme 활성화 — `twowo://` (app.json `scheme: "twowo"`)
+- [x] eas.json preview 프로필 설정 — development/preview/production 3개 프로필
+- [ ] `eas build --platform ios --profile preview` 실행 (Apple Developer Program 필요)
 - [ ] TestFlight에 빌드 제출 → 내부 테스터 2명 초대
 - [ ] 두 기기에서 앱 설치 확인
 

@@ -16,9 +16,14 @@
 - ✅ tsc --noEmit 0 errors
 
 ## 진행 체크 (stage-7.md 목표)
-- [ ] EAS Build 설정 (eas.json 확인 / EAS CLI 로그인)
-- [ ] iOS TestFlight 빌드 제출
-- [ ] TestFlight 내부 테스터 초대 + 설치 확인
+- [x] UI 다듬기 — 로딩/에러/빈 상태 전 화면, SafeAreaView+KAV
+- [x] 아이콘/스플래시/lottie 자산 연결
+- [x] husky + lint-staged
+- [x] app.json 빌드 설정 (version/buildNumber/bundleIdentifier/scheme)
+- [x] eas.json preview 프로필 설정
+- [ ] 빈 상태 일러스트 이미지 (assets/images/empty-states/)
+- [ ] netinfo 오프라인 배너 UI 구현
+- [ ] EAS Build + TestFlight 제출 (Apple Developer Program 필요)
 
 ## 버그 수정 완료 (세션 중)
 - ✅ `createInvite` LIST→GET 방식 (Firestore allow list:false 우회) — `core/couple/index.ts`
