@@ -1,0 +1,10 @@
+{
+  "firestore": {
+    "rules": "firestore.rules.test",
+    "indexes": "firestore.indexes.json"
+  },
+  "storage": {
+    "bucket": "pair-38a4e.firebasestorage.app",
+    "rules": "storage.rules"
+  }
+}

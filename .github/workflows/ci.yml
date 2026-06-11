@@ -55,7 +55,7 @@ jobs:
         run: npm i -g firebase-tools
       - name: 에뮬레이터 + 통합 테스트
         run: |
-          firebase emulators:exec \
+          firebase --config firebase.test.json emulators:exec \
             --only firestore,storage \
             --project demo-coupleapp \
             "npm run test:integration -- --ci"

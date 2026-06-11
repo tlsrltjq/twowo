@@ -8,7 +8,8 @@
     "ios": "expo run:ios",
     "android": "expo run:android",
     "test": "jest --watchAll=false",
-    "test:integration": "FIRESTORE_EMULATOR_HOST=localhost:8080 jest --testPathPattern='__tests__/integration' --watchAll=false",
+    "test:integration": "FIRESTORE_EMULATOR_HOST=localhost:8080 jest --config jest.config.integration.js --watchAll=false",
+    "test:integration:local": "firebase --config firebase.test.json emulators:exec --only firestore,storage --project demo-coupleapp \"npm run test:integration -- --ci\"",
     "lint": "eslint . --ext .ts,.tsx",
     "typecheck": "tsc --noEmit",
     "prepare": "husky"
@@ -67,6 +68,7 @@
     "jest-expo": "^56.0.4",
     "lint-staged": "^17.0.7",
     "prettier": "^3.8.3",
+    "ts-jest": "^29.4.11",
     "typescript": "~6.0.3"
   },
   "lint-staged": {
