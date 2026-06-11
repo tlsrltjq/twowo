@@ -102,14 +102,16 @@ export function subscribeLatestSession(
     limit(1),
   );
 
-  const u1 = onSnapshot(q1, snap => {
-    inProg = snap.empty ? null : mapSession(snap.docs[0]!);
-    cb(inProg, lastRev);
-  });
-  const u2 = onSnapshot(q2, snap => {
-    lastRev = snap.empty ? null : mapSession(snap.docs[0]!);
-    cb(inProg, lastRev);
-  });
+  const u1 = onSnapshot(
+    q1,
+    snap => { inProg = snap.empty ? null : mapSession(snap.docs[0]!); cb(inProg, lastRev); },
+    () =>   { inProg = null; cb(inProg, lastRev); },
+  );
+  const u2 = onSnapshot(
+    q2,
+    snap => { lastRev = snap.empty ? null : mapSession(snap.docs[0]!); cb(inProg, lastRev); },
+    () =>   { lastRev = null; cb(inProg, lastRev); },
+  );
 
   return () => { u1(); u2(); };
 }

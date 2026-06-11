@@ -9,13 +9,15 @@ import { useAuthStore } from '../../core/stores/auth.store';
 import { colors, radius, space, typography } from '../../design-system/tokens';
 
 const FEATURE_ROUTES: Record<string, string> = {
-  'couple-bingo':  '/(features)/bingo',
-  'date-decision': '/(features)/vote',
-  'night-message':  '/(features)/night-message',
-  'compliment-jar': '/(features)/compliment-jar',
-  'daily-food':     '/(features)/daily-food',
-  'first-moments':  '/(features)/first-moments',
-  'gift-wishlist':  '/(features)/gift-wishlist',
+  'couple-bingo':    '/(features)/bingo',
+  'date-decision':   '/(features)/vote',
+  'night-message':   '/(features)/night-message',
+  'compliment-jar':  '/(features)/compliment-jar',
+  'daily-food':      '/(features)/daily-food',
+  'first-moments':   '/(features)/first-moments',
+  'gift-wishlist':   '/(features)/gift-wishlist',
+  'daily-gratitude': '/(features)/daily-gratitude',
+  'our-playlist':    '/(features)/our-playlist',
 };
 
 const experimentalFeatures = getRegistry().filter(f => f.status === 'experimental');

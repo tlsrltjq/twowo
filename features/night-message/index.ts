@@ -80,14 +80,18 @@ export function subscribeTodayMessages(
     where('date', '==', today),
     where('type', '==', type),
   );
-  return onSnapshot(q, (snap) => {
-    let mine: NightMessage | null    = null;
-    let partner: NightMessage | null = null;
-    snap.docs.forEach(d => {
-      const msg = fromFirestore(d.id, d.data() as DocumentData);
-      if (msg.userId === myUid)      mine    = msg;
-      else if (msg.userId === partnerUid) partner = msg;
-    });
-    cb(mine, partner);
-  });
+  return onSnapshot(
+    q,
+    (snap) => {
+      let mine: NightMessage | null    = null;
+      let partner: NightMessage | null = null;
+      snap.docs.forEach(d => {
+        const msg = fromFirestore(d.id, d.data() as DocumentData);
+        if (msg.userId === myUid)           mine    = msg;
+        else if (msg.userId === partnerUid) partner = msg;
+      });
+      cb(mine, partner);
+    },
+    () => { cb(null, null); },
+  );
 }

@@ -63,7 +63,9 @@ export function subscribeCompliments(
     where('coupleId', '==', coupleId),
     orderBy('createdAt', 'desc'),
   );
-  return onSnapshot(q, (snap) => {
-    cb(snap.docs.map(d => fromFirestore(d.id, d.data() as DocumentData)));
-  });
+  return onSnapshot(
+    q,
+    (snap) => { cb(snap.docs.map(d => fromFirestore(d.id, d.data() as DocumentData))); },
+    () => { cb([]); },
+  );
 }

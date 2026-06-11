@@ -107,7 +107,9 @@ export function subscribeTodayFood(
     where('date', '==', today),
     orderBy('loggedAt', 'asc'),
   );
-  return onSnapshot(q, (snap) => {
-    cb(snap.docs.map(d => fromFirestore(d.id, d.data() as DocumentData)));
-  });
+  return onSnapshot(
+    q,
+    (snap) => { cb(snap.docs.map(d => fromFirestore(d.id, d.data() as DocumentData))); },
+    () => { cb([]); },
+  );
 }

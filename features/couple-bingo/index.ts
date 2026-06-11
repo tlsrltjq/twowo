@@ -55,8 +55,10 @@ export function subscribeActiveBoard(
     where('status', '==', 'active'),
     limit(1),
   );
-  return onSnapshot(q, snap =>
-    cb(snap.empty ? null : mapBoard(snap.docs[0]!)),
+  return onSnapshot(
+    q,
+    snap => cb(snap.empty ? null : mapBoard(snap.docs[0]!)),
+    ()   => cb(null),
   );
 }
 

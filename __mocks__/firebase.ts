@@ -26,9 +26,15 @@ export const resetMockDb = () => { store.clear(); listeners.clear(); _autoId = 1
 export const seedMockDb  = (path: string, data: Record<string, any>) => { store.set(path, data); emitDoc(path); };
 export const getMockDb   = () => new Map(store);
 
-export const doc = jest.fn((_db: any, collection: string, id: string): DocRef => ({
-  path: `${collection}/${id}`, id,
-}));
+export const doc = jest.fn((dbOrColRef: any, collectionPath?: string, id?: string): DocRef => {
+  if (collectionPath === undefined) {
+    // doc(colRef) form — Firestore auto-ID generation
+    const colName: string = (dbOrColRef as QueryRef).__collection ?? 'unknown';
+    const newId = `auto_${_autoId++}`;
+    return { path: `${colName}/${newId}`, id: newId };
+  }
+  return { path: `${collectionPath}/${id}`, id: id! };
+});
 
 export const collection = jest.fn((_db: any, name: string): QueryRef => ({
   __collection: name, __filters: [],
@@ -130,6 +136,7 @@ export const arrayUnion = (...vals: any[]) => ({ __op: 'arrayUnion', vals });
 export const arrayRemove = (...vals: any[]) => ({ __op: 'arrayRemove', vals });
 export const deleteField = () => ({ __op: 'deleteField' });
 
+export const limit   = (_n: number) => ({ __limit: _n });
 export const where   = (field: string, op: string, value: any) => [field, op, value];
 export const orderBy = (field: string, dir: 'asc' | 'desc' = 'asc') => ({ __orderBy: field, __dir: dir });
 export const query   = (ref: QueryRef, ...filters: any[]) => ({ ...ref, __filters: filters });
@@ -149,7 +156,9 @@ export const getDocs = jest.fn(async (q: QueryRef) => {
   const docs: any[] = [];
   for (const [path, data] of store.entries()) {
     if (!path.startsWith(q.__collection + '/')) continue;
-    const matches = q.__filters.every(([field, op, value]: any) => {
+    const matches = q.__filters.every((f: any) => {
+      if (!Array.isArray(f)) return true; // limit / orderBy markers — ignored
+      const [field, op, value] = f as [string, string, any];
       if (op === '==') return data[field] === value;
       if (op === '!=') return data[field] !== value;
       if (op === '<')  return data[field] <  value;
@@ -158,5 +167,5 @@ export const getDocs = jest.fn(async (q: QueryRef) => {
     });
     if (matches) docs.push({ id: path.split('/').pop(), data: () => data, ref: { path } });
   }
-  return { docs, forEach: (cb: (d: any) => void) => docs.forEach(cb), size: docs.length };
+  return { docs, forEach: (cb: (d: any) => void) => docs.forEach(cb), size: docs.length, empty: docs.length === 0 };
 });
