@@ -266,6 +266,22 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // ---------- gratitudeEntries (오늘의 고마움) ----------
+    // 문서 ID = {coupleId}_{userId}_{YYYY-MM-DD} (moodChecks와 동일 패턴)
+    match /gratitudeEntries/{docId} {
+      allow read:   if canReadCoupleDoc();
+      allow create: if isMyCouple(request.resource.data.coupleId)
+                    && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.message.size() >= 1
+                    && request.resource.data.message.size() <= 100;
+      allow update: if isMyCouple(resource.data.coupleId)
+                    && resource.data.userId == request.auth.uid
+                    && request.resource.data.userId == resource.data.userId
+                    && request.resource.data.message.size() >= 1
+                    && request.resource.data.message.size() <= 100;
+      allow delete: if false;
+    }
+
     // ---------- 기본 차단 ----------
     match /{document=**} {
       allow read, write: if false;

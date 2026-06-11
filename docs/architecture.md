@@ -164,12 +164,20 @@ createdAt: Timestamp
 > **규칙**: `featureId` (registry 키) === `features/{폴더}` 폴더명 === **kebab-case 영문**. 셋은 항상 동일 문자열.
 > 새 feature 추가 시 **이 표에 먼저 한 줄** 등록 → 그 다음 폴더/스펙 생성. 폴더명을 즉흥적으로 짓지 않는다.
 
-| 기능(한글) | `features/` 폴더 = featureId | 단계 | 탭/진입점 | Firestore 컬렉션 | status 초기값 |
-|------------|------------------------------|:----:|-----------|------------------|:-------------:|
-| 채팅         | `chat`                       | 3    | `(tabs)/chat.tsx` | couples/{id}/messages | active |
-| 둘다좋아     | `date-decision`              | 3a   | 사이드바 → 별도 화면 | dateCandidates, voteSessions | experimental |
-| 오늘의 컨디션 | `mood-share`                | 3b   | 홈 카드 + 자체 화면 | moodChecks | experimental |
-| 데이트 빙고  | `couple-bingo`               | 3c   | 사이드바 → 별도 화면 | bingoBoards | experimental |
+| 기능(한글) | `features/` 폴더 = featureId | 탭/진입점 | Firestore 컬렉션 | status 초기값 |
+|------------|------------------------------|-----------|------------------|:-------------:|
+| 채팅               | `chat`             | `(tabs)/chat.tsx`              | couples/{id}/messages                 | active       |
+| 둘다좋아           | `date-decision`    | 사이드바 → `(features)/vote`   | dateCandidates, voteSessions          | experimental |
+| 오늘의 컨디션      | `mood-share`       | 홈 카드 + `(tabs)/mood`        | moodChecks                            | experimental |
+| 데이트 빙고        | `couple-bingo`     | 사이드바 → `(features)/bingo`  | bingoBoards                           | experimental |
+| 자기 전 한 마디    | `night-message`    | 사이드바 → `(features)/night-message` | nightMessages                  | experimental |
+| 칭찬 저금통        | `compliment-jar`   | 사이드바 → `(features)/compliment-jar` | compliments                   | experimental |
+| 오늘 뭐 먹었어     | `daily-food`       | 사이드바 → `(features)/daily-food` | foodLogs                          | experimental |
+| 우리가 처음 한 것들 | `first-moments`   | 사이드바 → `(features)/first-moments` | firstMoments                   | experimental |
+| 선물 위시리스트    | `gift-wishlist`    | 사이드바 → `(features)/gift-wishlist` | wishlistItems                  | experimental |
+| 오늘의 고마움      | `daily-gratitude`  | 사이드바 → `(features)/daily-gratitude` | gratitudeEntries *(미구현)*  | experimental |
+
+> 라우트명이 폴더명과 다른 경우: `couple-bingo` → `bingo.tsx`, `date-decision` → `vote.tsx` (Expo Router 경로 제약으로 단축).
 
 > 홈 / 채팅 / 캘린더 / 컨디션 / 설정은 **고정 탭**(`app/(tabs)/`) — registry 미등록.
 > 실험/보조 기능은 사이드바(햄버거 메뉴)로 진입 — 탭에 등록하지 않음.
@@ -182,15 +190,22 @@ createdAt: Timestamp
 | 둘다좋아 | voteSessions | coupleId, status, choices, startedAt, revealedAt? |
 | 오늘의 컨디션 | moodChecks | coupleId, userId, energy, mood, canMeet, memo |
 | 데이트 빙고 | bingoBoards | coupleId, items[], checkedItems[], date |
+| 자기 전 한 마디 | nightMessages | coupleId, userId, type(night/morning), text, date |
+| 칭찬 저금통 | compliments | coupleId, fromUid, toUid, text, createdAt |
+| 오늘 뭐 먹었어 | foodLogs | coupleId, userId, mealType, name, date |
+| 우리가 처음 한 것들 | firstMoments | coupleId, addedBy, title, date, memo |
+| 선물 위시리스트 | wishlistItems | coupleId, addedBy, name, url?, received |
+| 오늘의 고마움 *(미구현)* | gratitudeEntries | coupleId, userId, date, message |
 
 ## 메인 탭 구조
 | 탭 | 화면 | 주요 기능 |
 |----|------|----------|
-| 홈 | 오늘 요약 | 컨디션 공유, 다가오는 일정, 사이드바 진입 |
-| 채팅 | 실시간 채팅 | 커플 메시지, 말풍선 UI |
-| 캘린더 | 뷰 전환형 캘린더 | 일정/사진/운동/데이트 뷰 |
-| 컨디션 | 오늘의 컨디션 | 에너지/기분 입력, 상대방 확인 |
-| 설정 | 앱 설정 | 커플 정보, 기능 관리 |
+| 홈 | 오늘 요약 | 컨디션 공유, 다가오는 일정(7일/3개), 사이드바 진입 |
+| 채팅 | 실시간 채팅 | 커플 메시지, 말풍선 UI, 이미지 전송 |
+| 캘린더 | 뷰 전환형 캘린더 | 달력/사진/운동/데이트 뷰, 이벤트·사진 CRUD |
+| 컨디션 | 오늘의 컨디션 | 에너지/기분 입력, 상대방 확인, 7일 히스토리 |
+| 실험실 | 기능 토글 | experimental 기능 ON/OFF, 사이드바 표시 제어 |
+| 설정 | 앱 설정 | 커플 정보, 프로필 수정, 로그아웃, 커플 해제 |
 
 > 보조 기능(빙고, 둘다좋아 등)은 홈 화면 우상단 햄버거(≡) → 우측 사이드바에서 진입.
 
