@@ -133,7 +133,7 @@ await runTransaction(db, async (tx) => {
 | BR-2 | 단위 | features/mood-share/setTodayMood.test.ts | '[BR-2] 23:59 KST 지나면 MoodLockedError' |
 | BR-3 | 단위 | features/mood-share/setTodayMood.test.ts | '[BR-3] 다른 날 데이터 수정 거부' |
 | BR-4 | 단위 | features/mood-share/schema.test.ts | '[BR-4] energy 1~5, mood enum 4종' |
-| BR-5 | 컴포넌트 | features/mood-share/MoodForm.test.tsx | '[BR-5] memo 200자 초과 시 입력 차단' |
-| BR-6 | 통합 | __tests__/integration/mood-sync.test.ts | '[BR-6] 상대 입력 1초 내 내 화면 반영' |
-| BR-7 | 컴포넌트 | features/mood-share/MoodHistory.test.tsx | '[BR-7] 어제 데이터 수정 버튼 비활성' |
+| BR-5 | 단위 | features/mood-share/__tests__/schema.test.ts | '[BR-5] memo 200자 허용 / 201자 거부' ✅ (MoodForm.test.tsx 로 이관 예정) |
+| BR-6 | 통합 | __tests__/integration/mood-sync.test.ts | '[BR-6] 상대 입력 1초 내 내 화면 반영' *(2차 에뮬레이터 필요)* |
+| BR-7 | 단위 | features/mood-share/__tests__/MoodHistory.test.tsx | '[BR-7] 어제 데이터 수정 버튼 비활성' ✅ |
 | BR-8 | 통합 | __tests__/integration/security-rules.test.ts | '[BR-8] 다른 userId 명의 작성 → PERMISSION_DENIED' |

@@ -159,4 +159,4 @@ await updateDoc(doc(calendarEvents, eventId), {                 // ④
 | BR-7 | 통합 | __tests__/integration/photo-upload-order.test.ts | '[BR-7] Storage 원본→썸네일→메타→photoIds 순서' |
 | BR-8 | 통합 | __tests__/integration/event-delete-cascade.test.ts | '[BR-8] 이벤트 삭제 시 사진 메타 + Storage 정리' |
 | BR-9 | 수동 | qa-checklist | 캘린더 점 색상이 design-system 토큰과 일치 |
-| BR-10 | 단위 | core/calendar/subscribeEvents.test.ts | '[BR-10] 사진 뷰 정렬 = event.date desc' |
+| BR-10 | 단위 | core/calendar/__tests__/subscribeEvents.test.ts | '[BR-10] 사진 뷰 정렬 = event.date desc' ✅ |

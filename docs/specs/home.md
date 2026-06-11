@@ -134,7 +134,7 @@ export const onMoodWritten = onDocumentWritten('moodChecks/{docId}', async (even
 |----|------|------|-------------|
 | BR-1 | 단위 | features/home/useHomeData.test.ts | '[BR-1] 각 feature subscribe 합성, 직접 쿼리 X' |
 | BR-2 | 단위 | core/utils/date.test.ts | '[BR-2] D-day 계산 KST 기준' |
-| BR-3 | 단위 | features/home/upcomingEvents.test.ts | '[BR-3] 오늘~7일, date asc, 최대 3개' |
+| BR-3 | 단위 | features/home/__tests__/upcomingEvents.test.ts | '[BR-3] 오늘~7일, date asc, 최대 3개' ✅ |
 | BR-4 | 단위 | core/notifications/permission.test.ts | '[BR-4] 권한 거부 시 schedule/send 모두 no-op' |
 | BR-5 | 통합 | __tests__/integration/push-token-sync.test.ts | '[BR-5] 토큰 변경 시 Firestore 업데이트' |
 | BR-6 | 단위 | core/notifications/scheduleMoodReminder.test.ts | '[BR-6] 미입력 시 schedule, 입력 후 cancel' |

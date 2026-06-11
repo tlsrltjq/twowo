@@ -13,6 +13,7 @@ import { getDaysSince, getTodayKST } from '../../core/utils/date';
 import { Skeleton } from '../../design-system/Skeleton';
 import { Spinner } from '../../design-system/Spinner';
 import { colors, space, typography } from '../../design-system/tokens';
+import { getUpcomingRange, sliceUpcoming } from '../../features/home/upcomingEvents';
 import { MoodCheck,subscribeMyMoodToday, subscribePartnerMoodToday } from '../../features/mood-share';
 
 const MOOD_LABELS: Record<string, string> = {
@@ -76,15 +77,12 @@ export default function HomeScreen() {
     return subscribePartnerMoodToday(coupleId, partnerUid, setPartnerMood);
   }, [coupleId, partnerUid]);
 
-  // 다가오는 일정 구독 (오늘~+90일, 최대 5개)
+  // 다가오는 일정 구독 — BR-3: 오늘~7일, date asc, 최대 3개
   useEffect(() => {
     if (!coupleId) return;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const until = new Date(today);
-    until.setDate(until.getDate() + 90);
-    return subscribeEvents(coupleId, { from: today, to: until }, (evs) => {
-      setEvents(evs.slice(0, 5));
+    const { from, to } = getUpcomingRange(new Date());
+    return subscribeEvents(coupleId, { from, to }, (evs) => {
+      setEvents(sliceUpcoming(evs));
     });
   }, [coupleId]);
 
