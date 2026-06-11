@@ -5,6 +5,8 @@
 
 ---
 
+## 2026-06-11 | 실험실 2차 품질 | feat: Maestro E2E 7종(night-message/compliment-jar/daily-food/first-moments/gift-wishlist/date-decision/couple-bingo) + 7개 화면 testID + GratitudeScreen KAV + night-message 스펙 서명 수정.
+## 2026-06-11 | 실험실 1차 품질 | fix: lab.tsx FEATURE_ROUTES 2개 누락(daily-gratitude/our-playlist) + onSnapshot 에러 콜백 8개 기능 + date-decision/couple-bingo 단위 테스트 15종 추가 + mock getDocs empty 수정.
 ## 2026-06-11 | E2E 테스트 + Firestore 배포 | fix: onSnapshot 에러 핸들러, sidebar Lucide 아이콘, rules+indexes 배포. Maestro 3종(sidebar_icons/daily_gratitude/our_playlist) PASS.
 ## 2026-06-11 | 우리의 플레이리스트 | feat(our-playlist): addSong(BR-1/2/3/4)+deleteSong(BR-6)+subscribePlaylist(BR-5). OurPlaylistScreen(곡 목록·FAB·모달·롱프레스삭제). 테스트 19종 green.
 ## 2026-06-11 | 오늘의 고마움 | feat(daily-gratitude): setTodayGratitude(BR-1/2/3) + subscribePartnerGratitudeToday(BR-4) + getRecent7DaysGratitude(BR-5). GratitudeScreen. firestore.rules+indexes. 테스트 11종 green.

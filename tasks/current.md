@@ -54,13 +54,11 @@
 - ✅ P4: calendar.md 매핑 테이블 이미 완성 상태
 - ✅ P5: 루트 PNG 10개 git 추적 제거 + .gitignore 추가
 
-## 이전 세션에서 멈춘 곳 (2026-06-11)
-- 사이드바 이모지 → Lucide 아이콘 교체 완료 (Target/Users/Moon/ThumbsUp/Utensils/Sparkles/Gift/HandHeart/Music2/X)
-- daily-gratitude / our-playlist 구현 + Firestore rules+indexes 배포 + Maestro 3종 PASS
-- 다음: 추가 기능 구현 or git push
-- 운동/데이트 탭: TypeStatsBar(전체 N회·이번 달 N회) + 월별 SectionList 그룹핑
-- 사진 탭: general 구독 추가 → 전체 기간 사진 이벤트 통합, 타입별 컬러 카드(3열 그리드), 통계 바
-- Maestro로 4개 탭 스크린샷 검증 완료 (달력/운동/데이트/사진 모두 정상)
+## 이전 세션에서 멈춘 곳 (2026-06-11 2차)
+- 실험실 품질 감사 + 1차·2차 수정 완료
+- 1차: lab.tsx FEATURE_ROUTES 누락 수정 / onSnapshot 에러 콜백 8종 / date-decision·couple-bingo 단위 테스트 15종
+- 2차: GratitudeScreen KAV / 7개 화면 testID / Maestro E2E 7종 / night-message 스펙 서명 수정
+- 다음: git push 후 시뮬레이터에서 Maestro E2E 확인 (7종) or 추가 기능 구현
 
 ## 진행 중인 작업 (시뮬레이터 전용)
 > **보류 항목 (비용 발생)**: Apple Developer Program · Firebase Storage Blaze · TestFlight 등. 언급하지 않음.
