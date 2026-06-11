@@ -3,6 +3,7 @@ import { useCallback, useMemo, useState } from 'react';
 import {
   FlatList,
   Pressable,
+  SectionList,
   ScrollView,
   StyleSheet,
   Text,
@@ -48,6 +49,23 @@ function toYMD(d: Date): string {
 
 function formatDate(d: Date): string {
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function groupByYearMonth(events: CalendarEvent[]): { title: string; data: CalendarEvent[]; key: string }[] {
+  const map = new Map<string, CalendarEvent[]>();
+  for (const ev of events) {
+    const y = ev.date.getFullYear();
+    const m = ev.date.getMonth() + 1;
+    const key = `${y}-${String(m).padStart(2, '0')}`;
+    if (!map.has(key)) map.set(key, []);
+    map.get(key)!.push(ev);
+  }
+  return Array.from(map.entries())
+    .sort(([a], [b]) => b.localeCompare(a))
+    .map(([key, data]) => {
+      const [y, m] = key.split('-');
+      return { title: `${y}년 ${Number(m)}월`, data, key };
+    });
 }
 
 export default function CalendarScreen() {
@@ -168,21 +186,11 @@ export default function CalendarScreen() {
       )}
 
       {activeView === 'exercise' && (
-        <TypeListView
-          events={exerciseEvents}
-          loading={exerciseLoading}
-          emptyTitle="운동 기록이 없어요"
-          emptyDescription="일정 추가 시 '운동' 타입을 선택해보세요"
-        />
+        <ExerciseView events={exerciseEvents} loading={exerciseLoading} />
       )}
 
       {activeView === 'date' && (
-        <TypeListView
-          events={dateEvents}
-          loading={dateLoading}
-          emptyTitle="데이트 기록이 없어요"
-          emptyDescription="일정 추가 시 '데이트' 타입을 선택해보세요"
-        />
+        <DateView events={dateEvents} loading={dateLoading} />
       )}
 
       {activeView === 'photos' && (
@@ -217,17 +225,44 @@ export default function CalendarScreen() {
   );
 }
 
-function TypeListView({
-  events,
-  loading,
-  emptyTitle,
-  emptyDescription,
+function TypeStatsBar({
+  emoji,
+  total,
+  monthCount,
+  accentColor,
+  unitLabel,
 }: {
-  events: CalendarEvent[];
-  loading: boolean;
-  emptyTitle: string;
-  emptyDescription: string;
+  emoji: string;
+  total: number;
+  monthCount: number;
+  accentColor: string;
+  unitLabel: string;
 }) {
+  return (
+    <View style={[styles.statsBar, { borderColor: accentColor + '40' }]}>
+      <Text style={styles.statsEmoji}>{emoji}</Text>
+      <View style={styles.statItem}>
+        <Text style={[styles.statNumber, { color: accentColor }]}>{total}</Text>
+        <Text style={styles.statLabel}>전체 {unitLabel}</Text>
+      </View>
+      <View style={styles.statDivider} />
+      <View style={styles.statItem}>
+        <Text style={[styles.statNumber, { color: accentColor }]}>{monthCount}</Text>
+        <Text style={styles.statLabel}>이번 달 {unitLabel}</Text>
+      </View>
+    </View>
+  );
+}
+
+function ExerciseView({ events, loading }: { events: CalendarEvent[]; loading: boolean }) {
+  const thisMonthCount = useMemo(() => {
+    const now = new Date();
+    return events.filter(ev =>
+      ev.date.getFullYear() === now.getFullYear() && ev.date.getMonth() === now.getMonth(),
+    ).length;
+  }, [events]);
+  const sections = useMemo(() => groupByYearMonth(events), [events]);
+
   if (loading) {
     return (
       <View style={styles.skeletonContainer}>
@@ -236,14 +271,57 @@ function TypeListView({
     );
   }
   if (events.length === 0) {
-    return <EmptyState title={emptyTitle} description={emptyDescription} />;
+    return <EmptyState title="운동 기록이 없어요" description="일정 추가 시 '운동' 타입을 선택해보세요" />;
   }
   return (
-    <FlatList
-      data={events}
+    <SectionList
+      sections={sections}
       keyExtractor={item => item.id}
+      ListHeaderComponent={
+        <TypeStatsBar emoji="🏃" total={events.length} monthCount={thisMonthCount} accentColor={colors.accent.warm} unitLabel="회" />
+      }
+      renderSectionHeader={({ section }) => (
+        <Text style={styles.monthHeader}>{section.title}</Text>
+      )}
       renderItem={({ item }) => <TypeEventCard event={item} />}
       contentContainerStyle={styles.listContent}
+      stickySectionHeadersEnabled={false}
+    />
+  );
+}
+
+function DateView({ events, loading }: { events: CalendarEvent[]; loading: boolean }) {
+  const thisMonthCount = useMemo(() => {
+    const now = new Date();
+    return events.filter(ev =>
+      ev.date.getFullYear() === now.getFullYear() && ev.date.getMonth() === now.getMonth(),
+    ).length;
+  }, [events]);
+  const sections = useMemo(() => groupByYearMonth(events), [events]);
+
+  if (loading) {
+    return (
+      <View style={styles.skeletonContainer}>
+        {[0, 1, 2].map(i => <Skeleton key={i} style={styles.skeletonRow} />)}
+      </View>
+    );
+  }
+  if (events.length === 0) {
+    return <EmptyState title="데이트 기록이 없어요" description="일정 추가 시 '데이트' 타입을 선택해보세요" />;
+  }
+  return (
+    <SectionList
+      sections={sections}
+      keyExtractor={item => item.id}
+      ListHeaderComponent={
+        <TypeStatsBar emoji="💑" total={events.length} monthCount={thisMonthCount} accentColor={colors.accent.primary} unitLabel="번" />
+      }
+      renderSectionHeader={({ section }) => (
+        <Text style={styles.monthHeader}>{section.title}</Text>
+      )}
+      renderItem={({ item }) => <TypeEventCard event={item} />}
+      contentContainerStyle={styles.listContent}
+      stickySectionHeadersEnabled={false}
     />
   );
 }
@@ -334,6 +412,15 @@ const styles = StyleSheet.create({
   typeEventTitle:  { ...typography.bodyBold, color: colors.text.primary },
   typeEventPlace:  { ...typography.caption, color: colors.text.secondary },
   typeEventMemo:   { ...typography.caption, color: colors.text.muted, marginTop: 2 },
+
+  // 통계 바 (운동/데이트)
+  statsBar:        { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[4], marginBottom: space[3], gap: space[5], borderWidth: 1 },
+  statsEmoji:      { fontSize: 32 },
+  statItem:        { alignItems: 'center', gap: 2 },
+  statNumber:      { ...typography.title1, fontFamily: 'Pretendard-Bold' },
+  statLabel:       { ...typography.tiny, color: colors.text.muted },
+  statDivider:     { width: 1, height: 32, backgroundColor: colors.border.subtle },
+  monthHeader:     { ...typography.caption, color: colors.text.muted, paddingTop: space[3], paddingBottom: space[2], textTransform: 'uppercase', letterSpacing: 0.5 },
 
   // 사진 뷰
   photoGrid:       { padding: space[1] },
