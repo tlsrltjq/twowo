@@ -46,8 +46,16 @@
 - ✅ 로딩 분기 — home 일정 섹션 null→Skeleton
 - ✅ accessibilityLabel — 메뉴/뒤로가기/삭제 아이콘 버튼 5곳
 
+## 정합성 수정 완료 (P0~P5)
+- ✅ P0: ESLint 0 warnings — exhaustive-deps disable-line, 테스트 파일 규칙 완화, import sort 자동 수정
+- ✅ P1: 통합 테스트 인프라 — jest.config.integration.js, firebase.test.json, CI 에뮬레이터 설정
+- ✅ P2: security-rules.test.ts — @firebase/rules-unit-testing 3개 실제 테스트
+- ✅ P3: 1차 feature 누락 테스트 추가 — signOut.test.ts(BR-S2), subscribeEvents.test.ts(BR-10), upcomingEvents.test.ts(BR-3), MoodHistory.test.tsx(BR-7); BR-3 스펙 위반 수정(90d/5→7d/3)
+- ✅ P4: calendar.md 매핑 테이블 이미 완성 상태
+- ✅ P5: 루트 PNG 10개 git 추적 제거 + .gitignore 추가
+
 ## 이전 세션에서 멈춘 곳
-캘린더 운동/데이트/사진 뷰 개선 완료. 다음: 앱 아이콘/스플래시 스크린.
+정합성 수정(P0~P5) 완료. 다음: 앱 아이콘/스플래시 스크린 (stage-7 남은 항목) 또는 TestFlight 빌드.
 - 운동/데이트 탭: TypeStatsBar(전체 N회·이번 달 N회) + 월별 SectionList 그룹핑
 - 사진 탭: general 구독 추가 → 전체 기간 사진 이벤트 통합, 타입별 컬러 카드(3열 그리드), 통계 바
 - Maestro로 4개 탭 스크린샷 검증 완료 (달력/운동/데이트/사진 모두 정상)
