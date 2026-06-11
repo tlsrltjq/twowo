@@ -14,7 +14,7 @@ import { Button } from '../../design-system/Button';
 import { EmptyState } from '../../design-system/EmptyState';
 import { Spinner } from '../../design-system/Spinner';
 import { Toast } from '../../design-system/Toast';
-import { colors, radius, space, typography } from '../../design-system/tokens';
+import { black, colors, radius, space, typography } from '../../design-system/tokens';
 import { subscribeCouple } from '../../core/couple';
 import { getTodayKST } from '../../core/utils/date';
 import { useAuthStore } from '../../core/stores/auth.store';
@@ -250,7 +250,7 @@ export default function MoodScreen() {
   );
 }
 
-function MoodDisplay({ check, readonly = false }: { check: MoodCheck; readonly?: boolean }) {
+function MoodDisplay({ check, readonly: _readonly = false }: { check: MoodCheck; readonly?: boolean }) {
   return (
     <View style={styles.displayRow}>
       <Text style={styles.displayEnergy}>{ENERGY_EMOJIS[check.energy]} {check.energy}</Text>
@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
   container:          { flex: 1 },
   body:               { padding: space[5], gap: space[4], paddingBottom: space[12] },
   screenTitle:        { ...typography.title2, color: colors.text.primary },
-  card:               { backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[5], gap: space[3], shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
+  card:               { backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[5], gap: space[3], shadowColor: black, shadowOpacity: 0.04, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
   cardHeader:         { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   cardLabel:          { ...typography.bodyBold, color: colors.text.primary },
   editLink:           { ...typography.caption, color: colors.accent.primary },

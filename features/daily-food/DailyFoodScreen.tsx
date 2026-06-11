@@ -21,7 +21,7 @@ import { subscribeCouple, Couple } from '../../core/couple';
 import { db } from '../../core/config/firebase';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { Skeleton } from '../../design-system/Skeleton';
-import { colors, radius, space, typography } from '../../design-system/tokens';
+import { black, colors, radius, space, typography } from '../../design-system/tokens';
 import {
   FoodLog, MealType, MEAL_LABEL, MEAL_EMOJI, MEAL_TYPES,
   logFood, deleteFood, subscribeTodayFood, suggestMealType,
@@ -77,8 +77,8 @@ export default function DailyFoodScreen() {
       await logFood(coupleId, user.uid, mealType, trimmed);
       setName('');
       setModal(false);
-    } catch (e: any) {
-      Alert.alert('오류', e.message ?? '다시 시도해주세요');
+    } catch (e: unknown) {
+      Alert.alert('오류', e instanceof Error ? e.message : '다시 시도해주세요');
     } finally {
       setSaving(false);
     }
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
   cardName:       { ...typography.bodyBold, color: colors.text.primary },
   cardTime:       { ...typography.tiny, color: colors.text.muted },
 
-  fab:            { position: 'absolute', right: space[5], bottom: space[6], width: 56, height: 56, borderRadius: 28, backgroundColor: colors.accent.primary, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 6 },
+  fab:            { position: 'absolute', right: space[5], bottom: space[6], width: 56, height: 56, borderRadius: 28, backgroundColor: colors.accent.primary, alignItems: 'center', justifyContent: 'center', shadowColor: black, shadowOpacity: 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 6 },
   fabText:        { fontSize: 28, color: colors.text.inverse, lineHeight: 32 },
 
   backdrop:       { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'center', paddingHorizontal: space[5] },

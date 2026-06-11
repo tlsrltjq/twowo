@@ -15,7 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { EmptyState } from '../../design-system/EmptyState';
 import { Skeleton } from '../../design-system/Skeleton';
 import { Spinner } from '../../design-system/Spinner';
-import { colors, radius, space, typography } from '../../design-system/tokens';
+import { black, colors, radius, space, typography } from '../../design-system/tokens';
 import { CalendarEvent } from '../../core/calendar/schema';
 import { useCalendarEvents, useCalendarEventsByType } from '../../core/memory';
 import { useAuthStore } from '../../core/stores/auth.store';
@@ -343,6 +343,6 @@ const styles = StyleSheet.create({
   photoCount:      { ...typography.tiny, color: colors.text.secondary },
   photoDate:       { ...typography.tiny, color: colors.text.secondary, marginTop: 2, textAlign: 'center' },
 
-  fab:             { position: 'absolute', right: space[5], bottom: space[6], width: 56, height: 56, borderRadius: 28, backgroundColor: colors.accent.primary, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 6 },
+  fab:             { position: 'absolute', right: space[5], bottom: space[6], width: 56, height: 56, borderRadius: 28, backgroundColor: colors.accent.primary, alignItems: 'center', justifyContent: 'center', shadowColor: black, shadowOpacity: 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 6 },
   fabText:         { fontSize: 28, color: colors.text.inverse, lineHeight: 32 },
 });

@@ -1,0 +1,53 @@
+# 실험실 탭: 기능 5종 토글 ON + 화면 열기 확인
+# 주의: 이 플로우는 순서상 09 이후 플로우보다 먼저 실행해야 함
+# 기능이 이미 ON인 경우 OFF가 될 수 있으므로 한 번만 실행
+appId: host.exp.Exponent
+env:
+  TEST_EMAIL: ${TEST_EMAIL}
+  TEST_PASSWORD: ${TEST_PASSWORD}
+---
+- launchApp
+- waitForAnimationToEnd
+
+- runFlow: e2e/_login.yaml
+
+# 실험실 탭 진입
+- tapOn: "실험실"
+- waitForAnimationToEnd
+- assertVisible: "실험실"
+- assertVisible: "커플만의 기능을 골라서 켜보세요"
+- takeScreenshot: e2e/screenshots/08-lab-tab
+
+# 자기 전 한 마디 토글 ON
+- tapOn:
+    id: "switch-night-message"
+- waitForAnimationToEnd
+- takeScreenshot: e2e/screenshots/08-lab-night-message-on
+
+# 칭찬 저금통 토글 ON
+- scrollToBottom
+- tapOn:
+    id: "switch-compliment-jar"
+- waitForAnimationToEnd
+
+# 오늘 뭐 먹었어 토글 ON
+- tapOn:
+    id: "switch-daily-food"
+- waitForAnimationToEnd
+
+# 처음 한 것들 토글 ON
+- tapOn:
+    id: "switch-first-moments"
+- waitForAnimationToEnd
+
+# 선물 위시리스트 토글 ON
+- tapOn:
+    id: "switch-gift-wishlist"
+- waitForAnimationToEnd
+
+- takeScreenshot: e2e/screenshots/08-lab-all-enabled
+
+# 자기 전 한 마디 "화면 열기" 탭으로 이동 확인
+- scrollToTop
+- assertVisible: "화면 열기"
+- takeScreenshot: e2e/screenshots/08-lab-open-btn-visible

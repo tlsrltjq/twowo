@@ -1,0 +1,130 @@
+# 실험실 기능 5종 입력 폼 제출 플로우
+# 전제: 08-lab-enable-features 실행 후 (기능들이 ON 상태)
+appId: host.exp.Exponent
+env:
+  TEST_EMAIL: ${TEST_EMAIL}
+  TEST_PASSWORD: ${TEST_PASSWORD}
+---
+- launchApp
+- waitForAnimationToEnd
+
+- runFlow: e2e/_login.yaml
+
+# ── 1. 자기 전 한 마디 ──────────────────────────────────────────────────
+- tapOn: "실험실"
+- waitForAnimationToEnd
+- scrollToTop
+- tapOn: "화면 열기"
+- waitForAnimationToEnd
+- assertVisible: "자기 전 한 마디"
+- takeScreenshot: e2e/screenshots/10-night-message-enter
+
+# 메시지 입력
+- tapOn: "한 마디 남기기..."
+- inputText: "E2E 테스트 잘자 메시지"
+- takeScreenshot: e2e/screenshots/10-night-message-typed
+- tapOn: "보내기"
+- waitForAnimationToEnd
+- takeScreenshot: e2e/screenshots/10-night-message-sent
+
+- back
+
+# ── 2. 칭찬 저금통 ──────────────────────────────────────────────────────
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- tapOn: "칭찬 저금통"
+- waitForAnimationToEnd
+- takeScreenshot: e2e/screenshots/10-compliment-jar-enter
+
+# FAB 탭 → 모달 열기
+- tapOn:
+    label: "칭찬 쓰기"
+- waitForAnimationToEnd
+- assertVisible: "칭찬 저금하기"
+- takeScreenshot: e2e/screenshots/10-compliment-modal
+
+# 칭찬 입력
+- tapOn: "상대에게 전하고 싶은 칭찬을 써보세요"
+- inputText: "E2E 테스트 칭찬입니다"
+- tapOn: "저금하기"
+- waitForAnimationToEnd
+- takeScreenshot: e2e/screenshots/10-compliment-saved
+
+- back
+
+# ── 3. 오늘 뭐 먹었어 ───────────────────────────────────────────────────
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- tapOn: "오늘 뭐 먹었어"
+- waitForAnimationToEnd
+- takeScreenshot: e2e/screenshots/10-daily-food-enter
+
+# FAB 탭 → 모달 열기
+- tapOn:
+    label: "식사 기록 추가"
+- waitForAnimationToEnd
+- assertVisible: "뭐 먹었어?"
+- takeScreenshot: e2e/screenshots/10-daily-food-modal
+
+# 점심 선택 후 메뉴 입력
+- tapOn: "점심"
+- tapOn: "메뉴 이름을 입력하세요"
+- inputText: "E2E 테스트 김밥"
+- tapOn: "기록하기"
+- waitForAnimationToEnd
+- takeScreenshot: e2e/screenshots/10-daily-food-saved
+
+- back
+
+# ── 4. 처음 한 것들 ─────────────────────────────────────────────────────
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- tapOn: "처음 한 것들"
+- waitForAnimationToEnd
+- takeScreenshot: e2e/screenshots/10-first-moments-enter
+
+# FAB 탭 → 모달 열기
+- tapOn:
+    label: "처음 기록 추가"
+- waitForAnimationToEnd
+- assertVisible: "새로운 처음 기록하기"
+- takeScreenshot: e2e/screenshots/10-first-moments-modal
+
+# 제목 입력 (autoFocus이므로 바로 입력)
+- inputText: "처음 같이 커피 마신 날"
+- tapOn: "기록하기"
+- waitForAnimationToEnd
+- takeScreenshot: e2e/screenshots/10-first-moments-saved
+
+- back
+
+# ── 5. 선물 위시리스트 ──────────────────────────────────────────────────
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- tapOn: "선물 위시리스트"
+- waitForAnimationToEnd
+- takeScreenshot: e2e/screenshots/10-gift-wishlist-enter
+
+# 내 목록 탭 진입
+- tapOn: "✏️ 내 목록"
+- waitForAnimationToEnd
+- takeScreenshot: e2e/screenshots/10-gift-wishlist-my-tab
+
+# FAB 탭 → 모달 열기
+- tapOn:
+    label: "위시 추가"
+- waitForAnimationToEnd
+- assertVisible: "갖고 싶은 것 추가"
+- takeScreenshot: e2e/screenshots/10-gift-wishlist-modal
+
+# 이름 입력 (autoFocus)
+- inputText: "E2E 테스트 위시아이템"
+- tapOn: "추가하기"
+- waitForAnimationToEnd
+- takeScreenshot: e2e/screenshots/10-gift-wishlist-saved
+
+- back

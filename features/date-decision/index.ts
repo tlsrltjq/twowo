@@ -1,4 +1,5 @@
 import {
+  QueryDocumentSnapshot,
   addDoc,
   collection,
   deleteDoc,
@@ -20,25 +21,27 @@ export { CATEGORY_LABELS } from './types';
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 
-function mapCandidate(d: any): DateCandidate {
+function mapCandidate(d: QueryDocumentSnapshot): DateCandidate {
+  const data = d.data();
   return {
     id: d.id,
-    coupleId: d.data().coupleId,
-    title: d.data().title,
-    category: d.data().category ?? 'etc',
-    createdBy: d.data().createdBy,
-    createdAt: d.data().createdAt?.toDate() ?? new Date(),
+    coupleId: data['coupleId'],
+    title: data['title'],
+    category: data['category'] ?? 'etc',
+    createdBy: data['createdBy'],
+    createdAt: data['createdAt']?.toDate() ?? new Date(),
   };
 }
 
-function mapSession(d: any): VoteSession {
+function mapSession(d: QueryDocumentSnapshot): VoteSession {
+  const data = d.data();
   return {
     id: d.id,
-    coupleId: d.data().coupleId,
-    status: d.data().status,
-    choices: d.data().choices ?? {},
-    startedAt: d.data().startedAt?.toDate() ?? null,
-    revealedAt: d.data().revealedAt?.toDate() ?? null,
+    coupleId: data['coupleId'],
+    status: data['status'],
+    choices: data['choices'] ?? {},
+    startedAt: data['startedAt']?.toDate() ?? null,
+    revealedAt: data['revealedAt']?.toDate() ?? null,
   };
 }
 

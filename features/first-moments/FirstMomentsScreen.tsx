@@ -17,7 +17,7 @@ import { ChevronLeft } from 'lucide-react-native';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { EmptyState } from '../../design-system/EmptyState';
 import { Skeleton } from '../../design-system/Skeleton';
-import { colors, radius, space, typography } from '../../design-system/tokens';
+import { black, colors, radius, space, typography } from '../../design-system/tokens';
 import { FirstMoment, addFirstMoment, deleteFirstMoment, subscribeFirstMoments } from './index';
 import { getTodayKST } from '../../core/utils/date';
 
@@ -47,8 +47,8 @@ export default function FirstMomentsScreen() {
       await addFirstMoment(coupleId, user.uid, title, date, memo || undefined);
       setTitle(''); setDate(getTodayKST()); setMemo('');
       setModal(false);
-    } catch (e: any) {
-      Alert.alert('오류', e.message ?? '다시 시도해주세요');
+    } catch (e: unknown) {
+      Alert.alert('오류', e instanceof Error ? e.message : '다시 시도해주세요');
     } finally {
       setSaving(false);
     }
@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
   cardDate:     { ...typography.caption, color: colors.accent.primary },
   cardMemo:     { ...typography.caption, color: colors.text.secondary, marginTop: 2 },
 
-  fab:          { position: 'absolute', right: space[5], bottom: space[6], width: 56, height: 56, borderRadius: 28, backgroundColor: colors.accent.primary, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 6 },
+  fab:          { position: 'absolute', right: space[5], bottom: space[6], width: 56, height: 56, borderRadius: 28, backgroundColor: colors.accent.primary, alignItems: 'center', justifyContent: 'center', shadowColor: black, shadowOpacity: 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 6 },
   fabText:      { fontSize: 28, color: colors.text.inverse, lineHeight: 32 },
 
   backdrop:     { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'center', paddingHorizontal: space[5] },

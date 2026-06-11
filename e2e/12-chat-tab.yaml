@@ -1,0 +1,27 @@
+# 채팅 탭: 화면 진입 + 메시지 전송 확인
+appId: host.exp.Exponent
+env:
+  TEST_EMAIL: ${TEST_EMAIL}
+  TEST_PASSWORD: ${TEST_PASSWORD}
+---
+- launchApp
+- waitForAnimationToEnd
+
+- runFlow: e2e/_login.yaml
+
+# 채팅 탭 진입
+- tapOn: "채팅"
+- waitForAnimationToEnd
+- takeScreenshot: e2e/screenshots/12-chat-tab
+
+# 메시지 입력 필드 확인
+- tapOn:
+    id: "input-chat"
+- inputText: "E2E 테스트 메시지"
+- takeScreenshot: e2e/screenshots/12-chat-typed
+
+# 전송
+- tapOn:
+    id: "btn-chat-send"
+- waitForAnimationToEnd
+- takeScreenshot: e2e/screenshots/12-chat-sent

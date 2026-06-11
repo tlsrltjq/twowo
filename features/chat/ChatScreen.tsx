@@ -205,10 +205,10 @@ export default function ChatScreen() {
             <Image source={{ uri: p.localUri }} style={styles.chatImage} resizeMode="cover" />
             <View style={styles.imageOverlay}>
               {p.status === 'uploading' ? (
-                <ActivityIndicator color="#fff" size="small" />
+                <ActivityIndicator color={colors.text.inverse} size="small" />
               ) : (
                 <TouchableOpacity onPress={() => handleRetry(p)} style={styles.retryBtn}>
-                  <RefreshCw size={20} color="#fff" />
+                  <RefreshCw size={20} color={colors.text.inverse} />
                   <Text style={styles.retryText}>재시도</Text>
                 </TouchableOpacity>
               )}
@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
   chatImage:         { width: 200, height: 200 },
   imageOverlay:      { ...StyleSheet.absoluteFill, backgroundColor: 'rgba(0,0,0,0.35)', alignItems: 'center', justifyContent: 'center' },
   retryBtn:          { alignItems: 'center', gap: space[1] },
-  retryText:         { ...typography.tiny, color: '#fff' },
+  retryText:         { ...typography.tiny, color: colors.text.inverse },
 
   empty:             { flex: 1, alignItems: 'center', justifyContent: 'center', gap: space[3] },
   emptyIcon:         { fontSize: 48 },

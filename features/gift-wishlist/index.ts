@@ -9,7 +9,8 @@ import {
   serverTimestamp,
   updateDoc,
   where,
-} from 'firebase/firestore';
+  DocumentData,
+} from 'firebase/firestore' ;
 
 import { db } from '../../core/config/firebase';
 
@@ -24,7 +25,7 @@ export interface WishlistItem {
   createdAt: Date;
 }
 
-function fromFirestore(id: string, data: Record<string, any>): WishlistItem {
+function fromFirestore(id: string, data: DocumentData): WishlistItem {
   return {
     id,
     coupleId:   data.coupleId,
@@ -50,7 +51,7 @@ export async function addWishlistItem(
   if (trimmed.length === 0 || trimmed.length > 60) {
     throw new Error('아이템 이름은 1~60자여야 합니다');
   }
-  const payload: Record<string, any> = {
+  const payload: DocumentData = {
     coupleId,
     addedBy,
     name: trimmed,
@@ -83,6 +84,6 @@ export function subscribeWishlist(
     orderBy('createdAt', 'asc'),
   );
   return onSnapshot(q, (snap) => {
-    cb(snap.docs.map(d => fromFirestore(d.id, d.data() as Record<string, any>)));
+    cb(snap.docs.map(d => fromFirestore(d.id, d.data() as DocumentData)));
   });
 }

@@ -1,0 +1,35 @@
+# 홈 탭 + 사이드바 열기/닫기
+# 전제: TEST_EMAIL/TEST_PASSWORD 커플 연결 계정
+appId: host.exp.Exponent
+env:
+  TEST_EMAIL: ${TEST_EMAIL}
+  TEST_PASSWORD: ${TEST_PASSWORD}
+---
+- launchApp
+- waitForAnimationToEnd
+
+- runFlow: e2e/_login.yaml
+
+# 홈 탭 확인
+- assertVisible: "안녕하세요"
+- takeScreenshot: e2e/screenshots/05-home
+
+# 오늘의 컨디션 섹션 확인
+- assertVisible: "오늘의 컨디션"
+
+# 다음 일정 섹션 확인
+- assertVisible: "다음 일정"
+- takeScreenshot: e2e/screenshots/05-home-content
+
+# 사이드바 열기 (hamburger ≡)
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- assertVisible: "더 많은 기능"
+- takeScreenshot: e2e/screenshots/05-sidebar-open
+
+# 사이드바 닫기
+- tapOn: "✕"
+- waitForAnimationToEnd
+- assertVisible: "안녕하세요"
+- takeScreenshot: e2e/screenshots/05-sidebar-closed

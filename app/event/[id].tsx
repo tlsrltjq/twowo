@@ -18,7 +18,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Spinner } from '../../design-system/Spinner';
 import { Toast } from '../../design-system/Toast';
-import { colors, radius, space, typography } from '../../design-system/tokens';
+import { black, colors, radius, space, typography } from '../../design-system/tokens';
 import { deleteEvent } from '../../core/calendar';
 import { CalendarEvent } from '../../core/calendar/schema';
 import { db } from '../../core/config/firebase';
@@ -277,12 +277,12 @@ const styles = StyleSheet.create({
   photoCell:        { flex: 1, aspectRatio: 1, padding: space[1] },
   photoThumb:       { flex: 1, borderRadius: radius.sm },
   photoPlaceholder: { flex: 1, backgroundColor: colors.bg.subtle, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center' },
-  viewer:               { flex: 1, backgroundColor: '#000' },
+  viewer:               { flex: 1, backgroundColor: black },
   viewerClose:          { position: 'absolute', top: 56, right: space[5], zIndex: 10, padding: space[2] },
-  viewerCloseText:      { fontSize: 24, color: '#fff' },
+  viewerCloseText:      { fontSize: 24, color: colors.text.inverse },
   viewerPage:           { width: SCREEN_W, height: SCREEN_H, alignItems: 'center', justifyContent: 'center' },
   viewerImage:          { width: SCREEN_W, height: SCREEN_H },
   viewerPlaceholder:    { alignItems: 'center', justifyContent: 'center' },
   viewerPlaceholderText: { fontSize: 64 },
-  viewerCounter:        { position: 'absolute', bottom: 48, width: '100%', textAlign: 'center', color: '#fff', ...typography.caption },
+  viewerCounter:        { position: 'absolute', bottom: 48, width: '100%', textAlign: 'center', color: colors.text.inverse, ...typography.caption },
 });

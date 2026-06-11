@@ -1,0 +1,32 @@
+# 설정 탭: 기능 확인 + 닉네임 변경 + 커플 해제 확인
+appId: host.exp.Exponent
+env:
+  TEST_EMAIL: ${TEST_EMAIL}
+  TEST_PASSWORD: ${TEST_PASSWORD}
+---
+- launchApp
+- waitForAnimationToEnd
+
+- runFlow: e2e/_login.yaml
+
+# 설정 탭 진입
+- tapOn: "설정"
+- waitForAnimationToEnd
+- assertVisible: "설정"
+- takeScreenshot: e2e/screenshots/11-settings-tab
+
+# 닉네임 변경 (입력 필드 확인)
+- assertVisible: "닉네임"
+- takeScreenshot: e2e/screenshots/11-settings-nickname-section
+
+# 기념일 섹션 확인
+- assertVisible: "기념일"
+- takeScreenshot: e2e/screenshots/11-settings-anniversary-section
+
+# 커플 해제 버튼 확인 (탭은 하지 않음 - 데이터 파괴 방지)
+- scrollToBottom
+- assertVisible: "커플 해제"
+- takeScreenshot: e2e/screenshots/11-settings-bottom
+
+# 로그아웃 버튼 확인 (실행 안 함 - 이후 플로우 영향 방지)
+- assertVisible: "로그아웃"

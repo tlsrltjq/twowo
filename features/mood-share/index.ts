@@ -9,7 +9,8 @@ import {
   runTransaction,
   serverTimestamp,
   where,
-} from 'firebase/firestore';
+  DocumentData,
+} from 'firebase/firestore' ;
 
 import { db } from '../../core/config/firebase';
 import { getTodayKST } from '../../core/utils/date';
@@ -19,7 +20,7 @@ function docId(coupleId: string, userId: string, date: string): string {
   return `${coupleId}_${userId}_${date}`;
 }
 
-function fromFirestore(id: string, data: Record<string, any>): MoodCheck {
+function fromFirestore(id: string, data: DocumentData): MoodCheck {
   return {
     id,
     coupleId:  data.coupleId,
@@ -40,7 +41,7 @@ export async function getTodayMood(coupleId: string, userId: string): Promise<Mo
   const ref   = doc(db, 'moodChecks', docId(coupleId, userId, today));
   const snap  = await getDoc(ref);
   if (!snap.exists()) return null;
-  return fromFirestore(snap.id, snap.data() as Record<string, any>);
+  return fromFirestore(snap.id, snap.data() as DocumentData);
 }
 
 // BR-2/3: 당일 1회 생성, 당일 중 수정 허용. 다른 날 수정 시도 → MoodLockedError
@@ -53,7 +54,7 @@ export async function setTodayMood(input: MoodCheckInput): Promise<MoodCheck> {
   await runTransaction(db, async (tx) => {
     const snap = await tx.get(ref);
     if (snap.exists()) {
-      const existing = snap.data() as Record<string, any>;
+      const existing = snap.data() as DocumentData;
       // BR-2: 다른 날짜 문서이면 잠금 (날짜가 오늘이 아닌 경우)
       if (existing.date !== today) {
         throw new MoodLockedError();
@@ -71,7 +72,7 @@ export async function setTodayMood(input: MoodCheckInput): Promise<MoodCheck> {
         mood:      input.mood,
         canMeet:   input.canMeet,
         memo:      input.memo ?? null,
-        createdAt: snap.exists() ? (snap.data() as any).createdAt : now,
+        createdAt: snap.exists() ? (snap.data()!).createdAt : now,
         updatedAt: now,
       },
       { merge: false },
@@ -85,7 +86,7 @@ export async function setTodayMood(input: MoodCheckInput): Promise<MoodCheck> {
       mood:      input.mood,
       canMeet:   input.canMeet,
       memo:      input.memo ?? undefined,
-      createdAt: snap.exists() ? ((snap.data() as any).createdAt?.toDate?.() ?? new Date()) : new Date(),
+      createdAt: snap.exists() ? ((snap.data()!).createdAt?.toDate?.() ?? new Date()) : new Date(),
       updatedAt: new Date(),
     };
   });
@@ -102,7 +103,7 @@ export function subscribePartnerMoodToday(
   const today = getTodayKST();
   const ref   = doc(db, 'moodChecks', docId(coupleId, partnerUid, today));
   return onSnapshot(ref, (snap) => {
-    cb(snap.exists() ? fromFirestore(snap.id, snap.data() as Record<string, any>) : null);
+    cb(snap.exists() ? fromFirestore(snap.id, snap.data() as DocumentData) : null);
   });
 }
 
@@ -115,7 +116,7 @@ export function subscribeMyMoodToday(
   const today = getTodayKST();
   const ref   = doc(db, 'moodChecks', docId(coupleId, userId, today));
   return onSnapshot(ref, (snap) => {
-    cb(snap.exists() ? fromFirestore(snap.id, snap.data() as Record<string, any>) : null);
+    cb(snap.exists() ? fromFirestore(snap.id, snap.data() as DocumentData) : null);
   });
 }
 
@@ -129,7 +130,7 @@ export async function getRecent7Days(coupleId: string, userId: string): Promise<
   );
   const snap = await getDocs(q);
   return snap.docs
-    .map(d => fromFirestore(d.id, d.data() as Record<string, any>))
+    .map(d => fromFirestore(d.id, d.data() as DocumentData))
     .slice(0, 7);
 }
 

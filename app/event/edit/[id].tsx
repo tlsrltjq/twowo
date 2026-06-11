@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router, useLocalSearchParams } from 'expo-router';
-import { doc } from 'firebase/firestore';
+import { DocumentData, doc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
@@ -58,7 +58,7 @@ export default function EditEventScreen() {
 
   useEffect(() => {
     if (!raw) return;
-    const d = raw as Record<string, any>;
+    const d = raw as DocumentData;
     reset({
       title:     d.title ?? '',
       type:      d.type ?? 'general',

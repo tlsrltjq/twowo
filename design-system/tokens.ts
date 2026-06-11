@@ -60,6 +60,9 @@ export const radius = {
   pill: 999,
 } as const;
 
+/** 순수 검정 — shadowColor, 풀스크린 오버레이 배경 등에만 사용. 일반 텍스트/배경은 colors.text.* 사용. */
+export const black = '#000000' as const;
+
 export const shadow = {
   sm: {
     shadowColor: '#000000',

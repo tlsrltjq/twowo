@@ -6,7 +6,8 @@ import {
   query,
   serverTimestamp,
   where,
-} from 'firebase/firestore';
+  DocumentData,
+} from 'firebase/firestore' ;
 
 import { db } from '../../core/config/firebase';
 
@@ -19,7 +20,7 @@ export interface Compliment {
   createdAt: Date;
 }
 
-function fromFirestore(id: string, data: Record<string, any>): Compliment {
+function fromFirestore(id: string, data: DocumentData): Compliment {
   return {
     id,
     coupleId:  data.coupleId,
@@ -63,6 +64,6 @@ export function subscribeCompliments(
     orderBy('createdAt', 'desc'),
   );
   return onSnapshot(q, (snap) => {
-    cb(snap.docs.map(d => fromFirestore(d.id, d.data() as Record<string, any>)));
+    cb(snap.docs.map(d => fromFirestore(d.id, d.data() as DocumentData)));
   });
 }

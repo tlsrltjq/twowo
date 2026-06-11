@@ -1,4 +1,6 @@
 import {
+  DocumentData,
+  QueryDocumentSnapshot,
   collection,
   doc,
   getDocs,
@@ -21,23 +23,23 @@ export { DEFAULT_BINGO_ITEMS } from './defaultItems';
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 
-function mapBoard(d: any): BingoBoard {
+function mapBoard(d: QueryDocumentSnapshot<DocumentData>): BingoBoard {
   const data = d.data();
   return {
     id: d.id,
-    coupleId: data.coupleId,
-    status: data.status,
-    items: data.items ?? [],
-    checkedItems: data.checkedItems ?? {},
+    coupleId: data['coupleId'],
+    status: data['status'],
+    items: data['items'] ?? [],
+    checkedItems: data['checkedItems'] ?? {},
     checkedBy: Object.fromEntries(
-      Object.entries(data.checkedBy ?? {}).map(([k, v]: [string, any]) => [
-        k,
-        { uid: v.uid, at: v.at?.toDate() ?? null },
-      ]),
+      Object.entries(data['checkedBy'] ?? {}).map(([k, v]) => {
+        const entry = v as { uid: string; at?: { toDate(): Date } | null };
+        return [k, { uid: entry.uid, at: entry.at?.toDate() ?? null }];
+      }),
     ),
-    completedLines: data.completedLines ?? [],
-    startedAt: data.startedAt?.toDate() ?? null,
-    completedAt: data.completedAt?.toDate() ?? null,
+    completedLines: data['completedLines'] ?? [],
+    startedAt: data['startedAt']?.toDate() ?? null,
+    completedAt: data['completedAt']?.toDate() ?? null,
   };
 }
 
@@ -112,7 +114,7 @@ export async function toggleCell(
     const key = String(index);
 
     const newChecked: Record<string, true> = { ...data.checkedItems };
-    const newBy: Record<string, any> = { ...data.checkedBy };
+    const newBy: Record<string, { uid: string; at: unknown }> = { ...data['checkedBy'] as Record<string, { uid: string; at: unknown }> };
 
     if (key in newChecked) {
       delete newChecked[key];

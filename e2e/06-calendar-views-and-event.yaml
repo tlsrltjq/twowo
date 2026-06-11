@@ -1,0 +1,48 @@
+# 캘린더 탭: 달력·운동·데이트 뷰 + 일정 추가 폼
+appId: host.exp.Exponent
+env:
+  TEST_EMAIL: ${TEST_EMAIL}
+  TEST_PASSWORD: ${TEST_PASSWORD}
+---
+- launchApp
+- waitForAnimationToEnd
+
+- runFlow: e2e/_login.yaml
+
+# 캘린더 탭 진입
+- tapOn: "캘린더"
+- waitForAnimationToEnd
+- assertVisible: "📅 달력"
+- takeScreenshot: e2e/screenshots/06-calendar-tab
+
+# 운동 뷰 탭
+- tapOn: "🏃 운동"
+- waitForAnimationToEnd
+- takeScreenshot: e2e/screenshots/06-calendar-exercise
+
+# 데이트 뷰 탭
+- tapOn: "💑 데이트"
+- waitForAnimationToEnd
+- takeScreenshot: e2e/screenshots/06-calendar-date
+
+# 달력 뷰로 복귀
+- tapOn: "📅 달력"
+- waitForAnimationToEnd
+
+# 일정 추가 FAB 탭
+- tapOn:
+    label: "새 일정 추가"
+- waitForAnimationToEnd
+- assertVisible: "새 일정"
+- takeScreenshot: e2e/screenshots/06-event-new-form
+
+# 제목 입력
+- tapOn:
+    id: "input-event-title"
+- inputText: "E2E 테스트 일정"
+
+# 저장
+- tapOn:
+    id: "btn-event-save"
+- waitForAnimationToEnd
+- takeScreenshot: e2e/screenshots/06-event-saved

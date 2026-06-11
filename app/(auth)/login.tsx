@@ -33,8 +33,8 @@ export default function LoginScreen() {
       useAuthStore.getState().setUser(user);
       useAuthStore.getState().setCoupleId(coupleId);
       router.replace(coupleId ? '/(tabs)' : '/(auth)/couple-connect');
-    } catch (e: any) {
-      const code: string = e?.code ?? '';
+    } catch (e: unknown) {
+      const code: string = (e as { code?: string })?.code ?? '';
       if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') {
         showError('이메일 또는 비밀번호가 올바르지 않습니다');
       } else if (code === 'auth/invalid-email') {

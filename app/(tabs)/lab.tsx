@@ -2,7 +2,7 @@ import { FlaskConical } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+import { Href, router } from 'expo-router';
 
 import { colors, radius, space, typography } from '../../design-system/tokens';
 import { useAuthStore } from '../../core/stores/auth.store';
@@ -67,6 +67,7 @@ export default function LabScreen() {
                     <Text style={styles.featureDesc}>{feature.description}</Text>
                   </View>
                   <Switch
+                    testID={`switch-${feature.id}`}
                     value={enabled}
                     onValueChange={v => handleToggle(feature.id, v)}
                     disabled={isBusy}
@@ -79,7 +80,7 @@ export default function LabScreen() {
                 {enabled && route && (
                   <TouchableOpacity
                     style={styles.openBtn}
-                    onPress={() => router.push(route as any)}
+                    onPress={() => router.push(route as Href)}
                     activeOpacity={0.75}
                   >
                     <Text style={styles.openBtnText}>화면 열기 →</Text>

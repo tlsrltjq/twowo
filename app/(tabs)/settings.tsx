@@ -11,7 +11,7 @@ import { getDaysSince } from '../../core/utils/date';
 import { colors, space, typography } from '../../design-system/tokens';
 import type { Couple } from '../../core/couple';
 
-function timestampToKST(ts: any): string {
+function timestampToKST(ts: { seconds: number } | Date | null | undefined): string {
   if (!ts) return '';
   const d = ts instanceof Date ? ts : new Date(ts.seconds * 1000);
   const kst = new Date(d.getTime() + 9 * 60 * 60 * 1000);
@@ -69,7 +69,7 @@ export default function SettingsScreen() {
     try {
       await setDoc(doc(db, 'users', user.uid), { displayName: nickname.trim() }, { merge: true });
       setNicknameEditing(false);
-    } catch (e) {
+    } catch {
       Alert.alert('오류', '닉네임 저장에 실패했습니다');
     } finally {
       setSaving(false);
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
   editRow:       { flexDirection: 'row', alignItems: 'center', gap: space[2], flex: 1, justifyContent: 'flex-end' },
   input:         { ...typography.body, color: colors.text.primary, borderBottomWidth: 1, borderBottomColor: colors.accent.primary, minWidth: 120, paddingVertical: 2 },
   saveBtn:       { paddingHorizontal: space[3], paddingVertical: space[1], backgroundColor: colors.accent.primary, borderRadius: 6 },
-  saveBtnText:   { ...typography.caption, color: '#fff' },
+  saveBtnText:   { ...typography.caption, color: colors.text.inverse },
   cancelBtn:     { paddingHorizontal: space[2], paddingVertical: space[1] },
   cancelBtnText: { ...typography.caption, color: colors.text.muted },
 
@@ -274,6 +274,6 @@ const styles = StyleSheet.create({
   actionText:    { ...typography.body, color: colors.accent.primary },
 
   dangerDesc:    { ...typography.caption, color: colors.text.muted, padding: space[4], paddingBottom: 0 },
-  dangerBtn:     { margin: space[4], padding: space[3], backgroundColor: '#FEE2E2', borderRadius: 10, alignItems: 'center' },
-  dangerBtnText: { ...typography.body, color: '#DC2626' },
+  dangerBtn:     { margin: space[4], padding: space[3], backgroundColor: colors.status.danger + '20', borderRadius: 10, alignItems: 'center' },
+  dangerBtnText: { ...typography.body, color: colors.status.danger },
 });

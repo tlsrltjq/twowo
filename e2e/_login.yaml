@@ -1,0 +1,23 @@
+# 공통 로그인 서브플로우
+# 호출 전 TEST_EMAIL / TEST_PASSWORD 환경변수 필요
+# 이미 홈에 있으면 아무것도 안 함
+---
+- runFlow:
+    when:
+      visible: "로그인"
+    commands:
+      - tapOn:
+          id: "input-email"
+      - clearText
+      - inputText: ${TEST_EMAIL}
+      - tapOn:
+          id: "input-password"
+      - clearText
+      - inputText: ${TEST_PASSWORD}
+      - tapOn: "로그인"
+      - waitForAnimationToEnd
+      - runFlow:
+          when:
+            visible: "허용"
+          commands:
+            - tapOn: "허용"

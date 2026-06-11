@@ -20,7 +20,7 @@ import { db } from '../../core/config/firebase';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { EmptyState } from '../../design-system/EmptyState';
 import { Skeleton } from '../../design-system/Skeleton';
-import { colors, radius, space, typography } from '../../design-system/tokens';
+import { black, colors, radius, space, typography } from '../../design-system/tokens';
 import { Compliment, addCompliment, subscribeCompliments } from './index';
 
 type ViewTab = 'received' | 'sent';
@@ -75,8 +75,8 @@ export default function ComplimentJarScreen() {
       await addCompliment(coupleId, user.uid, partnerUid, text);
       setDraft('');
       setModal(false);
-    } catch (e: any) {
-      Alert.alert('오류', e.message ?? '다시 시도해주세요');
+    } catch (e: unknown) {
+      Alert.alert('오류', e instanceof Error ? e.message : '다시 시도해주세요');
     } finally {
       setSending(false);
     }
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
   cardText:     { ...typography.body, color: colors.text.primary, lineHeight: 22 },
   cardMeta:     { ...typography.tiny, color: colors.text.muted },
 
-  fab:          { position: 'absolute', right: space[5], bottom: space[6], width: 56, height: 56, borderRadius: 28, backgroundColor: colors.accent.primary, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 6 },
+  fab:          { position: 'absolute', right: space[5], bottom: space[6], width: 56, height: 56, borderRadius: 28, backgroundColor: colors.accent.primary, alignItems: 'center', justifyContent: 'center', shadowColor: black, shadowOpacity: 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 6 },
   fabText:      { fontSize: 28, color: colors.text.inverse, lineHeight: 32 },
 
   backdrop:     { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'center', paddingHorizontal: space[5] },

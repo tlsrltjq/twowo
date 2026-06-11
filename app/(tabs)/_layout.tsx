@@ -1,5 +1,5 @@
 import { Calendar, FlaskConical, Heart, Home, MessageCircle, Settings } from 'lucide-react-native';
-import { router, Redirect, Tabs, usePathname } from 'expo-router';
+import { Href, router, Redirect, Tabs, usePathname } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
   Animated,
@@ -15,7 +15,7 @@ import { subscribeUnreadCount } from '../../features/chat';
 import { subscribeFeatureSettings } from '../../core/features';
 import { SidebarContext } from '../../core/sidebar.context';
 import { useAuthStore } from '../../core/stores/auth.store';
-import { colors, radius, space, typography } from '../../design-system/tokens';
+import { black, colors, radius, space, typography } from '../../design-system/tokens';
 
 const SIDEBAR_WIDTH = 280;
 
@@ -92,7 +92,7 @@ export default function TabsLayout() {
   const handleSidebarItem = (item: SidebarItem) => {
     if (item.comingSoon) return;
     closeSidebar();
-    router.push(item.route as any);
+    router.push(item.route as Href);
   };
 
   return (
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: space[5],
     paddingBottom: space[8],
     gap: space[2],
-    shadowColor: '#000',
+    shadowColor: black,
     shadowOpacity: 0.15,
     shadowRadius: 20,
     shadowOffset: { width: -4, height: 0 },

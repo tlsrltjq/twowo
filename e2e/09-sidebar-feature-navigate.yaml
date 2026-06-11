@@ -1,0 +1,75 @@
+# 사이드바를 통한 기능 화면 진입 확인
+# 전제: 08-lab-enable-features 실행 후 (기능들이 ON 상태)
+appId: host.exp.Exponent
+env:
+  TEST_EMAIL: ${TEST_EMAIL}
+  TEST_PASSWORD: ${TEST_PASSWORD}
+---
+- launchApp
+- waitForAnimationToEnd
+
+- runFlow: e2e/_login.yaml
+
+# 홈 탭에서 사이드바 열기
+- assertVisible: "안녕하세요"
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- assertVisible: "더 많은 기능"
+- takeScreenshot: e2e/screenshots/09-sidebar-with-features
+
+# 사이드바 아이템 목록 확인 (기능 활성화 전제)
+- assertVisible: "자기 전 한 마디"
+
+# 자기 전 한 마디 진입
+- tapOn: "자기 전 한 마디"
+- waitForAnimationToEnd
+- assertVisible: "자기 전 한 마디"
+- takeScreenshot: e2e/screenshots/09-night-message-screen
+
+# 뒤로가기
+- back
+
+# 다시 사이드바 열어서 칭찬 저금통 진입
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- tapOn: "칭찬 저금통"
+- waitForAnimationToEnd
+- assertVisible: "칭찬 저금통"
+- takeScreenshot: e2e/screenshots/09-compliment-jar-screen
+
+- back
+
+# 오늘 뭐 먹었어
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- tapOn: "오늘 뭐 먹었어"
+- waitForAnimationToEnd
+- assertVisible: "오늘 뭐 먹었어?"
+- takeScreenshot: e2e/screenshots/09-daily-food-screen
+
+- back
+
+# 처음 한 것들
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- tapOn: "처음 한 것들"
+- waitForAnimationToEnd
+- assertVisible: "우리가 처음 한 것들"
+- takeScreenshot: e2e/screenshots/09-first-moments-screen
+
+- back
+
+# 선물 위시리스트
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- tapOn: "선물 위시리스트"
+- waitForAnimationToEnd
+- assertVisible: "선물 위시리스트"
+- takeScreenshot: e2e/screenshots/09-gift-wishlist-screen
+
+- back

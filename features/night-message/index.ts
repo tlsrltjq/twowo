@@ -6,7 +6,8 @@ import {
   serverTimestamp,
   setDoc,
   where,
-} from 'firebase/firestore';
+  DocumentData,
+} from 'firebase/firestore' ;
 
 import { db } from '../../core/config/firebase';
 import { getTodayKST } from '../../core/utils/date';
@@ -27,7 +28,7 @@ function docId(coupleId: string, userId: string, date: string, type: MessageType
   return `${coupleId}_${userId}_${date}_${type}`;
 }
 
-function fromFirestore(id: string, data: Record<string, any>): NightMessage {
+function fromFirestore(id: string, data: DocumentData): NightMessage {
   return {
     id,
     coupleId: data.coupleId,
@@ -83,7 +84,7 @@ export function subscribeTodayMessages(
     let mine: NightMessage | null    = null;
     let partner: NightMessage | null = null;
     snap.docs.forEach(d => {
-      const msg = fromFirestore(d.id, d.data() as Record<string, any>);
+      const msg = fromFirestore(d.id, d.data() as DocumentData);
       if (msg.userId === myUid)      mine    = msg;
       else if (msg.userId === partnerUid) partner = msg;
     });

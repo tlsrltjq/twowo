@@ -1,0 +1,33 @@
+# 컨디션 탭: 에너지·기분 선택 + 저장
+appId: host.exp.Exponent
+env:
+  TEST_EMAIL: ${TEST_EMAIL}
+  TEST_PASSWORD: ${TEST_PASSWORD}
+---
+- launchApp
+- waitForAnimationToEnd
+
+- runFlow: e2e/_login.yaml
+
+# 컨디션 탭 진입
+- tapOn: "컨디션"
+- waitForAnimationToEnd
+- assertVisible:
+    id: "screen-mood"
+- takeScreenshot: e2e/screenshots/07-mood-tab
+
+# 에너지 4 선택
+- tapOn:
+    id: "btn-energy-4"
+
+# 기분 "좋아" 선택
+- tapOn:
+    id: "btn-mood-good"
+
+- takeScreenshot: e2e/screenshots/07-mood-selected
+
+# 저장
+- tapOn:
+    id: "btn-mood-save"
+- waitForAnimationToEnd
+- takeScreenshot: e2e/screenshots/07-mood-saved

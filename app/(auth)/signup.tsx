@@ -30,8 +30,8 @@ export default function SignUpScreen() {
       const user = await signUpWithEmail(data.email, data.password, data.displayName);
       useAuthStore.getState().setUser(user);
       router.replace('/(auth)/couple-connect');
-    } catch (e: any) {
-      const code: string = e?.code ?? '';
+    } catch (e: unknown) {
+      const code: string = (e as { code?: string })?.code ?? '';
       if (code === 'auth/email-already-in-use') {
         showError('이미 사용 중인 이메일입니다');
       } else if (code === 'auth/weak-password') {

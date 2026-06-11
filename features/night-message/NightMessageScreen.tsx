@@ -78,8 +78,8 @@ export default function NightMessageScreen() {
     try {
       await sendNightMessage(coupleId, user.uid, activeType, text);
       setDraft('');
-    } catch (e: any) {
-      Alert.alert('오류', e.message ?? '다시 시도해주세요');
+    } catch (e: unknown) {
+      Alert.alert('오류', e instanceof Error ? e.message : '다시 시도해주세요');
     } finally {
       setSending(false);
     }

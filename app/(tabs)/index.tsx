@@ -38,7 +38,7 @@ export default function HomeScreen() {
     const base = couple.anniversaryDate ?? couple.createdAt;
     if (!base) return null;
     const baseStr = (() => {
-      const d = base instanceof Date ? base : new Date((base as any).seconds * 1000);
+      const d = base instanceof Date ? base : new Date((base as { seconds: number }).seconds * 1000);
       const kstMs = d.getTime() + 9 * 60 * 60 * 1000;
       const kst   = new Date(kstMs);
       const y = kst.getUTCFullYear();
@@ -117,7 +117,7 @@ export default function HomeScreen() {
             <Text style={styles.dday}>함께한 지 D+{dDay}일</Text>
           )}
         </View>
-        <TouchableOpacity onPress={openSidebar} style={styles.hamburger} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+        <TouchableOpacity testID="btn-sidebar-open" onPress={openSidebar} style={styles.hamburger} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
           <Menu size={24} color={colors.text.secondary} strokeWidth={1.8} />
         </TouchableOpacity>
       </View>
@@ -193,8 +193,8 @@ function formatEventDate(date: Date): string {
 
 // ─── NextEventCard ────────────────────────────────────────────────────────────
 function NextEventCard({ event }: { event: CalendarEvent }) {
-  const ddayLabel  = getDdayLabel(event.date instanceof Date ? event.date : new Date((event.date as any).seconds * 1000));
-  const dateStr    = formatEventDate(event.date instanceof Date ? event.date : new Date((event.date as any).seconds * 1000));
+  const ddayLabel  = getDdayLabel(event.date instanceof Date ? event.date : new Date((event.date as { seconds: number }).seconds * 1000));
+  const dateStr    = formatEventDate(event.date instanceof Date ? event.date : new Date((event.date as { seconds: number }).seconds * 1000));
   const emoji      = TYPE_EMOJI[event.type] ?? '📅';
   const isToday    = ddayLabel === 'D-Day';
 
@@ -255,7 +255,7 @@ function MoodCard({ label, mood, loading }: { label: string; mood: MoodCheck | n
 }
 
 function EventRow({ event }: { event: CalendarEvent }) {
-  const date    = event.date instanceof Date ? event.date : new Date((event.date as any).seconds * 1000);
+  const date    = event.date instanceof Date ? event.date : new Date((event.date as { seconds: number }).seconds * 1000);
   const dateStr = formatEventDate(date);
   const emoji   = TYPE_EMOJI[event.type] ?? '📅';
 

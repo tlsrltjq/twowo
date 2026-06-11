@@ -8,7 +8,8 @@ import {
   query,
   serverTimestamp,
   where,
-} from 'firebase/firestore';
+  DocumentData,
+} from 'firebase/firestore' ;
 
 import { db } from '../../core/config/firebase';
 import { getTodayKST } from '../../core/utils/date';
@@ -23,7 +24,7 @@ export interface FirstMoment {
   createdAt: Date;
 }
 
-function fromFirestore(id: string, data: Record<string, any>): FirstMoment {
+function fromFirestore(id: string, data: DocumentData): FirstMoment {
   return {
     id,
     coupleId: data.coupleId,
@@ -53,7 +54,7 @@ export async function addFirstMoment(
   if (date > today) {
     throw new Error('과거 날짜만 기록할 수 있어요');
   }
-  const payload: Record<string, any> = {
+  const payload: DocumentData = {
     coupleId,
     addedBy,
     title: trimmedTitle,
@@ -83,6 +84,6 @@ export function subscribeFirstMoments(
     orderBy('date', 'asc'),
   );
   return onSnapshot(q, (snap) => {
-    cb(snap.docs.map(d => fromFirestore(d.id, d.data() as Record<string, any>)));
+    cb(snap.docs.map(d => fromFirestore(d.id, d.data() as DocumentData)));
   });
 }

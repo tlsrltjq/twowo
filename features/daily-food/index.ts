@@ -8,7 +8,8 @@ import {
   query,
   serverTimestamp,
   where,
-} from 'firebase/firestore';
+  DocumentData,
+} from 'firebase/firestore' ;
 
 import { db } from '../../core/config/firebase';
 import { getTodayKST } from '../../core/utils/date';
@@ -41,7 +42,7 @@ export interface FoodLog {
   loggedAt: Date;
 }
 
-function fromFirestore(id: string, data: Record<string, any>): FoodLog {
+function fromFirestore(id: string, data: DocumentData): FoodLog {
   return {
     id,
     coupleId: data.coupleId,
@@ -107,6 +108,6 @@ export function subscribeTodayFood(
     orderBy('loggedAt', 'asc'),
   );
   return onSnapshot(q, (snap) => {
-    cb(snap.docs.map(d => fromFirestore(d.id, d.data() as Record<string, any>)));
+    cb(snap.docs.map(d => fromFirestore(d.id, d.data() as DocumentData)));
   });
 }
