@@ -10,6 +10,7 @@ import { scheduleMoodReminderIfNeeded } from '../../core/notifications';
 import { useSidebar } from '../../core/sidebar.context';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { getDaysSince, getTodayKST } from '../../core/utils/date';
+import { Skeleton } from '../../design-system/Skeleton';
 import { Spinner } from '../../design-system/Spinner';
 import { colors, space, typography } from '../../design-system/tokens';
 import { subscribeMyMoodToday, subscribePartnerMoodToday, MoodCheck } from '../../features/mood-share';
@@ -27,7 +28,7 @@ export default function HomeScreen() {
   const [couple, setCouple]           = useState<Couple | null>(null);
   const [myMood, setMyMood]           = useState<MoodCheck | null | 'loading'>('loading');
   const [partnerMood, setPartnerMood] = useState<MoodCheck | null>(null);
-  const [events, setEvents]           = useState<CalendarEvent[]>([]);
+  const [events, setEvents]           = useState<CalendarEvent[] | null>(null);
   const [refreshing, setRefreshing]   = useState(false);
 
   const partnerUid = couple?.memberIds.find((id: string) => id !== user?.uid) ?? null;
@@ -117,7 +118,7 @@ export default function HomeScreen() {
             <Text style={styles.dday}>함께한 지 D+{dDay}일</Text>
           )}
         </View>
-        <TouchableOpacity testID="btn-sidebar-open" onPress={openSidebar} style={styles.hamburger} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+        <TouchableOpacity testID="btn-sidebar-open" onPress={openSidebar} style={styles.hamburger} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="메뉴 열기">
           <Menu size={24} color={colors.text.secondary} strokeWidth={1.8} />
         </TouchableOpacity>
       </View>
@@ -134,7 +135,9 @@ export default function HomeScreen() {
       {/* 다음 일정 카드 */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>다음 일정</Text>
-        {events.length === 0 ? (
+        {events === null ? (
+          <Skeleton style={styles.skeletonEvent} />
+        ) : events.length === 0 ? (
           <EmptyEventCard />
         ) : (
           <>
@@ -270,8 +273,10 @@ function EventRow({ event }: { event: CalendarEvent }) {
 const styles = StyleSheet.create({
   safeArea:     { flex: 1, backgroundColor: colors.bg.base },
   scroll:       { flex: 1 },
-  container:    { padding: space[4], gap: space[5] },
+  container:    { padding: space[4], gap: space[5], paddingBottom: space[8] },
   center:       { flex: 1, backgroundColor: colors.bg.base, alignItems: 'center', justifyContent: 'center' },
+
+  skeletonEvent: { height: 72, borderRadius: 12 },
 
   header:       { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   headerLeft:   { gap: space[1], flex: 1 },

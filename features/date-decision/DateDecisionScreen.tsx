@@ -298,7 +298,7 @@ export default function DateDecisionScreen() {
 function Header() {
   return (
     <View style={styles.header}>
-      <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+      <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="뒤로 가기">
         <ChevronLeft size={24} color={colors.text.primary} />
       </TouchableOpacity>
       <Text style={styles.headerTitle}>둘다좋아 💑</Text>
@@ -333,7 +333,7 @@ function CandidateRow({
         </View>
       )}
       {!sessionActive && (
-        <TouchableOpacity onPress={onDelete} style={styles.deleteBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+        <TouchableOpacity onPress={onDelete} style={styles.deleteBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="후보 삭제">
           <Trash2 size={18} color={colors.text.muted} />
         </TouchableOpacity>
       )}
@@ -370,7 +370,7 @@ const styles = StyleSheet.create({
   waitingBanner:         { backgroundColor: colors.accent.primary + '20', paddingHorizontal: space[4], paddingVertical: space[3] },
   waitingText:           { ...typography.caption, color: colors.accent.primary },
 
-  listContent:           { padding: space[4], gap: space[2] },
+  listContent:           { padding: space[4], gap: space[2], paddingBottom: space[8] },
 
   candidateRow:          { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.bg.surface, borderRadius: radius.md, padding: space[4], borderWidth: 1.5, borderColor: 'transparent' },
   candidateRowSelected:  { borderColor: colors.accent.primary, backgroundColor: colors.accent.primary + '10' },

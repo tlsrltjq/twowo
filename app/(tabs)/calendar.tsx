@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
 
   skeletonContainer: { padding: space[4], gap: space[3] },
   skeletonRow:     { height: 60, borderRadius: radius.md },
-  listContent:     { padding: space[4], gap: space[3] },
+  listContent:     { padding: space[4], gap: space[3], paddingBottom: 96 },
 
   // 달력 뷰 이벤트 카드
   eventCard:       { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.bg.surface, borderRadius: radius.md, padding: space[4], gap: space[3] },

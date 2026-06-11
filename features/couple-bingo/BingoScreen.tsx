@@ -111,12 +111,12 @@ function Header({
 }) {
   return (
     <View style={styles.header}>
-      <TouchableOpacity onPress={onBack} style={styles.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+      <TouchableOpacity onPress={onBack} style={styles.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="뒤로 가기">
         <ChevronLeft size={24} color={colors.text.primary} />
       </TouchableOpacity>
       <Text style={styles.headerTitle}>데이트 빙고 🎯</Text>
       {onNewBoard ? (
-        <TouchableOpacity onPress={onNewBoard} style={styles.newBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+        <TouchableOpacity onPress={onNewBoard} style={styles.newBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="새 빙고 시작">
           <RefreshCw size={20} color={colors.accent.primary} />
         </TouchableOpacity>
       ) : (
