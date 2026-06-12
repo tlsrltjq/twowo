@@ -59,12 +59,12 @@
 - ✅ P4: calendar.md 매핑 테이블 이미 완성 상태
 - ✅ P5: 루트 PNG 10개 git 추적 제거 + .gitignore 추가
 
-## 이전 세션에서 멈춘 곳 (2026-06-12 6차)
-- 실험실 4종 동기화 Maestro E2E 완성
-  - test_lab_sync_a (A-side 4종 쓰기): 칭찬/음식/처음/위시리스트 전부 PASS
-  - test_lab_sync_b (B-side 4종 수신): 칭찬/음식/처음/위시리스트 동기화 전부 PASS
-  - 수정 내역: overlay-* testID(오탐 제거), *-ready 가드(coupleId 로딩 대기),
-    DailyFoodScreen KAV 전환(키보드 덮임), 카드 testID 4종, Firestore 복합 인덱스 4종
+## 이전 세션에서 멈춘 곳 (2026-06-12 7차)
+- B-side 동기화 Maestro E2E 완성 (7종 전부 PASS)
+  - 수정 내역: GratitudeDisplay testID(partner-gratitude, 따옴표 텍스트 오탐 우회)
+    + SongCard testID(song-card, 동적 id 없이 카드 감지)
+    + test_lab_sync_b 섹션 6·7 testID 기반 전환
+    + test_night_message 멱등성 보장(runFlow 수정버튼 처리 + eraseText)
 - 다음: 추가 기능 구현 또는 TestFlight 제출 (Apple Developer Program 필요)
 
 ## 진행 중인 작업 (시뮬레이터 전용)
