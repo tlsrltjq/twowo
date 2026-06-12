@@ -32,7 +32,6 @@ describe('BingoBoard 스키마 유효성', () => {
     items[0] = 'a'.repeat(50);
     const id = await startBoard('couple1', items);
     expect(typeof id).toBe('string');
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(getMockDb().get(`bingoBoards/${id}`)!.items[0]).toBe('a'.repeat(50));
   });
 });

@@ -1,60 +1,89 @@
 /**
  * 통합 테스트: 커플 조인 플로우 (BR-5)
- * 실행: npm run test:integration (FIRESTORE_EMULATOR_HOST=localhost:8080 필요)
- * 에뮬레이터: firebase emulators:start --only firestore
+ * 실행: firebase --config firebase.test.json emulators:exec ... "npm run test:integration"
+ *
+ * seed는 withSecurityRulesDisabled(admin context), 실제 트랜잭션만 authenticatedContext로 검증.
  */
 
-if (process.env.FIRESTORE_EMULATOR_HOST) {
-  const firebase = require('firebase/app');
-  const fs = require('firebase/firestore');
+import {
+  assertSucceeds,
+  initializeTestEnvironment,
+  RulesTestEnvironment,
+} from '@firebase/rules-unit-testing';
+import {
+  doc,
+  getDoc,
+  runTransaction,
+  setDoc,
+  Timestamp,
+} from 'firebase/firestore';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
-  let db: ReturnType<typeof fs.getFirestore>;
+const PROJECT_ID = process.env.GCLOUD_PROJECT ?? 'demo-coupleapp';
+const EMULATOR_HOST = process.env.FIRESTORE_EMULATOR_HOST ?? 'localhost:8080';
+const [host, portStr] = EMULATOR_HOST.split(':');
+const port = parseInt(portStr ?? '8080', 10);
+
+const rulesPath = join(__dirname, '../../firestore.rules');
+
+if (process.env.FIRESTORE_EMULATOR_HOST) {
+  let testEnv: RulesTestEnvironment;
+
+  beforeAll(async () => {
+    testEnv = await initializeTestEnvironment({
+      projectId: PROJECT_ID,
+      firestore: { host, port, rules: readFileSync(rulesPath, 'utf8') },
+    });
+  });
+
+  afterEach(async () => {
+    await testEnv.clearFirestore();
+  });
+
+  afterAll(async () => {
+    await testEnv.cleanup();
+  });
 
   describe('couple-join-flow (integration)', () => {
-    beforeAll(() => {
-      const app = firebase.getApps().length
-        ? firebase.getApp()
-        : firebase.initializeApp({ projectId: process.env.GCLOUD_PROJECT ?? 'demo-coupleapp' });
-      db = fs.getFirestore(app);
-      fs.connectFirestoreEmulator(db, 'localhost', 8080);
-    });
-
-    afterEach(async () => {
-      const projectId = process.env.GCLOUD_PROJECT ?? 'demo-coupleapp';
-      await fetch(
-        `http://localhost:8080/emulator/v1/projects/${projectId}/databases/(default)/documents`,
-        { method: 'DELETE' }
-      );
-    });
-
     it('[BR-5] join 트랜잭션 3단계 모두 성공 (couples + users + invitations 삭제)', async () => {
       const uidA = 'uid-a', uidB = 'uid-b', coupleId = 'couple-1', code = 'JOIN11';
 
-      await fs.setDoc(fs.doc(db, 'couples', coupleId), { id: coupleId, memberIds: [uidA], status: 'active' });
-      await fs.setDoc(fs.doc(db, 'users', uidA), { id: uidA, displayName: 'A', coupleId });
-      await fs.setDoc(fs.doc(db, 'users', uidB), { id: uidB, displayName: 'B', coupleId: null });
-      await fs.setDoc(fs.doc(db, 'invitations', code), {
-        coupleId, createdBy: uidA,
-        createdAt: fs.serverTimestamp(),
-        expiresAt: fs.Timestamp.fromDate(new Date(Date.now() + 86_400_000)),
+      // seed: admin context (rules 우회)
+      await testEnv.withSecurityRulesDisabled(async (ctx) => {
+        const db = ctx.firestore();
+        await setDoc(doc(db, 'couples', coupleId), {
+          id: coupleId, memberIds: [uidA], status: 'active', createdAt: new Date(),
+        });
+        await setDoc(doc(db, 'users', uidA), { id: uidA, displayName: 'A', coupleId });
+        await setDoc(doc(db, 'users', uidB), { id: uidB, displayName: 'B', coupleId: null });
+        await setDoc(doc(db, 'invitations', code), {
+          coupleId, createdBy: uidA,
+          createdAt: new Date(),
+          expiresAt: Timestamp.fromDate(new Date(Date.now() + 86_400_000)),
+        });
       });
 
-      await fs.runTransaction(db, async (tx: any) => {
-        const inv = await tx.get(fs.doc(db, 'invitations', code));
-        expect(inv.exists()).toBe(true);
-        const { coupleId: cId } = inv.data();
-        const coupleSnap = await tx.get(fs.doc(db, 'couples', cId));
-        const memberIds: string[] = coupleSnap.data().memberIds;
-        tx.update(fs.doc(db, 'couples', cId), { memberIds: [...memberIds, uidB] });
-        tx.update(fs.doc(db, 'users', uidB), { coupleId: cId });
-        tx.delete(fs.doc(db, 'invitations', code));
-      });
+      // joinByCode 트랜잭션: uidB 로 인증
+      const userBDb = testEnv.authenticatedContext(uidB).firestore();
+      await assertSucceeds(
+        runTransaction(userBDb, async (tx) => {
+          const inv = await tx.get(doc(userBDb, 'invitations', code));
+          const { coupleId: cId } = inv.data() as { coupleId: string };
+          const coupleSnap = await tx.get(doc(userBDb, 'couples', cId));
+          const memberIds = (coupleSnap.data() as { memberIds: string[] }).memberIds;
+          tx.update(doc(userBDb, 'couples', cId), { memberIds: [...memberIds, uidB] });
+          tx.update(doc(userBDb, 'users', uidB), { coupleId: cId });
+          tx.delete(doc(userBDb, 'invitations', code));
+        }),
+      );
 
-      const coupleSnap = await fs.getDoc(fs.doc(db, 'couples', coupleId));
-      expect(coupleSnap.data()!.memberIds).toEqual([uidA, uidB]);
-      const userBSnap = await fs.getDoc(fs.doc(db, 'users', uidB));
-      expect(userBSnap.data()!.coupleId).toBe(coupleId);
-      const invSnap = await fs.getDoc(fs.doc(db, 'invitations', code));
+      // 검증
+      const coupleSnap = await getDoc(doc(userBDb, 'couples', coupleId));
+      expect((coupleSnap.data() as { memberIds: string[] }).memberIds).toEqual([uidA, uidB]);
+      const userBSnap = await getDoc(doc(userBDb, 'users', uidB));
+      expect((userBSnap.data() as { coupleId: string }).coupleId).toBe(coupleId);
+      const invSnap = await getDoc(doc(userBDb, 'invitations', code));
       expect(invSnap.exists()).toBe(false);
     });
   });

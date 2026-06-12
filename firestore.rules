@@ -80,8 +80,10 @@ service cloud.firestore {
     match /users/{userId} {
       allow get: if isMe(userId) || shareCoupleWith(userId);
       allow list: if false;
+      // create 시 coupleId는 반드시 null — join/create 트랜잭션은 update 경로만 허용
       allow create: if isMe(userId)
-                    && request.resource.data.id == userId;
+                    && request.resource.data.id == userId
+                    && (!('coupleId' in request.resource.data) || request.resource.data.coupleId == null);
       // coupleId 직접 변경 금지: 불변이거나, join/create 트랜잭션에서 getAfter()로 멤버십 증명해야 함
       allow update: if isMe(userId)
                     && request.resource.data.id == userId
