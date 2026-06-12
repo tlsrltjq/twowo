@@ -221,6 +221,20 @@
 - **트레이드오프**: 구 필드가 장기간 코드에 남아 기술 부채가 될 수 있다. 3단계 절차를 지키면 안전하게 정리 가능.
 - **재검토 시점**: OTA(expo-updates) 도입 시 — 양쪽 동시 업데이트가 보장되면 절차를 완화할 수 있다.
 
+## ADR-024: Cloud Functions v2 — 원격 푸시 + 데이터 정리 (2026-06-12)
+- **결정**: Firebase Cloud Functions Gen 2(firebase-functions v6 + Node 20)를 사용해 (1) 원격 푸시 알림, (2) 커플 해제 30일 유예 데이터 정리를 구현한다.
+- **배경**: ADR-018 2차 항목 `4′`(원격 푸시) + `6`(30일 유예). Blaze 플랜 이미 활성화.
+- **선택 이유**:
+  - Firestore onCreate 트리거로 클라이언트 없이 서버에서 안전하게 발송 (ADR-018(3): "클라이언트 직접 푸시 금지").
+  - Admin SDK가 Security Rules를 우회해 `userTokens` 읽기 가능 → 파트너 토큰 노출 없음 (ADR-022 준수).
+  - Scheduled Function은 cron 기반 1일 1회 실행 → Firestore 비용 최소.
+- **구현 위치**: `functions/` (독립 Node 패키지, `firebase.json` functions 섹션 등록).
+- **트레이드오프**:
+  - Gen 2 함수는 Cold Start가 Gen 1보다 느릴 수 있으나, 푸시 지연 수초는 허용 범위.
+  - `deleteFiles({ prefix })` Storage 삭제는 Firebase Admin SDK 비동기. 실패 시 로그만 기록하고 Firestore 정리를 우선.
+- **테스트 전략**: Cloud Functions 통합 테스트는 `firebase-functions-test` + 에뮬레이터 필요. 현재 experimental 완화 적용. `active` 승격 전 매핑 완성.
+- **배포 명령**: `npm --prefix functions run build && firebase deploy --only functions`
+
 ## ADR-019: 비용 발생 항목 보류 — 시뮬레이터 우선 개발
 - **결정**: 아래 항목은 사용자가 직접 진행 의사를 밝힐 때까지 대기. 그 전까지는 시뮬레이터에서 검증 가능한 기능 개발에 집중.
   - Apple Developer Program ($99/년) → EAS Build · TestFlight · App Store 공개 출시

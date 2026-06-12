@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-06-12 | Cloud Functions | feat(functions): 원격 푸시(BR-N1/N2/N3) + 커플 해제 30일 유예 스케줄 정리(BR-D3/D5/D6/D7) — functions/ 신규, firebase.json functions 등록, ADR-024, notifications 스펙.
 ## 2026-06-12 | 채팅 BR 테스트 | test(chat): BR-1~9 전체 매핑 완성 — subscribeMessages/sendMessage/sendImageMessage/ChatScreen 4파일, security-rules BR-2·4·7 통합 추가. 219 green.
 ## 2026-06-12 | UX 개선 | feat(ux): DateTimePicker(네이티브 인라인) 날짜 입력 교체 + 채팅 헤더 파트너 닉네임 + 연결 해제 버튼 danger solid 강조.
 ## 2026-06-12 | P2 마무리 | refactor(calendar): 화면 분할(472→199줄) + subscribeEventsSince limit(200) + usePartnerProfile loading/error + firestore rules title/type 검증.
