@@ -38,7 +38,7 @@
 
 | 기능 | featureId | 구현 | 스펙 | 테스트 | 상태 |
 |------|-----------|------|------|--------|------|
-| 실시간 채팅 | (고정 탭 — registry 미등록) | ✅ | ✅ `docs/specs/chat.md` | ⬜ BR↔테스트 미작성 | active (고정탭) |
+| 실시간 채팅 | (고정 탭 — registry 미등록) | ✅ | ✅ `docs/specs/chat.md` | ✅ BR-1~9 완성 | active (고정탭) |
 | 우측 사이드바 | — | ✅ | ⬜ | ⬜ | experimental |
 | 둘다좋아(투표) | date-decision | ✅ | ✅ `docs/specs/vote.md` | ⬜ 매핑 미완 | experimental |
 | 데이트 빙고 | couple-bingo | ✅ | ✅ `docs/specs/bingo.md` | ⬜ 매핑 미완 | experimental |
@@ -81,11 +81,11 @@
 - [ ] **security-rules 통합 테스트 확대** — 컬렉션당 "타인 차단" 1개씩 추가. 현재 3개뿐인데 rules 352줄이 사실상 백엔드
 - [ ] **subscribeUnreadCount 정확도** — `limit(10)` 후 클라이언트 필터라 10개 초과 시 배지 부정확. 실사용 중 문제되면 서버사이드 카운터로 교체
 
-## 이전 세션에서 멈춘 곳 (2026-06-12 15차)
-- UX 3종 수정 완료: DateTimePicker(inline) 날짜 직접 입력 제거(new.tsx/edit/[id].tsx), 채팅 헤더 파트너 닉네임, 연결 해제 버튼 solid danger 색상
-- @react-native-community/datetimepicker 9.1.0 설치 완료
-- tsc --noEmit 0 errors, 커밋 완료
-- 다음: TestFlight(보류) 또는 추가 UX 개선
+## 이전 세션에서 멈춘 곳 (2026-06-12 16차)
+- UX 3종 수정: DateTimePicker(inline), 채팅 헤더 파트너 닉네임, 연결 해제 버튼 solid danger
+- 채팅 BR-1~9 테스트 완성: 4파일 신규 + security-rules BR-2·4·7 추가 → 219 green
+- helpers.ts 추출(formatDateLabel·getDateKey), sendMessage 1000자 검증 추가
+- 다음: TestFlight(보류) 또는 추가 작업
 
 ## 진행 중인 작업 (시뮬레이터 전용)
 > **보류 항목 (비용 발생)**: Apple Developer Program · Firebase Storage Blaze · TestFlight 등. 언급하지 않음.
