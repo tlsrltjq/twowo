@@ -5,7 +5,7 @@ import { CalendarEvent } from '../../../core/calendar/schema';
 import { EmptyState } from '../../../design-system/EmptyState';
 import { Skeleton } from '../../../design-system/Skeleton';
 import { colors } from '../../../design-system/tokens';
-import { groupByYearMonth, sharedStyles, TypeEventCard, TypeStatsBar } from './shared';
+import { groupByYearMonth, sharedStyles, TypeEventCard, TypeStatsBar } from './_shared';
 
 export function DateView({ events, loading }: { events: CalendarEvent[]; loading: boolean }) {
   const thisMonthCount = useMemo(() => {

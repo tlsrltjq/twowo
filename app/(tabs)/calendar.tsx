@@ -18,9 +18,9 @@ import { EmptyState } from '../../design-system/EmptyState';
 import { Skeleton } from '../../design-system/Skeleton';
 import { Spinner } from '../../design-system/Spinner';
 import { black, colors, radius, space, typography } from '../../design-system/tokens';
-import { DateView } from './_calendar/DateView';
-import { ExerciseView } from './_calendar/ExerciseView';
-import { PhotoView } from './_calendar/PhotoView';
+import { DateView } from './_calendar/_DateView';
+import { ExerciseView } from './_calendar/_ExerciseView';
+import { PhotoView } from './_calendar/_PhotoView';
 
 type ViewTab = 'calendar' | 'exercise' | 'date' | 'photos';
 
