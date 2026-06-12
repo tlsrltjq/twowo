@@ -97,6 +97,8 @@ export default function EventDetailScreen() {
         coupleId:          event.coupleId,
         eventId:           id,
         currentPhotoCount: event.photoIds.length,
+        width:             asset.width,
+        height:            asset.height,
       });
       show('사진이 추가됐어요 📷', 'success');
     } catch {

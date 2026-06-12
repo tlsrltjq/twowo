@@ -11,10 +11,31 @@ function newPhotoId(): string {
   return Math.random().toString(36).slice(2) + Date.now().toString(36);
 }
 
-async function compress(uri: string, maxSide: number, quality: number): Promise<{ uri: string; width: number; height: number }> {
+// 긴 쪽을 maxSide 이하로 축소. 이미 작으면 리사이즈 없이 재인코딩만(EXIF 제거 목적).
+async function compress(
+  uri: string,
+  maxSide: number,
+  quality: number,
+  origW?: number,
+  origH?: number,
+): Promise<{ uri: string; width: number; height: number }> {
+  const ops: ImageManipulator.Action[] = [];
+
+  if (origW && origH) {
+    const longer = Math.max(origW, origH);
+    if (longer > maxSide) {
+      // 세로 사진이면 height 기준, 가로/정방형이면 width 기준으로 축소
+      if (origH > origW) ops.push({ resize: { height: maxSide } });
+      else                ops.push({ resize: { width:  maxSide } });
+    }
+    // longer <= maxSide → 업스케일 없이 재인코딩만 (EXIF 제거)
+  } else {
+    ops.push({ resize: { width: maxSide } });
+  }
+
   const result = await ImageManipulator.manipulateAsync(
     uri,
-    [{ resize: { width: maxSide } }],
+    ops,
     // SaveFormat.JPEG でEXIF を除去 (manipulateAsync は EXIF を保持しない)
     { compress: quality, format: ImageManipulator.SaveFormat.JPEG },
   );
@@ -32,15 +53,16 @@ export function guardPhotoLimit(currentCount: number): void {
 // BR-7: Storage 원본 → 썸네일 → Firestore photos → calendarEvents.photoIds 순서
 export async function uploadPhoto(
   localUri: string,
-  ctx: { coupleId: string; eventId: string; currentPhotoCount: number },
+  ctx: { coupleId: string; eventId: string; currentPhotoCount: number; width?: number; height?: number },
 ): Promise<{ photoId: string; originalUrl: string; thumbUrl: string }> {
   guardPhotoLimit(ctx.currentPhotoCount);
 
   const photoId = newPhotoId();
   const base = `couples/${ctx.coupleId}/events/${ctx.eventId}/${photoId}`;
 
-  const original = await compress(localUri, 1440, 0.75);
-  const thumb    = await compress(localUri, 400,  0.6);
+  const { width: origW, height: origH } = ctx;
+  const original = await compress(localUri, 1440, 0.75, origW, origH);
+  const thumb    = await compress(localUri, 400,  0.6,  origW, origH);
 
   const [originalBlob, thumbBlob] = await Promise.all([
     FileSystem.readAsStringAsync(original.uri, { encoding: FileSystem.EncodingType.Base64 }),
