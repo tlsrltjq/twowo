@@ -117,10 +117,9 @@ export function usePhotoEvents(coupleId: string | null): { events: CalendarEvent
 
 // core/storage/
 export async function uploadPhoto(
-  source: 'camera' | 'library',
   localUri: string,
-  ctx: { coupleId: string; eventId: string }
-): Promise<{ photoId: string; original: string; thumb: string }>
+  ctx: { coupleId: string; eventId: string; currentPhotoCount: number; width?: number; height?: number }
+): Promise<{ photoId: string; originalUrl: string; thumbUrl: string }>
 export async function deletePhoto(photoId: string): Promise<void>   // 메타 + Storage 모두 삭제
 export async function cleanupOrphans(coupleId: string): Promise<{ removed: number }>
 ```

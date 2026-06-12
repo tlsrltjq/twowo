@@ -113,10 +113,10 @@ eventId: string
 coupleId: string
 storagePath: string       // Firebase Storage 원본 경로
 thumbnailPath: string     // 압축 썸네일 경로 (리스트 표시용)
-width: number             // 원본 가로 px
+originalUrl: string       // Storage 다운로드 URL (원본)
+thumbUrl: string          // Storage 다운로드 URL (썸네일)
+width: number             // 원본 가로 px (compress 후 실측)
 height: number            // 원본 세로 px
-sizeBytes: number         // 파일 크기 (용량 모니터링)
-source: 'camera' | 'library'  // 인앱 카메라 vs 라이브러리
 createdAt: Timestamp
 ```
 
@@ -138,12 +138,11 @@ createdAt: Timestamp
 > Security Rule: isMyCouple(coupleId) + senderId == 본인 uid.
 
 ## 사진 업로드 전략
-- **인앱 카메라** (expo-camera): 촬영 시 최대 1080p 제한, 바로 업로드
-- **라이브러리 선택** (expo-image-picker): 선택 후 expo-image-manipulator로 리사이즈 + 압축
-  - 긴 쪽 최대 1440px로 리사이즈
-  - quality: 0.75 (용량 약 70~80% 절감)
-- **EXIF(GPS 등) 제거 필수**(1차 MVP, ADR-018): expo-image-manipulator 의 리사이즈/재인코딩 과정에서 메타데이터가 떨어지도록 처리 → 사진에 박힌 위치정보가 Storage 에 업로드되지 않게 한다 (개인정보 보호).
-- **썸네일 자동 생성**: 업로드 시 400px 썸네일 별도 저장 → 리스트/그리드 로딩 속도 확보
+- **라이브러리 선택** (expo-image-picker): 선택 후 expo-image-manipulator로 압축
+  - 긴 쪽(가로/세로 중 더 긴 쪽)이 1440px 초과 시에만 축소 — 작은 이미지는 업스케일 없음
+  - quality: 0.75 (원본), 0.6 (썸네일)
+- **EXIF(GPS 등) 제거 필수**(1차 MVP, ADR-018): manipulateAsync JPEG 재인코딩 시 자동 제거 → 위치정보 Storage 유출 차단 (개인정보 보호).
+- **썸네일 자동 생성**: 업로드 시 400px 썸네일 별도 저장 → 그리드/리스트 로딩 속도 확보
 - Storage 경로 규칙: `couples/{coupleId}/events/{eventId}/{photoId}_original.jpg`
 - 썸네일 경로: `couples/{coupleId}/events/{eventId}/{photoId}_thumb.jpg`
 

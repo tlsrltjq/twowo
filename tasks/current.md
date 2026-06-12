@@ -81,11 +81,13 @@
 - [ ] **security-rules 통합 테스트 확대** — 컬렉션당 "타인 차단" 1개씩 추가. 현재 3개뿐인데 rules 352줄이 사실상 백엔드
 - [ ] **subscribeUnreadCount 정확도** — `limit(10)` 후 클라이언트 필터라 10개 초과 시 배지 부정확. 실사용 중 문제되면 서버사이드 카운터로 교체
 
-## 이전 세션에서 멈춘 곳 (2026-06-12 13차)
-- P3-A/B 완료: chat.md 스펙, FRONTEND_RULES 경로 수정, console 정책, ADR-023, runbook.md, Sentry release/소스맵 설정
-- P2 완료: calendar.tsx 화면 분할(472→199줄), subscribeEventsSince limit(200), usePartnerProfile loading/error, firestore rules 강화
-- 미완료: P3-B 콘솔 작업 2건 (PITR, Firebase 예산 알림) — 사용자가 직접 설정 필요
-- 다음: TestFlight 빌드 (`eas build --profile preview`) 또는 P3-C 착수 (App Check / expo-updates OTA)
+## 이전 세션에서 멈춘 곳 (2026-06-12 14차)
+- Firebase Blaze 활성화 + Storage 초기화 + storage.rules 배포 완료
+- 사진 업로드 완전 구현: compress() 긴 쪽 기준 축소·업스케일 방지, width/height 전달, [id].tsx 완성
+- 문서 최신화: architecture.md photos 스키마(originalUrl/thumbUrl 추가, sizeBytes/source 제거), calendar.md uploadPhoto 시그니처, HARNESS.md Stage 7 완료 표시
+- P3-B 콘솔 작업 완료: PITR 7일 + 예산 알림($10) + Firestore 읽기 알림(50,000)
+- TestFlight 빌드 보류 (사용자 결정)
+- 다음: 시뮬레이터 Maestro 테스트 실행 (사진 업로드 플로우 포함)
 
 ## 진행 중인 작업 (시뮬레이터 전용)
 > **보류 항목 (비용 발생)**: Apple Developer Program · Firebase Storage Blaze · TestFlight 등. 언급하지 않음.
