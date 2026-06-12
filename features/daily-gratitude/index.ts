@@ -15,6 +15,7 @@ import {
 
 import { db } from '../../core/config/firebase';
 import { getTodayKST } from '../../core/utils/date';
+import { tsToDate } from '../../core/utils/firestore';
 import { GratitudeEntry, GratitudeInput, GratitudeLockError } from './schema';
 
 function docId(coupleId: string, userId: string, date: string): string {
@@ -28,8 +29,8 @@ function fromFirestore(id: string, data: DocumentData): GratitudeEntry {
     userId:    data.userId,
     date:      data.date,
     message:   data.message,
-    createdAt: data.createdAt?.toDate?.() ?? new Date(),
-    updatedAt: data.updatedAt?.toDate?.() ?? new Date(),
+    createdAt: tsToDate(data.createdAt),
+    updatedAt: tsToDate(data.updatedAt),
   };
 }
 
@@ -70,7 +71,7 @@ export async function setTodayGratitude(input: GratitudeInput): Promise<Gratitud
       userId:    input.userId,
       date:      today,
       message:   input.message,
-      createdAt: snap.exists() ? ((snap.data()!).createdAt?.toDate?.() ?? new Date()) : new Date(),
+      createdAt: snap.exists() ? tsToDate((snap.data()!).createdAt) : new Date(),
       updatedAt: new Date(),
     };
   });

@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore' ;
 
 import { db } from '../../core/config/firebase';
+import { tsToDate } from '../../core/utils/firestore';
 
 export interface WishlistItem {
   id: string;
@@ -34,7 +35,7 @@ function fromFirestore(id: string, data: DocumentData): WishlistItem {
     memo:       data.memo,
     priceRange: data.priceRange,
     received:   data.received ?? false,
-    createdAt:  data.createdAt?.toDate() ?? new Date(),
+    createdAt:  tsToDate(data.createdAt),
   };
 }
 

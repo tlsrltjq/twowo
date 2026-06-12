@@ -1,12 +1,11 @@
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { signOut } from '../../core/auth';
 import { db } from '../../core/config/firebase';
-import type { Couple } from '../../core/couple';
-import { disconnectCouple,subscribeCouple } from '../../core/couple';
+import { disconnectCouple, usePartnerProfile } from '../../core/couple';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { getDaysSince } from '../../core/utils/date';
 import { colors, space, typography } from '../../design-system/tokens';
@@ -23,31 +22,13 @@ function timestampToKST(ts: { seconds: number } | Date | null | undefined): stri
 
 export default function SettingsScreen() {
   const { user, coupleId } = useAuthStore();
+  const { couple, partnerName } = usePartnerProfile(coupleId, user?.uid ?? null);
 
-  const [couple, setCouple]             = useState<Couple | null>(null);
-  const [partnerName, setPartnerName]   = useState('');
   const [nickname, setNickname]         = useState('');
   const [nicknameEditing, setNicknameEditing] = useState(false);
   const [anniversaryInput, setAnniversaryInput] = useState('');
   const [anniversaryEditing, setAnniversaryEditing] = useState(false);
   const [saving, setSaving]             = useState(false);
-
-  useEffect(() => {
-    if (!coupleId) return;
-    return subscribeCouple(coupleId, async (c) => {
-      setCouple(c);
-      const partnerUid = (c.memberIds as string[]).find(id => id !== user?.uid);
-      if (partnerUid) {
-        try {
-          const snap = await getDoc(doc(db, 'users', partnerUid));
-          const name = snap.data()?.displayName as string | undefined;
-          setPartnerName(name || '상대방');
-        } catch {
-          setPartnerName('상대방');
-        }
-      }
-    });
-  }, [coupleId, user?.uid]);
 
   useEffect(() => {
     if (user?.displayName) setNickname(user.displayName);

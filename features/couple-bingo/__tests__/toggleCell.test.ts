@@ -13,21 +13,22 @@ const makeBoard = (checkedItems: Record<string, true> = {}) => ({
   completedLines: [],
 });
 
+type BoardDoc = { checkedItems: Record<string, boolean>; checkedBy: Record<string, { uid: string; at: unknown }>; status: string };
+const getBoard = () => getMockDb().get('bingoBoards/board1') as BoardDoc;
+
 beforeEach(() => resetMockDb());
 
 describe('[BR-B4/5] toggleCell', () => {
   test('체크: checkedItems에 인덱스가 추가된다', async () => {
     seedMockDb('bingoBoards/board1', makeBoard());
     await toggleCell('board1', 'user1', 0);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    expect(getMockDb().get('bingoBoards/board1')!.checkedItems['0']).toBe(true);
+    expect(getBoard().checkedItems['0']).toBe(true);
   });
 
   test('체크 해제: 이미 체크된 셀을 다시 토글하면 제거된다', async () => {
     seedMockDb('bingoBoards/board1', makeBoard({ '3': true }));
     await toggleCell('board1', 'user1', 3);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    expect(getMockDb().get('bingoBoards/board1')!.checkedItems['3']).toBeUndefined();
+    expect(getBoard().checkedItems['3']).toBeUndefined();
   });
 
   test('newLines를 반환한다', async () => {
@@ -43,17 +44,15 @@ describe('[BR-B4/5] toggleCell', () => {
   test('[BR-4] 체크 시 checkedBy에 uid와 시각이 기록된다', async () => {
     seedMockDb('bingoBoards/board1', makeBoard());
     await toggleCell('board1', 'user1', 7);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const by = getMockDb().get('bingoBoards/board1')!.checkedBy['7'];
-    expect(by.uid).toBe('user1');
-    expect(by.at).toBeDefined();
+    const by = getBoard().checkedBy['7'] as { uid: string; at: unknown } | undefined;
+    expect(by?.uid).toBe('user1');
+    expect(by?.at).toBeDefined();
   });
 
   test('[BR-4] 체크 해제 시 checkedBy에서 해당 항목이 제거된다', async () => {
     seedMockDb('bingoBoards/board1', makeBoard({ '7': true }));
     await toggleCell('board1', 'user1', 7);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    expect(getMockDb().get('bingoBoards/board1')!.checkedBy['7']).toBeUndefined();
+    expect(getBoard().checkedBy['7']).toBeUndefined();
   });
 
   test('[BR-6] 25칸 모두 체크 시 status가 completed로 전환된다', async () => {
@@ -62,8 +61,7 @@ describe('[BR-B4/5] toggleCell', () => {
     ) as Record<string, true>;
     seedMockDb('bingoBoards/board1', makeBoard(allButLast));
     await toggleCell('board1', 'user1', 24);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    expect(getMockDb().get('bingoBoards/board1')!.status).toBe('completed');
+    expect(getBoard().status).toBe('completed');
   });
 
   test('[BR-7] 라인 완성 시 newLines 배열에 해당 라인 인덱스가 포함된다', async () => {

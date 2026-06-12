@@ -1,5 +1,4 @@
 import { router } from 'expo-router';
-import { doc, getDoc } from 'firebase/firestore';
 import { ChevronLeft } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import {
@@ -16,8 +15,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { db } from '../../core/config/firebase';
-import { Couple,subscribeCouple } from '../../core/couple';
+import { usePartnerProfile } from '../../core/couple';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { Skeleton } from '../../design-system/Skeleton';
 import { black, colors, radius, space, typography } from '../../design-system/tokens';
@@ -36,33 +34,17 @@ function formatTime(d: Date): string {
 
 export default function DailyFoodScreen() {
   const { user, coupleId }        = useAuthStore();
-  const [couple, setCouple]       = useState<Couple | null>(null);
+  const { partnerUid, partnerName } = usePartnerProfile(coupleId, user?.uid ?? null);
   const [logs, setLogs]           = useState<FoodLog[] | null>(null);
-  const [partnerName, setPartnerName] = useState('상대방');
   const [modalVisible, setModal]  = useState(false);
   const [mealType, setMealType]   = useState<MealType>(suggestMealType());
   const [name, setName]           = useState('');
   const [saving, setSaving]       = useState(false);
 
-  const partnerUid = couple?.memberIds.find((id: string) => id !== user?.uid) ?? null;
-
-  useEffect(() => {
-    if (!coupleId) return;
-    return subscribeCouple(coupleId, setCouple);
-  }, [coupleId]);
-
   useEffect(() => {
     if (!coupleId) return;
     return subscribeTodayFood(coupleId, setLogs);
   }, [coupleId]);
-
-  useEffect(() => {
-    if (!partnerUid) return;
-    getDoc(doc(db, 'users', partnerUid)).then(snap => {
-      const displayName = snap.data()?.displayName as string | undefined;
-      if (displayName) setPartnerName(displayName);
-    });
-  }, [partnerUid]);
 
   const myLogs      = logs?.filter(l => l.userId === user?.uid)      ?? [];
   const partnerLogs = logs?.filter(l => l.userId === partnerUid)     ?? [];

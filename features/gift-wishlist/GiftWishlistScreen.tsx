@@ -1,5 +1,4 @@
 import { router } from 'expo-router';
-import { doc, getDoc } from 'firebase/firestore';
 import { ChevronLeft } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import {
@@ -16,8 +15,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { db } from '../../core/config/firebase';
-import { Couple,subscribeCouple } from '../../core/couple';
+import { usePartnerProfile } from '../../core/couple';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { EmptyState } from '../../design-system/EmptyState';
 import { Skeleton } from '../../design-system/Skeleton';
@@ -34,7 +32,7 @@ type ViewTab = 'partner' | 'mine';
 
 export default function GiftWishlistScreen() {
   const { user, coupleId }        = useAuthStore();
-  const [couple, setCouple]       = useState<Couple | null>(null);
+  const { partnerUid, partnerName } = usePartnerProfile(coupleId, user?.uid ?? null);
   const [all, setAll]             = useState<WishlistItem[] | null>(null);
   const [activeTab, setActiveTab] = useState<ViewTab>('partner');
   const [modalVisible, setModal]  = useState(false);
@@ -42,23 +40,6 @@ export default function GiftWishlistScreen() {
   const [memo, setMemo]           = useState('');
   const [price, setPrice]         = useState('');
   const [saving, setSaving]       = useState(false);
-
-  const [partnerName, setPartnerName] = useState('상대방');
-
-  const partnerUid = couple?.memberIds.find((id: string) => id !== user?.uid) ?? null;
-
-  useEffect(() => {
-    if (!coupleId) return;
-    return subscribeCouple(coupleId, setCouple);
-  }, [coupleId]);
-
-  useEffect(() => {
-    if (!partnerUid) return;
-    getDoc(doc(db, 'users', partnerUid)).then(snap => {
-      const displayName = snap.data()?.displayName as string | undefined;
-      if (displayName) setPartnerName(displayName);
-    });
-  }, [partnerUid]);
 
   useEffect(() => {
     if (!coupleId) return;

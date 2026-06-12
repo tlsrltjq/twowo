@@ -1,5 +1,4 @@
 import * as ImagePicker from 'expo-image-picker';
-import { doc,getDoc } from 'firebase/firestore';
 import { ImageIcon, RefreshCw, Send } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -17,8 +16,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { db } from '../../core/config/firebase';
-import { subscribeCouple } from '../../core/couple';
+import { usePartnerProfile } from '../../core/couple';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { colors, radius, space, typography } from '../../design-system/tokens';
 import { Message, PendingImage,sendImageMessage, sendMessage, subscribeMessages } from './index';
@@ -83,27 +81,12 @@ function buildItems(messages: Message[]): (MsgItem | SepItem)[] {
 
 export default function ChatScreen() {
   const { user, coupleId } = useAuthStore();
+  const { partnerName } = usePartnerProfile(coupleId, user?.uid ?? null);
   const [messages, setMessages]       = useState<Message[]>([]);
-  const [partnerName, setPartnerName] = useState('상대방');
   const [pendingImages, setPendingImages] = useState<PendingImage[]>([]);
   const [inputText, setInputText]     = useState('');
   const [sending, setSending]         = useState(false);
   const inputRef = useRef<TextInput>(null);
-
-  // 상대방 이름 조회
-  useEffect(() => {
-    if (!coupleId || !user) return;
-    const unsub = subscribeCouple(coupleId, async couple => {
-      const partnerUid = (couple.memberIds as string[]).find(id => id !== user.uid);
-      if (!partnerUid) return;
-      try {
-        const snap = await getDoc(doc(db, 'users', partnerUid));
-        const name = snap.data()?.displayName as string | undefined;
-        if (name) setPartnerName(name);
-      } catch {}
-    });
-    return unsub;
-  }, [coupleId, user]);
 
   // 메시지 실시간 구독
   useEffect(() => {

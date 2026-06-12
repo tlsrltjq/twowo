@@ -10,6 +10,7 @@ import {
 } from 'firebase/firestore' ;
 
 import { db } from '../../core/config/firebase';
+import { tsToDate } from '../../core/utils/firestore';
 
 export interface Compliment {
   id: string;
@@ -27,7 +28,7 @@ function fromFirestore(id: string, data: DocumentData): Compliment {
     fromUid:   data.fromUid,
     toUid:     data.toUid,
     text:      data.text,
-    createdAt: data.createdAt?.toDate() ?? new Date(),
+    createdAt: tsToDate(data.createdAt),
   };
 }
 

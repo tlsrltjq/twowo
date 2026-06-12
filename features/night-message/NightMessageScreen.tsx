@@ -1,5 +1,4 @@
 import { router } from 'expo-router';
-import { doc, getDoc } from 'firebase/firestore';
 import { ChevronLeft } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -15,8 +14,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { db } from '../../core/config/firebase';
-import { Couple,subscribeCouple } from '../../core/couple';
+import { usePartnerProfile } from '../../core/couple';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { Skeleton } from '../../design-system/Skeleton';
 import { colors, radius, space, typography } from '../../design-system/tokens';
@@ -35,30 +33,13 @@ function formatTime(d: Date): string {
 
 export default function NightMessageScreen() {
   const { user, coupleId } = useAuthStore();
-  const [couple, setCouple] = useState<Couple | null>(null);
+  const { partnerUid, partnerName } = usePartnerProfile(coupleId, user?.uid ?? null);
   const [activeType, setActiveType] = useState<MessageType>('night');
   const [mine, setMine]       = useState<NightMessage | null | 'loading'>('loading');
   const [partner, setPartner] = useState<NightMessage | null | 'loading'>('loading');
   const [draft, setDraft]     = useState('');
   const [sending, setSending] = useState(false);
   const inputRef = useRef<TextInput>(null);
-
-  const [partnerName, setPartnerName] = useState('상대방');
-
-  const partnerUid = couple?.memberIds.find((id: string) => id !== user?.uid) ?? null;
-
-  useEffect(() => {
-    if (!coupleId) return;
-    return subscribeCouple(coupleId, setCouple);
-  }, [coupleId]);
-
-  useEffect(() => {
-    if (!partnerUid) return;
-    getDoc(doc(db, 'users', partnerUid)).then(snap => {
-      const displayName = snap.data()?.displayName as string | undefined;
-      if (displayName) setPartnerName(displayName);
-    });
-  }, [partnerUid]);
 
   useEffect(() => {
     if (!coupleId || !user || !partnerUid) return;

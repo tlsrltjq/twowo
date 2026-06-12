@@ -13,6 +13,7 @@ import {
 
 import { db } from '../../core/config/firebase';
 import { getTodayKST } from '../../core/utils/date';
+import { tsToDate } from '../../core/utils/firestore';
 
 export interface FirstMoment {
   id: string;
@@ -32,7 +33,7 @@ function fromFirestore(id: string, data: DocumentData): FirstMoment {
     title:    data.title,
     date:     data.date,
     memo:     data.memo,
-    createdAt: data.createdAt?.toDate() ?? new Date(),
+    createdAt: tsToDate(data.createdAt),
   };
 }
 

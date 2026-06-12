@@ -4,6 +4,9 @@ import { castVote, startNewRound } from '../index';
 jest.mock('firebase/firestore', () => require('../../../__mocks__/firebase'));
 jest.mock('../../../core/config/firebase', () => ({ db: {} }));
 
+type SessionDoc = { status: string; choices: Record<string, string>; coupleId: string };
+const getSession = () => getMockDb().get('voteSessions/session1') as SessionDoc;
+
 beforeEach(() => resetMockDb());
 
 describe('[BR-DD3] startNewRound', () => {
@@ -11,11 +14,12 @@ describe('[BR-DD3] startNewRound', () => {
     const id = await startNewRound('couple1');
     expect(typeof id).toBe('string');
     expect(id).toBeTruthy();
-    const db = getMockDb();
-    const sessions = [...db.entries()].filter(([k]) => k.startsWith('voteSessions/'));
+    const mockDb = getMockDb();
+    const sessions = [...mockDb.entries()].filter(([k]) => k.startsWith('voteSessions/'));
     expect(sessions).toHaveLength(1);
-    expect(sessions[0]![1].status).toBe('in_progress');
-    expect(sessions[0]![1].coupleId).toBe('couple1');
+    const first = sessions[0] as [string, SessionDoc];
+    expect(first[1].status).toBe('in_progress');
+    expect(first[1].coupleId).toBe('couple1');
   });
 });
 
@@ -27,9 +31,7 @@ describe('[BR-DD4/5] castVote', () => {
       choices: {},
     });
     await castVote('session1', 'user1', 'cand1', ['user1', 'user2']);
-    const db = getMockDb();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const session = db.get('voteSessions/session1')!;
+    const session = getSession();
     expect(session.status).toBe('in_progress');
     expect(session.choices['user1']).toBe('cand1');
   });
@@ -41,11 +43,9 @@ describe('[BR-DD4/5] castVote', () => {
       choices: { user1: 'cand1' },
     });
     await castVote('session1', 'user2', 'cand2', ['user1', 'user2']);
-    const db = getMockDb();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    expect(db.get('voteSessions/session1')!.status).toBe('revealed');
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    expect(db.get('voteSessions/session1')!.choices['user2']).toBe('cand2');
+    const session = getSession();
+    expect(session.status).toBe('revealed');
+    expect(session.choices['user2']).toBe('cand2');
   });
 
   test('존재하지 않는 세션은 에러', async () => {
@@ -57,8 +57,7 @@ describe('[BR-DD4/5] castVote', () => {
       coupleId: 'couple1', status: 'in_progress', choices: {},
     });
     await castVote('session1', 'user1', 'cand1', ['user1', 'user2']);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const session = getMockDb().get('voteSessions/session1')!;
+    const session = getSession();
     expect(session.status).toBe('in_progress');
     expect(Object.keys(session.choices)).toHaveLength(1);
   });
@@ -68,8 +67,7 @@ describe('[BR-DD4/5] castVote', () => {
       coupleId: 'couple1', status: 'in_progress', choices: { user1: 'cand1' },
     });
     await castVote('session1', 'user1', 'cand2', ['user1', 'user2']);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    expect(getMockDb().get('voteSessions/session1')!.choices['user1']).toBe('cand2');
+    expect(getSession().choices['user1']).toBe('cand2');
   });
 });
 
