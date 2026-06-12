@@ -1,8 +1,8 @@
 import { router } from 'expo-router';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { CalendarEvent } from '../../../core/calendar/schema';
-import { colors, radius, space, typography } from '../../../design-system/tokens';
+import { CalendarEvent } from '../../core/calendar/schema';
+import { colors, radius, space, typography } from '../../design-system/tokens';
 
 export function formatDate(d: Date): string {
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;

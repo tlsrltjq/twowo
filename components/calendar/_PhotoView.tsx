@@ -2,10 +2,10 @@ import { router } from 'expo-router';
 import { useMemo } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { CalendarEvent } from '../../../core/calendar/schema';
-import { EmptyState } from '../../../design-system/EmptyState';
-import { Skeleton } from '../../../design-system/Skeleton';
-import { colors, radius, space, typography } from '../../../design-system/tokens';
+import { CalendarEvent } from '../../core/calendar/schema';
+import { EmptyState } from '../../design-system/EmptyState';
+import { Skeleton } from '../../design-system/Skeleton';
+import { colors, radius, space, typography } from '../../design-system/tokens';
 import { groupByYearMonth, sharedStyles, TYPE_EMOJI, TypeStatsBar } from './_shared';
 
 const PHOTO_CARD_BG: Record<string, string> = {

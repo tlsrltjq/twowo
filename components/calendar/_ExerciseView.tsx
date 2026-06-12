@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
 import { SectionList, Text, View } from 'react-native';
 
-import { CalendarEvent } from '../../../core/calendar/schema';
-import { EmptyState } from '../../../design-system/EmptyState';
-import { Skeleton } from '../../../design-system/Skeleton';
-import { colors } from '../../../design-system/tokens';
+import { CalendarEvent } from '../../core/calendar/schema';
+import { EmptyState } from '../../design-system/EmptyState';
+import { Skeleton } from '../../design-system/Skeleton';
+import { colors } from '../../design-system/tokens';
 import { groupByYearMonth, sharedStyles, TypeEventCard, TypeStatsBar } from './_shared';
 
-export function DateView({ events, loading }: { events: CalendarEvent[]; loading: boolean }) {
+export function ExerciseView({ events, loading }: { events: CalendarEvent[]; loading: boolean }) {
   const thisMonthCount = useMemo(() => {
     const now = new Date();
     return events.filter(
@@ -24,7 +24,7 @@ export function DateView({ events, loading }: { events: CalendarEvent[]; loading
     );
   }
   if (events.length === 0) {
-    return <EmptyState title="데이트 기록이 없어요" description="일정 추가 시 '데이트' 타입을 선택해보세요" />;
+    return <EmptyState title="운동 기록이 없어요" description="일정 추가 시 '운동' 타입을 선택해보세요" />;
   }
   return (
     <SectionList
@@ -32,11 +32,11 @@ export function DateView({ events, loading }: { events: CalendarEvent[]; loading
       keyExtractor={item => item.id}
       ListHeaderComponent={
         <TypeStatsBar
-          emoji="💑"
+          emoji="🏃"
           total={events.length}
           monthCount={thisMonthCount}
-          accentColor={colors.accent.primary}
-          unitLabel="번"
+          accentColor={colors.accent.warm}
+          unitLabel="회"
         />
       }
       renderSectionHeader={({ section }) => (
