@@ -68,11 +68,12 @@
 - [x] **invitations TTL 정책** — Firebase 콘솔에서 설정 완료. `invitations.expiresAt` TTL 정책 빌드 중 → 활성화 후 만료 코드 자동 삭제
 
 ### P3-B: 운영 진입 전 필수 (비용 없음 or 소액)
-- [ ] **Firestore PITR / 정기 백업** — "둘의 추억" 데이터 손실 = 서비스 종료급. 운영 전 1순위. PITR(7일) 또는 `gcloud firestore export` 자동화 + Storage 사진 동일
-- [ ] **Firebase 예산/사용량 알림** — onSnapshot 구독 누수 시 read 폭증 방지. Firebase 콘솔 예산 알림 + 일일 사용량 임계값 설정
-- [ ] **Sentry 소스맵 + release 태깅 확인** — `app/_layout.tsx`에 Sentry 연결됨. 운영 전 소스맵 업로드·release 태깅 동작 검증
-- [ ] **구버전 호환 마이그레이션 ADR** — 두 기기 버전 차이 시 스키마 충돌 방지 규칙. "Firestore 필드는 추가만, 삭제·의미변경은 새 필드" 정책 ADR-023으로 박기
-- [ ] **운영 런북** — `docs/runbook.md`: 배포 순서(indexes→rules→앱), rules 배포 전 에뮬레이터 테스트 확인, 롤백 방법
+- [ ] **Firestore PITR** — Google Cloud Console → Firestore → PITR 탭 → 사용 설정 (7일). 상세: `docs/runbook.md` §4
+- [ ] **Firebase 예산/사용량 알림** — Cloud Console 예산 알림($10) + Firestore 읽기 일별 알림(50,000). 상세: `docs/runbook.md` §5
+- [x] **Sentry release 태깅** — `app/_layout.tsx`에 `release`·`dist` 명시 추가 완료 (Constants 기반 fallback, EAS 빌드 시 플러그인 자동 주입 우선)
+- [ ] **Sentry 소스맵 업로드** — `app.json` 플러그인에 org/project 슬러그 추가 + `eas secret:create SENTRY_AUTH_TOKEN` 필요. 상세: `docs/runbook.md` §6
+- [x] **구버전 호환 마이그레이션 ADR** — ADR-023 작성 완료 (`docs/decisions.md`)
+- [x] **운영 런북** — `docs/runbook.md` 작성 완료 (배포 순서·롤백·모니터링·PITR·예산·Sentry 설정 포함)
 
 ### P3-C: 2차 진입 후 (비용 필요 or 아키텍처 작업)
 - [ ] **App Check (App Attest)** — 앱 외부 직접 API 호출 차단. Security Rules가 유일한 방어층인 현재 구조 보강. 공개 출시 전 적용

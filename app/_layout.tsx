@@ -19,6 +19,10 @@ Sentry.init({
   dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
   environment: process.env.EXPO_PUBLIC_APP_ENV ?? 'development',
   enabled: process.env.EXPO_PUBLIC_APP_ENV !== 'development',
+  // EAS Build 시 @sentry/react-native/expo 플러그인이 SENTRY_RELEASE·SENTRY_DIST를 자동 주입.
+  // dev 빌드는 enabled:false라 미설정 무해.
+  ...(process.env.SENTRY_RELEASE ? { release: process.env.SENTRY_RELEASE } : {}),
+  ...(process.env.SENTRY_DIST   ? { dist:    process.env.SENTRY_DIST }    : {}),
   integrations: [routingInstrumentation],
   tracesSampleRate: 0.2,
 });
