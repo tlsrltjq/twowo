@@ -176,6 +176,14 @@
 - **재검토 시점**: TestFlight 게이트 결과(매일 사용 여부)에 따라 2차 우선순위 재배치. 사용 동력이 약하면 투표/빙고보다 캘린더/추억 강화로 방향 전환.
 
 
+## ADR-022: users create coupleId 차단 + expoPushToken 컬렉션 분리 (2026-06-12)
+- **결정**:
+  1. `users` **create** 규칙에 `coupleId == null` 강제 추가. 공격자가 계정 생성 시 피해자의 `coupleId`를 미리 집어넣어 커플 격리를 우회하는 경로 차단.
+  2. `expoPushToken`을 `users/{uid}` 문서에서 분리 → 별도 `userTokens/{uid}` 컬렉션. `isMe(userId)` 만 read/write 허용. `users` get은 파트너에게도 열려 있으므로 token 노출 방지.
+- **이유**: `users` update 규칙은 `getAfter()` 로 강화됐으나 create는 `id == userId` 만 검증 → 생성 시 coupleId 임의 삽입이 가능했음. expoPushToken은 현재 로컬 알림에만 사용(원격 미구현)이나, 파트너가 읽는 users 문서에 놓는 것 자체가 불필요한 노출.
+- **트레이드오프**: Cloud Functions이 파트너 토큰을 읽으려면 admin SDK 경유 필요(2차). 현재는 원격 푸시 미구현이므로 즉각적 제약 없음.
+- **배포**: `firebase deploy --only firestore:rules` 즉시 반영.
+
 ## ADR-020: Firestore Rules `getAfter()` 기반 쓰기 검증 강화
 - **결정**: 아래 3개 규칙을 `getAfter()` 패턴으로 강화 (2026-06-12 배포).
   1. `users` update: `coupleId` 변경 시 `getAfter(/couples/{newCoupleId}).memberIds`에 `request.auth.uid` 포함 필수 — 클라이언트가 임의 coupleId를 집어넣어 타 커플 데이터에 접근하는 위조 차단.

@@ -53,11 +53,19 @@ expiresAt: Timestamp      // TTL (권장 24시간)
 ### users
 ```
 id: string
-coupleId: string
+coupleId: string | null   // null = 커플 미연결. create 시 반드시 null (rules 강제). join/create 트랜잭션의 update 경로로만 설정 가능
 displayName: string
-expoPushToken?: string    // 푸시 알림용 (Expo Push). 앱 첫 실행/토큰 변경 시 저장 (home BR-5)
-                          // ⚠️ 'fcmToken' 아님 — Expo Push API 사용. 원격 발송은 Cloud Function 만(2차, home BR-8)
+activeInviteCode?: string // 현재 유효한 초대 코드 (재발급 시 이전 코드 삭제용 GET 기반)
 ```
+> `expoPushToken`은 `userTokens` 컬렉션으로 분리 (ADR-022). `users/{uid}` 는 파트너가 읽을 수 있으므로 token 은 포함하지 않는다.
+
+### userTokens
+```
+expoPushToken: string     // Expo Push token. 본인(isMe)만 read/write 가능
+uid: string
+updatedAt: Timestamp
+```
+> Cloud Functions이 원격 푸시를 보낼 때 admin SDK 로 이 컬렉션을 읽는다 (2차, home BR-8).
 
 ### calendarEvents
 ```
@@ -251,7 +259,8 @@ coupleId 있음? → 메인 화면
 
 | 컬렉션 | read | write |
 |--------|------|-------|
-| users | 본인 + 같은 커플 상대방 | 본인. **coupleId 변경 시 `getAfter(couples).memberIds` 로 멤버십 증명 필수** (위조 차단) |
+| users | 본인 + 같은 커플 상대방 | 본인. **create 시 coupleId==null 강제**. update 시 coupleId 변경은 `getAfter(couples).memberIds` 로 멤버십 증명 필수 (위조 차단) |
+| userTokens | 본인만 | 본인만 (파트너 접근 완전 차단) |
 | couples | memberIds 멤버 (또는 size==1 오픈 커플) | 초대 join(size 1→2) 또는 멤버가 **3가지 연산만**: `anniversaryDate` 변경 / disconnect / reconnect. `memberIds·createdAt` 불변 |
 | invitations | 인증된 사용자 누구나 (코드 자체가 비밀, list 금지) | 발급자 본인(create). 삭제는 발급자 **또는 `getAfter(couples).memberIds` 에 속하는 join 완료자** — 제3자 DoS 차단 |
 | calendarEvents | 내 coupleId 와 일치 | 내 coupleId 와 일치 |
