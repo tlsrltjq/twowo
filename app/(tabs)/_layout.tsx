@@ -28,7 +28,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { subscribeFeatureSettings } from '../../core/features';
+import { useFeatureSettings } from '../../core/features';
 import { SidebarContext } from '../../core/sidebar.context';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { black, colors, radius, space, typography } from '../../design-system/tokens';
@@ -65,17 +65,12 @@ export default function TabsLayout() {
   // 채팅 읽음 배지
   const chatSeenAt = useRef(new Date());
   const [unreadChat, setUnreadChat]             = useState(0);
-  const [featureSettings, setFeatureSettings]   = useState<Record<string, boolean>>({});
+  const featureSettings = useFeatureSettings(coupleId);
 
   useEffect(() => {
     if (!coupleId || !user) return;
     return subscribeUnreadCount(coupleId, user.uid, chatSeenAt.current, setUnreadChat);
   }, [coupleId, user?.uid]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    if (!coupleId) return;
-    return subscribeFeatureSettings(coupleId, setFeatureSettings);
-  }, [coupleId]);
 
   useEffect(() => {
     if (pathname === '/chat') {

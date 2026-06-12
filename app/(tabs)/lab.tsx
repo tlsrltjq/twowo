@@ -1,10 +1,10 @@
 import { Href, router } from 'expo-router';
 import { FlaskConical } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { getRegistry, setFeatureEnabled, subscribeFeatureSettings } from '../../core/features';
+import { getRegistry, setFeatureEnabled, useFeatureSettings } from '../../core/features';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { colors, radius, space, typography } from '../../design-system/tokens';
 
@@ -24,13 +24,8 @@ const experimentalFeatures = getRegistry().filter(f => f.status === 'experimenta
 
 export default function LabScreen() {
   const { coupleId } = useAuthStore();
-  const [settings, setSettings]   = useState<Record<string, boolean>>({});
+  const settings                  = useFeatureSettings(coupleId);
   const [toggling, setToggling]   = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!coupleId) return;
-    return subscribeFeatureSettings(coupleId, setSettings);
-  }, [coupleId]);
 
   const handleToggle = async (featureId: string, value: boolean) => {
     if (!coupleId || toggling) return;

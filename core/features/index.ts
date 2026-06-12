@@ -37,4 +37,5 @@ export function subscribeFeatureSettings(
   });
 }
 
+export { useFeatureSettings } from './useFeatureSettings';
 export type { AppFeature };
