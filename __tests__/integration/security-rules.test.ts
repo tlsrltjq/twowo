@@ -17,6 +17,7 @@ import {
   RulesTestEnvironment,
 } from '@firebase/rules-unit-testing';
 import {
+  addDoc,
   collection,
   deleteDoc,
   doc,
@@ -224,6 +225,111 @@ if (process.env.FIRESTORE_EMULATOR_HOST) {
 
       const evilDb = testEnv.authenticatedContext('uid-evil').firestore();
       await assertFails(deleteDoc(doc(evilDb, 'invitations', 'XYZ999')));
+    });
+
+    // ─── 채팅 메시지 rules ────────────────────────────────────────────────────
+
+    it('[BR-2] 타인 senderId로 메시지 생성 → PERMISSION_DENIED', async () => {
+      await testEnv.withSecurityRulesDisabled(async (ctx) => {
+        const db = ctx.firestore();
+        await setDoc(doc(db, 'users', 'uid-a'), { id: 'uid-a', displayName: 'A', coupleId: 'couple-1' });
+        await setDoc(doc(db, 'couples', 'couple-1'), { id: 'couple-1', memberIds: ['uid-a', 'uid-b'], status: 'active', createdAt: new Date() });
+      });
+
+      const uidADb = testEnv.authenticatedContext('uid-a').firestore();
+      await assertFails(
+        addDoc(collection(uidADb, 'couples', 'couple-1', 'messages'), {
+          senderId:  'uid-evil',   // 본인 uid-a 가 아닌 타인
+          text:      '위조 메시지',
+          createdAt: new Date(),
+        })
+      );
+    });
+
+    it('[BR-2] 본인 senderId로 메시지 생성 → 허용', async () => {
+      await testEnv.withSecurityRulesDisabled(async (ctx) => {
+        const db = ctx.firestore();
+        await setDoc(doc(db, 'users', 'uid-a'), { id: 'uid-a', displayName: 'A', coupleId: 'couple-1' });
+        await setDoc(doc(db, 'couples', 'couple-1'), { id: 'couple-1', memberIds: ['uid-a', 'uid-b'], status: 'active', createdAt: new Date() });
+      });
+
+      const uidADb = testEnv.authenticatedContext('uid-a').firestore();
+      await assertSucceeds(
+        addDoc(collection(uidADb, 'couples', 'couple-1', 'messages'), {
+          senderId:  'uid-a',
+          text:      '정상 메시지',
+          createdAt: new Date(),
+        })
+      );
+    });
+
+    it('[BR-4] text·imageUrl 모두 없으면 rules 거부', async () => {
+      await testEnv.withSecurityRulesDisabled(async (ctx) => {
+        const db = ctx.firestore();
+        await setDoc(doc(db, 'users', 'uid-a'), { id: 'uid-a', displayName: 'A', coupleId: 'couple-1' });
+        await setDoc(doc(db, 'couples', 'couple-1'), { id: 'couple-1', memberIds: ['uid-a', 'uid-b'], status: 'active', createdAt: new Date() });
+      });
+
+      const uidADb = testEnv.authenticatedContext('uid-a').firestore();
+      await assertFails(
+        addDoc(collection(uidADb, 'couples', 'couple-1', 'messages'), {
+          senderId:  'uid-a',
+          text:      '',           // 빈 텍스트 + imageUrl 없음
+          createdAt: new Date(),
+        })
+      );
+    });
+
+    it('[BR-4] 빈 text + imageUrl 있으면 허용', async () => {
+      await testEnv.withSecurityRulesDisabled(async (ctx) => {
+        const db = ctx.firestore();
+        await setDoc(doc(db, 'users', 'uid-a'), { id: 'uid-a', displayName: 'A', coupleId: 'couple-1' });
+        await setDoc(doc(db, 'couples', 'couple-1'), { id: 'couple-1', memberIds: ['uid-a', 'uid-b'], status: 'active', createdAt: new Date() });
+      });
+
+      const uidADb = testEnv.authenticatedContext('uid-a').firestore();
+      await assertSucceeds(
+        addDoc(collection(uidADb, 'couples', 'couple-1', 'messages'), {
+          senderId:  'uid-a',
+          text:      '',
+          imageUrl:  'https://storage.example.com/img.jpg',
+          createdAt: new Date(),
+        })
+      );
+    });
+
+    it('[BR-7] 메시지 update → PERMISSION_DENIED', async () => {
+      let msgId: string;
+      await testEnv.withSecurityRulesDisabled(async (ctx) => {
+        const db = ctx.firestore();
+        await setDoc(doc(db, 'users', 'uid-a'), { id: 'uid-a', displayName: 'A', coupleId: 'couple-1' });
+        await setDoc(doc(db, 'couples', 'couple-1'), { id: 'couple-1', memberIds: ['uid-a', 'uid-b'], status: 'active', createdAt: new Date() });
+        const ref = doc(collection(db, 'couples', 'couple-1', 'messages'));
+        msgId = ref.id;
+        await setDoc(ref, { senderId: 'uid-a', text: '원본', createdAt: new Date() });
+      });
+
+      const uidADb = testEnv.authenticatedContext('uid-a').firestore();
+      await assertFails(
+        updateDoc(doc(uidADb, 'couples', 'couple-1', 'messages', msgId!), { text: '수정 시도' })
+      );
+    });
+
+    it('[BR-7] 메시지 delete → PERMISSION_DENIED', async () => {
+      let msgId: string;
+      await testEnv.withSecurityRulesDisabled(async (ctx) => {
+        const db = ctx.firestore();
+        await setDoc(doc(db, 'users', 'uid-a'), { id: 'uid-a', displayName: 'A', coupleId: 'couple-1' });
+        await setDoc(doc(db, 'couples', 'couple-1'), { id: 'couple-1', memberIds: ['uid-a', 'uid-b'], status: 'active', createdAt: new Date() });
+        const ref = doc(collection(db, 'couples', 'couple-1', 'messages'));
+        msgId = ref.id;
+        await setDoc(ref, { senderId: 'uid-a', text: '삭제 대상', createdAt: new Date() });
+      });
+
+      const uidADb = testEnv.authenticatedContext('uid-a').firestore();
+      await assertFails(
+        deleteDoc(doc(uidADb, 'couples', 'couple-1', 'messages', msgId!))
+      );
     });
 
     it('A3: 발급자 본인 invitation 삭제 → 허용', async () => {

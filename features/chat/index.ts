@@ -47,6 +47,7 @@ export async function sendMessage(
   senderId: string,
   text: string,
 ): Promise<void> {
+  if (text.length > 1000) throw new Error('텍스트는 최대 1000자입니다');
   await addDoc(collection(db, 'couples', coupleId, 'messages'), {
     senderId,
     text: text.trim(),
