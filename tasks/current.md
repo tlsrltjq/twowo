@@ -65,10 +65,7 @@
 - [x] **chat 스펙 문서 누락** — `docs/specs/chat.md` 작성 완료. current.md 상태 불일치(experimental→active 고정탭) 수정 완료
 - [x] **FRONTEND_RULES 참조 경로 깨짐** — `docs/frontend.md`·`design-system.md` → `docs/_archive/` 경로로 전체 수정 완료
 - [x] **console 정책 현실화** — FRONTEND_RULES 조항 수정: debug warn/log는 `__DEV__` 가드, catch 블록 `console.error`는 Sentry 캡처 목적으로 가드 없이 허용. `_layout.tsx:63` 기존 코드가 이미 올바른 패턴
-- [ ] **invitations TTL 정책** — Firebase 콘솔 작업 필요 (코드 변경 없음):
-  - Firebase Console → Firestore → 데이터베이스 → `invitations` 컬렉션 → 필드 TTL 정책
-  - 필드명: `expiresAt` / 타입: Timestamp — "TTL 정책 추가" 클릭
-  - 적용 후 24h 지난 초대 코드 자동 삭제됨
+- [x] **invitations TTL 정책** — Firebase 콘솔에서 설정 완료. `invitations.expiresAt` TTL 정책 빌드 중 → 활성화 후 만료 코드 자동 삭제
 
 ### P3-B: 운영 진입 전 필수 (비용 없음 or 소액)
 - [ ] **Firestore PITR / 정기 백업** — "둘의 추억" 데이터 손실 = 서비스 종료급. 운영 전 1순위. PITR(7일) 또는 `gcloud firestore export` 자동화 + Storage 사진 동일
