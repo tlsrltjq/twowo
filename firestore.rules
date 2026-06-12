@@ -88,7 +88,7 @@ service cloud.firestore {
       allow update: if isMe(userId)
                     && request.resource.data.id == userId
                     && (
-                      // coupleId 변경 없음 — 일반 프로필 수정(displayName, expoPushToken 등)
+                      // coupleId 변경 없음 — 일반 프로필 수정(displayName 등)
                       request.resource.data.coupleId == resource.data.coupleId
                       // coupleId null 허용 — 해제 후 초기화 경로
                       || request.resource.data.coupleId == null
@@ -97,6 +97,13 @@ service cloud.firestore {
                           && request.auth.uid in getAfter(/databases/$(database)/documents/couples/$(request.resource.data.coupleId)).data.memberIds)
                     );
       allow delete: if false;
+    }
+
+    // ---------- userTokens (push notification token — private) ----------
+    // expoPushToken을 공개 users 문서와 분리. 본인만 읽기/쓰기 허용.
+    // Cloud Functions이 서버에서 파트너 토큰을 읽는 경로는 admin SDK 경유 예정 (2차).
+    match /userTokens/{userId} {
+      allow read, write: if isMe(userId);
     }
 
     // ---------- couples ----------

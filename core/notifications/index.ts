@@ -22,7 +22,8 @@ export async function ensurePermissionAndToken(uid: string): Promise<{
 
   try {
     const { data: token } = await Notifications.getExpoPushTokenAsync();
-    await setDoc(doc(db, 'users', uid), { expoPushToken: token }, { merge: true });
+    // userTokens 컬렉션에 격리: 파트너가 users/{uid} 전체를 읽어도 토큰은 노출되지 않음
+    await setDoc(doc(db, 'userTokens', uid), { expoPushToken: token, uid, updatedAt: new Date() });
     return { status: 'granted', token };
   } catch (e) {
     // 시뮬레이터 등 토큰 발급 불가 환경 — 권한은 granted지만 토큰 없음
