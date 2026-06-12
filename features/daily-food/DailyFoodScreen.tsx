@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import {
   Alert,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -109,7 +108,7 @@ export default function DailyFoodScreen() {
         <View style={{ width: 36 }} />
       </View>
 
-      <Text style={styles.dateLabel}>{formatDate(new Date())}</Text>
+      <Text testID={logs !== null ? 'daily-food-ready' : undefined} style={styles.dateLabel}>{formatDate(new Date())}</Text>
 
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
@@ -157,10 +156,11 @@ export default function DailyFoodScreen() {
         <Text style={styles.fabText}>＋</Text>
       </Pressable>
 
-      {/* 입력 모달 */}
-      <Modal visible={modalVisible} transparent animationType="fade" onRequestClose={() => setModal(false)}>
-        <Pressable style={styles.backdrop} onPress={() => setModal(false)}>
-          <Pressable style={styles.modalCard} onPress={() => {}}>
+      {/* 입력 오버레이 — KAV 래퍼로 키보드 올라올 때 버튼 노출 보장 */}
+      {modalVisible && (
+        <KeyboardAvoidingView testID="overlay-food" style={StyleSheet.absoluteFill} behavior={Platform.OS === 'ios' ? 'padding' : undefined} accessibilityViewIsModal>
+          <Pressable accessible={false} style={styles.backdrop} onPress={() => setModal(false)}>
+          <Pressable accessible={false} style={styles.modalCard} onPress={() => {}}>
             <Text style={styles.modalTitle}>뭐 먹었어? 🍽️</Text>
 
             {/* 식사 타입 선택 */}
@@ -193,7 +193,7 @@ export default function DailyFoodScreen() {
             />
 
             <View style={styles.modalFooter}>
-              <Text style={styles.charCount}>{name.trim().length}/50</Text>
+              <Text testID={name.trim().length > 0 ? 'food-name-ready' : undefined} style={styles.charCount}>{name.trim().length}/50</Text>
               <View style={styles.modalBtns}>
                 <TouchableOpacity style={styles.cancelBtn} onPress={() => setModal(false)}>
                   <Text style={styles.cancelBtnText}>취소</Text>
@@ -210,7 +210,8 @@ export default function DailyFoodScreen() {
             </View>
           </Pressable>
         </Pressable>
-      </Modal>
+        </KeyboardAvoidingView>
+      )}
     </SafeAreaView>
   );
 }
@@ -224,6 +225,7 @@ function FoodCard({
 }) {
   return (
     <TouchableOpacity
+      testID="food-log-card"
       style={styles.card}
       onLongPress={onDelete}
       activeOpacity={onDelete ? 0.7 : 1}

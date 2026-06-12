@@ -6,7 +6,6 @@ import {
   Alert,
   FlatList,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   Pressable,
   StyleSheet,
@@ -103,7 +102,7 @@ export default function ComplimentJarScreen() {
       {/* 저금통 요약 */}
       <View style={styles.jarBanner}>
         <Text style={styles.jarEmoji}>🫙</Text>
-        <Text style={styles.jarCount}>
+        <Text testID={all !== null && couple !== null ? 'compliment-jar-ready' : undefined} style={styles.jarCount}>
           {all === null ? '...' : `우리가 쌓은 칭찬 ${total}개`}
         </Text>
       </View>
@@ -111,11 +110,12 @@ export default function ComplimentJarScreen() {
       {/* 탭 */}
       <View style={styles.tabBar}>
         {([
-          { key: 'received' as ViewTab, label: `💝 ${partnerName}에게 받은` },
-          { key: 'sent'     as ViewTab, label: '✏️ 내가 쓴 칭찬' },
+          { key: 'received' as ViewTab, label: `💝 ${partnerName}에게 받은`, testID: 'tab-compliment-received' },
+          { key: 'sent'     as ViewTab, label: '✏️ 내가 쓴 칭찬', testID: 'tab-compliment-sent' },
         ]).map(tab => (
           <TouchableOpacity
             key={tab.key}
+            testID={tab.testID}
             style={[styles.tab, activeTab === tab.key && styles.tabActive]}
             onPress={() => setActiveTab(tab.key)}
           >
@@ -150,51 +150,52 @@ export default function ComplimentJarScreen() {
         <Text style={styles.fabText}>＋</Text>
       </Pressable>
 
-      {/* 작성 모달 */}
-      <Modal visible={modalVisible} transparent animationType="fade" onRequestClose={() => setModal(false)}>
-        <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <Pressable style={styles.backdrop} onPress={() => setModal(false)}>
-          <Pressable style={styles.modalCard} onPress={() => {}}>
-            <Text style={styles.modalTitle}>칭찬 저금하기 🫙</Text>
-            <TextInput
-              ref={inputRef}
-              testID="input-compliment"
-              style={styles.modalInput}
-              placeholder="상대에게 전하고 싶은 칭찬을 써보세요"
-              placeholderTextColor={colors.text.muted}
-              value={draft}
-              onChangeText={setDraft}
-              maxLength={150}
-              multiline
-              textAlignVertical="top"
-            />
-            <View style={styles.modalFooter}>
-              <Text style={styles.charCount}>{draft.trim().length}/150</Text>
-              <View style={styles.modalBtns}>
-                <TouchableOpacity style={styles.cancelBtn} onPress={() => setModal(false)}>
-                  <Text style={styles.cancelBtnText}>취소</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  testID="btn-compliment-send"
-                  style={[styles.saveBtn, (!draft.trim() || sending) && styles.saveBtnDisabled]}
-                  onPress={handleSend}
-                  disabled={!draft.trim() || sending}
-                >
-                  <Text style={styles.saveBtnText}>{sending ? '저금 중...' : '저금하기'}</Text>
-                </TouchableOpacity>
+      {/* 작성 오버레이 — Modal 대신 absoluteFill View (Maestro testID 접근 가능) */}
+      {modalVisible && (
+        <KeyboardAvoidingView testID="overlay-compliment" style={StyleSheet.absoluteFill} behavior={Platform.OS === 'ios' ? 'padding' : undefined} accessibilityViewIsModal>
+          <Pressable accessible={false} style={styles.backdrop} onPress={() => setModal(false)}>
+            <Pressable accessible={false} style={styles.modalCard} onPress={() => {}}>
+              <Text style={styles.modalTitle}>칭찬 저금하기 🫙</Text>
+              <TextInput
+                ref={inputRef}
+                testID="input-compliment"
+                style={styles.modalInput}
+                placeholder="상대에게 전하고 싶은 칭찬을 써보세요"
+                placeholderTextColor={colors.text.muted}
+                value={draft}
+                onChangeText={setDraft}
+                maxLength={150}
+                multiline
+                textAlignVertical="top"
+                autoFocus
+              />
+              <View style={styles.modalFooter}>
+                <Text testID={draft.trim().length > 0 ? 'compliment-draft-ready' : undefined} style={styles.charCount}>{draft.trim().length}/150</Text>
+                <View style={styles.modalBtns}>
+                  <TouchableOpacity style={styles.cancelBtn} onPress={() => setModal(false)}>
+                    <Text style={styles.cancelBtnText}>취소</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    testID="btn-compliment-send"
+                    style={[styles.saveBtn, (!draft.trim() || sending) && styles.saveBtnDisabled]}
+                    onPress={handleSend}
+                    disabled={!draft.trim() || sending}
+                  >
+                    <Text style={styles.saveBtnText}>{sending ? '저금 중...' : '저금하기'}</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
+            </Pressable>
           </Pressable>
-        </Pressable>
         </KeyboardAvoidingView>
-      </Modal>
+      )}
     </SafeAreaView>
   );
 }
 
 function ComplimentCard({ compliment }: { compliment: Compliment }) {
   return (
-    <View style={styles.card}>
+    <View testID="compliment-card" style={styles.card}>
       <Text style={styles.cardText}>{compliment.text}</Text>
       <Text style={styles.cardMeta}>{formatDate(compliment.createdAt)}</Text>
     </View>

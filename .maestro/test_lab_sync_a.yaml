@@ -1,0 +1,224 @@
+appId: host.exp.Exponent
+---
+# Account A (iPhone 14 Pro) — 실험실 모달 4종 데이터 쓰기
+# overlay-* testID: 모달 KAV/View 컨테이너. View는 disabled 없음 → unmount 시에만 notVisible.
+# btn-*-save는 saving=true 되는 순간 disabled → isHittable=false → Maestro notVisible 오탐 발생.
+
+# ─────────────────────────────────────────────
+# 1. 칭찬 저금통: "정말 멋진 사람이야"
+# ─────────────────────────────────────────────
+- launchApp
+- tapOn:
+    text: "둘다좋아"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 90000
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- tapOn: "칭찬 저금통"
+- extendedWaitUntil:
+    visible:
+      id: "screen-compliment-jar"
+    timeout: 15000
+# couple + compliments 구독 로드 대기 (partnerUid null 방지)
+- extendedWaitUntil:
+    visible:
+      id: "compliment-jar-ready"
+    timeout: 15000
+- tapOn:
+    id: "fab-compliment"
+# btn-compliment-send (interactive) 로 모달 대기
+- extendedWaitUntil:
+    visible:
+      id: "btn-compliment-send"
+    timeout: 10000
+- tapOn:
+    id: "input-compliment"
+- inputText: "정말 멋진 사람이야"
+- waitForAnimationToEnd
+# draft 상태 업데이트 검증 (비어있으면 버튼이 disabled라 handleSend 실행 안됨)
+- extendedWaitUntil:
+    visible:
+      id: "compliment-draft-ready"
+    timeout: 5000
+- tapOn:
+    id: "btn-compliment-send"
+# overlay-compliment = KAV 컨테이너 testID. disabled 없음 → setModal(false) 후에만 사라짐.
+# btn-compliment-send는 saving=true 되면 disabled → isHittable=false → 오탐. 사용 금지.
+- extendedWaitUntil:
+    notVisible:
+      id: "overlay-compliment"
+    timeout: 15000
+# 저장 검증: "내가 쓴 칭찬" 탭에서 카드 확인
+- tapOn:
+    id: "tab-compliment-sent"
+- extendedWaitUntil:
+    visible:
+      id: "compliment-card"
+    timeout: 15000
+- takeScreenshot: "sync_a_compliment_saved"
+
+# ─────────────────────────────────────────────
+# 2. 오늘 뭐 먹었어: "파스타"
+# ─────────────────────────────────────────────
+- launchApp
+- tapOn:
+    text: "둘다좋아"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 90000
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- tapOn: "오늘 뭐 먹었어"
+- extendedWaitUntil:
+    visible:
+      id: "screen-daily-food"
+    timeout: 15000
+# 구독 로드 대기 → coupleId 설정 + onSnapshot 콜백 수신 확인
+- extendedWaitUntil:
+    visible:
+      id: "daily-food-ready"
+    timeout: 15000
+- tapOn:
+    id: "fab-food"
+- extendedWaitUntil:
+    visible:
+      id: "btn-food-save"
+    timeout: 10000
+- tapOn:
+    id: "input-food-name"
+- eraseText: 10
+- inputText: "파스타"
+- waitForAnimationToEnd
+# name 상태 업데이트 확인 (비어있으면 버튼 disabled → handleSave 실행 안됨)
+- extendedWaitUntil:
+    visible:
+      id: "food-name-ready"
+    timeout: 5000
+- tapOn:
+    id: "btn-food-save"
+# overlay-food = View 컨테이너 testID. disabled 없음 → setModal(false) 후에만 사라짐.
+- extendedWaitUntil:
+    notVisible:
+      id: "overlay-food"
+    timeout: 15000
+- extendedWaitUntil:
+    visible:
+      id: "food-log-card"
+    timeout: 10000
+- takeScreenshot: "sync_a_food_saved"
+
+# ─────────────────────────────────────────────
+# 3. 처음 한 것들: "처음 여행"
+# ─────────────────────────────────────────────
+- launchApp
+- tapOn:
+    text: "둘다좋아"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 90000
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- tapOn: "처음 한 것들"
+- extendedWaitUntil:
+    visible:
+      id: "screen-first-moments"
+    timeout: 15000
+# 구독 로드 대기 → coupleId 설정 확인
+- extendedWaitUntil:
+    visible:
+      id: "first-moments-ready"
+    timeout: 15000
+- tapOn:
+    id: "fab-first-moments"
+- extendedWaitUntil:
+    visible:
+      id: "btn-moment-save"
+    timeout: 10000
+- tapOn:
+    id: "input-moment-title"
+- eraseText: 10
+- inputText: "처음 여행"
+- waitForAnimationToEnd
+# title 상태 업데이트 확인
+- extendedWaitUntil:
+    visible:
+      id: "moment-title-ready"
+    timeout: 5000
+# 날짜 필드(numbers-and-punctuation)로 포커스 이동 → 한국어 IME 해제
+- tapOn:
+    id: "input-moment-date"
+- waitForAnimationToEnd
+- tapOn:
+    id: "btn-moment-save"
+# overlay-moments = KAV 컨테이너 testID. disabled 없음 → setModal(false) 후에만 사라짐.
+- extendedWaitUntil:
+    notVisible:
+      id: "overlay-moments"
+    timeout: 15000
+- extendedWaitUntil:
+    visible:
+      id: "moment-card"
+    timeout: 10000
+- takeScreenshot: "sync_a_moments_saved"
+
+# ─────────────────────────────────────────────
+# 4. 선물 위시리스트: "에어팟" (내 목록 탭에서만 FAB 노출)
+# ─────────────────────────────────────────────
+- launchApp
+- tapOn:
+    text: "둘다좋아"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 90000
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- tapOn: "선물 위시리스트"
+- extendedWaitUntil:
+    visible:
+      id: "screen-gift-wishlist"
+    timeout: 15000
+# 구독 로드 대기 → coupleId 설정 확인
+- extendedWaitUntil:
+    visible:
+      id: "gift-wishlist-ready"
+    timeout: 15000
+- tapOn:
+    id: "tab-wishlist-mine"
+- waitForAnimationToEnd
+- tapOn:
+    id: "fab-wishlist"
+- extendedWaitUntil:
+    visible:
+      id: "btn-wishlist-save"
+    timeout: 10000
+- tapOn:
+    id: "input-wishlist-name"
+- eraseText: 10
+- inputText: "에어팟"
+- waitForAnimationToEnd
+# name 상태 업데이트 확인
+- extendedWaitUntil:
+    visible:
+      id: "wishlist-name-ready"
+    timeout: 5000
+- tapOn:
+    id: "btn-wishlist-save"
+# overlay-wishlist = KAV 컨테이너 testID. disabled 없음 → setModal(false) 후에만 사라짐.
+- extendedWaitUntil:
+    notVisible:
+      id: "overlay-wishlist"
+    timeout: 15000
+- takeScreenshot: "sync_a_wishlist_saved"

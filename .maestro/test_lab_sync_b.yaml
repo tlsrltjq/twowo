@@ -1,0 +1,202 @@
+appId: host.exp.Exponent
+---
+# Account B (iPhone 16) — 실험실 기능 7종 A 데이터 동기화 확인
+# 실행 전: Account A에서 test_night_message / test_daily_gratitude / test_our_playlist
+#          / test_lab_sync_a 모두 실행 완료 후 진행
+
+# ─────────────────────────────────────────────
+# 1. 자기 전 한 마디 — A의 "오늘도 수고했어 잘 자" 수신 확인
+# ─────────────────────────────────────────────
+- launchApp
+- tapOn:
+    text: "둘다좋아"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 90000
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- tapOn: "자기 전 한 마디"
+- extendedWaitUntil:
+    visible:
+      id: "screen-night-message"
+    timeout: 15000
+- extendedWaitUntil:
+    visible: "오늘도 수고했어 잘 자"
+    timeout: 15000
+- takeScreenshot: "sync_b_night_ok"
+
+# ─────────────────────────────────────────────
+# 2. 칭찬 저금통 — A가 보낸 "정말 멋진 사람이야" 수신 확인 (받은 탭 기본)
+# ─────────────────────────────────────────────
+- launchApp
+- tapOn:
+    text: "둘다좋아"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 90000
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- tapOn: "칭찬 저금통"
+- extendedWaitUntil:
+    visible:
+      id: "screen-compliment-jar"
+    timeout: 15000
+# couple + compliments 구독 로드 대기
+- extendedWaitUntil:
+    visible:
+      id: "compliment-jar-ready"
+    timeout: 15000
+# A의 칭찬이 받은 탭에 카드로 렌더링되는지 확인
+- extendedWaitUntil:
+    visible:
+      id: "compliment-card"
+    timeout: 15000
+- takeScreenshot: "sync_b_compliment_ok"
+
+# ─────────────────────────────────────────────
+# 3. 오늘 뭐 먹었어 — A의 "파스타" 식사 기록 확인
+# ─────────────────────────────────────────────
+- launchApp
+- tapOn:
+    text: "둘다좋아"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 90000
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- tapOn: "오늘 뭐 먹었어"
+- extendedWaitUntil:
+    visible:
+      id: "screen-daily-food"
+    timeout: 15000
+- extendedWaitUntil:
+    visible:
+      id: "daily-food-ready"
+    timeout: 15000
+# food-log-card: FoodCard testID — A의 음식 기록이 렌더링되면 나타남
+- extendedWaitUntil:
+    visible:
+      id: "food-log-card"
+    timeout: 15000
+- takeScreenshot: "sync_b_food_ok"
+
+# ─────────────────────────────────────────────
+# 4. 처음 한 것들 — A가 추가한 "처음 여행" 확인
+# ─────────────────────────────────────────────
+- launchApp
+- tapOn:
+    text: "둘다좋아"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 90000
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- tapOn: "처음 한 것들"
+- extendedWaitUntil:
+    visible:
+      id: "screen-first-moments"
+    timeout: 15000
+- extendedWaitUntil:
+    visible:
+      id: "first-moments-ready"
+    timeout: 15000
+# moment-card: MomentCard testID — A의 "처음 여행" 기록이 렌더링되면 나타남
+- extendedWaitUntil:
+    visible:
+      id: "moment-card"
+    timeout: 15000
+- takeScreenshot: "sync_b_moments_ok"
+
+# ─────────────────────────────────────────────
+# 5. 선물 위시리스트 — A의 "에어팟" 확인 (기본 탭: 상대방 위시리스트)
+# ─────────────────────────────────────────────
+- launchApp
+- tapOn:
+    text: "둘다좋아"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 90000
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- tapOn: "선물 위시리스트"
+- extendedWaitUntil:
+    visible:
+      id: "screen-gift-wishlist"
+    timeout: 15000
+- extendedWaitUntil:
+    visible:
+      id: "gift-wishlist-ready"
+    timeout: 15000
+# wishlist-card: WishlistCard testID — A의 위시리스트 아이템이 렌더링되면 나타남
+- extendedWaitUntil:
+    visible:
+      id: "wishlist-card"
+    timeout: 15000
+- takeScreenshot: "sync_b_wishlist_ok"
+
+# ─────────────────────────────────────────────
+# 6. 오늘의 고마움 — A의 "오늘 맛있는 거 사줘서 너무 고마워" 확인
+# ─────────────────────────────────────────────
+- launchApp
+- tapOn:
+    text: "둘다좋아"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 90000
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- tapOn: "오늘의 고마움"
+- extendedWaitUntil:
+    visible:
+      id: "screen-gratitude"
+    timeout: 15000
+- extendedWaitUntil:
+    visible: "오늘 맛있는 거 사줘서 너무 고마워"
+    timeout: 15000
+- takeScreenshot: "sync_b_gratitude_ok"
+
+# ─────────────────────────────────────────────
+# 7. 우리의 플레이리스트 — A가 추가한 "봄날" 확인
+# ─────────────────────────────────────────────
+- launchApp
+- tapOn:
+    text: "둘다좋아"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 90000
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- tapOn: "우리의 플레이리스트"
+- extendedWaitUntil:
+    visible:
+      id: "screen-our-playlist"
+    timeout: 15000
+- extendedWaitUntil:
+    notVisible:
+      id: "playlist-loading"
+    timeout: 30000
+- extendedWaitUntil:
+    visible: "봄날"
+    timeout: 15000
+- takeScreenshot: "sync_b_playlist_ok"

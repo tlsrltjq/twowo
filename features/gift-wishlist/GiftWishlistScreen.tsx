@@ -6,7 +6,6 @@ import {
   Alert,
   FlatList,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   Pressable,
   StyleSheet,
@@ -109,7 +108,7 @@ export default function GiftWishlistScreen() {
       </View>
 
       {/* 탭 */}
-      <View style={styles.tabBar}>
+      <View testID={all !== null ? 'gift-wishlist-ready' : undefined} style={styles.tabBar}>
         {([
           { key: 'partner' as ViewTab, label: `🎁 ${partnerName} 위시리스트` },
           { key: 'mine'    as ViewTab, label: '✏️ 내 목록' },
@@ -168,71 +167,71 @@ export default function GiftWishlistScreen() {
         </Pressable>
       )}
 
-      {/* 입력 모달 */}
-      <Modal visible={modalVisible} transparent animationType="fade" onRequestClose={() => setModal(false)}>
-        <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <Pressable style={styles.backdrop} onPress={() => setModal(false)}>
-          <Pressable style={styles.modalCard} onPress={() => {}}>
-            <Text style={styles.modalTitle}>갖고 싶은 것 추가 🎀</Text>
+      {/* 입력 오버레이 — Modal 대신 absoluteFill View (Maestro testID 접근 가능) */}
+      {modalVisible && (
+        <KeyboardAvoidingView testID="overlay-wishlist" style={StyleSheet.absoluteFill} behavior={Platform.OS === 'ios' ? 'padding' : undefined} accessibilityViewIsModal>
+          <Pressable accessible={false} style={styles.backdrop} onPress={() => setModal(false)}>
+            <Pressable accessible={false} style={styles.modalCard} onPress={() => {}}>
+              <Text style={styles.modalTitle}>갖고 싶은 것 추가 🎀</Text>
 
-            <View style={styles.fieldGroup}>
-              <Text style={styles.fieldLabel}>이름 *</Text>
-              <TextInput
-                testID="input-wishlist-name"
-                style={styles.fieldInput}
-                placeholder="에어팟, 향수, 책..."
-                placeholderTextColor={colors.text.muted}
-                value={name}
-                onChangeText={setName}
-                maxLength={60}
-                autoFocus
-              />
-              <Text style={styles.charCount}>{name.trim().length}/60</Text>
-            </View>
+              <View style={styles.fieldGroup}>
+                <Text style={styles.fieldLabel}>이름 *</Text>
+                <TextInput
+                  testID="input-wishlist-name"
+                  style={styles.fieldInput}
+                  placeholder="에어팟, 향수, 책..."
+                  placeholderTextColor={colors.text.muted}
+                  value={name}
+                  onChangeText={setName}
+                  maxLength={60}
+                  autoFocus
+                />
+                <Text testID={name.trim().length > 0 ? 'wishlist-name-ready' : undefined} style={styles.charCount}>{name.trim().length}/60</Text>
+              </View>
 
-            <View style={styles.fieldGroup}>
-              <Text style={styles.fieldLabel}>가격대 (선택)</Text>
-              <TextInput
-                style={styles.fieldInput}
-                placeholder="~10만원대"
-                placeholderTextColor={colors.text.muted}
-                value={price}
-                onChangeText={setPrice}
-                maxLength={30}
-              />
-            </View>
+              <View style={styles.fieldGroup}>
+                <Text style={styles.fieldLabel}>가격대 (선택)</Text>
+                <TextInput
+                  style={styles.fieldInput}
+                  placeholder="~10만원대"
+                  placeholderTextColor={colors.text.muted}
+                  value={price}
+                  onChangeText={setPrice}
+                  maxLength={30}
+                />
+              </View>
 
-            <View style={styles.fieldGroup}>
-              <Text style={styles.fieldLabel}>메모 (선택)</Text>
-              <TextInput
-                style={[styles.fieldInput, styles.memoInput]}
-                placeholder="색상, 사이즈, 브랜드 등..."
-                placeholderTextColor={colors.text.muted}
-                value={memo}
-                onChangeText={setMemo}
-                maxLength={100}
-                multiline
-                textAlignVertical="top"
-              />
-            </View>
+              <View style={styles.fieldGroup}>
+                <Text style={styles.fieldLabel}>메모 (선택)</Text>
+                <TextInput
+                  style={[styles.fieldInput, styles.memoInput]}
+                  placeholder="색상, 사이즈, 브랜드 등..."
+                  placeholderTextColor={colors.text.muted}
+                  value={memo}
+                  onChangeText={setMemo}
+                  maxLength={100}
+                  multiline
+                  textAlignVertical="top"
+                />
+              </View>
 
-            <View style={styles.modalBtns}>
-              <TouchableOpacity style={styles.cancelBtn} onPress={() => setModal(false)}>
-                <Text style={styles.cancelBtnText}>취소</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                testID="btn-wishlist-save"
-                style={[styles.saveBtn, (!name.trim() || saving) && styles.saveBtnDisabled]}
-                onPress={handleSave}
-                disabled={!name.trim() || saving}
-              >
-                <Text style={styles.saveBtnText}>{saving ? '추가 중...' : '추가하기'}</Text>
-              </TouchableOpacity>
-            </View>
+              <View style={styles.modalBtns}>
+                <TouchableOpacity style={styles.cancelBtn} onPress={() => setModal(false)}>
+                  <Text style={styles.cancelBtnText}>취소</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  testID="btn-wishlist-save"
+                  style={[styles.saveBtn, (!name.trim() || saving) && styles.saveBtnDisabled]}
+                  onPress={handleSave}
+                  disabled={!name.trim() || saving}
+                >
+                  <Text style={styles.saveBtnText}>{saving ? '추가 중...' : '추가하기'}</Text>
+                </TouchableOpacity>
+              </View>
+            </Pressable>
           </Pressable>
-        </Pressable>
         </KeyboardAvoidingView>
-      </Modal>
+      )}
     </SafeAreaView>
   );
 }
@@ -252,6 +251,7 @@ function WishlistCard({
 }) {
   return (
     <TouchableOpacity
+      testID="wishlist-card"
       style={[styles.card, item.received && styles.cardReceived]}
       onLongPress={canDelete ? onDelete : undefined}
       delayLongPress={400}

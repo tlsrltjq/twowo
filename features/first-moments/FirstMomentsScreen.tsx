@@ -5,7 +5,6 @@ import {
   Alert,
   FlatList,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   Pressable,
   StyleSheet,
@@ -80,7 +79,7 @@ export default function FirstMomentsScreen() {
       {/* 요약 배너 */}
       <View style={styles.banner}>
         <Text style={styles.bannerEmoji}>🌟</Text>
-        <Text style={styles.bannerText}>
+        <Text testID={moments !== null ? 'first-moments-ready' : undefined} style={styles.bannerText}>
           {moments === null ? '...' : `총 ${moments.length}개의 처음`}
         </Text>
       </View>
@@ -120,73 +119,74 @@ export default function FirstMomentsScreen() {
         <Text style={styles.fabText}>＋</Text>
       </Pressable>
 
-      {/* 입력 모달 */}
-      <Modal visible={modalVisible} transparent animationType="fade" onRequestClose={() => setModal(false)}>
-        <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <Pressable style={styles.backdrop} onPress={() => setModal(false)}>
-          <Pressable style={styles.modalCard} onPress={() => {}}>
-            <Text style={styles.modalTitle}>새로운 처음 기록하기 ✨</Text>
+      {/* 입력 오버레이 — Modal 대신 absoluteFill View (Maestro testID 접근 가능) */}
+      {modalVisible && (
+        <KeyboardAvoidingView testID="overlay-moments" style={StyleSheet.absoluteFill} behavior={Platform.OS === 'ios' ? 'padding' : undefined} accessibilityViewIsModal>
+          <Pressable accessible={false} style={styles.backdrop} onPress={() => setModal(false)}>
+            <Pressable accessible={false} style={styles.modalCard} onPress={() => {}}>
+              <Text style={styles.modalTitle}>새로운 처음 기록하기 ✨</Text>
 
-            <View style={styles.fieldGroup}>
-              <Text style={styles.fieldLabel}>어떤 처음이에요?</Text>
-              <TextInput
-                testID="input-moment-title"
-                style={styles.fieldInput}
-                placeholder="처음 여행 간 날, 처음 같이 밥 먹은 날..."
-                placeholderTextColor={colors.text.muted}
-                value={title}
-                onChangeText={setTitle}
-                maxLength={60}
-                autoFocus
-              />
-              <Text style={styles.charCount}>{title.trim().length}/60</Text>
-            </View>
+              <View style={styles.fieldGroup}>
+                <Text style={styles.fieldLabel}>어떤 처음이에요?</Text>
+                <TextInput
+                  testID="input-moment-title"
+                  style={styles.fieldInput}
+                  placeholder="처음 여행 간 날, 처음 같이 밥 먹은 날..."
+                  placeholderTextColor={colors.text.muted}
+                  value={title}
+                  onChangeText={setTitle}
+                  maxLength={60}
+                  autoFocus
+                />
+                <Text testID={title.trim().length > 0 ? 'moment-title-ready' : undefined} style={styles.charCount}>{title.trim().length}/60</Text>
+              </View>
 
-            <View style={styles.fieldGroup}>
-              <Text style={styles.fieldLabel}>언제였어요?</Text>
-              <TextInput
-                style={styles.fieldInput}
-                placeholder="YYYY-MM-DD"
-                placeholderTextColor={colors.text.muted}
-                value={date}
-                onChangeText={setDate}
-                maxLength={10}
-                keyboardType="numbers-and-punctuation"
-              />
-            </View>
+              <View style={styles.fieldGroup}>
+                <Text style={styles.fieldLabel}>언제였어요?</Text>
+                <TextInput
+                  testID="input-moment-date"
+                  style={styles.fieldInput}
+                  placeholder="YYYY-MM-DD"
+                  placeholderTextColor={colors.text.muted}
+                  value={date}
+                  onChangeText={setDate}
+                  maxLength={10}
+                  keyboardType="numbers-and-punctuation"
+                />
+              </View>
 
-            <View style={styles.fieldGroup}>
-              <Text style={styles.fieldLabel}>메모 (선택)</Text>
-              <TextInput
-                style={[styles.fieldInput, styles.memoInput]}
-                placeholder="기억에 남는 것들을 적어두세요"
-                placeholderTextColor={colors.text.muted}
-                value={memo}
-                onChangeText={setMemo}
-                maxLength={100}
-                multiline
-                textAlignVertical="top"
-              />
-              <Text style={styles.charCount}>{memo.trim().length}/100</Text>
-            </View>
+              <View style={styles.fieldGroup}>
+                <Text style={styles.fieldLabel}>메모 (선택)</Text>
+                <TextInput
+                  style={[styles.fieldInput, styles.memoInput]}
+                  placeholder="기억에 남는 것들을 적어두세요"
+                  placeholderTextColor={colors.text.muted}
+                  value={memo}
+                  onChangeText={setMemo}
+                  maxLength={100}
+                  multiline
+                  textAlignVertical="top"
+                />
+                <Text style={styles.charCount}>{memo.trim().length}/100</Text>
+              </View>
 
-            <View style={styles.modalBtns}>
-              <TouchableOpacity style={styles.cancelBtn} onPress={() => setModal(false)}>
-                <Text style={styles.cancelBtnText}>취소</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                testID="btn-moment-save"
-                style={[styles.saveBtn, !canSave && styles.saveBtnDisabled]}
-                onPress={handleSave}
-                disabled={!canSave}
-              >
-                <Text style={styles.saveBtnText}>{saving ? '기록 중...' : '기록하기'}</Text>
-              </TouchableOpacity>
-            </View>
+              <View style={styles.modalBtns}>
+                <TouchableOpacity style={styles.cancelBtn} onPress={() => setModal(false)}>
+                  <Text style={styles.cancelBtnText}>취소</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  testID="btn-moment-save"
+                  style={[styles.saveBtn, !canSave && styles.saveBtnDisabled]}
+                  onPress={handleSave}
+                  disabled={!canSave}
+                >
+                  <Text style={styles.saveBtnText}>{saving ? '기록 중...' : '기록하기'}</Text>
+                </TouchableOpacity>
+              </View>
+            </Pressable>
           </Pressable>
-        </Pressable>
         </KeyboardAvoidingView>
-      </Modal>
+      )}
     </SafeAreaView>
   );
 }
@@ -202,6 +202,7 @@ function MomentCard({
 }) {
   return (
     <TouchableOpacity
+      testID="moment-card"
       style={styles.card}
       onLongPress={isOwner ? onDelete : undefined}
       delayLongPress={400}
