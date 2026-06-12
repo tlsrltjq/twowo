@@ -28,9 +28,22 @@ appId: host.exp.Exponent
     id: "tab-night"
 - takeScreenshot: "night_message_night_tab"
 
-# 입력창에 메시지 작성 후 바로 보내기 (keyboardShouldPersistTaps="handled")
+# 이미 오늘 메시지가 있으면 "수정" 탭하여 편집 모드 진입
+- runFlow:
+    when:
+      visible: "수정"
+    commands:
+      - tapOn: "수정"
+      - waitForAnimationToEnd
+
+# 입력창 대기 후 기존 텍스트 지우고 새 메시지 작성
+- extendedWaitUntil:
+    visible:
+      id: "input-night-message"
+    timeout: 10000
 - tapOn:
     id: "input-night-message"
+- eraseText: 100
 - inputText: "오늘도 수고했어 잘 자"
 - waitForAnimationToEnd
 - tapOn:

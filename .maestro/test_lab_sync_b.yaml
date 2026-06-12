@@ -168,8 +168,10 @@ appId: host.exp.Exponent
     visible:
       id: "screen-gratitude"
     timeout: 15000
+# partner-gratitude: GratitudeDisplay testID — A의 고마움 메시지 View가 렌더링되면 나타남
 - extendedWaitUntil:
-    visible: "오늘 맛있는 거 사줘서 너무 고마워"
+    visible:
+      id: "partner-gratitude"
     timeout: 15000
 - takeScreenshot: "sync_b_gratitude_ok"
 
@@ -196,7 +198,9 @@ appId: host.exp.Exponent
     notVisible:
       id: "playlist-loading"
     timeout: 30000
+# song-card: SongCard inner View testID — A의 노래가 렌더링되면 나타남
 - extendedWaitUntil:
-    visible: "봄날"
+    visible:
+      id: "song-card"
     timeout: 15000
 - takeScreenshot: "sync_b_playlist_ok"

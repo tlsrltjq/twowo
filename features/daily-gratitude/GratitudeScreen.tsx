@@ -159,7 +159,7 @@ export default function GratitudeScreen() {
       <View style={styles.card}>
         <Text style={styles.cardLabel}>상대방의 고마움</Text>
         {partnerEntry ? (
-          <GratitudeDisplay entry={partnerEntry} readonly />
+          <GratitudeDisplay entry={partnerEntry} readonly testID="partner-gratitude" />
         ) : (
           <View style={styles.partnerEmpty}>
             <Text style={styles.partnerEmptyText}>아직 입력 전이에요 💭</Text>
@@ -193,9 +193,9 @@ export default function GratitudeScreen() {
   );
 }
 
-function GratitudeDisplay({ entry, readonly: _readonly = false }: { entry: GratitudeEntry; readonly?: boolean }) {
+function GratitudeDisplay({ entry, readonly: _readonly = false, testID }: { entry: GratitudeEntry; readonly?: boolean; testID?: string }) {
   return (
-    <View style={styles.displayBox}>
+    <View testID={testID} style={styles.displayBox}>
       <Text style={styles.displayMessage}>"{entry.message}"</Text>
     </View>
   );

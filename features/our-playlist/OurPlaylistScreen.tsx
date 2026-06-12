@@ -229,7 +229,7 @@ export default function OurPlaylistScreen() {
 
 function SongCard({ song, isMe }: { song: PlaylistSong; isMe: boolean }) {
   return (
-    <View style={styles.card}>
+    <View testID="song-card" style={styles.card}>
       <View style={styles.cardTop}>
         <View style={styles.cardInfo}>
           <Text style={styles.songTitle} numberOfLines={1}>🎵 {song.title}</Text>
