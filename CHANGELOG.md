@@ -5,6 +5,8 @@
 
 ---
 
+## 2026-06-12 | P2 마무리 | refactor(calendar): 화면 분할(472→199줄) + subscribeEventsSince limit(200) + usePartnerProfile loading/error + firestore rules title/type 검증.
+## 2026-06-12 | P3-A/B 완료 | feat: chat.md 스펙 + FRONTEND_RULES console 정책 + ADR-023 + runbook.md + Sentry 소스맵/release 설정.
 ## 2026-06-12 | 문서 최신화 | docs: architecture.md userTokens 추가 + users create rule 반영 + ADR-022 + HARNESS ADR 범위 갱신.
 ## 2026-06-12 | P1 수정 | fix: expoPushToken → userTokens 컬렉션 분리, isMe 전용 rule 추가. 파트너 노출 차단.
 ## 2026-06-12 | P0 수정 | fix: users create coupleId==null 강제(보안) + ESLint 0 warnings + integration 테스트 withSecurityRulesDisabled 시드 패턴 적용.

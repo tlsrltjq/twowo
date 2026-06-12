@@ -81,11 +81,11 @@
 - [ ] **security-rules 통합 테스트 확대** — 컬렉션당 "타인 차단" 1개씩 추가. 현재 3개뿐인데 rules 352줄이 사실상 백엔드
 - [ ] **subscribeUnreadCount 정확도** — `limit(10)` 후 클라이언트 필터라 10개 초과 시 배지 부정확. 실사용 중 문제되면 서버사이드 카운터로 교체
 
-## 이전 세션에서 멈춘 곳 (2026-06-12 12차)
-- 보안 감사 A·B·C 완료(8차) / 리팩토링 A·B 완료(9·10차)
-- P0·P1 완료(11차): users create coupleId==null 강제, ESLint 0, integration admin seed, expoPushToken→userTokens 분리
-- docs 최신화(12차): architecture.md(userTokens 추가, users 수정), decisions.md(ADR-022), HARNESS.md(ADR 범위 갱신)
-- 다음: P3-A(chat 스펙·룰북 불일치·invitations TTL) 또는 P2(feature rules 세부화 / 사진탭 서버 필터 / usePartnerProfile loading·error / 화면 분할)
+## 이전 세션에서 멈춘 곳 (2026-06-12 13차)
+- P3-A/B 완료: chat.md 스펙, FRONTEND_RULES 경로 수정, console 정책, ADR-023, runbook.md, Sentry release/소스맵 설정
+- P2 완료: calendar.tsx 화면 분할(472→199줄), subscribeEventsSince limit(200), usePartnerProfile loading/error, firestore rules 강화
+- 미완료: P3-B 콘솔 작업 2건 (PITR, Firebase 예산 알림) — 사용자가 직접 설정 필요
+- 다음: TestFlight 빌드 (`eas build --profile preview`) 또는 P3-C 착수 (App Check / expo-updates OTA)
 
 ## 진행 중인 작업 (시뮬레이터 전용)
 > **보류 항목 (비용 발생)**: Apple Developer Program · Firebase Storage Blaze · TestFlight 등. 언급하지 않음.
