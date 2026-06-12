@@ -31,7 +31,10 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "@sentry/react-native/expo",
+      ["@sentry/react-native/expo", {
+        "organization": "giseop",
+        "project": "react-native"
+      }],
       "expo-router",
       "expo-font",
       "expo-image-picker",

@@ -71,7 +71,7 @@
 - [ ] **Firestore PITR** — Google Cloud Console → Firestore → PITR 탭 → 사용 설정 (7일). 상세: `docs/runbook.md` §4
 - [ ] **Firebase 예산/사용량 알림** — Cloud Console 예산 알림($10) + Firestore 읽기 일별 알림(50,000). 상세: `docs/runbook.md` §5
 - [x] **Sentry release 태깅** — `app/_layout.tsx`에 `release`·`dist` 명시 추가 완료 (Constants 기반 fallback, EAS 빌드 시 플러그인 자동 주입 우선)
-- [ ] **Sentry 소스맵 업로드** — `app.json` 플러그인에 org/project 슬러그 추가 + `eas secret:create SENTRY_AUTH_TOKEN` 필요. 상세: `docs/runbook.md` §6
+- [x] **Sentry 소스맵 업로드** — `app.json` 플러그인 org/project 추가 완료 (giseop/react-native) + `SENTRY_AUTH_TOKEN` EAS Secret 등록 완료
 - [x] **구버전 호환 마이그레이션 ADR** — ADR-023 작성 완료 (`docs/decisions.md`)
 - [x] **운영 런북** — `docs/runbook.md` 작성 완료 (배포 순서·롤백·모니터링·PITR·예산·Sentry 설정 포함)
 
