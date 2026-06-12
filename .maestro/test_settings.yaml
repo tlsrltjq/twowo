@@ -3,7 +3,14 @@ appId: host.exp.Exponent
 # Dev1 (Account A) — 설정 탭: 상대방 닉네임/커플 정보 확인
 - launchApp
 - tapOn:
-    text: "설정"
+    text: "둘다좋아"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 90000
+- tapOn:
+    id: "tab-settings"
 - waitForAnimationToEnd
 - takeScreenshot: "settings_a"
 # 상대방 닉네임이 표시되어야 함
