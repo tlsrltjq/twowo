@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-06-12 | P0 수정 | fix: users create coupleId==null 강제(보안) + ESLint 0 warnings + integration 테스트 withSecurityRulesDisabled 시드 패턴 적용.
 ## 2026-06-12 | 리팩토링 Block B | refactor(features): useFeatureSettings 훅 — _layout.tsx·lab.tsx subscribeFeatureSettings+useState 중복 제거.
 ## 2026-06-12 | 리팩토링 Block A | refactor(core): usePartnerProfile 훅(6화면 통합) + tsToDate 유틸(duck-typing) + 테스트 ! non-null 제거. 42/42 green.
 ## 2026-06-12 | 보안 감사 A·B·C 블록 | fix(security): Firestore rules coupleId위조·커플업데이트·초대삭제 3건 수정+배포 + 통합테스트 8종. fix(ci): jest integration 경로 분리(42/42). fix(hooks): useFirestoreQuery queryKey 의존 배열. perf(firestore): lazy 구독+limit(7/100)+사진탭 range쿼리+FlatList.
