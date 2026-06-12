@@ -59,16 +59,11 @@
 - ✅ P4: calendar.md 매핑 테이블 이미 완성 상태
 - ✅ P5: 루트 PNG 10개 git 추적 제거 + .gitignore 추가
 
-## 이전 세션에서 멈춘 곳 (2026-06-12 9차)
-- 보안 감사(GPT 분석) A·B·C 블록 전부 완료 (8차)
-- 리팩토링 Block A 완료 (9차)
-  - A1: usePartnerProfile hook — NightMessage/ComplimentJar/DailyFood/GiftWishlist/Chat/Settings 6화면 통합
-  - A2: tsToDate 유틸 — duck-typing으로 jest mock 호환 해결
-  - A3: toggleCell/castVote 테스트 ! non-null → 타입 헬퍼로 교체
-  - 뒤로가기 버튼 추가 (GratitudeScreen, OurPlaylistScreen)
-  - 캘린더 탭 이모지 제거 + 전체 너비 맞춤
-  - docs 업데이트 (architecture.md, decisions.md, specs/calendar.md)
-- 다음: Block B (useFeatureEnabled hook) 또는 다른 작업
+## 이전 세션에서 멈춘 곳 (2026-06-12 10차)
+- 보안 감사(GPT 분析) A·B·C 블록 전부 완료 (8차)
+- 리팩토링 Block A 완료 (9차): usePartnerProfile, tsToDate, 테스트 ! 제거
+- 리팩토링 Block B 완료 (10차): useFeatureSettings 훅 — _layout.tsx·lab.tsx 통합
+- 다음: 신규 작업 또는 D1(feature route enabled guard) — 원본 C블록(성능)은 8차에서 완료됨
 
 ## 진행 중인 작업 (시뮬레이터 전용)
 > **보류 항목 (비용 발생)**: Apple Developer Program · Firebase Storage Blaze · TestFlight 등. 언급하지 않음.
