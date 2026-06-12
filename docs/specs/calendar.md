@@ -106,6 +106,14 @@ export async function createEvent(input: Omit<CalendarEvent,'id'|'createdAt'|'up
 export async function updateEvent(id: string, patch: Partial<CalendarEvent>): Promise<void>
 export async function deleteEvent(id: string): Promise<void>   // photos + Storage 정리 포함
 export function subscribeEvents(coupleId: string, range: { from: Date; to: Date }, cb: (events: CalendarEvent[]) => void): () => void
+// 타입별 구독. maxCount=100 으로 무제한 read 방지. (coupleId+type+date DESC 복합 인덱스)
+export function subscribeEventsByType(coupleId: string, type: string, cb: (events: CalendarEvent[]) => void, maxCount?: number): () => void
+// 사진 탭 전용: 특정 날짜 이후 전체 타입 구독. (coupleId+date DESC 인덱스, 3종 병렬 구독 대체)
+export function subscribeEventsSince(coupleId: string, since: Date, cb: (events: CalendarEvent[]) => void): () => void
+
+// core/memory/ — 탭 전환 lazy 구독 훅 (coupleId=null 시 즉시 해제)
+export function useCalendarEventsByType(coupleId: string | null, type: string): { events: CalendarEvent[]; loading: boolean }
+export function usePhotoEvents(coupleId: string | null): { events: CalendarEvent[]; loading: boolean }  // 최근 2년, photoIds 있는 것만
 
 // core/storage/
 export async function uploadPhoto(

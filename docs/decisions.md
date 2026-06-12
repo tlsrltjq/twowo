@@ -176,6 +176,26 @@
 - **재검토 시점**: TestFlight 게이트 결과(매일 사용 여부)에 따라 2차 우선순위 재배치. 사용 동력이 약하면 투표/빙고보다 캘린더/추억 강화로 방향 전환.
 
 
+## ADR-020: Firestore Rules `getAfter()` 기반 쓰기 검증 강화
+- **결정**: 아래 3개 규칙을 `getAfter()` 패턴으로 강화 (2026-06-12 배포).
+  1. `users` update: `coupleId` 변경 시 `getAfter(/couples/{newCoupleId}).memberIds`에 `request.auth.uid` 포함 필수 — 클라이언트가 임의 coupleId를 집어넣어 타 커플 데이터에 접근하는 위조 차단.
+  2. `couples` update: `affectedKeys().hasOnly(...)` 로 허용 연산을 `anniversaryDate` 변경 / `disconnect` / `reconnect` 3가지로 화이트리스트 — 임의 필드 수정 금지.
+  3. `invitations` delete: `size() == 1` 조건 제거 → `getAfter(/couples/{coupleId}).memberIds` 포함 증명으로 교체 — 코드를 아는 제3자가 삭제해 join을 방해하는 DoS 차단.
+- **추가**: `nightMessages` update에 `userId·coupleId·date·type` 불변 필드 강제 — 핵심 메타 위변조 방지.
+- **이유**: 기존 규칙은 클라이언트가 제공한 값(coupleId, memberIds.size)만 검증했으나, 쓰기 트랜잭션 내 `getAfter()`를 쓰면 서버가 커밋 후 상태를 직접 읽어 검증 가능 — honest-client 가정 없이 규칙 레벨에서 차단.
+- **트레이드오프**: `getAfter()` 호출 1회 = Firestore 읽기 1회 추가 비용. 트랜잭션/배치 쓰기 맥락에서만 유효(단순 set/update엔 사용 불가).
+- **배포**: `firebase deploy --only firestore:rules` — 즉시 적용.
+
+## ADR-021: 캘린더 탭 Lazy 구독 + Firestore read limit
+- **결정**: 캘린더 탭 4개 뷰의 Firestore 구독을 **활성 탭에서만 연결**하고, 타입별 쿼리에 `limit(maxCount)` 를 추가 (2026-06-12).
+  - `useCalendarEventsByType(coupleId | null, type)` — `coupleId=null` 전달 시 `useEffect`가 즉시 반환하여 구독하지 않음.
+  - `usePhotoEvents(coupleId | null)` — 사진 탭 전용. 3종 타입별 병렬 구독 대신 `subscribeEventsSince(coupleId, since)` 단일 range 쿼리로 대체.
+  - `subscribeEventsByType`: `maxCount = 100` 기본값으로 무제한 read 방지.
+  - `getRecent7Days` / `getRecent7DaysGratitude`: `.slice(0,7)` 제거 → 쿼리 `limit(7)` 로 서버 차단.
+- **이유**: 탭 전환 시 비활성 탭 구독이 계속 살아있으면 불필요한 Firestore read가 발생. 사진 탭의 3종 병렬 구독(`exercise/date/general` 각각 `subscribeEventsByType`)은 쿼리 3개 = 인덱스 3번 scan → `coupleId+date` 단일 인덱스 range 쿼리 1개로 통합.
+- **적용 패턴**: `activeView === 'photos' ? coupleId : null` 처럼 삼항으로 null을 넘기면 훅이 구독을 해제하고 빈 배열 반환.
+- **트레이드오프**: 탭 전환 시 첫 로딩 딜레이 발생 가능 (Skeleton으로 처리). 탭 유지 중에는 캐시 덕분에 재진입이 빠름.
+
 ## ADR-019: 비용 발생 항목 보류 — 시뮬레이터 우선 개발
 - **결정**: 아래 항목은 사용자가 직접 진행 의사를 밝힐 때까지 대기. 그 전까지는 시뮬레이터에서 검증 가능한 기능 개발에 집중.
   - Apple Developer Program ($99/년) → EAS Build · TestFlight · App Store 공개 출시

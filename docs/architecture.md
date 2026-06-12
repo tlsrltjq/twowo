@@ -150,12 +150,15 @@ createdAt: Timestamp
 캘린더 탭은 동일한 calendarEvents 데이터를 **뷰만 전환**해서 보여줌.
 데이터를 모드별로 분리하지 않음 (한 이벤트가 여러 뷰에 동시에 표시 가능).
 
-| 뷰 | 설명 | 필터 조건 |
-|----|------|----------|
-| 📅 캘린더 뷰 | 월간 달력, 날짜에 이벤트 점 표시 | 전체 type |
-| 🖼️ 사진 뷰 | 사진 그리드 (인스타그램 형식) | photoIds 있는 이벤트만 |
-| 🏃 운동 뷰 | 운동 기록 리스트 + 간단 통계 | type === 'exercise' |
-| 💑 데이트 뷰 | 데이트 타임라인 | type === 'date' |
+| 뷰 | 설명 | 필터 조건 | 구독 함수 |
+|----|------|----------|----------|
+| 📅 캘린더 뷰 | 월간 달력, 날짜에 이벤트 점 표시 | 전체 type, 월 범위 | `subscribeEvents(range)` |
+| 🖼️ 사진 뷰 | 사진 그리드 (인스타그램 형식) | photoIds 있는 이벤트만, 최근 2년 | `subscribeEventsSince(since)` |
+| 🏃 운동 뷰 | 운동 기록 리스트 + 간단 통계 | type === 'exercise', 최근 100개 | `subscribeEventsByType('exercise')` |
+| 💑 데이트 뷰 | 데이트 타임라인 | type === 'date', 최근 100개 | `subscribeEventsByType('date')` |
+
+> **Lazy 구독**: 각 뷰는 활성화된 탭에서만 coupleId를 전달해 구독한다 (`null` 전달 시 즉시 해제).
+> 비활성 탭은 Firestore 연결을 유지하지 않으므로 불필요한 read 비용이 발생하지 않는다.
 
 > **향후 확장**: 구글 캘린더 / 노션 연동은 externalId, externalSource 필드로 대비.
 > 연동 기능 자체는 Feature Registry에 experimental로 추가 예정.
@@ -233,7 +236,7 @@ coupleId 있음? → 메인 화면
 | 인덱스 (필드 순서) | 쓰는 쿼리 | 범위 |
 |--------------------|-----------|:----:|
 | `calendarEvents` (coupleId ASC, date ASC) | 월간 뷰 날짜 범위(`date >= from && date <= to`) + 홈 다가오는 일정(`date >= 오늘`, asc, limit 3) | 1차 |
-| `calendarEvents` (coupleId ASC, date DESC) | 사진 뷰 정렬(`event.date` desc, calendar BR-10) | 1차 |
+| `calendarEvents` (coupleId ASC, date DESC) | 사진 뷰 정렬(`subscribeEventsSince` — `event.date` desc, calendar BR-10) | 1차 |
 | `moodChecks` (coupleId ASC, userId ASC, date DESC) | 컨디션 최근 7일(`getRecent7Days`, mood US-4) | 1차 |
 | `calendarEvents` (coupleId ASC, type ASC, date DESC) | 운동 뷰(`type=='exercise'`) / 데이트 뷰(`type=='date'`) | 2차 |
 | `voteSessions` (coupleId ASC, status ASC, startedAt DESC) | 활성 세션 조회(`status=='in_progress'`, 최신) | 2차 |
@@ -248,12 +251,13 @@ coupleId 있음? → 메인 화면
 
 | 컬렉션 | read | write |
 |--------|------|-------|
-| users | 본인 + 같은 커플 상대방 | 본인 |
-| couples | memberIds 멤버 | 멤버 OR 초대 join(size 1→2) |
-| invitations | 인증된 사용자 누구나 (코드 자체가 비밀) | 발급자 본인 |
+| users | 본인 + 같은 커플 상대방 | 본인. **coupleId 변경 시 `getAfter(couples).memberIds` 로 멤버십 증명 필수** (위조 차단) |
+| couples | memberIds 멤버 (또는 size==1 오픈 커플) | 초대 join(size 1→2) 또는 멤버가 **3가지 연산만**: `anniversaryDate` 변경 / disconnect / reconnect. `memberIds·createdAt` 불변 |
+| invitations | 인증된 사용자 누구나 (코드 자체가 비밀, list 금지) | 발급자 본인(create). 삭제는 발급자 **또는 `getAfter(couples).memberIds` 에 속하는 join 완료자** — 제3자 DoS 차단 |
 | calendarEvents | 내 coupleId 와 일치 | 내 coupleId 와 일치 |
 | photos | 내 coupleId 와 일치 | 내 coupleId 와 일치 |
 | featureSettings | 내 coupleId 와 일치 | 내 coupleId 와 일치 (delete 금지) |
+| nightMessages | 내 coupleId 와 일치 | create: 본인 userId. update: **userId·coupleId·date·type 불변** (메타 위변조 금지) |
 | dateCandidates / voteSessions / moodChecks / bingoBoards | 내 coupleId 와 일치 | 내 coupleId 와 일치 |
 | 그 외 모든 경로 | 차단 | 차단 |
 
