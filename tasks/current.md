@@ -59,12 +59,16 @@
 - ✅ P4: calendar.md 매핑 테이블 이미 완성 상태
 - ✅ P5: 루트 PNG 10개 git 추적 제거 + .gitignore 추가
 
-## 이전 세션에서 멈춘 곳 (2026-06-12 8차)
-- 보안 감사(GPT 분석) A·B·C 블록 전부 완료
-  - A: Firestore rules 3건(coupleId위조/커플업데이트/초대삭제) + 통합 테스트 8종
-  - B: jest.config integration 경로 제외(CI 42/42) + useFirestoreQuery queryKey 의존 배열 버그 수정
-  - C: lazy 구독(calendar 탭 전환) + limit(7/100) + 사진탭 단일 range 쿼리 + OurPlaylistScreen FlatList 전환
-- 다음: 추가 기능 구현 또는 TestFlight 제출 (Apple Developer Program 필요)
+## 이전 세션에서 멈춘 곳 (2026-06-12 9차)
+- 보안 감사(GPT 분석) A·B·C 블록 전부 완료 (8차)
+- 리팩토링 Block A 완료 (9차)
+  - A1: usePartnerProfile hook — NightMessage/ComplimentJar/DailyFood/GiftWishlist/Chat/Settings 6화면 통합
+  - A2: tsToDate 유틸 — duck-typing으로 jest mock 호환 해결
+  - A3: toggleCell/castVote 테스트 ! non-null → 타입 헬퍼로 교체
+  - 뒤로가기 버튼 추가 (GratitudeScreen, OurPlaylistScreen)
+  - 캘린더 탭 이모지 제거 + 전체 너비 맞춤
+  - docs 업데이트 (architecture.md, decisions.md, specs/calendar.md)
+- 다음: Block B (useFeatureEnabled hook) 또는 다른 작업
 
 ## 진행 중인 작업 (시뮬레이터 전용)
 > **보류 항목 (비용 발생)**: Apple Developer Program · Firebase Storage Blaze · TestFlight 등. 언급하지 않음.
