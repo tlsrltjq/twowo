@@ -24,10 +24,10 @@ import { black, colors, radius, space, typography } from '../../design-system/to
 type ViewTab = 'calendar' | 'exercise' | 'date' | 'photos';
 
 const VIEW_TABS: { key: ViewTab; label: string }[] = [
-  { key: 'calendar', label: '📅 달력' },
-  { key: 'exercise', label: '🏃 운동' },
-  { key: 'date',     label: '💑 데이트' },
-  { key: 'photos',   label: '🖼️ 사진' },
+  { key: 'calendar', label: '달력' },
+  { key: 'exercise', label: '운동' },
+  { key: 'date',     label: '데이트' },
+  { key: 'photos',   label: '사진' },
 ];
 
 // BR-9: 타입별 점 색상
@@ -131,12 +131,7 @@ export default function CalendarScreen() {
   return (
     <SafeAreaView testID="screen-calendar" style={styles.container} edges={['top']}>
       {/* 뷰 전환 탭바 */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.viewTabBar}
-        contentContainerStyle={styles.viewTabBarContent}
-      >
+      <View style={styles.viewTabBar}>
         {VIEW_TABS.map(v => (
           <TouchableOpacity
             key={v.key}
@@ -148,7 +143,7 @@ export default function CalendarScreen() {
             </Text>
           </TouchableOpacity>
         ))}
-      </ScrollView>
+      </View>
 
       {activeView === 'calendar' && (
         <View style={styles.flex}>
@@ -424,9 +419,8 @@ const styles = StyleSheet.create({
   container:       { flex: 1, backgroundColor: colors.bg.base },
   flex:            { flex: 1 },
 
-  viewTabBar:      { flexGrow: 0, backgroundColor: colors.bg.surface, borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
-  viewTabBarContent: { flexDirection: 'row' },
-  viewTab:         { paddingHorizontal: space[4], paddingVertical: space[3], alignItems: 'center' },
+  viewTabBar:      { flexDirection: 'row', backgroundColor: colors.bg.surface, borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
+  viewTab:         { flex: 1, paddingVertical: space[3], alignItems: 'center' },
   viewTabActive:   { borderBottomWidth: 2, borderBottomColor: colors.accent.primary },
   viewTabText:     { ...typography.caption, color: colors.text.secondary },
   viewTabTextActive: { ...typography.caption, color: colors.accent.primary, fontFamily: 'Pretendard-SemiBold' },
