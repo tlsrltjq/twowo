@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-06-12 | 리팩토링 Block B | refactor(features): useFeatureSettings 훅 — _layout.tsx·lab.tsx subscribeFeatureSettings+useState 중복 제거.
 ## 2026-06-12 | 리팩토링 Block A | refactor(core): usePartnerProfile 훅(6화면 통합) + tsToDate 유틸(duck-typing) + 테스트 ! non-null 제거. 42/42 green.
 ## 2026-06-12 | 보안 감사 A·B·C 블록 | fix(security): Firestore rules coupleId위조·커플업데이트·초대삭제 3건 수정+배포 + 통합테스트 8종. fix(ci): jest integration 경로 분리(42/42). fix(hooks): useFirestoreQuery queryKey 의존 배열. perf(firestore): lazy 구독+limit(7/100)+사진탭 range쿼리+FlatList.
 ## 2026-06-12 | B-side 동기화 E2E 완성 | test: GratitudeDisplay testID(따옴표 텍스트 오탐 우회) + SongCard testID + test_lab_sync_b 섹션 6·7 testID 기반 전환 + test_night_message 멱등성(runFlow+eraseText). 전체 7종(자기전/칭찬/음식/처음/위시리스트/고마움/플레이리스트) PASS.
