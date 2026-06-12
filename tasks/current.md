@@ -59,11 +59,11 @@
 - ✅ P4: calendar.md 매핑 테이블 이미 완성 상태
 - ✅ P5: 루트 PNG 10개 git 추적 제거 + .gitignore 추가
 
-## 이전 세션에서 멈춘 곳 (2026-06-12 10차)
-- 보안 감사(GPT 분析) A·B·C 블록 전부 완료 (8차)
-- 리팩토링 Block A 완료 (9차): usePartnerProfile, tsToDate, 테스트 ! 제거
-- 리팩토링 Block B 완료 (10차): useFeatureSettings 훅 — _layout.tsx·lab.tsx 통합
-- 다음: 신규 작업 또는 D1(feature route enabled guard) — 원본 C블록(성능)은 8차에서 완료됨
+## 이전 세션에서 멈춘 곳 (2026-06-12 11차)
+- 보안 감사 A·B·C 완료(8차) / 리팩토링 A·B 완료(9·10차)
+- P0 완료(11차): users create coupleId==null 강제 + ESLint 0 + integration 테스트 admin seed
+- P1 완료(11차): expoPushToken → userTokens 컬렉션 분리, isMe 전용 rule
+- 다음: P2(feature rules 세부화 / 사진탭 서버 필터 / usePartnerProfile loading·error / 화면 분할) 또는 신규 작업
 
 ## 진행 중인 작업 (시뮬레이터 전용)
 > **보류 항목 (비용 발생)**: Apple Developer Program · Firebase Storage Blaze · TestFlight 등. 언급하지 않음.
