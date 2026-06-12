@@ -36,12 +36,12 @@
 > 스펙 BR↔테스트 매핑 완성·`active` 승격은 2차 단계에서 한다.
 > 현재는 `experimental` 상태로 간주하고 7단계(TestFlight) 완료 기준에 포함하지 않는다.
 
-| 기능 | featureId | 구현 | 테스트 | 상태 |
-|------|-----------|------|--------|------|
-| 실시간 채팅 | (core 수준, sidebar 진입) | ✅ | ⬜ 매핑 미완 | experimental |
-| 우측 사이드바 | — | ✅ | ⬜ | experimental |
-| 둘다좋아(투표) | date-decision | ✅ | ⬜ 매핑 미완 | experimental |
-| 데이트 빙고 | couple-bingo | ✅ | ⬜ 매핑 미완 | experimental |
+| 기능 | featureId | 구현 | 스펙 | 테스트 | 상태 |
+|------|-----------|------|------|--------|------|
+| 실시간 채팅 | (고정 탭 — registry 미등록) | ✅ | ✅ `docs/specs/chat.md` | ⬜ BR↔테스트 미작성 | active (고정탭) |
+| 우측 사이드바 | — | ✅ | ⬜ | ⬜ | experimental |
+| 둘다좋아(투표) | date-decision | ✅ | ✅ `docs/specs/vote.md` | ⬜ 매핑 미완 | experimental |
+| 데이트 빙고 | couple-bingo | ✅ | ✅ `docs/specs/bingo.md` | ⬜ 매핑 미완 | experimental |
 
 ## UI 다듬기 완료 (stage-7)
 - ✅ 키보드 밀림 — couple-connect/settings KAV 추가, 모달 3종 KAV 추가
@@ -59,11 +59,35 @@
 - ✅ P4: calendar.md 매핑 테이블 이미 완성 상태
 - ✅ P5: 루트 PNG 10개 git 추적 제거 + .gitignore 추가
 
+## P3 — 종합 분석 후 발굴한 미추적 작업 (2026-06-12)
+
+### P3-A: 즉시 처리 가능 (코드/문서, 비용 없음)
+- [x] **chat 스펙 문서 누락** — `docs/specs/chat.md` 작성 완료. current.md 상태 불일치(experimental→active 고정탭) 수정 완료
+- [x] **FRONTEND_RULES 참조 경로 깨짐** — `docs/frontend.md`·`design-system.md` → `docs/_archive/` 경로로 전체 수정 완료
+- [x] **console 정책 현실화** — FRONTEND_RULES 조항 수정: debug warn/log는 `__DEV__` 가드, catch 블록 `console.error`는 Sentry 캡처 목적으로 가드 없이 허용. `_layout.tsx:63` 기존 코드가 이미 올바른 패턴
+- [ ] **invitations TTL 정책** — Firebase 콘솔 작업 필요 (코드 변경 없음):
+  - Firebase Console → Firestore → 데이터베이스 → `invitations` 컬렉션 → 필드 TTL 정책
+  - 필드명: `expiresAt` / 타입: Timestamp — "TTL 정책 추가" 클릭
+  - 적용 후 24h 지난 초대 코드 자동 삭제됨
+
+### P3-B: 운영 진입 전 필수 (비용 없음 or 소액)
+- [ ] **Firestore PITR / 정기 백업** — "둘의 추억" 데이터 손실 = 서비스 종료급. 운영 전 1순위. PITR(7일) 또는 `gcloud firestore export` 자동화 + Storage 사진 동일
+- [ ] **Firebase 예산/사용량 알림** — onSnapshot 구독 누수 시 read 폭증 방지. Firebase 콘솔 예산 알림 + 일일 사용량 임계값 설정
+- [ ] **Sentry 소스맵 + release 태깅 확인** — `app/_layout.tsx`에 Sentry 연결됨. 운영 전 소스맵 업로드·release 태깅 동작 검증
+- [ ] **구버전 호환 마이그레이션 ADR** — 두 기기 버전 차이 시 스키마 충돌 방지 규칙. "Firestore 필드는 추가만, 삭제·의미변경은 새 필드" 정책 ADR-023으로 박기
+- [ ] **운영 런북** — `docs/runbook.md`: 배포 순서(indexes→rules→앱), rules 배포 전 에뮬레이터 테스트 확인, 롤백 방법
+
+### P3-C: 2차 진입 후 (비용 필요 or 아키텍처 작업)
+- [ ] **App Check (App Attest)** — 앱 외부 직접 API 호출 차단. Security Rules가 유일한 방어층인 현재 구조 보강. 공개 출시 전 적용
+- [ ] **expo-updates OTA** — JS 버그 핫픽스 경로 확보. EAS Update 무료 티어로 충분
+- [ ] **security-rules 통합 테스트 확대** — 컬렉션당 "타인 차단" 1개씩 추가. 현재 3개뿐인데 rules 352줄이 사실상 백엔드
+- [ ] **subscribeUnreadCount 정확도** — `limit(10)` 후 클라이언트 필터라 10개 초과 시 배지 부정확. 실사용 중 문제되면 서버사이드 카운터로 교체
+
 ## 이전 세션에서 멈춘 곳 (2026-06-12 12차)
 - 보안 감사 A·B·C 완료(8차) / 리팩토링 A·B 완료(9·10차)
 - P0·P1 완료(11차): users create coupleId==null 강제, ESLint 0, integration admin seed, expoPushToken→userTokens 분리
 - docs 최신화(12차): architecture.md(userTokens 추가, users 수정), decisions.md(ADR-022), HARNESS.md(ADR 범위 갱신)
-- 다음: P2(feature rules 세부화 / 사진탭 서버 필터 / usePartnerProfile loading·error / 화면 분할) 또는 신규 작업
+- 다음: P3-A(chat 스펙·룰북 불일치·invitations TTL) 또는 P2(feature rules 세부화 / 사진탭 서버 필터 / usePartnerProfile loading·error / 화면 분할)
 
 ## 진행 중인 작업 (시뮬레이터 전용)
 > **보류 항목 (비용 발생)**: Apple Developer Program · Firebase Storage Blaze · TestFlight 등. 언급하지 않음.
