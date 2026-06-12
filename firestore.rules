@@ -187,9 +187,16 @@ service cloud.firestore {
     match /calendarEvents/{eventId} {
       allow read: if canReadCoupleDoc();
       allow create: if isMyCouple(request.resource.data.coupleId)
-                    && request.resource.data.createdBy == request.auth.uid;
+                    && request.resource.data.createdBy == request.auth.uid
+                    && request.resource.data.title is string
+                    && request.resource.data.title.size() >= 1
+                    && request.resource.data.title.size() <= 100
+                    && request.resource.data.type in ['date', 'exercise', 'general'];
       allow update: if isMyCouple(resource.data.coupleId)
-                    && request.resource.data.coupleId == resource.data.coupleId;
+                    && request.resource.data.coupleId == resource.data.coupleId
+                    && request.resource.data.title is string
+                    && request.resource.data.title.size() >= 1
+                    && request.resource.data.title.size() <= 100;
       allow delete: if isMyCouple(resource.data.coupleId);
     }
 
@@ -214,7 +221,10 @@ service cloud.firestore {
     // ---------- dateCandidates (3a 둘다좋아) ----------
     match /dateCandidates/{docId} {
       allow read: if canReadCoupleDoc();
-      allow create: if isMyCouple(request.resource.data.coupleId);
+      allow create: if isMyCouple(request.resource.data.coupleId)
+                    && request.resource.data.title is string
+                    && request.resource.data.title.size() >= 1
+                    && request.resource.data.title.size() <= 60;
       allow update: if isMyCouple(resource.data.coupleId)
                     && request.resource.data.coupleId == resource.data.coupleId;
       allow delete: if isMyCouple(resource.data.coupleId);

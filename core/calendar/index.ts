@@ -106,16 +106,19 @@ export function subscribeEventsByType(
 
 // 사진 탭 전용: 특정 날짜 이후의 모든 타입 이벤트 구독
 // 기존 3종 병렬 구독 대신 단일 range 쿼리로 대체 (coupleId+date DESC 인덱스 사용)
+// maxCount: 최대 200개로 서버 사이드 차단. 2년치 이벤트에서 사진 있는 것만 필터해도 충분한 값.
 export function subscribeEventsSince(
   coupleId: string,
   since: Date,
   cb: (events: CalendarEvent[]) => void,
+  maxCount = 200,
 ): () => void {
   const q = query(
     collection(db, 'calendarEvents'),
     where('coupleId', '==', coupleId),
     where('date', '>=', Timestamp.fromDate(since)),
     orderBy('date', 'desc'),
+    limit(maxCount),
   );
   return onSnapshot(q, (snap) => {
     cb(snap.docs.map(d => fromFirestore(d.id, d.data() as Record<string, unknown>)));
