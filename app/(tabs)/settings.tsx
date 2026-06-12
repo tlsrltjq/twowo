@@ -128,7 +128,7 @@ export default function SettingsScreen() {
     : couple?.createdAt ? timestampToKST(couple.createdAt) : '';
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView testID="screen-settings" style={styles.safeArea} edges={['top']}>
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
     <ScrollView style={styles.scroll} contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
       {/* 커플 정보 */}

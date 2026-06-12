@@ -167,6 +167,7 @@ export default function CalendarScreen() {
       {activeView === 'photos'   && <PhotoView    events={photoEvents}    loading={photoLoading}    />}
 
       <Pressable
+        testID="btn-new-event"
         style={styles.fab}
         onPress={() => router.push('/event/new')}
         accessibilityLabel="새 일정 추가"
