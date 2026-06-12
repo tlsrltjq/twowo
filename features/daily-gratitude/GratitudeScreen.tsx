@@ -1,3 +1,5 @@
+import { useRouter } from 'expo-router';
+import { ChevronLeft } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -32,6 +34,7 @@ const MAX_LEN = 100;
 type ToastState = { message: string; type: 'success' | 'error' | 'info'; visible: boolean };
 
 export default function GratitudeScreen() {
+  const router = useRouter();
   const { user, coupleId } = useAuthStore();
   const [myEntry, setMyEntry]         = useState<GratitudeEntry | null>(null);
   const [partnerEntry, setPartnerEntry] = useState<GratitudeEntry | null>(null);
@@ -110,9 +113,15 @@ export default function GratitudeScreen() {
 
   return (
     <SafeAreaView testID="screen-gratitude" style={styles.safeArea} edges={['top']}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+          <ChevronLeft size={24} color={colors.text.primary} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>오늘의 고마움</Text>
+        <View style={{ width: 36 }} />
+      </View>
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
     <ScrollView style={styles.container} contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
-      <Text style={styles.screenTitle}>오늘의 고마움</Text>
 
       {/* 내 고마움 카드 */}
       <View style={styles.card}>
@@ -217,7 +226,9 @@ const styles = StyleSheet.create({
   flex:               { flex: 1 },
   container:          { flex: 1 },
   body:               { padding: space[5], gap: space[4], paddingBottom: space[12] },
-  screenTitle:        { ...typography.title2, color: colors.text.primary },
+  header:             { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space[4], paddingVertical: space[4], borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
+  backBtn:            { padding: space[1] },
+  headerTitle:        { ...typography.title2, color: colors.text.primary },
   card:               { backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[5], gap: space[3], shadowColor: black, shadowOpacity: 0.04, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
   cardHeader:         { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   cardLabel:          { ...typography.bodyBold, color: colors.text.primary },

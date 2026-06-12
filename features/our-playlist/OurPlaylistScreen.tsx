@@ -1,3 +1,5 @@
+import { useRouter } from 'expo-router';
+import { ChevronLeft } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import {
   Alert,
@@ -25,6 +27,7 @@ import { PlaylistSong } from './schema';
 type ToastState = { message: string; type: 'success' | 'error' | 'info'; visible: boolean };
 
 export default function OurPlaylistScreen() {
+  const router = useRouter();
   const { user, coupleId } = useAuthStore();
   const [songs, setSongs]   = useState<PlaylistSong[]>([]);
   const [loading, setLoading] = useState(true);
@@ -103,6 +106,13 @@ export default function OurPlaylistScreen() {
 
   return (
     <SafeAreaView testID="screen-our-playlist" style={styles.safeArea} edges={['top']}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+          <ChevronLeft size={24} color={colors.text.primary} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>우리의 플레이리스트</Text>
+        <View style={{ width: 36 }} />
+      </View>
       <FlatList
         testID="playlist-list"
         style={styles.container}
@@ -110,9 +120,7 @@ export default function OurPlaylistScreen() {
         keyExtractor={item => item.id}
         contentContainerStyle={styles.body}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
-        ListHeaderComponent={
-          <Text style={styles.screenTitle}>우리의 플레이리스트</Text>
-        }
+        ListHeaderComponent={null}
         ListEmptyComponent={
           loading ? (
             <View testID="playlist-loading" style={styles.skeletonWrap}>
@@ -260,10 +268,12 @@ function SongCard({ song, isMe }: { song: PlaylistSong; isMe: boolean }) {
 
 const styles = StyleSheet.create({
   safeArea:      { flex: 1, backgroundColor: colors.bg.base },
+  header:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space[4], paddingVertical: space[4], borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
+  backBtn:       { padding: space[1] },
+  headerTitle:   { ...typography.title2, color: colors.text.primary },
   container:     { flex: 1 },
   body:          { padding: space[5], paddingBottom: space[12] },
-  screenTitle:   { ...typography.title2, color: colors.text.primary, marginBottom: space[3] },
-  skeletonWrap:  { gap: space[3] },
+  skeletonWrap:  { gap: space[3], marginTop: space[4] },
   separator:     { height: space[3] },
 
   card:          { backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[4], gap: space[2], shadowColor: black, shadowOpacity: 0.04, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
