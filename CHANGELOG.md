@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-06-12 | 보안 감사 A·B·C 블록 | fix(security): Firestore rules coupleId위조·커플업데이트·초대삭제 3건 수정+배포 + 통합테스트 8종. fix(ci): jest integration 경로 분리(42/42). fix(hooks): useFirestoreQuery queryKey 의존 배열. perf(firestore): lazy 구독+limit(7/100)+사진탭 range쿼리+FlatList.
 ## 2026-06-12 | B-side 동기화 E2E 완성 | test: GratitudeDisplay testID(따옴표 텍스트 오탐 우회) + SongCard testID + test_lab_sync_b 섹션 6·7 testID 기반 전환 + test_night_message 멱등성(runFlow+eraseText). 전체 7종(자기전/칭찬/음식/처음/위시리스트/고마움/플레이리스트) PASS.
 ## 2026-06-12 | 실험실 동기화 E2E | test: overlay-* testID(saving disabled 오탐 제거) + *-ready 가드(coupleId 로딩 대기) + DailyFoodScreen KAV 전환(키보드 덮임) + 카드 testID 4종(food-log-card/moment-card/wishlist-card) + Firestore 복합 인덱스 4종. test_lab_sync_a(A 쓰기) + test_lab_sync_b(B 수신) 전부 PASS.
 ## 2026-06-11 | 두 계정 E2E 플로우 | test: 탭바 testID 방식 전환 + 한국어 IME 자동완성 차단(날짜 필드 포커스 이동) + netinfo isInternetReachable 오보 수정. Maestro 전체 9종 PASS.

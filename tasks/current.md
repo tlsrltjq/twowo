@@ -59,12 +59,11 @@
 - ✅ P4: calendar.md 매핑 테이블 이미 완성 상태
 - ✅ P5: 루트 PNG 10개 git 추적 제거 + .gitignore 추가
 
-## 이전 세션에서 멈춘 곳 (2026-06-12 7차)
-- B-side 동기화 Maestro E2E 완성 (7종 전부 PASS)
-  - 수정 내역: GratitudeDisplay testID(partner-gratitude, 따옴표 텍스트 오탐 우회)
-    + SongCard testID(song-card, 동적 id 없이 카드 감지)
-    + test_lab_sync_b 섹션 6·7 testID 기반 전환
-    + test_night_message 멱등성 보장(runFlow 수정버튼 처리 + eraseText)
+## 이전 세션에서 멈춘 곳 (2026-06-12 8차)
+- 보안 감사(GPT 분석) A·B·C 블록 전부 완료
+  - A: Firestore rules 3건(coupleId위조/커플업데이트/초대삭제) + 통합 테스트 8종
+  - B: jest.config integration 경로 제외(CI 42/42) + useFirestoreQuery queryKey 의존 배열 버그 수정
+  - C: lazy 구독(calendar 탭 전환) + limit(7/100) + 사진탭 단일 range 쿼리 + OurPlaylistScreen FlatList 전환
 - 다음: 추가 기능 구현 또는 TestFlight 제출 (Apple Developer Program 필요)
 
 ## 진행 중인 작업 (시뮬레이터 전용)
