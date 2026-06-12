@@ -258,6 +258,6 @@ const styles = StyleSheet.create({
   actionText:    { ...typography.body, color: colors.accent.primary },
 
   dangerDesc:    { ...typography.caption, color: colors.text.muted, padding: space[4], paddingBottom: 0 },
-  dangerBtn:     { margin: space[4], padding: space[3], backgroundColor: colors.status.danger + '20', borderRadius: 10, alignItems: 'center' },
-  dangerBtnText: { ...typography.body, color: colors.status.danger },
+  dangerBtn:     { margin: space[4], padding: space[4], backgroundColor: colors.status.danger, borderRadius: 10, alignItems: 'center' },
+  dangerBtnText: { ...typography.body, color: colors.text.inverse, fontFamily: 'Pretendard-SemiBold' },
 });

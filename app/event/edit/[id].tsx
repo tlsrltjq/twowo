@@ -1,3 +1,4 @@
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router, useLocalSearchParams } from 'expo-router';
 import { doc,DocumentData } from 'firebase/firestore';
@@ -47,6 +48,7 @@ export default function EditEventScreen() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error'; visible: boolean }>(
     { message: '', type: 'success', visible: false },
   );
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const eventRef = doc(db, 'calendarEvents', id);
   const { data: raw, loading } = useFirestoreDoc(eventRef);
@@ -142,17 +144,48 @@ export default function EditEventScreen() {
         <Controller
           control={control}
           name="date"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextField
-              label="날짜"
-              placeholder="YYYY-MM-DD"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              error={errors.date?.message}
-              keyboardType="numbers-and-punctuation"
-            />
-          )}
+          render={({ field: { onChange, value } }) => {
+            const parsed = value?.match(/^\d{4}-\d{2}-\d{2}$/)
+              ? new Date(value + 'T00:00:00')
+              : new Date();
+            const displayText = value?.match(/^\d{4}-\d{2}-\d{2}$/)
+              ? `${parsed.getFullYear()}년 ${parsed.getMonth() + 1}월 ${parsed.getDate()}일`
+              : '날짜를 선택해주세요';
+            return (
+              <View>
+                <Pressable
+                  style={[styles.dateField, showDatePicker && styles.dateFieldOpen]}
+                  onPress={() => setShowDatePicker(v => !v)}
+                >
+                  <View>
+                    <Text style={styles.dateFieldLabel}>날짜</Text>
+                    <Text style={[styles.dateFieldValue, !value && styles.dateFieldPlaceholder]}>
+                      {displayText}
+                    </Text>
+                  </View>
+                  <Text style={styles.dateFieldIcon}>{showDatePicker ? '▲' : '📅'}</Text>
+                </Pressable>
+                {errors.date && <Text style={styles.dateError}>{errors.date.message}</Text>}
+                {showDatePicker && (
+                  <DateTimePicker
+                    mode="date"
+                    value={parsed}
+                    display={Platform.OS === 'ios' ? 'inline' : 'default'}
+                    locale="ko-KR"
+                    maximumDate={new Date(new Date().getFullYear() + 1, 11, 31)}
+                    onChange={(_, selected) => {
+                      if (Platform.OS === 'android') setShowDatePicker(false);
+                      if (selected) {
+                        onChange(selected.toISOString().slice(0, 10));
+                        setShowDatePicker(false);
+                      }
+                    }}
+                    style={styles.datePicker}
+                  />
+                )}
+              </View>
+            );
+          }}
         />
 
         <Controller
@@ -225,4 +258,12 @@ const styles = StyleSheet.create({
   infoBox:            { backgroundColor: colors.bg.subtle, borderRadius: radius.md, padding: space[3] },
   infoText:           { ...typography.caption, color: colors.text.secondary },
   submitBtn:          { marginTop: space[4] },
+  dateField:          { backgroundColor: colors.bg.surface, borderRadius: radius.md, borderWidth: 1, borderColor: colors.border.subtle, padding: space[4], flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  dateFieldOpen:      { borderColor: colors.accent.primary },
+  dateFieldLabel:     { ...typography.tiny, color: colors.text.muted, marginBottom: 2 },
+  dateFieldValue:     { ...typography.body, color: colors.text.primary },
+  dateFieldPlaceholder: { color: colors.text.muted },
+  dateFieldIcon:      { fontSize: 20 },
+  dateError:          { ...typography.tiny, color: colors.status.danger, marginTop: 4, marginLeft: space[1] },
+  datePicker:         { width: '100%' as const, backgroundColor: colors.bg.surface },
 });

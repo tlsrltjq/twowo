@@ -227,7 +227,7 @@ export default function ChatScreen() {
   return (
     <SafeAreaView testID="screen-chat" style={styles.safeArea} edges={['top']}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>채팅</Text>
+        <Text style={styles.headerTitle}>{partnerName || '채팅'}</Text>
       </View>
 
       <KeyboardAvoidingView
