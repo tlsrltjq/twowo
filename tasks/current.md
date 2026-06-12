@@ -59,13 +59,12 @@
 - ✅ P4: calendar.md 매핑 테이블 이미 완성 상태
 - ✅ P5: 루트 PNG 10개 git 추적 제거 + .gitignore 추가
 
-## 이전 세션에서 멈춘 곳 (2026-06-11 5차)
-- bingo/vote BR↔테스트 매핑 완성 (신규 테스트 5종 + 기존 보완)
-- OfflineBanner isInternetReachable 오보 수정 (isConnected → isInternetReachable)
-- 두 계정 전체 플로우 Maestro E2E 9종 전부 통과
-  - 탭바 testID 방식 전환 (iOS 탭바 텍스트 접근 불가 우회)
-  - 한국어 IME 자동완성 차단: 날짜 필드 포커스 이동(testID="input-event-date") 추가
-  - mood_save_a / mood_sync_b / calendar_a / calendar_sync_b / chat_b / chat_sync_a 전부 PASS
+## 이전 세션에서 멈춘 곳 (2026-06-12 6차)
+- 실험실 4종 동기화 Maestro E2E 완성
+  - test_lab_sync_a (A-side 4종 쓰기): 칭찬/음식/처음/위시리스트 전부 PASS
+  - test_lab_sync_b (B-side 4종 수신): 칭찬/음식/처음/위시리스트 동기화 전부 PASS
+  - 수정 내역: overlay-* testID(오탐 제거), *-ready 가드(coupleId 로딩 대기),
+    DailyFoodScreen KAV 전환(키보드 덮임), 카드 testID 4종, Firestore 복합 인덱스 4종
 - 다음: 추가 기능 구현 또는 TestFlight 제출 (Apple Developer Program 필요)
 
 ## 진행 중인 작업 (시뮬레이터 전용)
