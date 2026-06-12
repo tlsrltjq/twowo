@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-06-12 | UX 개선 | feat(ux): DateTimePicker(네이티브 인라인) 날짜 입력 교체 + 채팅 헤더 파트너 닉네임 + 연결 해제 버튼 danger solid 강조.
 ## 2026-06-12 | P2 마무리 | refactor(calendar): 화면 분할(472→199줄) + subscribeEventsSince limit(200) + usePartnerProfile loading/error + firestore rules title/type 검증.
 ## 2026-06-12 | P3-A/B 완료 | feat: chat.md 스펙 + FRONTEND_RULES console 정책 + ADR-023 + runbook.md + Sentry 소스맵/release 설정.
 ## 2026-06-12 | 문서 최신화 | docs: architecture.md userTokens 추가 + users create rule 반영 + ADR-022 + HARNESS ADR 범위 갱신.
