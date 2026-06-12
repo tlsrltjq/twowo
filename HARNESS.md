@@ -43,6 +43,8 @@ __mocks__/, __tests__/, .github/workflows/
 | — | 오늘 뭐 먹었어 (daily-food) | 2차 | ✅ |
 | — | 우리가 처음 한 것들 (first-moments) | 2차 | ✅ |
 | — | 선물 위시리스트 (gift-wishlist) | 2차 | ✅ |
+| — | 오늘의 고마움 (daily-gratitude) | 2차 | ✅ |
+| — | 우리의 플레이리스트 (our-playlist) | 2차 | ✅ |
 | 4′ | 원격 푸시 Cloud Function *(Blaze 필요)* | 2차 | ⬜ |
 | 6 | 커플 해제 30일 유예 + Scheduled Function *(Blaze 필요)* | 2차 | ⬜ |
 | 8 | App Store 공개 출시 *(Apple Developer 필요)* | 2차 | ⬜ |
