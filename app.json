@@ -37,7 +37,9 @@
       }],
       "expo-router",
       "expo-font",
-      "expo-image-picker",
+      ["expo-image-picker", {
+        "photosPermission": "둘다좋아가 일정에 사진을 첨부하기 위해 사진 라이브러리에 접근합니다."
+      }],
       "expo-camera",
       "expo-notifications",
       "expo-sqlite",
