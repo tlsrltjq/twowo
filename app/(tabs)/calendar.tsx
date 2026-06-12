@@ -14,7 +14,7 @@ import { Calendar, DateData } from 'react-native-calendars';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CalendarEvent } from '../../core/calendar/schema';
-import { useCalendarEvents, useCalendarEventsByType } from '../../core/memory';
+import { useCalendarEvents, useCalendarEventsByType, usePhotoEvents } from '../../core/memory';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { EmptyState } from '../../design-system/EmptyState';
 import { Skeleton } from '../../design-system/Skeleton';
@@ -85,9 +85,17 @@ export default function CalendarScreen() {
   }, [currentMonth]);
 
   const { events, loading } = useCalendarEvents(coupleId, { from: monthStart, to: monthEnd });
-  const { events: exerciseEvents, loading: exerciseLoading } = useCalendarEventsByType(coupleId, 'exercise');
-  const { events: dateEvents,     loading: dateLoading }     = useCalendarEventsByType(coupleId, 'date');
-  const { events: generalEvents,  loading: generalLoading }  = useCalendarEventsByType(coupleId, 'general');
+  // activeView에 따라 lazy 구독 — 해당 탭이 활성일 때만 Firestore listener 생성
+  const { events: exerciseEvents, loading: exerciseLoading } = useCalendarEventsByType(
+    activeView === 'exercise' ? coupleId : null, 'exercise',
+  );
+  const { events: dateEvents, loading: dateLoading } = useCalendarEventsByType(
+    activeView === 'date' ? coupleId : null, 'date',
+  );
+  // 사진 탭: 최근 2년 범위 단일 구독 (타입 3종 병렬 구독 대체)
+  const { events: photoEvents, loading: photoLoading } = usePhotoEvents(
+    activeView === 'photos' ? coupleId : null,
+  );
 
   const markedDates = useMemo(() => {
     const marks: Record<string, { dots: { color: string }[]; selected?: boolean; selectedColor?: string }> = {};
@@ -109,13 +117,6 @@ export default function CalendarScreen() {
     () => events.filter(ev => toYMD(ev.date) === selectedDate),
     [events, selectedDate],
   );
-
-  // BR-10: 전체 타입에서 사진 있는 이벤트만 추출, date desc
-  const photoEvents = useMemo(() => {
-    const all = [...exerciseEvents, ...dateEvents, ...generalEvents];
-    return all.filter(ev => ev.photoIds.length > 0).sort((a, b) => b.date.getTime() - a.date.getTime());
-  }, [exerciseEvents, dateEvents, generalEvents]);
-  const photoLoading = exerciseLoading || dateLoading || generalLoading;
 
   const onDayPress = useCallback((day: DateData) => {
     setSelectedDate(day.dateString);

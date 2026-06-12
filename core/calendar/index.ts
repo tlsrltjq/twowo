@@ -3,6 +3,7 @@ import {
   collection,
   deleteField,
   doc,
+  limit,
   onSnapshot,
   orderBy,
   query,
@@ -84,15 +85,36 @@ export function subscribeEvents(
 }
 
 // coupleId+type+date DESC 복합 인덱스 사용 (firestore.indexes.json 4번째 항목)
+// maxCount: 최근 N개로 제한 (기본 100). 장기 사용 시 무제한 read 방지.
 export function subscribeEventsByType(
   coupleId: string,
   type: string,
   cb: (events: CalendarEvent[]) => void,
+  maxCount = 100,
 ): () => void {
   const q = query(
     collection(db, 'calendarEvents'),
     where('coupleId', '==', coupleId),
     where('type', '==', type),
+    orderBy('date', 'desc'),
+    limit(maxCount),
+  );
+  return onSnapshot(q, (snap) => {
+    cb(snap.docs.map(d => fromFirestore(d.id, d.data() as Record<string, unknown>)));
+  });
+}
+
+// 사진 탭 전용: 특정 날짜 이후의 모든 타입 이벤트 구독
+// 기존 3종 병렬 구독 대신 단일 range 쿼리로 대체 (coupleId+date DESC 인덱스 사용)
+export function subscribeEventsSince(
+  coupleId: string,
+  since: Date,
+  cb: (events: CalendarEvent[]) => void,
+): () => void {
+  const q = query(
+    collection(db, 'calendarEvents'),
+    where('coupleId', '==', coupleId),
+    where('date', '>=', Timestamp.fromDate(since)),
     orderBy('date', 'desc'),
   );
   return onSnapshot(q, (snap) => {

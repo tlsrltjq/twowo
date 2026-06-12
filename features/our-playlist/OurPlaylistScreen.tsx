@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   Alert,
+  FlatList,
   Modal,
   ScrollView,
   StyleSheet,
@@ -102,42 +103,48 @@ export default function OurPlaylistScreen() {
 
   return (
     <SafeAreaView testID="screen-our-playlist" style={styles.safeArea} edges={['top']}>
-      <ScrollView style={styles.container} contentContainerStyle={styles.body}>
-        <Text style={styles.screenTitle}>우리의 플레이리스트</Text>
-
-        {loading ? (
-          <View testID="playlist-loading" style={styles.skeletonWrap}>
-            <Skeleton height={72} />
-            <Skeleton height={72} />
-            <Skeleton height={72} />
-          </View>
-        ) : songs.length === 0 ? (
-          <EmptyState
-            title="아직 노래가 없어요"
-            description="우리 노래를 추가해보세요 🎵"
+      <FlatList
+        testID="playlist-list"
+        style={styles.container}
+        data={songs}
+        keyExtractor={item => item.id}
+        contentContainerStyle={styles.body}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        ListHeaderComponent={
+          <Text style={styles.screenTitle}>우리의 플레이리스트</Text>
+        }
+        ListEmptyComponent={
+          loading ? (
+            <View testID="playlist-loading" style={styles.skeletonWrap}>
+              <Skeleton height={72} />
+              <Skeleton height={72} />
+              <Skeleton height={72} />
+            </View>
+          ) : (
+            <EmptyState
+              title="아직 노래가 없어요"
+              description="우리 노래를 추가해보세요 🎵"
+            />
+          )
+        }
+        ListFooterComponent={
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            visible={toast.visible}
+            onHide={() => setToast(t => ({ ...t, visible: false }))}
           />
-        ) : (
-          <View testID="playlist-list" style={styles.list}>
-            {songs.map(song => (
-              <TouchableOpacity
-                key={song.id}
-                onLongPress={() => handleLongPress(song)}
-                activeOpacity={0.85}
-                testID={`song-card-${song.id}`}
-              >
-                <SongCard song={song} isMe={song.addedBy === user?.uid} />
-              </TouchableOpacity>
-            ))}
-          </View>
+        }
+        renderItem={({ item: song }) => (
+          <TouchableOpacity
+            onLongPress={() => handleLongPress(song)}
+            activeOpacity={0.85}
+            testID={`song-card-${song.id}`}
+          >
+            <SongCard song={song} isMe={song.addedBy === user?.uid} />
+          </TouchableOpacity>
         )}
-
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          visible={toast.visible}
-          onHide={() => setToast(t => ({ ...t, visible: false }))}
-        />
-      </ScrollView>
+      />
 
       {/* FAB */}
       <TouchableOpacity
@@ -254,10 +261,10 @@ function SongCard({ song, isMe }: { song: PlaylistSong; isMe: boolean }) {
 const styles = StyleSheet.create({
   safeArea:      { flex: 1, backgroundColor: colors.bg.base },
   container:     { flex: 1 },
-  body:          { padding: space[5], gap: space[3], paddingBottom: space[12] },
-  screenTitle:   { ...typography.title2, color: colors.text.primary },
+  body:          { padding: space[5], paddingBottom: space[12] },
+  screenTitle:   { ...typography.title2, color: colors.text.primary, marginBottom: space[3] },
   skeletonWrap:  { gap: space[3] },
-  list:          { gap: space[3] },
+  separator:     { height: space[3] },
 
   card:          { backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[4], gap: space[2], shadowColor: black, shadowOpacity: 0.04, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
   cardTop:       { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },

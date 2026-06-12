@@ -1,7 +1,7 @@
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
-import { subscribeEvents, subscribeEventsByType } from '../calendar';
+import { subscribeEvents, subscribeEventsByType, subscribeEventsSince } from '../calendar';
 import { CalendarEvent } from '../calendar/schema';
 import { db } from '../config/firebase';
 
@@ -42,6 +42,7 @@ export function useCalendarEvents(
   return { events, loading };
 }
 
+// coupleId null 시 구독 즉시 해제 (lazy subscription — 해당 탭 활성 시에만 사용)
 export function useCalendarEventsByType(
   coupleId: string | null,
   type: string,
@@ -51,6 +52,7 @@ export function useCalendarEventsByType(
 
   useEffect(() => {
     if (!coupleId) {
+      setEvents([]);
       setLoading(false);
       return;
     }
@@ -61,6 +63,37 @@ export function useCalendarEventsByType(
     });
     return unsub;
   }, [coupleId, type]);
+
+  return { events, loading };
+}
+
+// 사진 탭 전용: 최근 2년 이벤트에서 사진 있는 것만 구독
+// coupleId null 시 구독 안 함 (lazy — 사진 탭 활성 시에만 사용)
+export function usePhotoEvents(
+  coupleId: string | null,
+): { events: CalendarEvent[]; loading: boolean } {
+  const [events, setEvents]   = useState<CalendarEvent[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const since = useMemo(() => {
+    const d = new Date();
+    d.setFullYear(d.getFullYear() - 2);
+    return d;
+  }, []);
+
+  useEffect(() => {
+    if (!coupleId) {
+      setEvents([]);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    const unsub = subscribeEventsSince(coupleId, since, (evs) => {
+      setEvents(evs.filter(ev => ev.photoIds.length > 0));
+      setLoading(false);
+    });
+    return unsub;
+  }, [coupleId, since]);
 
   return { events, loading };
 }

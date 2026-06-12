@@ -4,13 +4,14 @@ import {
   DocumentData,
   getDoc,
   getDocs,
+  limit,
   onSnapshot,
   orderBy,
   query,
   runTransaction,
   serverTimestamp,
   where,
-} from 'firebase/firestore' ;
+} from 'firebase/firestore';
 
 import { db } from '../../core/config/firebase';
 import { getTodayKST } from '../../core/utils/date';
@@ -127,11 +128,10 @@ export async function getRecent7Days(coupleId: string, userId: string): Promise<
     where('coupleId', '==', coupleId),
     where('userId', '==', userId),
     orderBy('date', 'desc'),
+    limit(7),
   );
   const snap = await getDocs(q);
-  return snap.docs
-    .map(d => fromFirestore(d.id, d.data() as DocumentData))
-    .slice(0, 7);
+  return snap.docs.map(d => fromFirestore(d.id, d.data() as DocumentData));
 }
 
 export type { MoodCheck, MoodCheckInput } from './schema';

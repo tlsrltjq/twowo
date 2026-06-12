@@ -4,6 +4,7 @@ import {
   DocumentData,
   getDoc,
   getDocs,
+  limit,
   onSnapshot,
   orderBy,
   query,
@@ -99,11 +100,10 @@ export async function getRecent7DaysGratitude(coupleId: string, userId: string):
     where('coupleId', '==', coupleId),
     where('userId', '==', userId),
     orderBy('date', 'desc'),
+    limit(7),
   );
   const snap = await getDocs(q);
-  return snap.docs
-    .map(d => fromFirestore(d.id, d.data() as DocumentData))
-    .slice(0, 7);
+  return snap.docs.map(d => fromFirestore(d.id, d.data() as DocumentData));
 }
 
 export type { GratitudeEntry, GratitudeInput } from './schema';
