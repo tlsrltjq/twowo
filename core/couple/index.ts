@@ -103,10 +103,10 @@ export async function joinByCode(uid: string, code: string): Promise<{ coupleId:
 
     tx.update(coupleRef, { memberIds: [...memberIds, uid] });
     tx.update(userRef, { coupleId });
+    tx.update(invDocRef, { usedBy: uid });
     resultCoupleId = coupleId;
   });
-  // 트랜잭션 완료 후 초대 코드 삭제: users.coupleId가 이미 설정된 상태이므로
-  // invitations delete 규칙의 get(users/uid).coupleId == resource.data.coupleId 조건 충족.
+  // 트랜잭션 완료 후 초대 코드 삭제: invitations.usedBy == uid 조건으로 허용.
   await deleteDoc(invDocRef);
   return { coupleId: resultCoupleId };
 }

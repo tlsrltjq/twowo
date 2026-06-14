@@ -176,15 +176,20 @@ service cloud.firestore {
                     && request.resource.data.createdBy == request.auth.uid
                     && request.resource.data.coupleId == myCoupleId();
 
-      allow update: if false;
+      // join 시 사용 표시 — usedBy 필드만 추가, 나머지 불변, 최초 1회만 허용
+      allow update: if isSignedIn()
+                    && resource.data.createdBy != request.auth.uid
+                    && !('usedBy' in resource.data)
+                    && request.resource.data.usedBy == request.auth.uid
+                    && request.resource.data.coupleId == resource.data.coupleId
+                    && request.resource.data.createdBy == resource.data.createdBy
+                    && request.resource.data.createdAt == resource.data.createdAt
+                    && request.resource.data.expiresAt == resource.data.expiresAt;
 
-      // 발급자 본인, 또는 join 트랜잭션 완료 직후 멤버가 된 사람(getAfter로 멤버십 증명)
-      // 주의: "couples size==1 이면 누구나 삭제" 조건 제거 — 코드를 아는 제3자가 DoS 가능
-      // 발급자 본인 삭제
+      // 발급자 본인 삭제 (재발급 시 이전 코드 정리)
       allow delete: if isSignedIn() && resource.data.createdBy == request.auth.uid;
-      // 커플 멤버 삭제 — join 완료 후 별도 deleteDoc 호출 시 허용 (get으로 현재 coupleId 확인)
-      allow delete: if isSignedIn()
-                    && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.coupleId == resource.data.coupleId;
+      // 코드를 사용한 본인만 삭제 — join 트랜잭션에서 usedBy 표시 후 deleteDoc 호출
+      allow delete: if isSignedIn() && resource.data.usedBy == request.auth.uid;
     }
 
     // ---------- calendarEvents ----------
