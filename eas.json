@@ -13,12 +13,14 @@
     "preview": {
       "distribution": "store",
       "ios": { "buildConfiguration": "Release" },
-      "env": { "EXPO_PUBLIC_APP_ENV": "preview" }
+      "env": { "EXPO_PUBLIC_APP_ENV": "preview" },
+      "channel": "preview"
     },
     "production": {
       "ios": { "buildConfiguration": "Release" },
       "env": { "EXPO_PUBLIC_APP_ENV": "production" },
-      "autoIncrement": true
+      "autoIncrement": true,
+      "channel": "production"
     }
   },
   "submit": {

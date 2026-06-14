@@ -30,11 +30,18 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "runtimeVersion": {
+      "policy": "fingerprint"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/b2876cc9-17db-46e8-876d-06ee39f442b8"
+    },
     "plugins": [
       ["@sentry/react-native/expo", {
         "organization": "giseop",
         "project": "react-native"
       }],
+      "expo-updates",
       "expo-router",
       "expo-font",
       ["expo-image-picker", {
