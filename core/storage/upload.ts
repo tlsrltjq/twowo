@@ -1,4 +1,3 @@
-import { File } from 'expo-file-system';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { addDoc, arrayUnion, collection, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
@@ -39,10 +38,12 @@ async function compress(
 }
 
 async function sdkUpload(storagePath: string, fileUri: string): Promise<string> {
-  const file = new File(fileUri);
-  const bytes = await file.bytes();
+  // fetch(file://) → blob()은 RN 네이티브 Blob을 반환하므로 XHR.send(blob)과 호환됨.
+  // new Blob([Uint8Array])는 RN에서 동작하지 않아 File.bytes() 경로 불가.
+  const response = await fetch(fileUri);
+  const blob = await response.blob();
   const storageRef = ref(storage, storagePath);
-  const result = await uploadBytes(storageRef, bytes, { contentType: 'image/jpeg' });
+  const result = await uploadBytes(storageRef, blob, { contentType: 'image/jpeg' });
   return getDownloadURL(result.ref);
 }
 
