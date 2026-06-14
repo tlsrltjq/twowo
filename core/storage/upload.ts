@@ -1,4 +1,4 @@
-import * as FileSystem from 'expo-file-system';
+import { File } from 'expo-file-system';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { addDoc, arrayUnion, collection, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
@@ -11,7 +11,6 @@ function newPhotoId(): string {
   return Math.random().toString(36).slice(2) + Date.now().toString(36);
 }
 
-// 긴 쪽을 maxSide 이하로 축소. 이미 작으면 리사이즈 없이 재인코딩만(EXIF 제거 목적).
 async function compress(
   uri: string,
   maxSide: number,
@@ -24,11 +23,9 @@ async function compress(
   if (origW && origH) {
     const longer = Math.max(origW, origH);
     if (longer > maxSide) {
-      // 세로 사진이면 height 기준, 가로/정방형이면 width 기준으로 축소
       if (origH > origW) ops.push({ resize: { height: maxSide } });
       else                ops.push({ resize: { width:  maxSide } });
     }
-    // longer <= maxSide → 업스케일 없이 재인코딩만 (EXIF 제거)
   } else {
     ops.push({ resize: { width: maxSide } });
   }
@@ -36,10 +33,17 @@ async function compress(
   const result = await ImageManipulator.manipulateAsync(
     uri,
     ops,
-    // SaveFormat.JPEG でEXIF を除去 (manipulateAsync は EXIF を保持しない)
     { compress: quality, format: ImageManipulator.SaveFormat.JPEG },
   );
   return result;
+}
+
+async function sdkUpload(storagePath: string, fileUri: string): Promise<string> {
+  const file = new File(fileUri);
+  const bytes = await file.bytes();
+  const storageRef = ref(storage, storagePath);
+  const result = await uploadBytes(storageRef, bytes, { contentType: 'image/jpeg' });
+  return getDownloadURL(result.ref);
 }
 
 // BR-5: 20장 초과 시 거부
@@ -64,29 +68,12 @@ export async function uploadPhoto(
   const original = await compress(localUri, 1440, 0.75, origW, origH);
   const thumb    = await compress(localUri, 400,  0.6,  origW, origH);
 
-  const [originalBlob, thumbBlob] = await Promise.all([
-    FileSystem.readAsStringAsync(original.uri, { encoding: FileSystem.EncodingType.Base64 }),
-    FileSystem.readAsStringAsync(thumb.uri,    { encoding: FileSystem.EncodingType.Base64 }),
-  ]);
-
-  function base64ToUint8Array(b64: string): Uint8Array {
-    const binary = atob(b64);
-    const arr = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) arr[i] = binary.charCodeAt(i);
-    return arr;
-  }
-
   const originalPath = `${base}_original.jpg`;
   const thumbPath    = `${base}_thumb.jpg`;
 
-  const [originalSnap, thumbSnap] = await Promise.all([
-    uploadBytes(ref(storage, originalPath), base64ToUint8Array(originalBlob), { contentType: 'image/jpeg' }), // ①
-    uploadBytes(ref(storage, thumbPath),    base64ToUint8Array(thumbBlob),    { contentType: 'image/jpeg' }), // ②
-  ]);
-
   const [originalUrl, thumbUrl] = await Promise.all([
-    getDownloadURL(originalSnap.ref),
-    getDownloadURL(thumbSnap.ref),
+    sdkUpload(originalPath, original.uri), // ①
+    sdkUpload(thumbPath, thumb.uri),        // ②
   ]);
 
   await addDoc(collection(db, 'photos'), { // ③

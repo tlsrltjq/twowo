@@ -22,11 +22,13 @@ appId: host.exp.Exponent
     id: "input-event-title"
 - eraseText: 30
 - inputText: "E2E 테스트"
-- tapOn:
-    id: "input-event-date"
 - waitForAnimationToEnd
+- takeScreenshot: "calendar_a_before_save"
+# 헤더의 저장 버튼 — 키보드와 무관하게 항상 화면 상단에 노출됨
 - tapOn:
     id: "btn-event-save"
+- waitForAnimationToEnd
+- takeScreenshot: "calendar_a_after_save_tap"
 - extendedWaitUntil:
     visible:
       id: "screen-calendar"

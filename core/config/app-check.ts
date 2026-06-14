@@ -8,11 +8,9 @@ import { CustomProvider, initializeAppCheck } from 'firebase/app-check';
 
 export function setupAppCheck(app: FirebaseApp): void {
   if (__DEV__) {
-    // Debug 토큰을 자동 생성해 콘솔에 출력. Firebase 콘솔 App Check 페이지에 등록 필요.
-    // globalThis 사용: React Native에서 window/self 미존재.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (globalThis as any).FIREBASE_APPCHECK_DEBUG_TOKEN = true;
-
+    // DEV: CustomProvider로 고정 토큰 반환. Firebase JS SDK는 내부적으로
+    // FIREBASE_APPCHECK_DEBUG_TOKEN=true 플래그를 보면 crypto.randomUUID()를 호출하는데,
+    // React Native 환경에 crypto 전역이 없어 crash가 발생하므로 플래그를 설정하지 않는다.
     initializeAppCheck(app, {
       provider: new CustomProvider({
         getToken: async () => ({

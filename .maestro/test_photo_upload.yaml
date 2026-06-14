@@ -1,0 +1,79 @@
+appId: host.exp.Exponent
+---
+# Account A (iPhone 14 Pro) — 캘린더 이벤트 사진 업로드 테스트
+# 전제: test_calendar_a 실행 후 "E2E 테스트" 이벤트 존재, 시뮬레이터 포토 라이브러리에 테스트 이미지 4장 추가됨
+- launchApp
+- tapOn:
+    text: "둘다좋아"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 90000
+- tapOn:
+    id: "tab-calendar"
+- extendedWaitUntil:
+    visible:
+      id: "screen-calendar"
+    timeout: 10000
+
+# E2E 테스트 이벤트 진입
+- tapOn: "E2E 테스트"
+- extendedWaitUntil:
+    visible:
+      id: "screen-event-detail"
+    timeout: 10000
+- takeScreenshot: "photo_01_event_detail"
+
+# 사진 추가 버튼 탭
+- tapOn:
+    id: "btn-add-photo"
+- waitForAnimationToEnd
+
+# 사진 접근 권한 허용 (최초 1회)
+- tapOn:
+    text: "Allow Access to All Photos"
+    optional: true
+- waitForAnimationToEnd
+
+# 시스템 포토 피커에서 첫 번째 이미지 선택 (large_4000x3000)
+- tapOn:
+    text: "large_4000x3000"
+    optional: true
+- waitForAnimationToEnd
+# 텍스트가 안 보이면 첫 번째 이미지 셀 탭
+- tapOn:
+    point: "15%,25%"
+    optional: true
+- waitForAnimationToEnd
+- takeScreenshot: "photo_02_picker_open"
+
+# 업로드 중 토스트 확인 & 완료 대기
+- extendedWaitUntil:
+    visible:
+      id: "photo-thumb-0"
+    timeout: 30000
+- takeScreenshot: "photo_03_uploaded"
+
+# 두 번째 사진 추가 (medium)
+- tapOn:
+    id: "btn-add-photo"
+- waitForAnimationToEnd
+- tapOn:
+    point: "38%,25%"
+    optional: true
+- waitForAnimationToEnd
+- extendedWaitUntil:
+    visible:
+      id: "photo-thumb-1"
+    timeout: 30000
+- takeScreenshot: "photo_04_two_photos"
+
+# 첫 번째 사진 탭 → 전체화면 뷰어 확인
+- tapOn:
+    id: "photo-thumb-0"
+- waitForAnimationToEnd
+- takeScreenshot: "photo_05_viewer_full"
+- tapOn: "✕"
+- waitForAnimationToEnd
+- takeScreenshot: "photo_06_back_to_list"

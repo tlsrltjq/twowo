@@ -101,7 +101,8 @@ export default function EventDetailScreen() {
         height:            asset.height,
       });
       show('사진이 추가됐어요 📷', 'success');
-    } catch {
+    } catch (err) {
+      if (__DEV__) console.error('[upload]', err);
       show('사진 업로드에 실패했어요', 'error');
     }
   }, [event, id, user]);
@@ -136,7 +137,7 @@ export default function EventDetailScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView testID="screen-event-detail" style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <Pressable onPress={() => router.back()}>
           <Text style={styles.backText}>‹ 뒤로</Text>
@@ -172,7 +173,7 @@ export default function EventDetailScreen() {
 
         <View style={styles.photoHeader}>
           <Text style={styles.sectionTitle}>사진 ({event.photoIds.length}/20)</Text>
-          <Pressable onPress={handleAddPhoto} style={styles.addPhotoBtn}>
+          <Pressable testID="btn-add-photo" onPress={handleAddPhoto} style={styles.addPhotoBtn}>
             <Text style={styles.addPhotoText}>＋ 추가</Text>
           </Pressable>
         </View>
@@ -188,7 +189,7 @@ export default function EventDetailScreen() {
             numColumns={3}
             scrollEnabled={false}
             renderItem={({ item, index }) => (
-              <Pressable style={styles.photoCell} onPress={() => setViewerIndex(index)}>
+              <Pressable testID={`photo-thumb-${index}`} style={styles.photoCell} onPress={() => setViewerIndex(index)}>
                 {item.thumbUrl ? (
                   <Image source={{ uri: item.thumbUrl }} style={styles.photoThumb} resizeMode="cover" />
                 ) : (

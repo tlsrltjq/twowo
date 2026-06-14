@@ -85,7 +85,16 @@ export default function NewEventScreen() {
           <Text style={styles.cancelText}>취소</Text>
         </Pressable>
         <Text style={styles.headerTitle}>새 일정</Text>
-        <View style={styles.cancelBtn} />
+        <Pressable
+          testID="btn-event-save"
+          onPress={handleSubmit(onSubmit)}
+          disabled={isSubmitting}
+          style={styles.cancelBtn}
+        >
+          <Text style={[styles.cancelText, styles.saveText, isSubmitting && styles.disabledText]}>
+            {isSubmitting ? '저장 중' : '저장'}
+          </Text>
+        </Pressable>
       </View>
 
       <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
@@ -211,7 +220,6 @@ export default function NewEventScreen() {
 
         <View style={styles.submitBtn}>
           <Button
-            testID="btn-event-save"
             label={isSubmitting ? '저장 중...' : '저장'}
             onPress={handleSubmit(onSubmit)}
             disabled={isSubmitting}
@@ -236,6 +244,8 @@ const styles = StyleSheet.create({
   headerTitle:        { ...typography.title2, color: colors.text.primary },
   cancelBtn:          { width: 60 },
   cancelText:         { ...typography.body, color: colors.accent.primary },
+  saveText:           { textAlign: 'right', fontFamily: 'Pretendard-SemiBold' },
+  disabledText:       { opacity: 0.4 },
   body:               { padding: space[5], gap: space[4] },
   typeRow:            { flexDirection: 'row', gap: space[2] },
   typeChip:           { flex: 1, paddingVertical: space[2], borderRadius: radius.pill, borderWidth: 1, borderColor: colors.border.subtle, alignItems: 'center' },
