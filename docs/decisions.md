@@ -235,6 +235,19 @@
 - **테스트 전략**: Cloud Functions 통합 테스트는 `firebase-functions-test` + 에뮬레이터 필요. 현재 experimental 완화 적용. `active` 승격 전 매핑 완성.
 - **배포 명령**: `npm --prefix functions run build && firebase deploy --only functions`
 
+## ADR-025: App Check — DEV Debug Provider, PROD App Attest 단계적 적용 (2026-06-14)
+- **결정**: `core/config/app-check.ts` 에 Firebase App Check 초기화 코드를 준비. DEV에서는 Debug Token으로 동작, PROD App Attest는 네이티브 모듈 준비 후 활성화.
+- **배경**: React Native + Firebase JS SDK 조합에서 iOS App Attest를 쓰려면 `CustomProvider.getToken()` 에 Native Module 호출이 필요. 현재 `@react-native-firebase` 미사용 구조에서 추가 네이티브 작업 없이 바로 App Attest는 불가.
+- **DEV 설정**:
+  - `globalThis.FIREBASE_APPCHECK_DEBUG_TOKEN = true` → Firebase가 UUID debug token을 콘솔에 출력
+  - Firebase 콘솔 App Check > iOS App 페이지에 해당 UUID를 등록하면 DEV 기기에서 App Check 통과
+- **PROD 활성화 경로** (향후):
+  - 방법 A: `@invertase/react-native-firebase` 앱 체크 모듈 추가 + `CustomProvider.getToken()` 에서 네이티브 App Attest 호출
+  - 방법 B: `expo-modules-core` 기반 커스텀 Expo 모듈 작성
+  - 활성화 전까지는 Firebase 콘솔 App Check enforcement를 "monitor" 모드로 유지 (차단 않고 관찰만)
+- **현재 상태**: PROD에서 App Check 비활성화. Security Rules(ADR-008)가 유일 방어선. 공개 출시(8단계) 전 App Attest 활성화 목표.
+- **트레이드오프**: `@react-native-firebase` 전체를 추가하면 앱 용량 + 빌드 복잡도 증가. 현재 규모(2인 앱)에서는 Security Rules만으로 충분.
+
 ## ADR-019: 비용 발생 항목 보류 — 시뮬레이터 우선 개발
 - **결정**: 아래 항목은 사용자가 직접 진행 의사를 밝힐 때까지 대기. 그 전까지는 시뮬레이터에서 검증 가능한 기능 개발에 집중.
   - Apple Developer Program ($99/년) → EAS Build · TestFlight · App Store 공개 출시

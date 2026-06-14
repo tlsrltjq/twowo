@@ -45,6 +45,13 @@ export const auth    = buildAuth();
 export const db      = getFirestore(app);
 export const storage = getStorage(app);
 
+if (isFirst) {
+  // App Check: DEV는 debug token 자동 생성, PROD는 App Attest 준비 전까지 생략 (ADR-025)
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { setupAppCheck } = require('./app-check') as { setupAppCheck: (a: typeof app) => void };
+  setupAppCheck(app);
+}
+
 if (__DEV__) {
   console.warn('[firebase] initialized project:', process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID);
   console.warn('[firebase] auth type:', auth?.constructor?.name ?? typeof auth);

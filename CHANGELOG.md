@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-06-14 | App Check | chore(security): App Check DEV debug token 초기화 + ADR-025 (PROD App Attest 로드맵 기록).
 ## 2026-06-14 | expo-updates OTA | chore(ota): expo-updates 56.0.19 설치 + app.json runtimeVersion(fingerprint) + eas.json preview/production 채널 등록.
 ## 2026-06-12 | Cloud Functions | feat(functions): 원격 푸시(BR-N1/N2/N3) + 커플 해제 30일 유예 스케줄 정리(BR-D3/D5/D6/D7) — functions/ 신규, firebase.json functions 등록, ADR-024, notifications 스펙.
 ## 2026-06-12 | 채팅 BR 테스트 | test(chat): BR-1~9 전체 매핑 완성 — subscribeMessages/sendMessage/sendImageMessage/ChatScreen 4파일, security-rules BR-2·4·7 통합 추가. 219 green.
