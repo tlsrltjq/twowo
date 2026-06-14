@@ -81,15 +81,13 @@
 - [ ] **security-rules 통합 테스트 확대** — 컬렉션당 "타인 차단" 1개씩 추가. 현재 3개뿐인데 rules 352줄이 사실상 백엔드
 - [ ] **subscribeUnreadCount 정확도** — `limit(10)` 후 클라이언트 필터라 10개 초과 시 배지 부정확. 실사용 중 문제되면 서버사이드 카운터로 교체
 
-## 이전 세션에서 멈춘 곳 (2026-06-14 18차)
-- ✅ 5번: Cloud Functions — 원격 푸시(BR-N1/N2/N3) + 커플 해제 30일 유예(BR-D3/D5-D7), ADR-024
-- ✅ 2번: expo-updates OTA — 56.0.19 설치, fingerprint runtimeVersion, preview/production 채널
-- ✅ 3번: App Check — DEV debug token 초기화, ADR-025 (PROD App Attest 로드맵)
-- ✅ 1번: 빈 상태 일러스트 — SVG 3종(CalendarEmpty/ChatEmpty/ListEmpty), EmptyState illustration prop
-- ✅ CI 통합 테스트 전체 통과 — 에뮬레이터 getAfter 오염·경합 해소
-  - firestore.rules: users update 3분리 블록 + invitations delete get() 교체
-  - joinByCode: tx.delete → 트랜잭션 외 별도 deleteDoc
-  - jest.config.integration.js: maxWorkers:1 (clearFirestore 경합 방지)
+## 이전 세션에서 멈춘 곳 (2026-06-14 19차)
+- ✅ CI 통합 테스트 전체 통과 (이전 세션 완료)
+- ✅ invitations 삭제 권한 강화 — usedBy 필드 도입
+  - firestore.rules: invitations update 규칙 추가(usedBy 원자적 표시), delete rule 2를 get() → resource.data.usedBy 로 교체
+  - core/couple/index.ts: 트랜잭션에 tx.update(invDocRef, { usedBy: uid }) 추가
+  - couple-join-flow.test.ts: 트랜잭션 step에 usedBy 반영
+  - 커플 상대방이 초대 코드를 삭제할 수 있던 경로 차단
 - 다음: TestFlight(보류, Apple Developer 필요) 또는 추가 작업 선택
 
 ## 진행 중인 작업 (시뮬레이터 전용)
