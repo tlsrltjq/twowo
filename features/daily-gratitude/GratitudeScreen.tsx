@@ -18,6 +18,7 @@ import { useAuthStore } from '../../core/stores/auth.store';
 import { getTodayKST } from '../../core/utils/date';
 import { Button } from '../../design-system/Button';
 import { EmptyState } from '../../design-system/EmptyState';
+import { ListEmpty } from '../../design-system/illustrations';
 import { Spinner } from '../../design-system/Spinner';
 import { Toast } from '../../design-system/Toast';
 import { black, colors, radius, space, typography } from '../../design-system/tokens';
@@ -180,7 +181,7 @@ export default function GratitudeScreen() {
       <View style={styles.card}>
         <Text style={styles.cardLabel}>최근 7일</Text>
         {history.length === 0 ? (
-          <EmptyState title="기록이 없어요" description="오늘 고마움을 전해보세요" />
+          <EmptyState title="기록이 없어요" description="오늘 고마움을 전해보세요" illustration={ListEmpty} />
         ) : (
           <View style={styles.historyList}>
             {history.map(h => (

@@ -17,6 +17,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { Button } from '../../design-system/Button';
 import { EmptyState } from '../../design-system/EmptyState';
+import { ListEmpty } from '../../design-system/illustrations';
 import { Skeleton } from '../../design-system/Skeleton';
 import { Spinner } from '../../design-system/Spinner';
 import { Toast } from '../../design-system/Toast';
@@ -132,6 +133,7 @@ export default function OurPlaylistScreen() {
             <EmptyState
               title="아직 노래가 없어요"
               description="우리 노래를 추가해보세요 🎵"
+              illustration={ListEmpty}
             />
           )
         }

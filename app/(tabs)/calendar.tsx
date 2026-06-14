@@ -15,6 +15,7 @@ import { CalendarEvent } from '../../core/calendar/schema';
 import { useCalendarEvents, useCalendarEventsByType, usePhotoEvents } from '../../core/memory';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { EmptyState } from '../../design-system/EmptyState';
+import { CalendarEmpty } from '../../design-system/illustrations';
 import { Skeleton } from '../../design-system/Skeleton';
 import { Spinner } from '../../design-system/Spinner';
 import { black, colors, radius, space, typography } from '../../design-system/tokens';
@@ -150,7 +151,7 @@ export default function CalendarScreen() {
               {[0, 1, 2].map(i => <Skeleton key={i} style={styles.skeletonRow} />)}
             </View>
           ) : dayEvents.length === 0 ? (
-            <EmptyState title="일정이 없어요" description="오른쪽 아래 + 버튼으로 추가해보세요" />
+            <EmptyState title="일정이 없어요" description="오른쪽 아래 + 버튼으로 추가해보세요" illustration={CalendarEmpty} />
           ) : (
             <FlatList
               data={dayEvents}

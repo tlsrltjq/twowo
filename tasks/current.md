@@ -21,7 +21,7 @@
 - [x] husky + lint-staged
 - [x] app.json 빌드 설정 (version/buildNumber/bundleIdentifier/scheme)
 - [x] eas.json preview 프로필 설정
-- [ ] 빈 상태 일러스트 이미지 (assets/images/empty-states/)
+- [x] 빈 상태 일러스트 이미지 — SVG 컴포넌트 3종(CalendarEmpty/ChatEmpty/ListEmpty) + EmptyState illustration prop
 - [x] netinfo 오프라인 배너 UI 구현 — 이미 존재 (design-system/OfflineBanner.tsx)
 - [ ] EAS Build + TestFlight 제출 (Apple Developer Program 필요)
 

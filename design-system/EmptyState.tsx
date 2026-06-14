@@ -1,3 +1,4 @@
+import { ComponentType, ReactElement } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Button } from './Button';
@@ -7,11 +8,16 @@ interface EmptyStateProps {
   title: string;
   description?: string;
   action?: { label: string; onPress: () => void };
+  illustration?: ReactElement | ComponentType;
 }
 
-export function EmptyState({ title, description, action }: EmptyStateProps) {
+export function EmptyState({ title, description, action, illustration }: EmptyStateProps) {
+  const Illus = illustration && typeof illustration === 'function' ? illustration : null;
+
   return (
     <View style={styles.container}>
+      {illustration && typeof illustration !== 'function' && illustration}
+      {Illus && <Illus />}
       <Text style={styles.title}>{title}</Text>
       {description && <Text style={styles.description}>{description}</Text>}
       {action && (

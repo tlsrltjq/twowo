@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-06-14 | 빈 상태 일러스트 | feat(ui): SVG 일러스트 3종(CalendarEmpty/ChatEmpty/ListEmpty) + EmptyState illustration prop + 캘린더·채팅·플레이리스트·고마움 화면 적용.
 ## 2026-06-14 | App Check | chore(security): App Check DEV debug token 초기화 + ADR-025 (PROD App Attest 로드맵 기록).
 ## 2026-06-14 | expo-updates OTA | chore(ota): expo-updates 56.0.19 설치 + app.json runtimeVersion(fingerprint) + eas.json preview/production 채널 등록.
 ## 2026-06-12 | Cloud Functions | feat(functions): 원격 푸시(BR-N1/N2/N3) + 커플 해제 30일 유예 스케줄 정리(BR-D3/D5/D6/D7) — functions/ 신규, firebase.json functions 등록, ADR-024, notifications 스펙.
