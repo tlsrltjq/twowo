@@ -81,11 +81,12 @@
 - [ ] **security-rules 통합 테스트 확대** — 컬렉션당 "타인 차단" 1개씩 추가. 현재 3개뿐인데 rules 352줄이 사실상 백엔드
 - [ ] **subscribeUnreadCount 정확도** — `limit(10)` 후 클라이언트 필터라 10개 초과 시 배지 부정확. 실사용 중 문제되면 서버사이드 카운터로 교체
 
-## 이전 세션에서 멈춘 곳 (2026-06-12 16차)
-- UX 3종 수정: DateTimePicker(inline), 채팅 헤더 파트너 닉네임, 연결 해제 버튼 solid danger
-- 채팅 BR-1~9 테스트 완성: 4파일 신규 + security-rules BR-2·4·7 추가 → 219 green
-- helpers.ts 추출(formatDateLabel·getDateKey), sendMessage 1000자 검증 추가
-- 다음: TestFlight(보류) 또는 추가 작업
+## 이전 세션에서 멈춘 곳 (2026-06-14 17차)
+- ✅ 5번: Cloud Functions — 원격 푸시(BR-N1/N2/N3) + 커플 해제 30일 유예(BR-D3/D5-D7), ADR-024
+- ✅ 2번: expo-updates OTA — 56.0.19 설치, fingerprint runtimeVersion, preview/production 채널
+- ✅ 3번: App Check — DEV debug token 초기화, ADR-025 (PROD App Attest 로드맵)
+- ✅ 1번: 빈 상태 일러스트 — SVG 3종(CalendarEmpty/ChatEmpty/ListEmpty), EmptyState illustration prop
+- 다음: TestFlight(보류, Apple Developer 필요) 또는 추가 작업 선택
 
 ## 진행 중인 작업 (시뮬레이터 전용)
 > **보류 항목 (비용 발생)**: Apple Developer Program · Firebase Storage Blaze · TestFlight 등. 언급하지 않음.
