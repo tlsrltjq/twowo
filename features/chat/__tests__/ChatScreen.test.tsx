@@ -44,7 +44,8 @@ describe('[BR-8] formatDateLabel — 날짜 구분선 형식', () => {
 // 실제 동작은 Maestro E2E 로 커버한다.
 // 여기서는 핵심인 "inputText 복원 여부"를 검증한다.
 
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
+
 import ChatScreen from '../ChatScreen';
 
 const mockSendMessage = jest.fn();

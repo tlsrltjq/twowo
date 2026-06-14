@@ -11,6 +11,9 @@ import {
 import { Calendar, DateData } from 'react-native-calendars';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { DateView } from '../../components/calendar/_DateView';
+import { ExerciseView } from '../../components/calendar/_ExerciseView';
+import { PhotoView } from '../../components/calendar/_PhotoView';
 import { CalendarEvent } from '../../core/calendar/schema';
 import { useCalendarEvents, useCalendarEventsByType, usePhotoEvents } from '../../core/memory';
 import { useAuthStore } from '../../core/stores/auth.store';
@@ -19,9 +22,6 @@ import { CalendarEmpty } from '../../design-system/illustrations';
 import { Skeleton } from '../../design-system/Skeleton';
 import { Spinner } from '../../design-system/Spinner';
 import { black, colors, radius, space, typography } from '../../design-system/tokens';
-import { DateView } from '../../components/calendar/_DateView';
-import { ExerciseView } from '../../components/calendar/_ExerciseView';
-import { PhotoView } from '../../components/calendar/_PhotoView';
 
 type ViewTab = 'calendar' | 'exercise' | 'date' | 'photos';
 

@@ -103,6 +103,7 @@ export default [
       '@typescript-eslint/no-explicit-any': 'off',
       'no-restricted-imports': 'off',
       '@typescript-eslint/no-require-imports': 'off',
+      'import/first': 'off',  // jest.mock() 호이스팅 패턴에서 import 순서 제약 완화
     },
   },
 
@@ -113,5 +114,14 @@ export default [
     rules: { 'no-console': 'off', '@typescript-eslint/no-require-imports': 'off' },
   },
 
-  { ignores: ['node_modules/**', 'dist/**', 'android/**', 'ios/**', '.expo/**'] },
+  {
+    ignores: [
+      'node_modules/**',
+      'dist/**',
+      'android/**',
+      'ios/**',
+      '.expo/**',
+      'functions/**',   // 독립 Node 패키지 — 자체 tsconfig/빌드 스코프. lib/ 컴파일 출력 포함.
+    ],
+  },
 ];

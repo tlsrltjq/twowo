@@ -81,12 +81,12 @@ export const scheduledCleanup = onSchedule(
       return dis !== undefined && dis.seconds <= cutoff.seconds;
     });
 
-    console.log(`[cleanup] ${toDelete.length}건 삭제 예정`);
+    console.warn(`[cleanup] ${toDelete.length}건 삭제 예정`);
 
     for (const doc of toDelete) {
       const memberIds: string[] = doc.data().memberIds ?? [];
       await deleteCouple(doc.id, memberIds);
-      console.log(`[cleanup] couple ${doc.id} 삭제 완료`);
+      console.warn(`[cleanup] couple ${doc.id} 삭제 완료`);
     }
   },
 );
