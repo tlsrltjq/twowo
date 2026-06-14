@@ -84,18 +84,21 @@ service cloud.firestore {
       allow create: if isMe(userId)
                     && request.resource.data.id == userId
                     && (!('coupleId' in request.resource.data) || request.resource.data.coupleId == null);
-      // coupleId 직접 변경 금지: 불변이거나, join/create 트랜잭션에서 getAfter()로 멤버십 증명해야 함
+      // coupleId 직접 변경 금지: 불변이거나, join 트랜잭션에서 getAfter()로 멤버십 증명해야 함
+      // 주의: 에뮬레이터가 단일 allow 블록 내 || 를 완전 단락하지 않아 별개 블록으로 분리.
+      // coupleId 변경 없음 — 일반 프로필 수정(displayName 등)
       allow update: if isMe(userId)
                     && request.resource.data.id == userId
-                    && (
-                      // coupleId 변경 없음 — 일반 프로필 수정(displayName 등)
-                      request.resource.data.coupleId == resource.data.coupleId
-                      // coupleId null 허용 — 해제 후 초기화 경로
-                      || request.resource.data.coupleId == null
-                      // coupleId 신규 설정 — couples 문서에 uid 포함 증명(join/create 트랜잭션만 통과)
-                      || (request.resource.data.coupleId is string
-                          && request.auth.uid in getAfter(/databases/$(database)/documents/couples/$(request.resource.data.coupleId)).data.memberIds)
-                    );
+                    && request.resource.data.coupleId == resource.data.coupleId;
+      // coupleId null 허용 — 해제 후 초기화 경로
+      allow update: if isMe(userId)
+                    && request.resource.data.id == userId
+                    && request.resource.data.coupleId == null;
+      // coupleId 신규 설정 — couples 문서에 uid 포함 증명(join 트랜잭션만 통과)
+      allow update: if isMe(userId)
+                    && request.resource.data.id == userId
+                    && request.resource.data.coupleId is string
+                    && request.auth.uid in getAfter(/databases/$(database)/documents/couples/$(request.resource.data.coupleId)).data.memberIds;
       allow delete: if false;
     }
 
@@ -177,10 +180,11 @@ service cloud.firestore {
 
       // 발급자 본인, 또는 join 트랜잭션 완료 직후 멤버가 된 사람(getAfter로 멤버십 증명)
       // 주의: "couples size==1 이면 누구나 삭제" 조건 제거 — 코드를 아는 제3자가 DoS 가능
-      allow delete: if isSignedIn() && (
-        resource.data.createdBy == request.auth.uid
-        || request.auth.uid in getAfter(/databases/$(database)/documents/couples/$(resource.data.coupleId)).data.memberIds
-      );
+      // 발급자 본인 삭제
+      allow delete: if isSignedIn() && resource.data.createdBy == request.auth.uid;
+      // 커플 멤버 삭제 — join 완료 후 별도 deleteDoc 호출 시 허용 (get으로 현재 coupleId 확인)
+      allow delete: if isSignedIn()
+                    && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.coupleId == resource.data.coupleId;
     }
 
     // ---------- calendarEvents ----------

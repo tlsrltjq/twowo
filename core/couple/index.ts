@@ -1,5 +1,6 @@
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
   onSnapshot,
@@ -74,10 +75,12 @@ export async function createInvite(uid: string): Promise<{ code: string; expires
 }
 
 // BR-4~8: 코드 입력 후 커플 연결. 실패 시 JoinError.
+// 트랜잭션: couples + users 업데이트만 원자적 처리.
+// 초대 코드 삭제는 트랜잭션 완료 후 별도 deleteDoc (getAfter 교차오염 회피, ADR-020).
 export async function joinByCode(uid: string, code: string): Promise<{ coupleId: string }> {
+  const invDocRef = doc(db, 'invitations', code);
   let resultCoupleId = '';
   await runTransaction(db, async (tx) => {
-    const invDocRef = doc(db, 'invitations', code);
     const inv = await tx.get(invDocRef);
     if (!inv.exists()) throw new JoinError('not_found');
 
@@ -100,9 +103,11 @@ export async function joinByCode(uid: string, code: string): Promise<{ coupleId:
 
     tx.update(coupleRef, { memberIds: [...memberIds, uid] });
     tx.update(userRef, { coupleId });
-    tx.delete(invDocRef);
     resultCoupleId = coupleId;
   });
+  // 트랜잭션 완료 후 초대 코드 삭제: users.coupleId가 이미 설정된 상태이므로
+  // invitations delete 규칙의 get(users/uid).coupleId == resource.data.coupleId 조건 충족.
+  await deleteDoc(invDocRef);
   return { coupleId: resultCoupleId };
 }
 

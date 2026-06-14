@@ -11,6 +11,7 @@ import {
   RulesTestEnvironment,
 } from '@firebase/rules-unit-testing';
 import {
+  deleteDoc,
   doc,
   getDoc,
   runTransaction,
@@ -64,8 +65,10 @@ if (process.env.FIRESTORE_EMULATOR_HOST) {
         });
       });
 
-      // joinByCode 트랜잭션: uidB 로 인증
+      // joinByCode: step1 트랜잭션 (couples + users 업데이트), step2 초대 코드 삭제
+      // getAfter 교차오염 회피를 위해 실제 앱(joinByCode)과 동일하게 2단계로 분리.
       const userBDb = testEnv.authenticatedContext(uidB).firestore();
+      // step 1: 트랜잭션 — couples / users 업데이트
       await assertSucceeds(
         runTransaction(userBDb, async (tx) => {
           const inv = await tx.get(doc(userBDb, 'invitations', code));
@@ -74,9 +77,10 @@ if (process.env.FIRESTORE_EMULATOR_HOST) {
           const memberIds = (coupleSnap.data() as { memberIds: string[] }).memberIds;
           tx.update(doc(userBDb, 'couples', cId), { memberIds: [...memberIds, uidB] });
           tx.update(doc(userBDb, 'users', uidB), { coupleId: cId });
-          tx.delete(doc(userBDb, 'invitations', code));
         }),
       );
+      // step 2: 초대 코드 삭제 — users.coupleId 설정 후 get(users)로 멤버십 증명
+      await assertSucceeds(deleteDoc(doc(userBDb, 'invitations', code)));
 
       // 검증
       const coupleSnap = await getDoc(doc(userBDb, 'couples', coupleId));
