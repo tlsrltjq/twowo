@@ -113,6 +113,9 @@ export function useEventPhotos(eventId: string | null): { photos: EventPhoto[]; 
     const unsub = onSnapshot(q, (snap) => {
       setPhotos(snap.docs.map(d => ({ id: d.id, ...d.data() } as EventPhoto)));
       setLoading(false);
+    }, (err) => {
+      console.error('[useEventPhotos] snapshot error:', err);
+      setLoading(false);
     });
     return unsub;
   }, [eventId]);

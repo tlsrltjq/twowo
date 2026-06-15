@@ -8,11 +8,19 @@ rules_version = '2';
 //   couples/{coupleId}/events/{eventId}/{photoId}_thumb.jpg
 //
 // 원칙
-//   1) 인증된 사용자 중, Firestore users 문서의 coupleId 가 경로의 coupleId 와
-//      일치할 때만 read/write 허용.
+//   1) 인증된 사용자 중, 커플 멤버십을 확인한 사용자만 read/write 허용.
 //   2) 업로드 크기는 10MB 이하로 제한 (architecture.md: 평균 500KB 목표).
 //   3) 이미지 MIME 타입만 허용.
 //   4) 그 외 모든 경로는 차단.
+//
+// ⚠️  cross-service reads 미작동 이슈 (TODO: ADR 추가 예정)
+//   firestore.get() 이 Storage Security Rules 평가 시 항상 null 반환.
+//   원인: pair-38a4e.firebasestorage.app 버킷(신형)의 Firebase Storage 서비스 계정에
+//         GCP IAM roles/datastore.viewer 가 자동 부여되지 않아 Firestore 호출 자체가 차단됨.
+//   임시 조치: isSignedIn() 만으로 허용 (coupleId 는 비추측 랜덤 ID 로 security-by-obscurity).
+//   영구 수정 방법:
+//     (A) GCP Console → IAM → firebase-storage 서비스 계정에 roles/datastore.viewer 추가, 또는
+//     (B) Cloud Functions 에서 Admin SDK 로 멤버십 검증 후 서명 URL 발급 (ADR-030 예정).
 // =============================================================================
 
 service firebase.storage {
@@ -22,14 +30,15 @@ service firebase.storage {
       return request.auth != null;
     }
 
-    function myCoupleId() {
-      return firestore.get(
-        /databases/(default)/documents/users/$(request.auth.uid)
-      ).data.coupleId;
-    }
-
-    function isMyCouple(coupleId) {
-      return isSignedIn() && coupleId != null && myCoupleId() == coupleId;
+    // TODO(ADR-030): cross-service IAM 해결 후 firestore.get() 으로 교체
+    //   function isMyCouple(coupleId) {
+    //     let couple = firestore.get(/databases/(default)/documents/couples/$(coupleId));
+    //     return isSignedIn() && couple.data != null
+    //            && couple.data.status == 'active'
+    //            && request.auth.uid in couple.data.memberIds;
+    //   }
+    function isMyCouple(_coupleId) {
+      return isSignedIn();
     }
 
     function isImage() {

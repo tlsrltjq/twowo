@@ -38,7 +38,7 @@ function fromFirestore(id: string, data: Record<string, unknown>): CalendarEvent
     date:      (data.date as Timestamp).toDate(),
     endDate:   data.endDate ? (data.endDate as Timestamp).toDate() : undefined,
     createdAt: (data.createdAt as Timestamp).toDate(),
-    updatedAt: (data.updatedAt as Timestamp).toDate(),
+    updatedAt: data.updatedAt ? (data.updatedAt as Timestamp).toDate() : new Date(),
     photoIds:  Array.isArray(data.photoIds) ? (data.photoIds as string[]) : [],
   };
 }

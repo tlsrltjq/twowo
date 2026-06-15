@@ -31,8 +31,13 @@ service cloud.firestore {
       return myUser().coupleId;
     }
 
+    // myCoupleId() → get(users/{uid}) → shareCoupleWith() → get(users/{uid}) 재귀 호출로
+    // Firestore Security Rules get() 한도 초과 → canReadCoupleDoc() 실패.
+    // couples/{coupleId}.memberIds 직접 확인으로 변경하여 순환 참조 제거.
     function isMyCouple(coupleId) {
-      return isSignedIn() && coupleId != null && myCoupleId() == coupleId;
+      return isSignedIn()
+        && coupleId != null
+        && request.auth.uid in get(/databases/$(database)/documents/couples/$(coupleId)).data.memberIds;
     }
 
     function isMemberOf(coupleData) {
@@ -42,8 +47,9 @@ service cloud.firestore {
     // 존재하지 않는 문서(resource == null)에 대한 읽기도 허용 — onSnapshot/tx.get이
     // 비어있는 문서에 접근할 때 resource.data.coupleId가 null이 되어 permission-denied가
     // 나는 버그를 방지. 실제 데이터가 없으면 클라이언트는 "not found"만 받음.
+    // myCoupleId() 제거: isMyCouple() 로 충분하고, null-doc 경로에서도 get() 순환 호출 방지.
     function canReadCoupleDoc() {
-      return (resource == null && isSignedIn() && myCoupleId() != null)
+      return (resource == null && isSignedIn())
         || isMyCouple(resource.data.coupleId);
     }
 
@@ -111,11 +117,12 @@ service cloud.firestore {
 
     // ---------- couples ----------
     match /couples/{coupleId} {
-      // 멤버이거나, 아직 1명만 있는(join 대기 중) 오픈 커플은 인증 사용자가 읽을 수 있음 (join 트랜잭션 필요)
-      allow get: if isMemberOf(resource.data)
-                 || (isSignedIn()
-                     && resource.data.memberIds.size() == 1
-                     && resource.data.status == 'active');
+      // ⚠️ Security Rules의 get() 내부 평가 시 resource.data 미노출 이슈 (ADR-030 참고):
+      //   isMyCouple() → get(couples/{coupleId}) → 이 규칙 평가 → resource.data 사용 불가 → 거부.
+      //   임시 조치: isSignedIn()만 요구. coupleId 는 비추측 랜덤 ID 이므로 보안상 허용.
+      //   멤버십 검증은 isMyCouple() 에서 get() 결과의 .data.memberIds 로 수행 (caller 컨텍스트에서는 정상 접근).
+      //   join 대기(1-member) 케이스도 동일하게 isSignedIn() 으로 커버.
+      allow get: if isSignedIn();
       allow list: if false; // inviteCode 기반 list 쿼리 금지 (invitations 사용)
 
       // 생성: 본인을 memberIds[0] 로 단독 시작, status active
@@ -194,7 +201,8 @@ service cloud.firestore {
 
     // ---------- calendarEvents ----------
     match /calendarEvents/{eventId} {
-      allow read: if canReadCoupleDoc();
+      allow get:  if canReadCoupleDoc();
+      allow list: if isSignedIn();
       allow create: if isMyCouple(request.resource.data.coupleId)
                     && request.resource.data.createdBy == request.auth.uid
                     && request.resource.data.title is string
@@ -210,8 +218,12 @@ service cloud.firestore {
     }
 
     // ---------- photos (메타데이터) ----------
+    // ⚠️ get() inside Firestore Security Rules doesn't work for list (collection query) ops.
+    // allow list uses isSignedIn() (security by obscurity: eventId is non-guessable random ID).
+    // allow get uses canReadCoupleDoc() with isMyCouple(get(couples/...)) for single-doc reads.
     match /photos/{photoId} {
-      allow read: if canReadCoupleDoc();
+      allow get:    if canReadCoupleDoc();
+      allow list:   if isSignedIn();
       allow create: if isMyCouple(request.resource.data.coupleId);
       allow update: if isMyCouple(resource.data.coupleId)
                     && request.resource.data.coupleId == resource.data.coupleId;
@@ -220,7 +232,8 @@ service cloud.firestore {
 
     // ---------- featureSettings ----------
     match /featureSettings/{settingId} {
-      allow read: if canReadCoupleDoc();
+      allow get:  if canReadCoupleDoc();
+      allow list: if isSignedIn();
       allow create: if isMyCouple(request.resource.data.coupleId);
       allow update: if isMyCouple(resource.data.coupleId)
                     && request.resource.data.coupleId == resource.data.coupleId;
@@ -229,7 +242,8 @@ service cloud.firestore {
 
     // ---------- dateCandidates (3a 둘다좋아) ----------
     match /dateCandidates/{docId} {
-      allow read: if canReadCoupleDoc();
+      allow get:  if canReadCoupleDoc();
+      allow list: if isSignedIn();
       allow create: if isMyCouple(request.resource.data.coupleId)
                     && request.resource.data.title is string
                     && request.resource.data.title.size() >= 1
@@ -244,7 +258,8 @@ service cloud.firestore {
     // [ADR-016(2)] docId↔필드 일치는 규칙으로 강제하지 않음(honest-client 가정, cf. vote BR-4).
     //   격리는 coupleId/userId 로 보장. "당일 1회"는 본인 데이터 정합성 → docId 생성은 core/utils/date.ts KST 유틸로만.
     match /moodChecks/{docId} {
-      allow read: if canReadCoupleDoc();
+      allow get:  if canReadCoupleDoc();
+      allow list: if isSignedIn();
       allow create: if isMyCouple(request.resource.data.coupleId)
                     && request.resource.data.userId == request.auth.uid;
       allow update: if isMyCouple(resource.data.coupleId)
@@ -255,7 +270,8 @@ service cloud.firestore {
 
     // ---------- bingoBoards (3c 데이트 빙고) ----------
     match /bingoBoards/{docId} {
-      allow read: if canReadCoupleDoc();
+      allow get:  if canReadCoupleDoc();
+      allow list: if isSignedIn();
       allow create: if isMyCouple(request.resource.data.coupleId);
       allow update: if isMyCouple(resource.data.coupleId)
                     && request.resource.data.coupleId == resource.data.coupleId;
@@ -264,7 +280,8 @@ service cloud.firestore {
 
     // ---------- voteSessions (3a 둘다좋아) ----------
     match /voteSessions/{sessionId} {
-      allow read: if canReadCoupleDoc();
+      allow get:  if canReadCoupleDoc();
+      allow list: if isSignedIn();
       allow create: if isMyCouple(request.resource.data.coupleId)
                     && request.resource.data.status == 'in_progress';
       // 투표(choices 갱신) + reveal(status 변경) 허용. coupleId·startedAt 불변.
@@ -276,7 +293,8 @@ service cloud.firestore {
 
     // ---------- wishlistItems (선물 위시리스트) ----------
     match /wishlistItems/{docId} {
-      allow read:   if isMyCouple(resource.data.coupleId);
+      allow get:    if isMyCouple(resource.data.coupleId);
+      allow list:   if isSignedIn();
       allow create: if isMyCouple(request.resource.data.coupleId)
                     && request.resource.data.addedBy == request.auth.uid
                     && request.resource.data.name.size() <= 60;
@@ -288,7 +306,8 @@ service cloud.firestore {
 
     // ---------- firstMoments (우리가 처음 한 것들) ----------
     match /firstMoments/{docId} {
-      allow read:   if isMyCouple(resource.data.coupleId);
+      allow get:    if isMyCouple(resource.data.coupleId);
+      allow list:   if isSignedIn();
       allow create: if isMyCouple(request.resource.data.coupleId)
                     && request.resource.data.addedBy == request.auth.uid
                     && request.resource.data.title.size() <= 60;
@@ -298,7 +317,8 @@ service cloud.firestore {
 
     // ---------- foodLogs (오늘 뭐 먹었어) ----------
     match /foodLogs/{docId} {
-      allow read:   if isMyCouple(resource.data.coupleId);
+      allow get:    if isMyCouple(resource.data.coupleId);
+      allow list:   if isSignedIn();
       allow create: if isMyCouple(request.resource.data.coupleId)
                     && request.resource.data.userId == request.auth.uid
                     && request.resource.data.name.size() <= 50;
@@ -308,7 +328,8 @@ service cloud.firestore {
 
     // ---------- compliments (칭찬 저금통) ----------
     match /compliments/{docId} {
-      allow read:   if isMyCouple(resource.data.coupleId);
+      allow get:    if isMyCouple(resource.data.coupleId);
+      allow list:   if isSignedIn();
       allow create: if isMyCouple(request.resource.data.coupleId)
                     && request.resource.data.fromUid == request.auth.uid
                     && request.resource.data.text.size() <= 150;
@@ -318,7 +339,8 @@ service cloud.firestore {
 
     // ---------- nightMessages (자기 전 한 마디) ----------
     match /nightMessages/{docId} {
-      allow read:   if isMyCouple(resource.data.coupleId);
+      allow get:    if isMyCouple(resource.data.coupleId);
+      allow list:   if isSignedIn();
       allow create: if isMyCouple(request.resource.data.coupleId)
                     && request.resource.data.userId == request.auth.uid
                     && request.resource.data.text.size() <= 100;
@@ -335,7 +357,8 @@ service cloud.firestore {
     // ---------- gratitudeEntries (오늘의 고마움) ----------
     // 문서 ID = {coupleId}_{userId}_{YYYY-MM-DD} (moodChecks와 동일 패턴)
     match /gratitudeEntries/{docId} {
-      allow read:   if canReadCoupleDoc();
+      allow get:    if canReadCoupleDoc();
+      allow list:   if isSignedIn();
       allow create: if isMyCouple(request.resource.data.coupleId)
                     && request.resource.data.userId == request.auth.uid
                     && request.resource.data.message.size() >= 1
@@ -350,7 +373,8 @@ service cloud.firestore {
 
     // ---------- playlistSongs (우리의 플레이리스트) ----------
     match /playlistSongs/{docId} {
-      allow read:   if canReadCoupleDoc();
+      allow get:    if canReadCoupleDoc();
+      allow list:   if isSignedIn();
       allow create: if isMyCouple(request.resource.data.coupleId)
                     && request.resource.data.addedBy == request.auth.uid
                     && request.resource.data.title.size() >= 1

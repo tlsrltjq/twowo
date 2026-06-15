@@ -1,10 +1,12 @@
+import { File } from 'expo-file-system';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { addDoc, arrayUnion, collection, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
-import { db, storage } from '../config/firebase';
+import { auth, db } from '../config/firebase';
 
 const MAX_PHOTOS = 20;
+const BUCKET = process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET!;
+const STORAGE_BASE = `https://firebasestorage.googleapis.com/v0/b/${BUCKET}/o`;
 
 function newPhotoId(): string {
   return Math.random().toString(36).slice(2) + Date.now().toString(36);
@@ -37,14 +39,31 @@ async function compress(
   return result;
 }
 
-async function sdkUpload(storagePath: string, fileUri: string): Promise<string> {
-  // fetch(file://) → blob()은 RN 네이티브 Blob을 반환하므로 XHR.send(blob)과 호환됨.
-  // new Blob([Uint8Array])는 RN에서 동작하지 않아 File.bytes() 경로 불가.
-  const response = await fetch(fileUri);
-  const blob = await response.blob();
-  const storageRef = ref(storage, storagePath);
-  const result = await uploadBytes(storageRef, blob, { contentType: 'image/jpeg' });
-  return getDownloadURL(result.ref);
+async function restUpload(storagePath: string, fileUri: string): Promise<string> {
+  const token = await auth.currentUser!.getIdToken();
+  const encodedName = encodeURIComponent(storagePath);
+  const url = `${STORAGE_BASE}?uploadType=media&name=${encodedName}`;
+
+  const file = new File(fileUri);
+  const bytes = await file.bytes();
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type':  'image/jpeg',
+      'Authorization': `Firebase ${token}`,
+    },
+    body: bytes,
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Storage ${response.status}: ${text.slice(0, 300)}`);
+  }
+
+  const data = await response.json() as { downloadTokens?: string };
+  const dlToken = data.downloadTokens ?? '';
+  return `${STORAGE_BASE}/${encodedName}?alt=media&token=${dlToken}`;
 }
 
 // BR-5: 20장 초과 시 거부
@@ -73,8 +92,8 @@ export async function uploadPhoto(
   const thumbPath    = `${base}_thumb.jpg`;
 
   const [originalUrl, thumbUrl] = await Promise.all([
-    sdkUpload(originalPath, original.uri), // ①
-    sdkUpload(thumbPath, thumb.uri),        // ②
+    restUpload(originalPath, original.uri), // ①
+    restUpload(thumbPath, thumb.uri),        // ②
   ]);
 
   await addDoc(collection(db, 'photos'), { // ③

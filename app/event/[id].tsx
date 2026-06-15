@@ -39,7 +39,7 @@ function toCalendarEvent(id: string, data: Record<string, unknown>): CalendarEve
     date:      (data.date as { toDate(): Date }).toDate(),
     endDate:   data.endDate ? (data.endDate as { toDate(): Date }).toDate() : undefined,
     createdAt: (data.createdAt as { toDate(): Date }).toDate(),
-    updatedAt: (data.updatedAt as { toDate(): Date }).toDate(),
+    updatedAt: data.updatedAt ? (data.updatedAt as { toDate(): Date }).toDate() : new Date(),
     photoIds:  Array.isArray(data.photoIds) ? (data.photoIds as string[]) : [],
   };
 }
@@ -101,8 +101,7 @@ export default function EventDetailScreen() {
         height:            asset.height,
       });
       show('사진이 추가됐어요 📷', 'success');
-    } catch (err) {
-      if (__DEV__) console.error('[upload]', err);
+    } catch {
       show('사진 업로드에 실패했어요', 'error');
     }
   }, [event, id, user]);
