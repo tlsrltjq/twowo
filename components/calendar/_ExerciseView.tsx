@@ -7,7 +7,17 @@ import { Skeleton } from '../../design-system/Skeleton';
 import { colors } from '../../design-system/tokens';
 import { groupByYearMonth, sharedStyles, TypeEventCard, TypeStatsBar } from './_shared';
 
-export function ExerciseView({ events, loading }: { events: CalendarEvent[]; loading: boolean }) {
+export function ExerciseView({
+  events,
+  loading,
+  myUid,
+  partnerName,
+}: {
+  events: CalendarEvent[];
+  loading: boolean;
+  myUid?: string;
+  partnerName?: string;
+}) {
   const thisMonthCount = useMemo(() => {
     const now = new Date();
     return events.filter(
@@ -42,7 +52,7 @@ export function ExerciseView({ events, loading }: { events: CalendarEvent[]; loa
       renderSectionHeader={({ section }) => (
         <Text style={sharedStyles.monthHeader}>{section.title}</Text>
       )}
-      renderItem={({ item }) => <TypeEventCard event={item} />}
+      renderItem={({ item }) => <TypeEventCard event={item} {...(myUid ? { myUid, partnerName } : {})} />}
       contentContainerStyle={sharedStyles.listContent}
       stickySectionHeadersEnabled={false}
     />

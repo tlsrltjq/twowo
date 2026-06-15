@@ -4,6 +4,17 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { CalendarEvent } from '../../core/calendar/schema';
 import { colors, radius, space, typography } from '../../design-system/tokens';
 
+// general/exercise 이벤트에서 작성자를 나타내는 작은 배지
+export function PersonBadge({ isMe, name }: { isMe: boolean; name: string }) {
+  return (
+    <View style={[sharedStyles.personBadge, isMe ? sharedStyles.personBadgeMe : sharedStyles.personBadgeOther]}>
+      <Text style={[sharedStyles.personBadgeText, isMe ? sharedStyles.personBadgeTextMe : sharedStyles.personBadgeTextOther]}>
+        {isMe ? '나' : name}
+      </Text>
+    </View>
+  );
+}
+
 export function formatDate(d: Date): string {
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
 }
@@ -62,7 +73,18 @@ export function TypeStatsBar({
   );
 }
 
-export function TypeEventCard({ event }: { event: CalendarEvent }) {
+export function TypeEventCard({
+  event,
+  myUid,
+  partnerName,
+}: {
+  event: CalendarEvent;
+  myUid?: string;
+  partnerName?: string;
+}) {
+  const showBadge = event.type !== 'date' && myUid != null;
+  const isMe      = event.createdBy === myUid;
+
   return (
     <TouchableOpacity
       style={sharedStyles.typeEventCard}
@@ -72,7 +94,10 @@ export function TypeEventCard({ event }: { event: CalendarEvent }) {
         <Text style={sharedStyles.typeEventEmoji}>{TYPE_EMOJI[event.type] ?? '📌'}</Text>
       </View>
       <View style={sharedStyles.typeEventBody}>
-        <Text style={sharedStyles.typeEventDate}>{formatDate(event.date)}</Text>
+        <View style={sharedStyles.typeEventDateRow}>
+          <Text style={sharedStyles.typeEventDate}>{formatDate(event.date)}</Text>
+          {showBadge && <PersonBadge isMe={isMe} name={partnerName ?? '상대방'} />}
+        </View>
         <Text style={sharedStyles.typeEventTitle} numberOfLines={1}>{event.title}</Text>
         {event.placeName && (
           <Text style={sharedStyles.typeEventPlace} numberOfLines={1}>📍 {event.placeName}</Text>
@@ -98,12 +123,20 @@ export const sharedStyles = StyleSheet.create({
   statLabel:      { ...typography.tiny, color: colors.text.muted },
   statDivider:    { width: 1, height: 32, backgroundColor: colors.border.subtle },
 
-  typeEventCard:  { flexDirection: 'row', backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[4], gap: space[3] },
-  typeEventLeft:  { width: 40, height: 40, borderRadius: radius.md, backgroundColor: colors.bg.subtle, alignItems: 'center', justifyContent: 'center' },
-  typeEventEmoji: { fontSize: 20 },
-  typeEventBody:  { flex: 1, gap: 2 },
-  typeEventDate:  { ...typography.tiny, color: colors.text.muted },
-  typeEventTitle: { ...typography.bodyBold, color: colors.text.primary },
-  typeEventPlace: { ...typography.caption, color: colors.text.secondary },
-  typeEventMemo:  { ...typography.caption, color: colors.text.muted, marginTop: 2 },
+  typeEventCard:    { flexDirection: 'row', backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[4], gap: space[3] },
+  typeEventLeft:    { width: 40, height: 40, borderRadius: radius.md, backgroundColor: colors.bg.subtle, alignItems: 'center', justifyContent: 'center' },
+  typeEventEmoji:   { fontSize: 20 },
+  typeEventBody:    { flex: 1, gap: 2 },
+  typeEventDateRow: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
+  typeEventDate:    { ...typography.tiny, color: colors.text.muted },
+  typeEventTitle:   { ...typography.bodyBold, color: colors.text.primary },
+  typeEventPlace:   { ...typography.caption, color: colors.text.secondary },
+  typeEventMemo:    { ...typography.caption, color: colors.text.muted, marginTop: 2 },
+
+  personBadge:         { paddingHorizontal: space[2], paddingVertical: 2, borderRadius: radius.pill },
+  personBadgeMe:       { backgroundColor: colors.accent.primary + '22' },
+  personBadgeOther:    { backgroundColor: colors.accent.calm + '33' },
+  personBadgeText:     { ...typography.tiny },
+  personBadgeTextMe:   { color: colors.accent.primary },
+  personBadgeTextOther: { color: colors.text.secondary },
 });

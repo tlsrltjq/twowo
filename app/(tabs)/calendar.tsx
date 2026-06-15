@@ -13,8 +13,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { DateView } from '../../components/calendar/_DateView';
 import { ExerciseView } from '../../components/calendar/_ExerciseView';
+import { PersonBadge } from '../../components/calendar/_shared';
 import { PhotoView } from '../../components/calendar/_PhotoView';
 import { CalendarEvent } from '../../core/calendar/schema';
+import { usePartnerProfile } from '../../core/couple/usePartnerProfile';
 import { useCalendarEvents, useCalendarEventsByType, usePhotoEvents } from '../../core/memory';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { EmptyState } from '../../design-system/EmptyState';
@@ -43,7 +45,18 @@ function toYMD(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
-function EventCard({ event }: { event: CalendarEvent }) {
+function EventCard({
+  event,
+  myUid,
+  partnerName,
+}: {
+  event: CalendarEvent;
+  myUid?: string;
+  partnerName?: string;
+}) {
+  const showBadge = event.type !== 'date' && myUid != null;
+  const isMe      = event.createdBy === myUid;
+
   return (
     <TouchableOpacity
       style={styles.eventCard}
@@ -56,15 +69,20 @@ function EventCard({ event }: { event: CalendarEvent }) {
           <Text style={styles.eventSub} numberOfLines={1}>📍 {event.placeName}</Text>
         )}
       </View>
+      {showBadge && <PersonBadge isMe={isMe} name={partnerName ?? '상대방'} />}
     </TouchableOpacity>
   );
 }
 
 export default function CalendarScreen() {
-  const { coupleId } = useAuthStore();
-  const [activeView, setActiveView] = useState<ViewTab>('calendar');
+  const { coupleId, user } = useAuthStore();
+  const myUid = user?.uid ?? '';
+  const { partnerName } = usePartnerProfile(coupleId, myUid || null);
+
+  const [activeView, setActiveView]     = useState<ViewTab>('calendar');
   const [selectedDate, setSelectedDate] = useState<string>(toYMD(new Date()));
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [calendarKey, setCalendarKey]   = useState(0);
 
   const monthStart = useMemo(
     () => new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1),
@@ -110,6 +128,13 @@ export default function CalendarScreen() {
   const onDayPress    = useCallback((day: DateData) => setSelectedDate(day.dateString), []);
   const onMonthChange = useCallback((month: DateData) => setCurrentMonth(new Date(month.year, month.month - 1, 1)), []);
 
+  const goToToday = useCallback(() => {
+    const today = new Date();
+    setSelectedDate(toYMD(today));
+    setCurrentMonth(today);
+    setCalendarKey(k => k + 1);
+  }, []);
+
   if (!coupleId) return <Spinner />;
 
   return (
@@ -130,7 +155,13 @@ export default function CalendarScreen() {
 
       {activeView === 'calendar' && (
         <View style={styles.flex}>
+          <View style={styles.calendarToolbar}>
+            <TouchableOpacity onPress={goToToday} style={styles.todayBtn}>
+              <Text style={styles.todayBtnText}>오늘</Text>
+            </TouchableOpacity>
+          </View>
           <Calendar
+            key={calendarKey}
             markingType="multi-dot"
             markedDates={markedDates}
             onDayPress={onDayPress}
@@ -156,14 +187,14 @@ export default function CalendarScreen() {
             <FlatList
               data={dayEvents}
               keyExtractor={item => item.id}
-              renderItem={({ item }) => <EventCard event={item} />}
+              renderItem={({ item }) => <EventCard event={item} myUid={myUid} partnerName={partnerName} />}
               contentContainerStyle={styles.listContent}
             />
           )}
         </View>
       )}
 
-      {activeView === 'exercise' && <ExerciseView events={exerciseEvents} loading={exerciseLoading} />}
+      {activeView === 'exercise' && <ExerciseView events={exerciseEvents} loading={exerciseLoading} myUid={myUid} partnerName={partnerName} />}
       {activeView === 'date'     && <DateView     events={dateEvents}     loading={dateLoading}     />}
       {activeView === 'photos'   && <PhotoView    events={photoEvents}    loading={photoLoading}    />}
 
@@ -190,6 +221,9 @@ const styles = StyleSheet.create({
   skeletonContainer: { padding: space[4], gap: space[3] },
   skeletonRow:       { height: 60, borderRadius: radius.md },
   listContent:       { padding: space[4], gap: space[3], paddingBottom: 96 },
+  calendarToolbar:   { flexDirection: 'row', justifyContent: 'flex-end', paddingHorizontal: space[4], paddingVertical: space[2], backgroundColor: colors.bg.base },
+  todayBtn:          { paddingHorizontal: space[3], paddingVertical: space[1], borderRadius: radius.pill, borderWidth: 1, borderColor: colors.accent.primary },
+  todayBtnText:      { ...typography.tiny, color: colors.accent.primary },
   eventCard:         { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.bg.surface, borderRadius: radius.md, padding: space[4], gap: space[3] },
   typeDot:           { width: 10, height: 10, borderRadius: 5 },
   eventInfo:         { flex: 1 },
