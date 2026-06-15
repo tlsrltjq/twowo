@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-06-15 | Storage 403 + Firestore list 쿼리 수정 | fix(rules): Storage cross-service IAM 미비 → isSignedIn() 임시 대체. Firestore 전 컬렉션(12개) allow get/list 분리(get() list 불가 한계 대응). updatedAt null guard(serverTimestamp 지연). REST 방식 업로드. test_photo_upload PASS.
 ## 2026-06-14 | invitations 삭제 권한 강화 | fix(security): get(users) 방식 제거 → usedBy 필드 도입. join 트랜잭션에서 usedBy 원자적 표시, 삭제 권한 "발급자 OR 사용자 본인"으로 정확히 제한. 커플 상대방 삭제 경로 차단.
 ## 2026-06-14 | CI 통합 테스트 전체 통과 | fix(integration): 에뮬레이터 getAfter 교차오염·clearFirestore 경합 해소 — rules 3분리 블록·joinByCode 2단계·maxWorkers:1. 19/19 green.
 ## 2026-06-14 | 빈 상태 일러스트 | feat(ui): SVG 일러스트 3종(CalendarEmpty/ChatEmpty/ListEmpty) + EmptyState illustration prop + 캘린더·채팅·플레이리스트·고마움 화면 적용.

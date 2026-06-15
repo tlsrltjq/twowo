@@ -54,6 +54,12 @@
 ## 정합성 수정 완료 (P0~P5)
 - ✅ P0: ESLint 0 warnings — exhaustive-deps disable-line, 테스트 파일 규칙 완화, import sort 자동 수정
 - ✅ P1: 통합 테스트 인프라 — jest.config.integration.js, firebase.test.json, CI 에뮬레이터 설정
+
+## 버그 수정 완료 (세션 중 — 2026-06-15 20차)
+- ✅ Firebase Storage 403: storage.rules isMyCouple()→isSignedIn() (cross-service IAM 미비, ADR-030 TODO)
+- ✅ fromFirestore null crash: updatedAt null guard (serverTimestamp 지연) — calendar/index.ts, event/[id].tsx
+- ✅ Firestore Security Rules list 쿼리 get() 한계: 전 컬렉션(12개) allow read → allow get/list 분리 배포
+- ✅ Maestro E2E: test_calendar_a + test_photo_upload PASS
 - ✅ P2: security-rules.test.ts — @firebase/rules-unit-testing 3개 실제 테스트
 - ✅ P3: 1차 feature 누락 테스트 추가 — signOut.test.ts(BR-S2), subscribeEvents.test.ts(BR-10), upcomingEvents.test.ts(BR-3), MoodHistory.test.tsx(BR-7); BR-3 스펙 위반 수정(90d/5→7d/3)
 - ✅ P4: calendar.md 매핑 테이블 이미 완성 상태
@@ -81,7 +87,7 @@
 - [ ] **security-rules 통합 테스트 확대** — 컬렉션당 "타인 차단" 1개씩 추가. 현재 3개뿐인데 rules 352줄이 사실상 백엔드
 - [ ] **subscribeUnreadCount 정확도** — `limit(10)` 후 클라이언트 필터라 10개 초과 시 배지 부정확. 실사용 중 문제되면 서버사이드 카운터로 교체
 
-## 이전 세션에서 멈춘 곳 (2026-06-14 19차)
+## 이전 세션에서 멈춘 곳 (2026-06-15 20차)
 - ✅ CI 통합 테스트 전체 통과 (이전 세션 완료)
 - ✅ invitations 삭제 권한 강화 — usedBy 필드 도입
   - firestore.rules: invitations update 규칙 추가(usedBy 원자적 표시), delete rule 2를 get() → resource.data.usedBy 로 교체
