@@ -11,14 +11,17 @@ import {
 import { Calendar, DateData } from 'react-native-calendars';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { MonthDayComponent } from '../../components/calendar/_CalendarDayCell';
 import { DateView } from '../../components/calendar/_DateView';
 import { ExerciseView } from '../../components/calendar/_ExerciseView';
-import { PersonBadge } from '../../components/calendar/_shared';
 import { PhotoView } from '../../components/calendar/_PhotoView';
+import { PersonBadge } from '../../components/calendar/_shared';
+import { WeekStrip } from '../../components/calendar/_WeekStrip';
 import { CalendarEvent } from '../../core/calendar/schema';
 import { usePartnerProfile } from '../../core/couple/usePartnerProfile';
-import { useCalendarEvents, useCalendarEventsByType, usePhotoEvents } from '../../core/memory';
+import { useCalendarEvents, useCalendarEventsByType, useEventThumbnails, usePhotoEvents } from '../../core/memory';
 import { useAuthStore } from '../../core/stores/auth.store';
+import { addDays, parseYMD, startOfWeek, toYMD } from '../../core/utils/date';
 import { EmptyState } from '../../design-system/EmptyState';
 import { CalendarEmpty } from '../../design-system/illustrations';
 import { Skeleton } from '../../design-system/Skeleton';
@@ -26,6 +29,9 @@ import { Spinner } from '../../design-system/Spinner';
 import { black, colors, radius, space, typography } from '../../design-system/tokens';
 
 type ViewTab = 'calendar' | 'exercise' | 'date' | 'photos';
+type CalendarMode = 'month' | 'week';
+
+const DOTS_MAX = 5;
 
 const VIEW_TABS: { key: ViewTab; label: string }[] = [
   { key: 'calendar', label: '달력' },
@@ -40,10 +46,6 @@ const DOT_COLOR: Record<string, string> = {
   exercise: colors.accent.warm,
   general:  colors.text.muted,
 };
-
-function toYMD(d: Date): string {
-  return d.toISOString().slice(0, 10);
-}
 
 function EventCard({
   event,
@@ -80,6 +82,7 @@ export default function CalendarScreen() {
   const { partnerName } = usePartnerProfile(coupleId, myUid || null);
 
   const [activeView, setActiveView]     = useState<ViewTab>('calendar');
+  const [calendarMode, setCalendarMode] = useState<CalendarMode>('month');
   const [selectedDate, setSelectedDate] = useState<string>(toYMD(new Date()));
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [calendarKey, setCalendarKey]   = useState(0);
@@ -93,7 +96,14 @@ export default function CalendarScreen() {
     [currentMonth],
   );
 
-  const { events, loading } = useCalendarEvents(coupleId, { from: monthStart, to: monthEnd });
+  const weekStart = useMemo(() => startOfWeek(parseYMD(selectedDate)), [selectedDate]);
+  const weekDays  = useMemo(() => Array.from({ length: 7 }, (_, i) => addDays(weekStart, i)), [weekStart]);
+  const weekEnd   = weekDays[6]!;
+
+  const rangeFrom = calendarMode === 'week' ? weekStart : monthStart;
+  const rangeTo   = calendarMode === 'week' ? weekEnd   : monthEnd;
+
+  const { events, loading } = useCalendarEvents(coupleId, { from: rangeFrom, to: rangeTo });
   const { events: exerciseEvents, loading: exerciseLoading } = useCalendarEventsByType(
     activeView === 'exercise' ? coupleId : null, 'exercise',
   );
@@ -104,13 +114,24 @@ export default function CalendarScreen() {
     activeView === 'photos' ? coupleId : null,
   );
 
-  const markedDates = useMemo(() => {
-    const marks: Record<string, { dots: { color: string }[]; selected?: boolean; selectedColor?: string }> = {};
+  const thumbnails = useEventThumbnails(events);
+
+  // BR-9: 날짜당 점은 최대 5개까지만 표시
+  const dotsByDate = useMemo(() => {
+    const marks: Record<string, { color: string }[]> = {};
     events.forEach(ev => {
       const key = toYMD(ev.date);
-      if (!marks[key]) marks[key] = { dots: [] };
-      marks[key]!.dots.push({ color: DOT_COLOR[ev.type] ?? colors.text.muted });
+      if (!marks[key]) marks[key] = [];
+      if (marks[key]!.length < DOTS_MAX) {
+        marks[key]!.push({ color: DOT_COLOR[ev.type] ?? colors.text.muted });
+      }
     });
+    return marks;
+  }, [events]);
+
+  const markedDates = useMemo(() => {
+    const marks: Record<string, { dots: { color: string }[]; selected?: boolean; selectedColor?: string }> = {};
+    Object.entries(dotsByDate).forEach(([key, dots]) => { marks[key] = { dots }; });
     if (marks[selectedDate]) {
       marks[selectedDate]!.selected = true;
       marks[selectedDate]!.selectedColor = colors.accent.primary;
@@ -118,7 +139,7 @@ export default function CalendarScreen() {
       marks[selectedDate] = { dots: [], selected: true, selectedColor: colors.accent.primary };
     }
     return marks;
-  }, [events, selectedDate]);
+  }, [dotsByDate, selectedDate]);
 
   const dayEvents = useMemo(
     () => events.filter(ev => toYMD(ev.date) === selectedDate),
@@ -133,6 +154,22 @@ export default function CalendarScreen() {
     setSelectedDate(toYMD(today));
     setCurrentMonth(today);
     setCalendarKey(k => k + 1);
+  }, []);
+
+  const showMonthMode = useCallback(() => {
+    setCurrentMonth(parseYMD(selectedDate));
+    setCalendarKey(k => k + 1);
+    setCalendarMode('month');
+  }, [selectedDate]);
+
+  const showWeekMode = useCallback(() => setCalendarMode('week'), []);
+
+  const goPrevWeek = useCallback(() => {
+    setSelectedDate(prev => toYMD(addDays(parseYMD(prev), -7)));
+  }, []);
+
+  const goNextWeek = useCallback(() => {
+    setSelectedDate(prev => toYMD(addDays(parseYMD(prev), 7)));
   }, []);
 
   if (!coupleId) return <Spinner />;
@@ -156,27 +193,63 @@ export default function CalendarScreen() {
       {activeView === 'calendar' && (
         <View style={styles.flex}>
           <View style={styles.calendarToolbar}>
+            <View style={styles.viewModeToggle}>
+              <TouchableOpacity
+                onPress={showMonthMode}
+                style={[styles.viewModeBtn, calendarMode === 'month' && styles.viewModeBtnActive]}
+              >
+                <Text style={[styles.viewModeBtnText, calendarMode === 'month' && styles.viewModeBtnTextActive]}>월</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={showWeekMode}
+                style={[styles.viewModeBtn, calendarMode === 'week' && styles.viewModeBtnActive]}
+              >
+                <Text style={[styles.viewModeBtnText, calendarMode === 'week' && styles.viewModeBtnTextActive]}>주</Text>
+              </TouchableOpacity>
+            </View>
             <TouchableOpacity onPress={goToToday} style={styles.todayBtn}>
               <Text style={styles.todayBtnText}>오늘</Text>
             </TouchableOpacity>
           </View>
-          <Calendar
-            key={calendarKey}
-            markingType="multi-dot"
-            markedDates={markedDates}
-            onDayPress={onDayPress}
-            onMonthChange={onMonthChange}
-            theme={{
-              backgroundColor:            colors.bg.base,
-              calendarBackground:         colors.bg.base,
-              selectedDayBackgroundColor: colors.accent.primary,
-              todayTextColor:             colors.accent.primary,
-              arrowColor:                 colors.accent.primary,
-              textDayFontFamily:          'Pretendard-Regular',
-              textMonthFontFamily:        'Pretendard-SemiBold',
-              textDayHeaderFontFamily:    'Pretendard-Regular',
-            }}
-          />
+          {calendarMode === 'week' ? (
+            <WeekStrip
+              weekDays={weekDays}
+              selectedDate={selectedDate}
+              dotsByDate={dotsByDate}
+              thumbnails={thumbnails}
+              onSelectDate={setSelectedDate}
+              onPrevWeek={goPrevWeek}
+              onNextWeek={goNextWeek}
+            />
+          ) : (
+            <Calendar
+              key={calendarKey}
+              current={toYMD(currentMonth)}
+              markingType="multi-dot"
+              markedDates={markedDates}
+              onDayPress={onDayPress}
+              onMonthChange={onMonthChange}
+              dayComponent={({ date, state, onPress }) => (
+                <MonthDayComponent
+                  date={date}
+                  state={state}
+                  dots={date ? dotsByDate[date.dateString] ?? [] : []}
+                  thumbnailUrl={date ? thumbnails[date.dateString] : undefined}
+                  onPress={() => onPress?.(date)}
+                />
+              )}
+              theme={{
+                backgroundColor:            colors.bg.base,
+                calendarBackground:         colors.bg.base,
+                selectedDayBackgroundColor: colors.accent.primary,
+                todayTextColor:             colors.accent.primary,
+                arrowColor:                 colors.accent.primary,
+                textDayFontFamily:          'Pretendard-Regular',
+                textMonthFontFamily:        'Pretendard-SemiBold',
+                textDayHeaderFontFamily:    'Pretendard-Regular',
+              }}
+            />
+          )}
           {loading ? (
             <View style={styles.skeletonContainer}>
               {[0, 1, 2].map(i => <Skeleton key={i} style={styles.skeletonRow} />)}
@@ -221,7 +294,12 @@ const styles = StyleSheet.create({
   skeletonContainer: { padding: space[4], gap: space[3] },
   skeletonRow:       { height: 60, borderRadius: radius.md },
   listContent:       { padding: space[4], gap: space[3], paddingBottom: 96 },
-  calendarToolbar:   { flexDirection: 'row', justifyContent: 'flex-end', paddingHorizontal: space[4], paddingVertical: space[2], backgroundColor: colors.bg.base },
+  calendarToolbar:      { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: space[4], paddingVertical: space[2], backgroundColor: colors.bg.base },
+  viewModeToggle:       { flexDirection: 'row', backgroundColor: colors.bg.surface, borderRadius: radius.pill, padding: 2 },
+  viewModeBtn:          { paddingHorizontal: space[3], paddingVertical: space[1], borderRadius: radius.pill },
+  viewModeBtnActive:    { backgroundColor: colors.accent.primary },
+  viewModeBtnText:      { ...typography.tiny, color: colors.text.secondary },
+  viewModeBtnTextActive: { color: colors.text.inverse, fontFamily: 'Pretendard-SemiBold' },
   todayBtn:          { paddingHorizontal: space[3], paddingVertical: space[1], borderRadius: radius.pill, borderWidth: 1, borderColor: colors.accent.primary },
   todayBtnText:      { ...typography.tiny, color: colors.accent.primary },
   eventCard:         { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.bg.surface, borderRadius: radius.md, padding: space[4], gap: space[3] },

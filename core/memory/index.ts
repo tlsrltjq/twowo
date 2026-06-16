@@ -1,9 +1,10 @@
-import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import { collection, doc, getDoc, onSnapshot, query, where } from 'firebase/firestore';
 import { useEffect, useMemo, useState } from 'react';
 
 import { subscribeEvents, subscribeEventsByType, subscribeEventsSince } from '../calendar';
 import { CalendarEvent } from '../calendar/schema';
 import { db } from '../config/firebase';
+import { toYMD } from '../utils/date';
 
 export type EventPhoto = {
   id: string;
@@ -96,6 +97,42 @@ export function usePhotoEvents(
   }, [coupleId, since]);
 
   return { events, loading };
+}
+
+// 달력 그리드용 — 사진이 첨부된 이벤트 날짜마다 대표 썸네일(첫 photoId) 1장만 로드
+export function useEventThumbnails(events: CalendarEvent[]): Record<string, string> {
+  const [thumbnails, setThumbnails] = useState<Record<string, string>>({});
+
+  const photoRefs = useMemo(
+    () => events
+      .filter(ev => ev.photoIds.length > 0)
+      .map(ev => ({ dateKey: toYMD(ev.date), photoId: ev.photoIds[0]! })),
+    [events],
+  );
+
+  useEffect(() => {
+    if (photoRefs.length === 0) {
+      setThumbnails({});
+      return;
+    }
+    let cancelled = false;
+    Promise.all(
+      photoRefs.map(({ dateKey, photoId }) =>
+        getDoc(doc(db, 'photos', photoId)).then(snap => ({
+          dateKey,
+          url: snap.data()?.thumbUrl as string | undefined,
+        })),
+      ),
+    ).then(results => {
+      if (cancelled) return;
+      const map: Record<string, string> = {};
+      results.forEach(r => { if (r.url) map[r.dateKey] = r.url; });
+      setThumbnails(map);
+    });
+    return () => { cancelled = true; };
+  }, [photoRefs]);
+
+  return thumbnails;
 }
 
 export function useEventPhotos(eventId: string | null): { photos: EventPhoto[]; loading: boolean } {
