@@ -63,6 +63,7 @@ function EventCard({
     <TouchableOpacity
       style={styles.eventCard}
       onPress={() => router.push(`/event/${event.id}`)}
+      accessibilityLabel={event.title}
     >
       <View style={[styles.typeDot, { backgroundColor: DOT_COLOR[event.type] ?? colors.text.muted }]} />
       <View style={styles.eventInfo}>

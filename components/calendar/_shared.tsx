@@ -7,7 +7,12 @@ import { colors, radius, space, typography } from '../../design-system/tokens';
 // general/exercise 이벤트에서 작성자를 나타내는 작은 배지
 export function PersonBadge({ isMe, name }: { isMe: boolean; name: string }) {
   return (
-    <View style={[sharedStyles.personBadge, isMe ? sharedStyles.personBadgeMe : sharedStyles.personBadgeOther]}>
+    <View
+      style={[sharedStyles.personBadge, isMe ? sharedStyles.personBadgeMe : sharedStyles.personBadgeOther]}
+      accessible={false}
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+    >
       <Text style={[sharedStyles.personBadgeText, isMe ? sharedStyles.personBadgeTextMe : sharedStyles.personBadgeTextOther]}>
         {isMe ? '나' : name}
       </Text>
@@ -89,6 +94,7 @@ export function TypeEventCard({
     <TouchableOpacity
       style={sharedStyles.typeEventCard}
       onPress={() => router.push(`/event/${event.id}`)}
+      accessibilityLabel={event.title}
     >
       <View style={sharedStyles.typeEventLeft}>
         <Text style={sharedStyles.typeEventEmoji}>{TYPE_EMOJI[event.type] ?? '📌'}</Text>
