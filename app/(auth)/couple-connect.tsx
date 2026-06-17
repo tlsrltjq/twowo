@@ -2,7 +2,7 @@ import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { doc, DocumentReference } from 'firebase/firestore';
 import LottieView from 'lottie-react-native';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -14,7 +14,9 @@ import { useAuthStore } from '../../core/stores/auth.store';
 import { Button } from '../../design-system/Button';
 import { TextField } from '../../design-system/TextField';
 import { Toast } from '../../design-system/Toast';
-import { colors, radius, space, typography } from '../../design-system/tokens';
+import { useColors } from '../../design-system/ThemeContext';
+import { Colors } from '../../design-system/themes';
+import { radius, space, typography } from '../../design-system/tokens';
 
 function formatExpiry(expiresAt: Date): string {
   const hoursLeft = Math.floor((expiresAt.getTime() - Date.now()) / (1000 * 3600));
@@ -23,6 +25,8 @@ function formatExpiry(expiresAt: Date): string {
 }
 
 export default function CoupleConnectScreen() {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const router = useRouter();
   const user = useAuthStore(s => s.user);
   const setCoupleId = useAuthStore(s => s.setCoupleId);
@@ -40,7 +44,6 @@ export default function CoupleConnectScreen() {
     message: '', type: 'error', visible: false,
   });
 
-  // 코드 생성 후 상대방이 조인했는지 실시간으로 감지
   const coupleRef = createdCoupleId
     ? (doc(db, 'couples', createdCoupleId) as DocumentReference<Couple>)
     : null;
@@ -59,7 +62,6 @@ export default function CoupleConnectScreen() {
     }
   }, [coupleData, createdCoupleId, handleSuccess]);
 
-  // Guard: signup.tsx sets user in store before navigating here, but defend against any race
   if (!user) return null;
   const uid = user.uid;
 
@@ -118,7 +120,6 @@ export default function CoupleConnectScreen() {
         <Text style={styles.title}>커플 연결</Text>
         <Text style={styles.subtitle}>코드를 공유하거나 입력해서 연결하세요</Text>
 
-        {/* 코드 생성 섹션 */}
         <View style={styles.section}>
           {myCode ? (
             <View style={styles.codeBox}>
@@ -141,14 +142,12 @@ export default function CoupleConnectScreen() {
           )}
         </View>
 
-        {/* 구분선 */}
         <View style={styles.divider}>
           <View style={styles.dividerLine} />
           <Text style={styles.dividerText}>또는</Text>
           <View style={styles.dividerLine} />
         </View>
 
-        {/* 코드 입력 섹션 */}
         <View style={styles.section}>
           <TextField
             label="상대방 코드 입력"
@@ -193,8 +192,8 @@ export default function CoupleConnectScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  flex:        { flex: 1, backgroundColor: colors.bg.base, },
+const makeStyles = (colors: Colors) => StyleSheet.create({
+  flex:        { flex: 1, backgroundColor: colors.bg.base },
   container:   { flexGrow: 1, padding: space[6], gap: space[6] },
   title:       { ...typography.title1, color: colors.text.primary, textAlign: 'center', marginTop: space[8] },
   subtitle:    { ...typography.body, color: colors.text.secondary, textAlign: 'center' },

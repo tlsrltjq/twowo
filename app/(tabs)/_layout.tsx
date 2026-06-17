@@ -17,7 +17,7 @@ import {
   Utensils,
   X,
 } from 'lucide-react-native';
-import { ComponentType, useEffect, useRef, useState } from 'react';
+import { ComponentType, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,
   Pressable,
@@ -31,7 +31,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFeatureSettings } from '../../core/features';
 import { SidebarContext } from '../../core/sidebar.context';
 import { useAuthStore } from '../../core/stores/auth.store';
-import { black, colors, radius, space, typography } from '../../design-system/tokens';
+import { useColors } from '../../design-system/ThemeContext';
+import { Colors } from '../../design-system/themes';
+import { black, radius, space, typography } from '../../design-system/tokens';
 import { subscribeUnreadCount } from '../../features/chat';
 
 const SIDEBAR_WIDTH = 280;
@@ -58,11 +60,12 @@ const ALL_SIDEBAR_ITEMS: (SidebarItem & { featureId: string })[] = [
 ];
 
 export default function TabsLayout() {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const { user, coupleId } = useAuthStore();
   const insets = useSafeAreaInsets();
   const pathname = usePathname();
 
-  // 채팅 읽음 배지
   const chatSeenAt = useRef(new Date());
   const [unreadChat, setUnreadChat]             = useState(0);
   const featureSettings = useFeatureSettings(coupleId);
@@ -176,7 +179,6 @@ export default function TabsLayout() {
           />
         </Tabs>
 
-        {/* Sidebar overlay */}
         {sidebarOpen && (
           <>
             <Animated.View
@@ -229,7 +231,7 @@ export default function TabsLayout() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   root:                  { flex: 1 },
 
   backdrop:              {
@@ -267,7 +269,6 @@ const styles = StyleSheet.create({
   },
   sidebarTitle:          { ...typography.bodyBold, color: colors.text.primary },
   closeBtn:              { padding: space[2] },
-  closeBtnText:          { ...typography.body, color: colors.text.muted },
 
   sidebarItem:           {
     flexDirection: 'row',

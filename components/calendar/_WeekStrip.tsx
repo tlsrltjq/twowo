@@ -1,7 +1,10 @@
+import { useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { toYMD } from '../../core/utils/date';
-import { colors, space, typography } from '../../design-system/tokens';
+import { useColors } from '../../design-system/ThemeContext';
+import { Colors } from '../../design-system/themes';
+import { space, typography } from '../../design-system/tokens';
 import { CalendarDayCell } from './_CalendarDayCell';
 
 const WEEKDAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'];
@@ -23,6 +26,8 @@ export function WeekStrip({
   onPrevWeek: () => void;
   onNextWeek: () => void;
 }) {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const todayYMD = toYMD(new Date());
   const first = weekDays[0]!;
 
@@ -59,7 +64,7 @@ export function WeekStrip({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   container:    { backgroundColor: colors.bg.base, paddingBottom: space[2] },
   header:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space[4], paddingVertical: space[2] },
   navBtn:       { padding: space[2] },

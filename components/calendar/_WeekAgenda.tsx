@@ -3,8 +3,10 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 
 import { CalendarEvent } from '../../core/calendar/schema';
 import { toLocalYMD } from '../../core/utils/date';
-import { colors, radius, space, typography } from '../../design-system/tokens';
 import { Skeleton } from '../../design-system/Skeleton';
+import { useColors } from '../../design-system/ThemeContext';
+import { Colors } from '../../design-system/themes';
+import { radius, space, typography } from '../../design-system/tokens';
 import { CalendarEventCard } from './_shared';
 
 const WEEKDAY = ['일', '월', '화', '수', '목', '금', '토'];
@@ -26,6 +28,8 @@ export function WeekAgenda({
   onPrevWeek: () => void;
   onNextWeek: () => void;
 }) {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const todayYMD = toLocalYMD(new Date());
 
   const eventsByDate = useMemo(() => {
@@ -97,7 +101,7 @@ export function WeekAgenda({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   container:       { flex: 1, backgroundColor: colors.bg.base },
   header:          { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space[4], paddingVertical: space[2], paddingHorizontal: space[4] },
   navBtn:          { padding: space[2] },

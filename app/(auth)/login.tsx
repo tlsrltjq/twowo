@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -11,9 +11,13 @@ import { useAuthStore } from '../../core/stores/auth.store';
 import { Button } from '../../design-system/Button';
 import { TextField } from '../../design-system/TextField';
 import { Toast } from '../../design-system/Toast';
-import { colors, space, typography } from '../../design-system/tokens';
+import { useColors } from '../../design-system/ThemeContext';
+import { Colors } from '../../design-system/themes';
+import { space, typography } from '../../design-system/tokens';
 
 export default function LoginScreen() {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const router = useRouter();
   const [toast, setToast] = useState<{ message: string; type: 'error' | 'success'; visible: boolean }>({
     message: '', type: 'error', visible: false,
@@ -110,7 +114,7 @@ export default function LoginScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   flex:      { flex: 1, backgroundColor: colors.bg.base },
   container: { flexGrow: 1, justifyContent: 'center', padding: space[6], gap: space[6] },
   title:     { ...typography.display, color: colors.text.primary, textAlign: 'center' },

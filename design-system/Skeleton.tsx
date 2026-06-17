@@ -1,7 +1,9 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Animated, StyleSheet, View, ViewStyle } from 'react-native';
 
-import { colors, radius } from './tokens';
+import { useColors } from './ThemeContext';
+import { Colors } from './themes';
+import { radius } from './tokens';
 
 interface SkeletonProps {
   width?: number | `${number}%`;
@@ -10,6 +12,8 @@ interface SkeletonProps {
 }
 
 export function Skeleton({ width = '100%', height = 16, style }: SkeletonProps) {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const opacity = useRef(new Animated.Value(0.4)).current;
 
   useEffect(() => {
@@ -40,7 +44,7 @@ export function SkeletonBlock({ lines = 3 }: { lines?: number }) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   base: {
     backgroundColor: colors.bg.subtle,
     borderRadius: radius.sm,

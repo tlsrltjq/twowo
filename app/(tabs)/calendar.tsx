@@ -15,7 +15,7 @@ import { MonthDayComponent } from '../../components/calendar/_CalendarDayCell';
 import { DateView } from '../../components/calendar/_DateView';
 import { ExerciseView } from '../../components/calendar/_ExerciseView';
 import { PhotoView } from '../../components/calendar/_PhotoView';
-import { CalendarEventCard, DOT_COLOR } from '../../components/calendar/_shared';
+import { CalendarEventCard, useDotColor } from '../../components/calendar/_shared';
 import { WeekAgenda } from '../../components/calendar/_WeekAgenda';
 import { usePartnerProfile } from '../../core/couple/usePartnerProfile';
 import { useCalendarEvents, useCalendarEventsByType, useEventThumbnails, usePhotoEvents } from '../../core/memory';
@@ -25,7 +25,9 @@ import { EmptyState } from '../../design-system/EmptyState';
 import { CalendarEmpty } from '../../design-system/illustrations';
 import { Skeleton } from '../../design-system/Skeleton';
 import { Spinner } from '../../design-system/Spinner';
-import { black, colors, radius, space, typography } from '../../design-system/tokens';
+import { useColors } from '../../design-system/ThemeContext';
+import { Colors } from '../../design-system/themes';
+import { black, radius, space, typography } from '../../design-system/tokens';
 
 type ViewTab = 'calendar' | 'exercise' | 'date' | 'photos';
 type CalendarMode = 'month' | 'week';
@@ -40,6 +42,10 @@ const VIEW_TABS: { key: ViewTab; label: string }[] = [
 ];
 
 export default function CalendarScreen() {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+  const dotColorMap = useDotColor();
+
   const { coupleId, user } = useAuthStore();
   const myUid = user?.uid ?? '';
   const { partnerName } = usePartnerProfile(coupleId, myUid || null);
@@ -79,18 +85,17 @@ export default function CalendarScreen() {
 
   const thumbnails = useEventThumbnails(events);
 
-  // BR-9: 날짜당 점은 최대 5개까지만 표시
   const dotsByDate = useMemo(() => {
     const marks: Record<string, { color: string }[]> = {};
     events.forEach(ev => {
       const key = toYMD(ev.date);
       if (!marks[key]) marks[key] = [];
       if (marks[key]!.length < DOTS_MAX) {
-        marks[key]!.push({ color: DOT_COLOR[ev.type] ?? colors.text.muted });
+        marks[key]!.push({ color: dotColorMap[ev.type] ?? colors.text.muted });
       }
     });
     return marks;
-  }, [events]);
+  }, [events, dotColorMap, colors.text.muted]);
 
   const markedDates = useMemo(() => {
     const marks: Record<string, { dots: { color: string }[]; selected?: boolean; selectedColor?: string; hasThumbnail?: boolean }> = {};
@@ -104,7 +109,7 @@ export default function CalendarScreen() {
       marks[selectedDate] = { dots: [], selected: true, selectedColor: colors.accent.primary };
     }
     return marks;
-  }, [dotsByDate, selectedDate, thumbnails]);
+  }, [dotsByDate, selectedDate, thumbnails, colors.accent.primary]);
 
   const dayEvents = useMemo(
     () => events.filter(ev => toYMD(ev.date) === selectedDate),
@@ -250,7 +255,7 @@ export default function CalendarScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   container:         { flex: 1, backgroundColor: colors.bg.base },
   flex:              { flex: 1 },
   viewTabBar:        { flexDirection: 'row', backgroundColor: colors.bg.surface, borderBottomWidth: 1, borderBottomColor: colors.border.subtle },

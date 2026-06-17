@@ -1,19 +1,21 @@
 import NetInfo from '@react-native-community/netinfo';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, StyleSheet, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { colors, space, typography } from './tokens';
+import { useColors } from './ThemeContext';
+import { Colors } from './themes';
+import { space, typography } from './tokens';
 
 export function OfflineBanner() {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const [isOffline, setIsOffline] = useState(false);
   const slideAnim = useRef(new Animated.Value(-80)).current;
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
     return NetInfo.addEventListener(state => {
-      // isConnected는 시뮬레이터에서 false 오보 잦음 → isInternetReachable 기준 사용
-      // null이면 아직 판단 중 → 배너 숨김
       if (state.isInternetReachable !== null) {
         setIsOffline(state.isInternetReachable === false);
       }
@@ -39,7 +41,7 @@ export function OfflineBanner() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   banner: {
     position: 'absolute',
     top: 0,

@@ -1,12 +1,14 @@
 import { Href, router } from 'expo-router';
 import { FlaskConical } from 'lucide-react-native';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { getRegistry, setFeatureEnabled, useFeatureSettings } from '../../core/features';
 import { useAuthStore } from '../../core/stores/auth.store';
-import { colors, radius, space, typography } from '../../design-system/tokens';
+import { useColors } from '../../design-system/ThemeContext';
+import { Colors } from '../../design-system/themes';
+import { radius, space, typography } from '../../design-system/tokens';
 
 const FEATURE_ROUTES: Record<string, string> = {
   'couple-bingo':    '/(features)/bingo',
@@ -23,6 +25,8 @@ const FEATURE_ROUTES: Record<string, string> = {
 const experimentalFeatures = getRegistry().filter(f => f.status === 'experimental');
 
 export default function LabScreen() {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const { coupleId } = useAuthStore();
   const settings                  = useFeatureSettings(coupleId);
   const [toggling, setToggling]   = useState<string | null>(null);
@@ -94,7 +98,7 @@ export default function LabScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   safeArea:    { flex: 1, backgroundColor: colors.bg.base },
   header:      { paddingHorizontal: space[5], paddingTop: space[4], paddingBottom: space[3], gap: space[1] },
   title:       { ...typography.title1, color: colors.text.primary },
@@ -129,4 +133,3 @@ const styles = StyleSheet.create({
   },
   openBtnText: { ...typography.caption, color: colors.text.inverse, fontFamily: 'Pretendard-SemiBold' },
 });
-

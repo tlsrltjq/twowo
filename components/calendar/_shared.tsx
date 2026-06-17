@@ -1,17 +1,30 @@
 import { router } from 'expo-router';
+import { useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { CalendarEvent } from '../../core/calendar/schema';
-import { colors, radius, space, typography } from '../../design-system/tokens';
+import { useColors } from '../../design-system/ThemeContext';
+import { Colors } from '../../design-system/themes';
+import { radius, space, typography } from '../../design-system/tokens';
 
-export const DOT_COLOR: Record<string, string> = {
-  date:     colors.accent.primary,
-  exercise: colors.accent.warm,
-  general:  colors.text.muted,
-};
+export function useDotColor(): Record<string, string> {
+  const colors = useColors();
+  return useMemo(() => ({
+    date:     colors.accent.primary,
+    exercise: colors.accent.warm,
+    general:  colors.text.muted,
+  }), [colors]);
+}
 
-// general/exercise 이벤트에서 작성자를 나타내는 작은 배지
+export function useSharedStyles() {
+  const colors = useColors();
+  return useMemo(() => makeSharedStyles(colors), [colors]);
+}
+
 export function PersonBadge({ isMe, name }: { isMe: boolean; name: string }) {
+  const colors = useColors();
+  const sharedStyles = useMemo(() => makeSharedStyles(colors), [colors]);
+
   return (
     <View
       style={[sharedStyles.personBadge, isMe ? sharedStyles.personBadgeMe : sharedStyles.personBadgeOther]}
@@ -68,6 +81,9 @@ export function TypeStatsBar({
   accentColor: string;
   unitLabel: string;
 }) {
+  const colors = useColors();
+  const sharedStyles = useMemo(() => makeSharedStyles(colors), [colors]);
+
   return (
     <View style={[sharedStyles.statsBar, { borderColor: accentColor + '40' }]}>
       <Text style={sharedStyles.statsEmoji}>{emoji}</Text>
@@ -93,6 +109,8 @@ export function TypeEventCard({
   myUid?: string;
   partnerName?: string;
 }) {
+  const colors = useColors();
+  const sharedStyles = useMemo(() => makeSharedStyles(colors), [colors]);
   const showBadge = event.type !== 'date' && myUid != null;
   const isMe      = event.createdBy === myUid;
 
@@ -131,6 +149,13 @@ export function CalendarEventCard({
   myUid?: string;
   partnerName?: string;
 }) {
+  const colors = useColors();
+  const sharedStyles = useMemo(() => makeSharedStyles(colors), [colors]);
+  const dotColor = useMemo(() => ({
+    date:     colors.accent.primary,
+    exercise: colors.accent.warm,
+    general:  colors.text.muted,
+  }), [colors]);
   const showBadge = event.type !== 'date' && myUid != null;
   const isMe      = event.createdBy === myUid;
 
@@ -140,7 +165,7 @@ export function CalendarEventCard({
       onPress={() => router.push(`/event/${event.id}`)}
       accessibilityLabel={event.title}
     >
-      <View style={[sharedStyles.calEventDot, { backgroundColor: DOT_COLOR[event.type] ?? colors.text.muted }]} />
+      <View style={[sharedStyles.calEventDot, { backgroundColor: dotColor[event.type as keyof typeof dotColor] ?? colors.text.muted }]} />
       <View style={sharedStyles.calEventInfo}>
         <Text style={sharedStyles.calEventTitle} numberOfLines={1}>{event.title}</Text>
         {event.placeName && (
@@ -152,7 +177,7 @@ export function CalendarEventCard({
   );
 }
 
-export const sharedStyles = StyleSheet.create({
+const makeSharedStyles = (colors: Colors) => StyleSheet.create({
   skeletonContainer: { padding: space[4], gap: space[3] },
   skeletonRow:       { height: 60, borderRadius: radius.md },
   listContent:       { padding: space[4], gap: space[3], paddingBottom: 96 },

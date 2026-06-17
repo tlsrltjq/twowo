@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
   KeyboardAvoidingView,
@@ -22,7 +22,9 @@ import { useAuthStore } from '../../core/stores/auth.store';
 import { Button } from '../../design-system/Button';
 import { TextField } from '../../design-system/TextField';
 import { Toast } from '../../design-system/Toast';
-import { colors, radius, space, typography } from '../../design-system/tokens';
+import { useColors } from '../../design-system/ThemeContext';
+import { Colors } from '../../design-system/themes';
+import { radius, space, typography } from '../../design-system/tokens';
 
 const formSchema = z.object({
   title:     z.string().min(1, '제목을 입력해주세요').max(100),
@@ -45,6 +47,8 @@ function todayString(): string {
 }
 
 export default function NewEventScreen() {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const { user, coupleId } = useAuthStore();
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error'; visible: boolean }>(
     { message: '', type: 'success', visible: false },
@@ -98,7 +102,6 @@ export default function NewEventScreen() {
       </View>
 
       <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
-        {/* 타입 선택 */}
         <View style={styles.typeRow}>
           {(['general', 'date', 'exercise'] as EventType[]).map(t => (
             <Controller
@@ -238,7 +241,7 @@ export default function NewEventScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   flex:               { flex: 1, backgroundColor: colors.bg.base },
   header:             { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: space[4], borderBottomWidth: 1, borderBottomColor: colors.border.subtle, backgroundColor: colors.bg.surface },
   headerTitle:        { ...typography.title2, color: colors.text.primary },

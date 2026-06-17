@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { Calendar, Menu } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -12,7 +12,9 @@ import { useAuthStore } from '../../core/stores/auth.store';
 import { getDaysSince, getTodayKST } from '../../core/utils/date';
 import { Skeleton } from '../../design-system/Skeleton';
 import { Spinner } from '../../design-system/Spinner';
-import { colors, space, typography } from '../../design-system/tokens';
+import { useColors } from '../../design-system/ThemeContext';
+import { Colors } from '../../design-system/themes';
+import { space, typography } from '../../design-system/tokens';
 import { getUpcomingRange, sliceUpcoming } from '../../features/home/upcomingEvents';
 import { MoodCheck,subscribeMyMoodToday, subscribePartnerMoodToday } from '../../features/mood-share';
 
@@ -23,138 +25,8 @@ const MOOD_LABELS: Record<string, string> = {
   bad:   '별로 😔',
 };
 
-export default function HomeScreen() {
-  const { user, coupleId } = useAuthStore();
-  const { open: openSidebar } = useSidebar();
-  const [couple, setCouple]           = useState<Couple | null>(null);
-  const [myMood, setMyMood]           = useState<MoodCheck | null | 'loading'>('loading');
-  const [partnerMood, setPartnerMood] = useState<MoodCheck | null>(null);
-  const [events, setEvents]           = useState<CalendarEvent[] | null>(null);
-  const [refreshing, setRefreshing]   = useState(false);
-
-  const partnerUid = couple?.memberIds.find((id: string) => id !== user?.uid) ?? null;
-
-  // D-Day 계산 (BR-2: anniversaryDate 우선, 없으면 createdAt 폴백)
-  const dDay = (() => {
-    if (!couple) return null;
-    const base = couple.anniversaryDate ?? couple.createdAt;
-    if (!base) return null;
-    const baseStr = (() => {
-      const d = base instanceof Date ? base : new Date((base as { seconds: number }).seconds * 1000);
-      const kstMs = d.getTime() + 9 * 60 * 60 * 1000;
-      const kst   = new Date(kstMs);
-      const y = kst.getUTCFullYear();
-      const m = String(kst.getUTCMonth() + 1).padStart(2, '0');
-      const dy = String(kst.getUTCDate()).padStart(2, '0');
-      return `${y}-${m}-${dy}`;
-    })();
-    return getDaysSince(baseStr) + 1; // D+1부터 시작
-  })();
-
-  // 커플 구독
-  useEffect(() => {
-    if (!coupleId) return;
-    return subscribeCouple(coupleId, setCouple);
-  }, [coupleId]);
-
-  // 내 컨디션 실시간 구독 (컨디션 탭에서 입력 후 홈으로 돌아와도 즉시 반영)
-  useEffect(() => {
-    if (!coupleId || !user) return;
-    return subscribeMyMoodToday(coupleId, user.uid, (m) => {
-      setMyMood(m);
-    });
-  }, [coupleId, user?.uid]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // 알림 스케줄 — 내 컨디션 상태 확정 후
-  useEffect(() => {
-    if (myMood === 'loading') return;
-    scheduleMoodReminderIfNeeded(myMood !== null).catch(() => {});
-  }, [myMood]);
-
-  // 상대방 컨디션 실시간 구독
-  useEffect(() => {
-    if (!coupleId || !partnerUid) return;
-    return subscribePartnerMoodToday(coupleId, partnerUid, setPartnerMood);
-  }, [coupleId, partnerUid]);
-
-  // 다가오는 일정 구독 — BR-3: 오늘~7일, date asc, 최대 3개
-  useEffect(() => {
-    if (!coupleId) return;
-    const { from, to } = getUpcomingRange(new Date());
-    return subscribeEvents(coupleId, { from, to }, (evs) => {
-      setEvents(sliceUpcoming(evs));
-    });
-  }, [coupleId]);
-
-  const onRefresh = async () => {
-    setRefreshing(true);
-    // myMood는 onSnapshot 구독이라 별도 새로고침 불필요 — 잠깐 UX용 딜레이만
-    await new Promise(r => setTimeout(r, 500));
-    setRefreshing(false);
-  };
-
-  if (!couple) {
-    return (
-      <View style={styles.center}>
-        <Spinner />
-      </View>
-    );
-  }
-
-  return (
-    <SafeAreaView testID="screen-home" style={styles.safeArea} edges={['top']}>
-    <ScrollView
-      style={styles.scroll}
-      contentContainerStyle={styles.container}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-    >
-      {/* 헤더: 인사말 + D-Day + 햄버거 */}
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Text style={styles.greeting}>안녕하세요 👋</Text>
-          {dDay !== null && (
-            <Text style={styles.dday}>함께한 지 D+{dDay}일</Text>
-          )}
-        </View>
-        <TouchableOpacity testID="btn-sidebar-open" onPress={openSidebar} style={styles.hamburger} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="메뉴 열기">
-          <Menu size={24} color={colors.text.secondary} strokeWidth={1.8} />
-        </TouchableOpacity>
-      </View>
-
-      {/* 오늘의 컨디션 카드 */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>오늘의 컨디션</Text>
-        <View style={styles.moodRow}>
-          <MoodCard label="나" mood={myMood === 'loading' ? null : myMood} loading={myMood === 'loading'} />
-          <MoodCard label="상대방" mood={partnerMood} />
-        </View>
-      </View>
-
-      {/* 다음 일정 카드 */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>다음 일정</Text>
-        {events === null ? (
-          <Skeleton style={styles.skeletonEvent} />
-        ) : events.length === 0 ? (
-          <EmptyEventCard />
-        ) : (
-          <>
-            <NextEventCard event={events[0]!} />
-            {events.slice(1).map(ev => (
-              <EventRow key={ev.id} event={ev} />
-            ))}
-          </>
-        )}
-      </View>
-    </ScrollView>
-    </SafeAreaView>
-  );
-}
-
-// ─── 이벤트 타입 이모지 ───────────────────────────────────────────────────────
 const TYPE_EMOJI: Record<string, string> = { date: '💕', exercise: '🏃', general: '📅' };
 
-// ─── 날짜 → KST YYYY-MM-DD ────────────────────────────────────────────────────
 function toKSTDateStr(date: Date): string {
   const kst = new Date(date.getTime() + 9 * 60 * 60 * 1000);
   const y = kst.getUTCFullYear();
@@ -163,7 +35,6 @@ function toKSTDateStr(date: Date): string {
   return `${y}-${m}-${d}`;
 }
 
-// ─── D-Day 라벨 ───────────────────────────────────────────────────────────────
 function getDdayLabel(date: Date): string {
   const eventStr = toKSTDateStr(date);
   const todayStr = getTodayKST();
@@ -175,7 +46,6 @@ function getDdayLabel(date: Date): string {
   return `D-${diff}`;
 }
 
-// ─── 날짜 표시 문자열 ─────────────────────────────────────────────────────────
 const DAY_KO = ['일', '월', '화', '수', '목', '금', '토'];
 function formatEventDate(date: Date): string {
   const eventStr = toKSTDateStr(date);
@@ -192,8 +62,9 @@ function formatEventDate(date: Date): string {
   return `${m}월 ${d}일 (${dayOfWeek})`;
 }
 
-// ─── NextEventCard ────────────────────────────────────────────────────────────
 function NextEventCard({ event }: { event: CalendarEvent }) {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const ddayLabel  = getDdayLabel(event.date instanceof Date ? event.date : new Date((event.date as { seconds: number }).seconds * 1000));
   const dateStr    = formatEventDate(event.date instanceof Date ? event.date : new Date((event.date as { seconds: number }).seconds * 1000));
   const emoji      = TYPE_EMOJI[event.type] ?? '📅';
@@ -225,8 +96,9 @@ function NextEventCard({ event }: { event: CalendarEvent }) {
   );
 }
 
-// ─── EmptyEventCard ───────────────────────────────────────────────────────────
 function EmptyEventCard() {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   return (
     <View style={styles.emptyCard}>
       <Calendar size={28} color={colors.text.muted} strokeWidth={1.5} />
@@ -237,6 +109,8 @@ function EmptyEventCard() {
 }
 
 function MoodCard({ label, mood, loading }: { label: string; mood: MoodCheck | null; loading?: boolean }) {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   return (
     <View style={styles.moodCard}>
       <Text style={styles.moodLabel}>{label}</Text>
@@ -256,6 +130,8 @@ function MoodCard({ label, mood, loading }: { label: string; mood: MoodCheck | n
 }
 
 function EventRow({ event }: { event: CalendarEvent }) {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const date    = event.date instanceof Date ? event.date : new Date((event.date as { seconds: number }).seconds * 1000);
   const dateStr = formatEventDate(date);
   const emoji   = TYPE_EMOJI[event.type] ?? '📅';
@@ -268,7 +144,127 @@ function EventRow({ event }: { event: CalendarEvent }) {
   );
 }
 
-const styles = StyleSheet.create({
+export default function HomeScreen() {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+  const { user, coupleId } = useAuthStore();
+  const { open: openSidebar } = useSidebar();
+  const [couple, setCouple]           = useState<Couple | null>(null);
+  const [myMood, setMyMood]           = useState<MoodCheck | null | 'loading'>('loading');
+  const [partnerMood, setPartnerMood] = useState<MoodCheck | null>(null);
+  const [events, setEvents]           = useState<CalendarEvent[] | null>(null);
+  const [refreshing, setRefreshing]   = useState(false);
+
+  const partnerUid = couple?.memberIds.find((id: string) => id !== user?.uid) ?? null;
+
+  const dDay = (() => {
+    if (!couple) return null;
+    const base = couple.anniversaryDate ?? couple.createdAt;
+    if (!base) return null;
+    const baseStr = (() => {
+      const d = base instanceof Date ? base : new Date((base as { seconds: number }).seconds * 1000);
+      const kstMs = d.getTime() + 9 * 60 * 60 * 1000;
+      const kst   = new Date(kstMs);
+      const y = kst.getUTCFullYear();
+      const m = String(kst.getUTCMonth() + 1).padStart(2, '0');
+      const dy = String(kst.getUTCDate()).padStart(2, '0');
+      return `${y}-${m}-${dy}`;
+    })();
+    return getDaysSince(baseStr) + 1;
+  })();
+
+  useEffect(() => {
+    if (!coupleId) return;
+    return subscribeCouple(coupleId, setCouple);
+  }, [coupleId]);
+
+  useEffect(() => {
+    if (!coupleId || !user) return;
+    return subscribeMyMoodToday(coupleId, user.uid, (m) => {
+      setMyMood(m);
+    });
+  }, [coupleId, user?.uid]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (myMood === 'loading') return;
+    scheduleMoodReminderIfNeeded(myMood !== null).catch(() => {});
+  }, [myMood]);
+
+  useEffect(() => {
+    if (!coupleId || !partnerUid) return;
+    return subscribePartnerMoodToday(coupleId, partnerUid, setPartnerMood);
+  }, [coupleId, partnerUid]);
+
+  useEffect(() => {
+    if (!coupleId) return;
+    const { from, to } = getUpcomingRange(new Date());
+    return subscribeEvents(coupleId, { from, to }, (evs) => {
+      setEvents(sliceUpcoming(evs));
+    });
+  }, [coupleId]);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await new Promise(r => setTimeout(r, 500));
+    setRefreshing(false);
+  };
+
+  if (!couple) {
+    return (
+      <View style={styles.center}>
+        <Spinner />
+      </View>
+    );
+  }
+
+  return (
+    <SafeAreaView testID="screen-home" style={styles.safeArea} edges={['top']}>
+    <ScrollView
+      style={styles.scroll}
+      contentContainerStyle={styles.container}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+    >
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          <Text style={styles.greeting}>안녕하세요 👋</Text>
+          {dDay !== null && (
+            <Text style={styles.dday}>함께한 지 D+{dDay}일</Text>
+          )}
+        </View>
+        <TouchableOpacity testID="btn-sidebar-open" onPress={openSidebar} style={styles.hamburger} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="메뉴 열기">
+          <Menu size={24} color={colors.text.secondary} strokeWidth={1.8} />
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>오늘의 컨디션</Text>
+        <View style={styles.moodRow}>
+          <MoodCard label="나" mood={myMood === 'loading' ? null : myMood} loading={myMood === 'loading'} />
+          <MoodCard label="상대방" mood={partnerMood} />
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>다음 일정</Text>
+        {events === null ? (
+          <Skeleton style={styles.skeletonEvent} />
+        ) : events.length === 0 ? (
+          <EmptyEventCard />
+        ) : (
+          <>
+            <NextEventCard event={events[0]!} />
+            {events.slice(1).map(ev => (
+              <EventRow key={ev.id} event={ev} />
+            ))}
+          </>
+        )}
+      </View>
+    </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+const makeStyles = (colors: Colors) => StyleSheet.create({
   safeArea:     { flex: 1, backgroundColor: colors.bg.base },
   scroll:       { flex: 1 },
   container:    { padding: space[4], gap: space[5], paddingBottom: space[8] },
@@ -298,7 +294,6 @@ const styles = StyleSheet.create({
   moodMeet:     { ...typography.body, color: colors.text.secondary, fontSize: 11 },
   moodEmpty:    { ...typography.caption, color: colors.text.muted, textAlign: 'center' },
 
-  // next event card
   nextCard: {
     backgroundColor: colors.bg.surface,
     borderRadius: 16,
@@ -309,7 +304,7 @@ const styles = StyleSheet.create({
   },
   nextCardToday: {
     borderColor: colors.accent.primary,
-    backgroundColor: colors.accent.primary + '0D', // 5% tint
+    backgroundColor: colors.accent.primary + '0D',
   },
   nextCardTop: {
     flexDirection: 'row',
@@ -335,7 +330,6 @@ const styles = StyleSheet.create({
   nextCardPlace: { ...typography.caption, color: colors.text.secondary },
   nextCardDate:  { ...typography.caption, color: colors.text.muted },
 
-  // empty event card
   emptyCard: {
     backgroundColor: colors.bg.surface,
     borderRadius: 16, padding: space[5],
@@ -346,7 +340,6 @@ const styles = StyleSheet.create({
   emptyCardText: { ...typography.body, color: colors.text.secondary },
   emptyCardSub:  { ...typography.caption, color: colors.text.muted },
 
-  // compact event rows (2nd~ events)
   eventRow:     {
     flexDirection: 'row', gap: space[3], alignItems: 'center',
     backgroundColor: colors.bg.surface, borderRadius: 10, padding: space[3],

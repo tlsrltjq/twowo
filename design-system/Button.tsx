@@ -1,7 +1,10 @@
 import * as Haptics from 'expo-haptics';
+import { useMemo } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text } from 'react-native';
 
-import { colors, radius, space, typography } from './tokens';
+import { useColors } from './ThemeContext';
+import { Colors } from './themes';
+import { radius, space, typography } from './tokens';
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
 type Size = 'sm' | 'md' | 'lg';
@@ -16,13 +19,6 @@ interface ButtonProps {
   accessibilityLabel?: string;
   testID?: string;
 }
-
-const variantStyle = {
-  primary:   { bg: colors.accent.primary,  text: colors.text.inverse,    border: 'transparent' },
-  secondary: { bg: colors.bg.surface,      text: colors.text.primary,    border: colors.border.strong },
-  ghost:     { bg: 'transparent',          text: colors.accent.primary,   border: 'transparent' },
-  danger:    { bg: colors.status.danger,   text: colors.text.inverse,    border: 'transparent' },
-} as const;
 
 const sizeStyle = {
   sm: { paddingVertical: space[2], paddingHorizontal: space[4], ...typography.caption },
@@ -40,6 +36,16 @@ export function Button({
   accessibilityLabel,
   testID,
 }: ButtonProps) {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
+  const variantStyle = {
+    primary:   { bg: colors.accent.primary,  text: colors.text.inverse,   border: 'transparent' },
+    secondary: { bg: colors.bg.surface,      text: colors.text.primary,   border: colors.border.strong },
+    ghost:     { bg: 'transparent',          text: colors.accent.primary,  border: 'transparent' },
+    danger:    { bg: colors.status.danger,   text: colors.text.inverse,   border: 'transparent' },
+  };
+
   const v = variantStyle[variant];
   const s = sizeStyle[size];
 
@@ -73,7 +79,7 @@ export function Button({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (_colors: Colors) => StyleSheet.create({
   base: {
     borderRadius: radius.md,
     borderWidth: 1,

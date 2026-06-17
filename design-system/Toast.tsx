@@ -1,7 +1,9 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Animated, StyleSheet, Text } from 'react-native';
 
-import { colors, radius, shadow, space, typography } from './tokens';
+import { useColors } from './ThemeContext';
+import { Colors } from './themes';
+import { radius, shadow, space, typography } from './tokens';
 
 type ToastType = 'success' | 'error' | 'info';
 
@@ -12,14 +14,16 @@ interface ToastProps {
   onHide: () => void;
 }
 
-const typeColors: Record<ToastType, string> = {
-  success: colors.status.success,
-  error:   colors.status.danger,
-  info:    colors.text.secondary,
-};
-
 export function Toast({ message, type = 'info', visible, onHide }: ToastProps) {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const opacity = useRef(new Animated.Value(0)).current;
+
+  const typeColor = type === 'success'
+    ? colors.status.success
+    : type === 'error'
+      ? colors.status.danger
+      : colors.text.secondary;
 
   useEffect(() => {
     if (visible) {
@@ -34,13 +38,13 @@ export function Toast({ message, type = 'info', visible, onHide }: ToastProps) {
   if (!visible) return null;
 
   return (
-    <Animated.View style={[styles.container, { borderLeftColor: typeColors[type], opacity }]}>
+    <Animated.View style={[styles.container, { borderLeftColor: typeColor, opacity }]}>
       <Text style={styles.text}>{message}</Text>
     </Animated.View>
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   container: {
     position: 'absolute',
     top: space[12],

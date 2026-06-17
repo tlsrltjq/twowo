@@ -5,17 +5,22 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 import { CalendarEvent } from '../../core/calendar/schema';
 import { EmptyState } from '../../design-system/EmptyState';
 import { Skeleton } from '../../design-system/Skeleton';
-import { colors, radius, space, typography } from '../../design-system/tokens';
-import { groupByYearMonth, sharedStyles, TYPE_EMOJI, TypeStatsBar } from './_shared';
-
-const PHOTO_CARD_BG: Record<string, string> = {
-  date:     colors.accent.primary + '30',
-  exercise: colors.accent.warm    + '30',
-  general:  colors.accent.calm    + '30',
-};
+import { useColors } from '../../design-system/ThemeContext';
+import { Colors } from '../../design-system/themes';
+import { radius, space, typography } from '../../design-system/tokens';
+import { groupByYearMonth, TYPE_EMOJI, TypeStatsBar, useSharedStyles } from './_shared';
 
 function PhotoCard({ event }: { event: CalendarEvent }) {
-  const bg = PHOTO_CARD_BG[event.type] ?? PHOTO_CARD_BG['general']!;
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
+  const photoBg: Record<string, string> = {
+    date:     colors.accent.primary + '30',
+    exercise: colors.accent.warm    + '30',
+    general:  colors.accent.calm    + '30',
+  };
+  const bg = photoBg[event.type] ?? photoBg['general']!;
+
   return (
     <TouchableOpacity
       style={styles.photoCard}
@@ -37,6 +42,10 @@ function PhotoCard({ event }: { event: CalendarEvent }) {
 }
 
 export function PhotoView({ events, loading }: { events: CalendarEvent[]; loading: boolean }) {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+  const sharedStyles = useSharedStyles();
+
   const totalPhotos = useMemo(
     () => events.reduce((sum, ev) => sum + ev.photoIds.length, 0),
     [events],
@@ -80,7 +89,7 @@ export function PhotoView({ events, loading }: { events: CalendarEvent[]; loadin
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   photoListContent: { padding: space[4], paddingBottom: 96 },
   photoMonthGrid:   { flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -space[1] },
   photoCard:        { width: '33.33%', padding: space[1] },

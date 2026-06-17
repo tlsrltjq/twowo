@@ -1,6 +1,9 @@
+import { useMemo } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
-import { colors, radius, space, typography } from './tokens';
+import { useColors } from './ThemeContext';
+import { Colors } from './themes';
+import { radius, space, typography } from './tokens';
 
 interface TextFieldProps {
   label: string;
@@ -31,6 +34,9 @@ export function TextField({
   autoCapitalize = 'sentences',
   testID,
 }: TextFieldProps) {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
@@ -58,7 +64,7 @@ export function TextField({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   container: { gap: space[1] },
   label: { ...typography.caption, color: colors.text.secondary },
   input: {

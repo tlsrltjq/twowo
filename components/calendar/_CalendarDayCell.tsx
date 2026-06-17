@@ -1,8 +1,10 @@
+import { useMemo } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { colors, space, typography } from '../../design-system/tokens';
+import { useColors } from '../../design-system/ThemeContext';
+import { Colors } from '../../design-system/themes';
+import { space, typography } from '../../design-system/tokens';
 
-// 달력 그리드 한 칸 — 사진 있으면 원형 배경, 없으면 일반 숫자 원
 export function CalendarDayCell({
   day,
   isSelected = false,
@@ -20,6 +22,8 @@ export function CalendarDayCell({
   thumbnailUrl?: string | undefined;
   onPress?: () => void;
 }) {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const hasPhoto = Boolean(thumbnailUrl);
 
   return (
@@ -59,7 +63,6 @@ export function CalendarDayCell({
   );
 }
 
-// react-native-calendars Calendar의 dayComponent 어댑터
 export function MonthDayComponent({
   date,
   state,
@@ -87,16 +90,14 @@ export function MonthDayComponent({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   cell:                 { alignItems: 'center', justifyContent: 'center', paddingVertical: space[1], minHeight: 52, minWidth: 36 },
-  // 사진 없는 날짜
   numberWrap:           { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   numberWrapSelected:   { backgroundColor: colors.accent.primary },
   dayNumber:            { ...typography.body, color: colors.text.primary },
   dayNumberSelected:    { color: colors.text.inverse, fontFamily: 'Pretendard-SemiBold' },
   dayNumberToday:       { color: colors.accent.primary, fontFamily: 'Pretendard-SemiBold' },
   dayNumberDisabled:    { color: colors.text.muted },
-  // 사진 있는 날짜 — 원형 포토 배경 + 숫자 오버레이
   photoWrap:            { width: 36, height: 36, borderRadius: 18, overflow: 'hidden', alignItems: 'center', justifyContent: 'center', backgroundColor: colors.bg.subtle },
   photoWrapToday:       { borderWidth: 2, borderColor: colors.accent.primary },
   photoWrapSelected:    { borderWidth: 2.5, borderColor: colors.accent.primary },

@@ -1,8 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { router, useLocalSearchParams } from 'expo-router';
-import { doc,DocumentData } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
+import { doc, DocumentData } from 'firebase/firestore';
+import { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
   KeyboardAvoidingView,
@@ -25,7 +25,9 @@ import { Button } from '../../../design-system/Button';
 import { Spinner } from '../../../design-system/Spinner';
 import { TextField } from '../../../design-system/TextField';
 import { Toast } from '../../../design-system/Toast';
-import { colors, radius, space, typography } from '../../../design-system/tokens';
+import { useColors } from '../../../design-system/ThemeContext';
+import { Colors } from '../../../design-system/themes';
+import { radius, space, typography } from '../../../design-system/tokens';
 
 const formSchema = z.object({
   title:     z.string().min(1, '제목을 입력해주세요').max(100),
@@ -44,6 +46,8 @@ const TYPE_LABELS: Record<EventType, string> = {
 };
 
 export default function EditEventScreen() {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const { id } = useLocalSearchParams<{ id: string }>();
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error'; visible: boolean }>(
     { message: '', type: 'success', visible: false },
@@ -243,7 +247,7 @@ export default function EditEventScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   flex:               { flex: 1, backgroundColor: colors.bg.base },
   header:             { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: space[4], borderBottomWidth: 1, borderBottomColor: colors.border.subtle, backgroundColor: colors.bg.surface },
   headerTitle:        { ...typography.title2, color: colors.text.primary },

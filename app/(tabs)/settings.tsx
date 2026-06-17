@@ -1,14 +1,17 @@
 import { doc, setDoc } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useEffect, useMemo, useState } from 'react';
+import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { signOut } from '../../core/auth';
 import { db } from '../../core/config/firebase';
 import { disconnectCouple, usePartnerProfile } from '../../core/couple';
 import { useAuthStore } from '../../core/stores/auth.store';
+import { useThemeStore } from '../../core/stores/theme.store';
 import { getDaysSince } from '../../core/utils/date';
-import { colors, space, typography } from '../../design-system/tokens';
+import { useColors } from '../../design-system/ThemeContext';
+import { ACCENT_META, AccentId, Colors } from '../../design-system/themes';
+import { space, typography } from '../../design-system/tokens';
 
 function timestampToKST(ts: { seconds: number } | Date | null | undefined): string {
   if (!ts) return '';
@@ -21,14 +24,17 @@ function timestampToKST(ts: { seconds: number } | Date | null | undefined): stri
 }
 
 export default function SettingsScreen() {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const { user, coupleId } = useAuthStore();
   const { couple, partnerName } = usePartnerProfile(coupleId, user?.uid ?? null);
+  const { accentId, isDark, setAccent, setDark } = useThemeStore();
 
-  const [nickname, setNickname]         = useState('');
-  const [nicknameEditing, setNicknameEditing] = useState(false);
-  const [anniversaryInput, setAnniversaryInput] = useState('');
+  const [nickname, setNickname]                   = useState('');
+  const [nicknameEditing, setNicknameEditing]     = useState(false);
+  const [anniversaryInput, setAnniversaryInput]   = useState('');
   const [anniversaryEditing, setAnniversaryEditing] = useState(false);
-  const [saving, setSaving]             = useState(false);
+  const [saving, setSaving]                       = useState(false);
 
   useEffect(() => {
     if (user?.displayName) setNickname(user.displayName);
@@ -43,7 +49,6 @@ export default function SettingsScreen() {
     return getDaysSince(baseStr) + 1;
   })();
 
-  // 닉네임 저장 (BR-S1)
   const saveNickname = async () => {
     if (!user || !nickname.trim()) return;
     setSaving(true);
@@ -57,7 +62,6 @@ export default function SettingsScreen() {
     }
   };
 
-  // 기념일 저장
   const saveAnniversary = async () => {
     if (!coupleId || !anniversaryInput.match(/^\d{4}-\d{2}-\d{2}$/)) {
       Alert.alert('오류', 'YYYY-MM-DD 형식으로 입력해주세요');
@@ -76,21 +80,16 @@ export default function SettingsScreen() {
     }
   };
 
-  // 로그아웃 (BR-S2)
   const handleSignOut = () => {
     Alert.alert('로그아웃', '로그아웃 하시겠어요?', [
       { text: '취소', style: 'cancel' },
       {
         text: '로그아웃', style: 'destructive',
-        onPress: async () => {
-          await signOut();
-          // subscribeAuthState → user null → index.tsx → login
-        },
+        onPress: async () => { await signOut(); },
       },
     ]);
   };
 
-  // 커플 해제 (BR-D1) — 2단계 확인
   const handleDisconnect = () => {
     Alert.alert(
       '커플 연결 해제',
@@ -110,7 +109,6 @@ export default function SettingsScreen() {
                   if (!user || !coupleId) return;
                   try {
                     await disconnectCouple(user.uid, coupleId);
-                    // BR-D2: _layout의 subscribeCouple이 status 변경 감지 → setCoupleId(null) 자동 처리
                   } catch {
                     Alert.alert('오류', '해제 중 문제가 발생했습니다. 다시 시도해주세요');
                   }
@@ -127,18 +125,48 @@ export default function SettingsScreen() {
     ? timestampToKST(couple.anniversaryDate)
     : couple?.createdAt ? timestampToKST(couple.createdAt) : '';
 
+  const accentIds = Object.keys(ACCENT_META) as AccentId[];
+
   return (
     <SafeAreaView testID="screen-settings" style={styles.safeArea} edges={['top']}>
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
     <ScrollView style={styles.scroll} contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-      {/* 커플 정보 */}
-      <Section title="커플 정보">
-        {dDay !== null && (
-          <Row label="함께한 날" value={`D+${dDay}일`} />
-        )}
-        {partnerName ? <Row label="상대방" value={partnerName} /> : null}
 
-        {/* 기념일 설정 */}
+      <Section title="테마" colors={colors}>
+        <View style={styles.themeSection}>
+          <Text style={styles.themeLabel}>색상</Text>
+          <View style={styles.accentRow}>
+            {accentIds.map(id => (
+              <Pressable
+                key={id}
+                style={[
+                  styles.accentCircle,
+                  { backgroundColor: ACCENT_META[id].preview },
+                  accentId === id && styles.accentCircleActive,
+                ]}
+                onPress={() => setAccent(id)}
+              />
+            ))}
+          </View>
+          <View style={styles.darkRow}>
+            <Text style={styles.darkLabel}>다크 모드</Text>
+            <Switch
+              value={isDark}
+              onValueChange={setDark}
+              trackColor={{ false: colors.border.subtle, true: colors.accent.primary }}
+              thumbColor={colors.bg.surface}
+              ios_backgroundColor={colors.border.subtle}
+            />
+          </View>
+        </View>
+      </Section>
+
+      <Section title="커플 정보" colors={colors}>
+        {dDay !== null && (
+          <Row label="함께한 날" value={`D+${dDay}일`} styles={styles} />
+        )}
+        {partnerName ? <Row label="상대방" value={partnerName} styles={styles} /> : null}
+
         <View style={styles.row}>
           <Text style={styles.rowLabel}>기념일</Text>
           {anniversaryEditing ? (
@@ -166,8 +194,7 @@ export default function SettingsScreen() {
         </View>
       </Section>
 
-      {/* 내 프로필 */}
-      <Section title="내 프로필">
+      <Section title="내 프로필" colors={colors}>
         <View style={styles.row}>
           <Text style={styles.rowLabel}>닉네임</Text>
           {nicknameEditing ? (
@@ -192,30 +219,30 @@ export default function SettingsScreen() {
             </TouchableOpacity>
           )}
         </View>
-        <Row label="이메일" value={user?.email ?? '-'} />
+        <Row label="이메일" value={user?.email ?? '-'} styles={styles} />
       </Section>
 
-      {/* 계정 */}
-      <Section title="계정">
+      <Section title="계정" colors={colors}>
         <TouchableOpacity testID="btn-signout" onPress={handleSignOut} style={styles.actionRow}>
           <Text style={styles.actionText}>로그아웃</Text>
         </TouchableOpacity>
       </Section>
 
-      {/* 위험 영역 */}
-      <Section title="위험 영역">
+      <Section title="위험 영역" colors={colors}>
         <Text style={styles.dangerDesc}>커플 연결을 해제하면 상대방 앱도 즉시 연결이 끊깁니다.</Text>
         <TouchableOpacity onPress={handleDisconnect} style={styles.dangerBtn}>
           <Text style={styles.dangerBtnText}>커플 연결 해제</Text>
         </TouchableOpacity>
       </Section>
+
     </ScrollView>
     </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, children, colors }: { title: string; children: React.ReactNode; colors: Colors }) {
+  const styles = useMemo(() => makeSectionStyles(colors), [colors]);
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>{title}</Text>
@@ -224,7 +251,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+function Row({ label, value, styles }: { label: string; value: string; styles: ReturnType<typeof makeStyles> }) {
   return (
     <View style={styles.row}>
       <Text style={styles.rowLabel}>{label}</Text>
@@ -233,15 +260,17 @@ function Row({ label, value }: { label: string; value: string }) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeSectionStyles = (colors: Colors) => StyleSheet.create({
+  section:      { gap: space[2] },
+  sectionTitle: { ...typography.caption, color: colors.text.muted, textTransform: 'uppercase', letterSpacing: 0.5 },
+  sectionBody:  { backgroundColor: colors.bg.surface, borderRadius: 12, overflow: 'hidden' },
+});
+
+const makeStyles = (colors: Colors) => StyleSheet.create({
   safeArea:      { flex: 1, backgroundColor: colors.bg.base },
   flex:          { flex: 1 },
   scroll:        { flex: 1 },
   container:     { padding: space[4], gap: space[5] },
-
-  section:       { gap: space[2] },
-  sectionTitle:  { ...typography.caption, color: colors.text.muted, textTransform: 'uppercase', letterSpacing: 0.5 },
-  sectionBody:   { backgroundColor: colors.bg.surface, borderRadius: 12, overflow: 'hidden' },
 
   row:           { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: space[4], borderBottomWidth: 0.5, borderBottomColor: colors.border.subtle },
   rowLabel:      { ...typography.body, color: colors.text.secondary },
@@ -260,4 +289,12 @@ const styles = StyleSheet.create({
   dangerDesc:    { ...typography.caption, color: colors.text.muted, padding: space[4], paddingBottom: 0 },
   dangerBtn:     { margin: space[4], padding: space[4], backgroundColor: colors.status.danger, borderRadius: 10, alignItems: 'center' },
   dangerBtnText: { ...typography.body, color: colors.text.inverse, fontFamily: 'Pretendard-SemiBold' },
+
+  themeSection:  { padding: space[4], gap: space[4] },
+  themeLabel:    { ...typography.caption, color: colors.text.secondary },
+  accentRow:     { flexDirection: 'row', gap: space[3], flexWrap: 'wrap' },
+  accentCircle:  { width: 32, height: 32, borderRadius: 16 },
+  accentCircleActive: { borderWidth: 3, borderColor: colors.text.primary, transform: [{ scale: 1.15 }] },
+  darkRow:       { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  darkLabel:     { ...typography.body, color: colors.text.primary },
 });

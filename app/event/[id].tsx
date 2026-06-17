@@ -1,7 +1,7 @@
 import * as ImagePicker from 'expo-image-picker';
 import { router, useLocalSearchParams } from 'expo-router';
 import { doc } from 'firebase/firestore';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   Dimensions,
@@ -20,12 +20,14 @@ import { deleteEvent } from '../../core/calendar';
 import { CalendarEvent } from '../../core/calendar/schema';
 import { db } from '../../core/config/firebase';
 import { useFirestoreDoc } from '../../core/firestore-hooks';
-import { EventPhoto,useEventPhotos } from '../../core/memory';
+import { EventPhoto, useEventPhotos } from '../../core/memory';
 import { guardPhotoLimit, uploadPhoto } from '../../core/storage';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { Spinner } from '../../design-system/Spinner';
 import { Toast } from '../../design-system/Toast';
-import { black, colors, radius, space, typography } from '../../design-system/tokens';
+import { useColors } from '../../design-system/ThemeContext';
+import { Colors } from '../../design-system/themes';
+import { black, radius, space, typography } from '../../design-system/tokens';
 
 const SCREEN_W = Dimensions.get('window').width;
 const SCREEN_H = Dimensions.get('window').height;
@@ -49,6 +51,8 @@ const TYPE_LABEL: Record<string, string> = {
 };
 
 export default function EventDetailScreen() {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const { id } = useLocalSearchParams<{ id: string }>();
   const { user } = useAuthStore();
   const [toast, setToast] = useState<ToastState>({ message: '', type: 'success', visible: false });
@@ -129,7 +133,7 @@ export default function EventDetailScreen() {
   }, [id]);
 
   if (loading) return <Spinner />;
-  if (!event)  return (
+  if (!event) return (
     <View style={styles.center}>
       <Text style={styles.notFound}>일정을 찾을 수 없어요</Text>
     </View>
@@ -253,7 +257,7 @@ export default function EventDetailScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   container:        { flex: 1, backgroundColor: colors.bg.base },
   center:           { flex: 1, alignItems: 'center', justifyContent: 'center' },
   notFound:         { ...typography.body, color: colors.text.secondary },

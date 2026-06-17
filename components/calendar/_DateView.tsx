@@ -4,10 +4,12 @@ import { SectionList, Text, View } from 'react-native';
 import { CalendarEvent } from '../../core/calendar/schema';
 import { EmptyState } from '../../design-system/EmptyState';
 import { Skeleton } from '../../design-system/Skeleton';
-import { colors } from '../../design-system/tokens';
-import { groupByYearMonth, sharedStyles, TypeEventCard, TypeStatsBar } from './_shared';
+import { useColors } from '../../design-system/ThemeContext';
+import { groupByYearMonth, TypeEventCard, TypeStatsBar, useSharedStyles } from './_shared';
 
 export function DateView({ events, loading }: { events: CalendarEvent[]; loading: boolean }) {
+  const colors = useColors();
+  const sharedStyles = useSharedStyles();
   const thisMonthCount = useMemo(() => {
     const now = new Date();
     return events.filter(
