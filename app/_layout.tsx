@@ -1,5 +1,6 @@
 import '../core/config/firebase';
 
+import NetInfo from '@react-native-community/netinfo';
 import * as Sentry from '@sentry/react-native';
 import { useFonts } from 'expo-font';
 import { Stack, useNavigationContainerRef } from 'expo-router';
@@ -28,6 +29,15 @@ Sentry.init({
 });
 
 SplashScreen.preventAutoHideAsync();
+
+// 시뮬레이터에서 isInternetReachable 오보 방지 — 실제 HTTP 응답으로 연결 판단
+NetInfo.configure({
+  reachabilityUrl: 'https://clients3.google.com/generate_204',
+  reachabilityTest: async (response) => response.status === 204,
+  reachabilityShortTimeout: 5000,
+  reachabilityLongTimeout: 60000,
+  reachabilityRequestTimeout: 5000,
+});
 
 function RootLayout() {
   const ref = useNavigationContainerRef();
