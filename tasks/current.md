@@ -87,14 +87,12 @@
 - [ ] **security-rules 통합 테스트 확대** — 컬렉션당 "타인 차단" 1개씩 추가. 현재 3개뿐인데 rules 352줄이 사실상 백엔드
 - [ ] **subscribeUnreadCount 정확도** — `limit(10)` 후 클라이언트 필터라 10개 초과 시 배지 부정확. 실사용 중 문제되면 서버사이드 카운터로 교체
 
-## 이전 세션에서 멈춘 곳 (2026-06-17 22차)
-- ✅ 캘린더 포토 썸네일 원형 배경 표시 수정 완료
-  - _CalendarDayCell: 작은 이미지 → 원형 포토 배경(36px) + 숫자 오버레이 디자인
-  - upload.ts: addDoc → setDoc (문서 ID = photoId 보장)
-  - date.ts: toLocalYMD 추가 (react-native-calendars dateString 타임존 일치)
-  - memory/index.ts: photoIds[last] 사용, snap.exists() 체크, 에러 핸들링
-  - calendar.tsx: markedDates에 hasThumbnail 포함 (Day 리렌더 보장), marking.selected 기반 선택 상태
-  - Maestro E2E test_photo_upload PASS + 캘린더 17일 원형 썸네일 스크린샷 확인
+## 이전 세션에서 멈춘 곳 (2026-06-17 23차)
+- ✅ 캘린더 포토 썸네일 원형 배경 표시 수정 완료 (22차)
+- ✅ 주간 아젠다 뷰 구현 완료 — WeekAgenda로 WeekStrip 교체, 7일 세로 목록, 오늘 강조
+- ✅ 런타임 테마 시스템 구현 완료 — accent 6종 × 라이트/다크, 설정 화면 picker
+  - design-system/themes.ts, ThemeContext.tsx, core/stores/theme.store.ts 신규
+  - 31개 컴포넌트 makeStyles(colors) 패턴으로 전환, tsc 0 errors
 - 다음: 추가 작업 필요 시 사용자 선택, 또는 TestFlight 준비
 
 ## 진행 중인 작업 (시뮬레이터 전용)

@@ -5,6 +5,8 @@
 
 ---
 
+## 2026-06-17 | 런타임 테마 시스템 | feat(theme): accent 6종(rose/coral/violet/blue/green/amber) × 라이트/다크 — buildColors, ThemeContext, useColors 훅, theme.store(AsyncStorage 영속), 31개 컴포넌트 makeStyles 패턴 전환. 설정 화면에 accent picker + 다크모드 스위치 추가.
+## 2026-06-17 | 주간 아젠다 뷰 | feat(calendar): WeekStrip을 WeekAgenda로 교체 — 7일 날짜+이벤트 세로 목록, 오늘 강조(배경+chip), 이전/다음 주 탐색, 빈 날 "일정 없음". 테마 시스템 완전 연동.
 ## 2026-06-17 | 캘린더 포토 썸네일 원형 배경 표시 수정 | fix(calendar): 날짜칸 사진이 원형 배경으로 표시 안 되던 문제 수정 — addDoc→setDoc(문서 ID 일치), toLocalYMD(타임존), photoIds[last](최신 사진), hasThumbnail marking으로 Day 리렌더 보장, marking.selected로 선택 상태 수정. Maestro E2E test_photo_upload PASS, 캘린더 17일 원형 썸네일 확인.
 ## 2026-06-16 | 캘린더 UX 개선 | feat(calendar): 날짜칸 사진 썸네일 + 점 마커 5개 캡(BR-9) + 주간뷰 토글(월/주) — _CalendarDayCell/_WeekStrip 신규, useEventThumbnails 훅, date.ts 유틸 4종(toYMD/parseYMD/addDays/startOfWeek) 추가.
 ## 2026-06-16 | 사진 업로드 플로우 회귀 수정 | fix(calendar): PersonBadge 추가로 이벤트 카드 accessibilityText 집계되어 VoiceOver/E2E 텍스트 탭 깨짐 — 배지 accessibilityElementsHidden + 카드 명시적 accessibilityLabel로 수정. Maestro test_photo_upload E2E 재실행으로 발견·검증, PASS.
