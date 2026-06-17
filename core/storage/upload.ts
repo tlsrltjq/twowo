@@ -1,6 +1,6 @@
 import { File } from 'expo-file-system';
 import * as ImageManipulator from 'expo-image-manipulator';
-import { addDoc, arrayUnion, collection, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { arrayUnion, doc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
 
 import { auth, db } from '../config/firebase';
 
@@ -96,7 +96,8 @@ export async function uploadPhoto(
     restUpload(thumbPath, thumb.uri),        // ②
   ]);
 
-  await addDoc(collection(db, 'photos'), { // ③
+  // ③ 문서 ID = photoId 로 고정 → getDoc(doc(db,'photos',photoId)) 직접 조회 가능
+  await setDoc(doc(db, 'photos', photoId), {
     id:            photoId,
     eventId:       ctx.eventId,
     coupleId:      ctx.coupleId,

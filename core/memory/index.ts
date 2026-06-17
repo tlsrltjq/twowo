@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { subscribeEvents, subscribeEventsByType, subscribeEventsSince } from '../calendar';
 import { CalendarEvent } from '../calendar/schema';
 import { db } from '../config/firebase';
-import { toYMD } from '../utils/date';
+import { toLocalYMD } from '../utils/date';
 
 export type EventPhoto = {
   id: string;
@@ -106,7 +106,7 @@ export function useEventThumbnails(events: CalendarEvent[]): Record<string, stri
   const photoRefs = useMemo(
     () => events
       .filter(ev => ev.photoIds.length > 0)
-      .map(ev => ({ dateKey: toYMD(ev.date), photoId: ev.photoIds[0]! })),
+      .map(ev => ({ dateKey: toLocalYMD(ev.date), photoId: ev.photoIds[ev.photoIds.length - 1]! })),
     [events],
   );
 
@@ -118,16 +118,18 @@ export function useEventThumbnails(events: CalendarEvent[]): Record<string, stri
     let cancelled = false;
     Promise.all(
       photoRefs.map(({ dateKey, photoId }) =>
-        getDoc(doc(db, 'photos', photoId)).then(snap => ({
-          dateKey,
-          url: snap.data()?.thumbUrl as string | undefined,
-        })),
+        getDoc(doc(db, 'photos', photoId)).then(snap => {
+          const url = snap.exists() ? (snap.data()?.thumbUrl as string | undefined) : undefined;
+          return { dateKey, url };
+        }),
       ),
     ).then(results => {
       if (cancelled) return;
       const map: Record<string, string> = {};
       results.forEach(r => { if (r.url) map[r.dateKey] = r.url; });
       setThumbnails(map);
+    }).catch(err => {
+      console.error('[useEventThumbnails] getDoc failed:', err);
     });
     return () => { cancelled = true; };
   }, [photoRefs]);

@@ -131,8 +131,10 @@ export default function CalendarScreen() {
   }, [events]);
 
   const markedDates = useMemo(() => {
-    const marks: Record<string, { dots: { color: string }[]; selected?: boolean; selectedColor?: string }> = {};
-    Object.entries(dotsByDate).forEach(([key, dots]) => { marks[key] = { dots }; });
+    const marks: Record<string, { dots: { color: string }[]; selected?: boolean; selectedColor?: string; hasThumbnail?: boolean }> = {};
+    Object.entries(dotsByDate).forEach(([key, dots]) => {
+      marks[key] = { dots, hasThumbnail: Boolean(thumbnails[key]) };
+    });
     if (marks[selectedDate]) {
       marks[selectedDate]!.selected = true;
       marks[selectedDate]!.selectedColor = colors.accent.primary;
@@ -140,7 +142,7 @@ export default function CalendarScreen() {
       marks[selectedDate] = { dots: [], selected: true, selectedColor: colors.accent.primary };
     }
     return marks;
-  }, [dotsByDate, selectedDate]);
+  }, [dotsByDate, selectedDate, thumbnails]);
 
   const dayEvents = useMemo(
     () => events.filter(ev => toYMD(ev.date) === selectedDate),
@@ -230,10 +232,10 @@ export default function CalendarScreen() {
               markedDates={markedDates}
               onDayPress={onDayPress}
               onMonthChange={onMonthChange}
-              dayComponent={({ date, state, onPress }) => (
+              dayComponent={({ date, state, marking, onPress }) => (
                 <MonthDayComponent
                   date={date}
-                  state={state}
+                  state={marking?.selected ? 'selected' : state}
                   dots={date ? dotsByDate[date.dateString] ?? [] : []}
                   thumbnailUrl={date ? thumbnails[date.dateString] : undefined}
                   onPress={() => onPress?.(date)}

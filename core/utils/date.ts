@@ -27,6 +27,14 @@ export function toYMD(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
+// 로컬 타임존 기준 'YYYY-MM-DD' — react-native-calendars의 date.dateString 과 매칭
+export function toLocalYMD(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 export function parseYMD(s: string): Date {
   const [y, m, d] = s.split('-').map(Number);
   return new Date(y ?? 0, (m ?? 1) - 1, d ?? 1);
