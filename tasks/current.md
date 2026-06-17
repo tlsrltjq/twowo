@@ -87,14 +87,15 @@
 - [ ] **security-rules 통합 테스트 확대** — 컬렉션당 "타인 차단" 1개씩 추가. 현재 3개뿐인데 rules 352줄이 사실상 백엔드
 - [ ] **subscribeUnreadCount 정확도** — `limit(10)` 후 클라이언트 필터라 10개 초과 시 배지 부정확. 실사용 중 문제되면 서버사이드 카운터로 교체
 
-## 이전 세션에서 멈춘 곳 (2026-06-15 20차)
-- ✅ CI 통합 테스트 전체 통과 (이전 세션 완료)
-- ✅ invitations 삭제 권한 강화 — usedBy 필드 도입
-  - firestore.rules: invitations update 규칙 추가(usedBy 원자적 표시), delete rule 2를 get() → resource.data.usedBy 로 교체
-  - core/couple/index.ts: 트랜잭션에 tx.update(invDocRef, { usedBy: uid }) 추가
-  - couple-join-flow.test.ts: 트랜잭션 step에 usedBy 반영
-  - 커플 상대방이 초대 코드를 삭제할 수 있던 경로 차단
-- 다음: TestFlight(보류, Apple Developer 필요) 또는 추가 작업 선택
+## 이전 세션에서 멈춘 곳 (2026-06-17 22차)
+- ✅ 캘린더 포토 썸네일 원형 배경 표시 수정 완료
+  - _CalendarDayCell: 작은 이미지 → 원형 포토 배경(36px) + 숫자 오버레이 디자인
+  - upload.ts: addDoc → setDoc (문서 ID = photoId 보장)
+  - date.ts: toLocalYMD 추가 (react-native-calendars dateString 타임존 일치)
+  - memory/index.ts: photoIds[last] 사용, snap.exists() 체크, 에러 핸들링
+  - calendar.tsx: markedDates에 hasThumbnail 포함 (Day 리렌더 보장), marking.selected 기반 선택 상태
+  - Maestro E2E test_photo_upload PASS + 캘린더 17일 원형 썸네일 스크린샷 확인
+- 다음: 추가 작업 필요 시 사용자 선택, 또는 TestFlight 준비
 
 ## 진행 중인 작업 (시뮬레이터 전용)
 > **보류 항목 (비용 발생)**: Apple Developer Program · Firebase Storage Blaze · TestFlight 등. 언급하지 않음.

@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-06-17 | 캘린더 포토 썸네일 원형 배경 표시 수정 | fix(calendar): 날짜칸 사진이 원형 배경으로 표시 안 되던 문제 수정 — addDoc→setDoc(문서 ID 일치), toLocalYMD(타임존), photoIds[last](최신 사진), hasThumbnail marking으로 Day 리렌더 보장, marking.selected로 선택 상태 수정. Maestro E2E test_photo_upload PASS, 캘린더 17일 원형 썸네일 확인.
 ## 2026-06-16 | 캘린더 UX 개선 | feat(calendar): 날짜칸 사진 썸네일 + 점 마커 5개 캡(BR-9) + 주간뷰 토글(월/주) — _CalendarDayCell/_WeekStrip 신규, useEventThumbnails 훅, date.ts 유틸 4종(toYMD/parseYMD/addDays/startOfWeek) 추가.
 ## 2026-06-16 | 사진 업로드 플로우 회귀 수정 | fix(calendar): PersonBadge 추가로 이벤트 카드 accessibilityText 집계되어 VoiceOver/E2E 텍스트 탭 깨짐 — 배지 accessibilityElementsHidden + 카드 명시적 accessibilityLabel로 수정. Maestro test_photo_upload E2E 재실행으로 발견·검증, PASS.
 ## 2026-06-15 | Storage 403 + Firestore list 쿼리 수정 | fix(rules): Storage cross-service IAM 미비 → isSignedIn() 임시 대체. Firestore 전 컬렉션(12개) allow get/list 분리(get() list 불가 한계 대응). updatedAt null guard(serverTimestamp 지연). REST 방식 업로드. test_photo_upload PASS.
