@@ -15,9 +15,8 @@ import { MonthDayComponent } from '../../components/calendar/_CalendarDayCell';
 import { DateView } from '../../components/calendar/_DateView';
 import { ExerciseView } from '../../components/calendar/_ExerciseView';
 import { PhotoView } from '../../components/calendar/_PhotoView';
-import { PersonBadge } from '../../components/calendar/_shared';
-import { WeekStrip } from '../../components/calendar/_WeekStrip';
-import { CalendarEvent } from '../../core/calendar/schema';
+import { CalendarEventCard, DOT_COLOR } from '../../components/calendar/_shared';
+import { WeekAgenda } from '../../components/calendar/_WeekAgenda';
 import { usePartnerProfile } from '../../core/couple/usePartnerProfile';
 import { useCalendarEvents, useCalendarEventsByType, useEventThumbnails, usePhotoEvents } from '../../core/memory';
 import { useAuthStore } from '../../core/stores/auth.store';
@@ -39,43 +38,6 @@ const VIEW_TABS: { key: ViewTab; label: string }[] = [
   { key: 'date',     label: '데이트' },
   { key: 'photos',   label: '사진' },
 ];
-
-// BR-9: 타입별 점 색상
-const DOT_COLOR: Record<string, string> = {
-  date:     colors.accent.primary,
-  exercise: colors.accent.warm,
-  general:  colors.text.muted,
-};
-
-function EventCard({
-  event,
-  myUid,
-  partnerName,
-}: {
-  event: CalendarEvent;
-  myUid?: string;
-  partnerName?: string;
-}) {
-  const showBadge = event.type !== 'date' && myUid != null;
-  const isMe      = event.createdBy === myUid;
-
-  return (
-    <TouchableOpacity
-      style={styles.eventCard}
-      onPress={() => router.push(`/event/${event.id}`)}
-      accessibilityLabel={event.title}
-    >
-      <View style={[styles.typeDot, { backgroundColor: DOT_COLOR[event.type] ?? colors.text.muted }]} />
-      <View style={styles.eventInfo}>
-        <Text style={styles.eventTitle} numberOfLines={1}>{event.title}</Text>
-        {event.placeName && (
-          <Text style={styles.eventSub} numberOfLines={1}>📍 {event.placeName}</Text>
-        )}
-      </View>
-      {showBadge && <PersonBadge isMe={isMe} name={partnerName ?? '상대방'} />}
-    </TouchableOpacity>
-  );
-}
 
 export default function CalendarScreen() {
   const { coupleId, user } = useAuthStore();
@@ -215,57 +177,59 @@ export default function CalendarScreen() {
             </TouchableOpacity>
           </View>
           {calendarMode === 'week' ? (
-            <WeekStrip
+            <WeekAgenda
               weekDays={weekDays}
-              selectedDate={selectedDate}
-              dotsByDate={dotsByDate}
-              thumbnails={thumbnails}
-              onSelectDate={setSelectedDate}
+              events={events}
+              loading={loading}
+              myUid={myUid}
+              partnerName={partnerName}
               onPrevWeek={goPrevWeek}
               onNextWeek={goNextWeek}
             />
           ) : (
-            <Calendar
-              key={calendarKey}
-              current={toYMD(currentMonth)}
-              markingType="multi-dot"
-              markedDates={markedDates}
-              onDayPress={onDayPress}
-              onMonthChange={onMonthChange}
-              dayComponent={({ date, state, marking, onPress }) => (
-                <MonthDayComponent
-                  date={date}
-                  state={marking?.selected ? 'selected' : state}
-                  dots={date ? dotsByDate[date.dateString] ?? [] : []}
-                  thumbnailUrl={date ? thumbnails[date.dateString] : undefined}
-                  onPress={() => onPress?.(date)}
+            <>
+              <Calendar
+                key={calendarKey}
+                current={toYMD(currentMonth)}
+                markingType="multi-dot"
+                markedDates={markedDates}
+                onDayPress={onDayPress}
+                onMonthChange={onMonthChange}
+                dayComponent={({ date, state, marking, onPress }) => (
+                  <MonthDayComponent
+                    date={date}
+                    state={marking?.selected ? 'selected' : state}
+                    dots={date ? dotsByDate[date.dateString] ?? [] : []}
+                    thumbnailUrl={date ? thumbnails[date.dateString] : undefined}
+                    onPress={() => onPress?.(date)}
+                  />
+                )}
+                theme={{
+                  backgroundColor:            colors.bg.base,
+                  calendarBackground:         colors.bg.base,
+                  selectedDayBackgroundColor: colors.accent.primary,
+                  todayTextColor:             colors.accent.primary,
+                  arrowColor:                 colors.accent.primary,
+                  textDayFontFamily:          'Pretendard-Regular',
+                  textMonthFontFamily:        'Pretendard-SemiBold',
+                  textDayHeaderFontFamily:    'Pretendard-Regular',
+                }}
+              />
+              {loading ? (
+                <View style={styles.skeletonContainer}>
+                  {[0, 1, 2].map(i => <Skeleton key={i} style={styles.skeletonRow} />)}
+                </View>
+              ) : dayEvents.length === 0 ? (
+                <EmptyState title="일정이 없어요" description="오른쪽 아래 + 버튼으로 추가해보세요" illustration={CalendarEmpty} />
+              ) : (
+                <FlatList
+                  data={dayEvents}
+                  keyExtractor={item => item.id}
+                  renderItem={({ item }) => <CalendarEventCard event={item} myUid={myUid} partnerName={partnerName} />}
+                  contentContainerStyle={styles.listContent}
                 />
               )}
-              theme={{
-                backgroundColor:            colors.bg.base,
-                calendarBackground:         colors.bg.base,
-                selectedDayBackgroundColor: colors.accent.primary,
-                todayTextColor:             colors.accent.primary,
-                arrowColor:                 colors.accent.primary,
-                textDayFontFamily:          'Pretendard-Regular',
-                textMonthFontFamily:        'Pretendard-SemiBold',
-                textDayHeaderFontFamily:    'Pretendard-Regular',
-              }}
-            />
-          )}
-          {loading ? (
-            <View style={styles.skeletonContainer}>
-              {[0, 1, 2].map(i => <Skeleton key={i} style={styles.skeletonRow} />)}
-            </View>
-          ) : dayEvents.length === 0 ? (
-            <EmptyState title="일정이 없어요" description="오른쪽 아래 + 버튼으로 추가해보세요" illustration={CalendarEmpty} />
-          ) : (
-            <FlatList
-              data={dayEvents}
-              keyExtractor={item => item.id}
-              renderItem={({ item }) => <EventCard event={item} myUid={myUid} partnerName={partnerName} />}
-              contentContainerStyle={styles.listContent}
-            />
+            </>
           )}
         </View>
       )}

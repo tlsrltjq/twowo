@@ -4,6 +4,12 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { CalendarEvent } from '../../core/calendar/schema';
 import { colors, radius, space, typography } from '../../design-system/tokens';
 
+export const DOT_COLOR: Record<string, string> = {
+  date:     colors.accent.primary,
+  exercise: colors.accent.warm,
+  general:  colors.text.muted,
+};
+
 // general/exercise 이벤트에서 작성자를 나타내는 작은 배지
 export function PersonBadge({ isMe, name }: { isMe: boolean; name: string }) {
   return (
@@ -116,6 +122,36 @@ export function TypeEventCard({
   );
 }
 
+export function CalendarEventCard({
+  event,
+  myUid,
+  partnerName,
+}: {
+  event: CalendarEvent;
+  myUid?: string;
+  partnerName?: string;
+}) {
+  const showBadge = event.type !== 'date' && myUid != null;
+  const isMe      = event.createdBy === myUid;
+
+  return (
+    <TouchableOpacity
+      style={sharedStyles.calEventCard}
+      onPress={() => router.push(`/event/${event.id}`)}
+      accessibilityLabel={event.title}
+    >
+      <View style={[sharedStyles.calEventDot, { backgroundColor: DOT_COLOR[event.type] ?? colors.text.muted }]} />
+      <View style={sharedStyles.calEventInfo}>
+        <Text style={sharedStyles.calEventTitle} numberOfLines={1}>{event.title}</Text>
+        {event.placeName && (
+          <Text style={sharedStyles.calEventSub} numberOfLines={1}>📍 {event.placeName}</Text>
+        )}
+      </View>
+      {showBadge && <PersonBadge isMe={isMe} name={partnerName ?? '상대방'} />}
+    </TouchableOpacity>
+  );
+}
+
 export const sharedStyles = StyleSheet.create({
   skeletonContainer: { padding: space[4], gap: space[3] },
   skeletonRow:       { height: 60, borderRadius: radius.md },
@@ -138,6 +174,12 @@ export const sharedStyles = StyleSheet.create({
   typeEventTitle:   { ...typography.bodyBold, color: colors.text.primary },
   typeEventPlace:   { ...typography.caption, color: colors.text.secondary },
   typeEventMemo:    { ...typography.caption, color: colors.text.muted, marginTop: 2 },
+
+  calEventCard:  { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.bg.surface, borderRadius: radius.md, padding: space[4], gap: space[3] },
+  calEventDot:   { width: 10, height: 10, borderRadius: 5, flexShrink: 0 },
+  calEventInfo:  { flex: 1 },
+  calEventTitle: { ...typography.bodyBold, color: colors.text.primary },
+  calEventSub:   { ...typography.caption, color: colors.text.secondary, marginTop: 2 },
 
   personBadge:         { paddingHorizontal: space[2], paddingVertical: 2, borderRadius: radius.pill },
   personBadgeMe:       { backgroundColor: colors.accent.primary + '22' },
