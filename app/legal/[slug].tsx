@@ -141,7 +141,7 @@ export default function LegalPage() {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} accessibilityLabel="뒤로가기">
+        <TouchableOpacity testID="btn-back" onPress={() => router.back()} style={styles.backBtn} accessibilityLabel="뒤로가기">
           <Text style={styles.backText}>‹</Text>
         </TouchableOpacity>
         <Text style={styles.title}>{content.title}</Text>

@@ -1,6 +1,6 @@
 appId: host.exp.Exponent
 ---
-# Dev1 (Account A) — 설정 탭: 상대방 닉네임/커플 정보 확인
+# Dev1 (Account A) — 설정 화면 전체 섹션 확인
 - launchApp
 - tapOn:
     text: "둘다좋아"
@@ -12,7 +12,89 @@ appId: host.exp.Exponent
 - tapOn:
     id: "tab-settings"
 - waitForAnimationToEnd
-- takeScreenshot: "settings_a"
-# 상대방 닉네임이 표시되어야 함
-- assertVisible: "커플 정보"
-- takeScreenshot: "settings_a_couple_info"
+- takeScreenshot: "settings_01_initial"
+
+# 테마 — 다크모드 토글
+- assertVisible: "다크 모드"
+- tapOn:
+    id: "switch-dark-mode"
+- waitForAnimationToEnd
+- takeScreenshot: "settings_02_dark_on"
+- tapOn:
+    id: "switch-dark-mode"
+- waitForAnimationToEnd
+
+# 알림 섹션
+- assertVisible: "푸시 알림"
+
+# 커플 정보 — 기념일 수정
+- tapOn:
+    id: "btn-edit-anniversary"
+- waitForAnimationToEnd
+- tapOn:
+    id: "input-anniversary"
+- eraseText: 20
+- inputText: "2026-01-01"
+- tapOn: "저장"
+- waitForAnimationToEnd
+- takeScreenshot: "settings_03_anniversary_saved"
+
+# 앱 정보 섹션 스크롤 — btn-terms가 보일 때까지
+- scrollUntilVisible:
+    element:
+      id: "btn-terms"
+- takeScreenshot: "settings_04_app_info"
+- assertVisible: "버전"
+
+# 이용약관 페이지
+- tapOn:
+    id: "btn-terms"
+- waitForAnimationToEnd
+- takeScreenshot: "settings_05_terms"
+- tapOn:
+    id: "btn-back"
+- waitForAnimationToEnd
+
+# 개인정보처리방침 페이지
+- tapOn:
+    id: "btn-privacy"
+- waitForAnimationToEnd
+- takeScreenshot: "settings_06_privacy"
+- tapOn:
+    id: "btn-back"
+- waitForAnimationToEnd
+
+# 오픈소스 라이선스 페이지
+- tapOn:
+    id: "btn-licenses"
+- waitForAnimationToEnd
+- takeScreenshot: "settings_07_licenses"
+- tapOn:
+    id: "btn-back"
+- waitForAnimationToEnd
+
+# 위험 영역 — 별도 페이지 진입
+- scrollUntilVisible:
+    element:
+      id: "btn-danger-zone"
+- tapOn:
+    id: "btn-danger-zone"
+- waitForAnimationToEnd
+- takeScreenshot: "settings_08_danger_page"
+- assertVisible: "커플 연결 해제"
+- assertVisible: "회원 탈퇴"
+
+# 탈퇴 비밀번호 입력 UI 확인
+- tapOn:
+    id: "btn-delete-account"
+- waitForAnimationToEnd
+- assertVisible: "비밀번호를 입력해 탈퇴를 확인하세요"
+- takeScreenshot: "settings_09_delete_reauth"
+- tapOn: "취소"
+- waitForAnimationToEnd
+
+# 뒤로가기
+- tapOn:
+    id: "btn-back"
+- waitForAnimationToEnd
+- takeScreenshot: "settings_10_final"

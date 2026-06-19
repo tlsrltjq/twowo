@@ -8,11 +8,12 @@ import {
   Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView,
   StyleSheet, Switch, Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
+// TextInput은 닉네임/기념일 편집에 사용
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { deleteAccount, signOut } from '../../core/auth';
+import { signOut } from '../../core/auth';
 import { db } from '../../core/config/firebase';
-import { disconnectCouple, usePartnerProfile } from '../../core/couple';
+import { usePartnerProfile } from '../../core/couple';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { useThemeStore } from '../../core/stores/theme.store';
 import { getDaysSince } from '../../core/utils/date';
@@ -47,11 +48,6 @@ export default function SettingsScreen() {
 
   // 알림
   const [notifGranted, setNotifGranted] = useState(false);
-
-  // 회원 탈퇴
-  const [deleteStep, setDeleteStep]     = useState<'idle' | 'confirm' | 'reauth'>('idle');
-  const [deletePassword, setDeletePassword] = useState('');
-  const [deleting, setDeleting]         = useState(false);
 
   const [saving, setSaving] = useState(false);
 
@@ -119,46 +115,6 @@ export default function SettingsScreen() {
       { text: '취소', style: 'cancel' },
       { text: '로그아웃', style: 'destructive', onPress: async () => { await signOut(); } },
     ]);
-  };
-
-  const handleDisconnect = () => {
-    Alert.alert('커플 연결 해제', '연결을 해제하면 상대방 앱에서도 즉시 연결이 끊깁니다.\n정말 해제하시겠어요?', [
-      { text: '취소', style: 'cancel' },
-      {
-        text: '해제하기', style: 'destructive',
-        onPress: () => Alert.alert('마지막 확인', '정말요?', [
-          { text: '취소', style: 'cancel' },
-          {
-            text: '네, 해제합니다', style: 'destructive',
-            onPress: async () => {
-              if (!user || !coupleId) return;
-              try { await disconnectCouple(user.uid, coupleId); }
-              catch { Alert.alert('오류', '해제 중 문제가 발생했습니다.'); }
-            },
-          },
-        ]),
-      },
-    ]);
-  };
-
-  const handleDeleteAccount = async () => {
-    if (!user || !coupleId && !user) return;
-    setDeleting(true);
-    try {
-      if (coupleId) await disconnectCouple(user.uid, coupleId);
-      await deleteAccount(deletePassword);
-    } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : '';
-      if (msg.includes('wrong-password') || msg.includes('invalid-credential')) {
-        Alert.alert('오류', '비밀번호가 올바르지 않아요');
-      } else {
-        Alert.alert('오류', '탈퇴 중 문제가 발생했어요. 다시 시도해주세요');
-      }
-    } finally {
-      setDeleting(false);
-      setDeleteStep('idle');
-      setDeletePassword('');
-    }
   };
 
   const accentIds = Object.keys(ACCENT_META) as AccentId[];
@@ -270,14 +226,10 @@ export default function SettingsScreen() {
       {/* ── 앱 정보 ── */}
       <Section title="앱 정보" colors={colors}>
         <Row label="버전" value={APP_VERSION} styles={styles} />
-        <NavRow
-          label="문의하기"
-          onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=twowo 문의`)}
-          styles={styles}
-        />
-        <NavRow label="이용약관"            onPress={() => router.push('/legal/terms')}    styles={styles} />
-        <NavRow label="개인정보 처리방침"   onPress={() => router.push('/legal/privacy')}  styles={styles} />
-        <NavRow label="오픈소스 라이선스"   onPress={() => router.push('/legal/licenses')} styles={styles} />
+        <NavRow testID="btn-contact"  label="문의하기"         onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=twowo 문의`)} styles={styles} />
+        <NavRow testID="btn-terms"    label="이용약관"         onPress={() => router.push('/legal/terms')}    styles={styles} />
+        <NavRow testID="btn-privacy"  label="개인정보 처리방침" onPress={() => router.push('/legal/privacy')}  styles={styles} />
+        <NavRow testID="btn-licenses" label="오픈소스 라이선스" onPress={() => router.push('/legal/licenses')} styles={styles} />
       </Section>
 
       {/* ── 계정 ── */}
@@ -289,47 +241,13 @@ export default function SettingsScreen() {
 
       {/* ── 위험 영역 ── */}
       <Section title="위험 영역" colors={colors}>
-        <Text style={styles.dangerDesc}>커플 연결을 해제하면 상대방 앱도 즉시 연결이 끊깁니다.</Text>
-        <TouchableOpacity onPress={handleDisconnect} style={styles.dangerBtn}>
-          <Text style={styles.dangerBtnText}>커플 연결 해제</Text>
-        </TouchableOpacity>
-
-        <View style={styles.divider} />
-
-        <Text style={styles.dangerDesc}>탈퇴 시 모든 데이터가 즉시 삭제되며 복구할 수 없습니다.</Text>
-
-        {deleteStep === 'idle' && (
-          <TouchableOpacity onPress={() => setDeleteStep('confirm')} style={[styles.dangerBtn, styles.deleteBtnOutline]}>
-            <Text style={[styles.dangerBtnText, { color: colors.status.danger }]}>회원 탈퇴</Text>
-          </TouchableOpacity>
-        )}
-
-        {deleteStep === 'confirm' && (
-          <View style={styles.reauthBox}>
-            <Text style={styles.reauthLabel}>비밀번호를 입력해 탈퇴를 확인하세요</Text>
-            <TextInput
-              style={styles.reauthInput}
-              value={deletePassword}
-              onChangeText={setDeletePassword}
-              placeholder="현재 비밀번호"
-              placeholderTextColor={colors.text.muted}
-              secureTextEntry
-              autoFocus
-            />
-            <View style={styles.reauthBtnRow}>
-              <TouchableOpacity style={styles.cancelBtn} onPress={() => { setDeleteStep('idle'); setDeletePassword(''); }}>
-                <Text style={styles.cancelBtnText}>취소</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.dangerBtn, { flex: 1, marginBottom: 0 }]}
-                onPress={handleDeleteAccount}
-                disabled={deleting || !deletePassword.trim()}
-              >
-                <Text style={styles.dangerBtnText}>{deleting ? '처리 중...' : '탈퇴 확인'}</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
+        <NavRow
+          testID="btn-danger-zone"
+          label="연결 해제 · 탈퇴"
+          onPress={() => router.push('/danger-zone')}
+          styles={styles}
+          danger
+        />
       </Section>
 
     </ScrollView>
@@ -357,11 +275,12 @@ function Row({ label, value, styles }: { label: string; value: string; styles: R
   );
 }
 
-function NavRow({ label, onPress, styles }: { label: string; onPress: () => void; styles: ReturnType<typeof makeStyles> }) {
+function NavRow({ label, onPress, styles, danger, testID }: { label: string; onPress: () => void; styles: ReturnType<typeof makeStyles>; danger?: boolean; testID?: string }) {
+  const colors = useColors();
   return (
-    <TouchableOpacity style={styles.row} onPress={onPress}>
-      <Text style={styles.rowLabel}>{label}</Text>
-      <Text style={styles.rowChevron}>›</Text>
+    <TouchableOpacity testID={testID} style={styles.row} onPress={onPress}>
+      <Text style={[styles.rowLabel, danger && { color: colors.status.danger }]}>{label}</Text>
+      <Text style={[styles.rowChevron, danger && { color: colors.status.danger }]}>›</Text>
     </TouchableOpacity>
   );
 }
