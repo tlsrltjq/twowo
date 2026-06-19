@@ -166,10 +166,11 @@ export default function BingoScreen() {
   const headerOnBack = mode === 'history-detail'
     ? () => setMode('history')
     : mode === 'history'
-    ? () => setMode(activeBoards.length > 0 ? 'game' : 'history')
+    ? () => setMode('game')
     : () => router.back();
 
-  const headerOnHistory = (mode === 'game' || mode === 'setup' || activeBoards.length === 0)
+  // 이미 history/history-detail에 있으면 Clock 아이콘 숨김
+  const headerOnHistory = mode !== 'history' && mode !== 'history-detail'
     ? () => setMode('history')
     : undefined;
 
@@ -294,10 +295,10 @@ function EmptyState({
     <View style={styles.emptyContainer}>
       <Text style={styles.emptyTitle}>진행 중인 빙고판이 없어요</Text>
       <Text style={styles.emptySub}>새 빙고판을 만들어 커플과 함께 도전해보세요!</Text>
-      <TouchableOpacity style={styles.emptyNewBtn} onPress={onNew}>
+      <TouchableOpacity testID="btn-empty-new" style={styles.emptyNewBtn} onPress={onNew}>
         <Text style={styles.emptyNewBtnText}>새 빙고판 만들기</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={onHistory} style={styles.emptyHistBtn}>
+      <TouchableOpacity testID="btn-empty-history" onPress={onHistory} style={styles.emptyHistBtn}>
         <Text style={[styles.emptySub, { color: colors.accent.primary }]}>이전 기록 보기</Text>
       </TouchableOpacity>
     </View>
@@ -327,6 +328,7 @@ function BoardTabs({
         return (
           <TouchableOpacity
             key={b.id}
+            testID={`btn-tab-${i + 1}`}
             style={[styles.tab, isActive && { borderBottomColor: colors.accent.primary }]}
             onPress={() => onSelect(i)}
           >
@@ -483,7 +485,7 @@ function SetupView({
     <View style={styles.flex}>
       <View style={styles.setupToolbar}>
         <Text style={styles.setupHint}>25개 항목을 채우세요 ({items.filter(t => t.trim()).length}/25)</Text>
-        <TouchableOpacity onPress={() => setItems([...DEFAULT_BINGO_ITEMS])} style={styles.fillBtn}>
+        <TouchableOpacity testID="btn-fill-default" onPress={() => setItems([...DEFAULT_BINGO_ITEMS])} style={styles.fillBtn}>
           <Text style={styles.fillBtnText}>기본으로 채우기</Text>
         </TouchableOpacity>
       </View>
@@ -509,10 +511,11 @@ function SetupView({
       />
 
       <View style={styles.setupFooter}>
-        <TouchableOpacity onPress={onCancel} style={styles.cancelSetupBtn}>
+        <TouchableOpacity testID="btn-cancel-setup" onPress={onCancel} style={styles.cancelSetupBtn}>
           <Text style={styles.cancelSetupText}>취소</Text>
         </TouchableOpacity>
         <TouchableOpacity
+          testID="btn-start-board"
           style={[styles.startBtn, (!allFilled || saving) && styles.startBtnDisabled]}
           onPress={handleStart}
           disabled={!allFilled || saving}
@@ -579,7 +582,7 @@ function GameView({
           <Text style={styles.completedText}>🏆 빙고판 완성! 새 판을 시작해보세요 (우상단 ↺)</Text>
         </View>
       ) : (
-        <TouchableOpacity style={styles.archiveBtn} onPress={onComplete}>
+        <TouchableOpacity testID="btn-archive" style={styles.archiveBtn} onPress={onComplete}>
           <Text style={styles.archiveBtnText}>기록으로 넘기기</Text>
         </TouchableOpacity>
       )}
