@@ -3,6 +3,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDocs,
   limit,
   onSnapshot,
   orderBy,
@@ -63,7 +64,7 @@ export async function addCandidate(
   coupleId: string,
   uid: string,
   title: string,
-  category: VoteCategory,
+  category: VoteCategory = 'etc',
 ): Promise<void> {
   await addDoc(collection(db, 'dateCandidates'), {
     coupleId,
@@ -114,6 +115,21 @@ export function subscribeLatestSession(
   );
 
   return () => { u1(); u2(); };
+}
+
+export async function getVoteHistory(
+  coupleId: string,
+  limitCount = 30,
+): Promise<VoteSession[]> {
+  const q = query(
+    collection(db, 'voteSessions'),
+    where('coupleId', '==', coupleId),
+    where('status', '==', 'revealed'),
+    orderBy('startedAt', 'desc'),
+    limit(limitCount),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map(mapSession);
 }
 
 export async function startNewRound(coupleId: string): Promise<string> {

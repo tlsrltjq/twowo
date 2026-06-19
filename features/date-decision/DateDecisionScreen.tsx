@@ -1,11 +1,12 @@
 import { router } from 'expo-router';
-import { ChevronLeft, Plus, Trash2 } from 'lucide-react-native';
+import { ChevronLeft, Clock, Trash2 } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   FlatList,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -16,23 +17,31 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { subscribeCouple } from '../../core/couple';
 import { useAuthStore } from '../../core/stores/auth.store';
+import { Spinner } from '../../design-system/Spinner';
 import { useColors } from '../../design-system/ThemeContext';
 import { Colors } from '../../design-system/themes';
 import { radius, space, typography } from '../../design-system/tokens';
 import {
   addCandidate,
   castVote,
-  CATEGORY_LABELS,
   DateCandidate,
+  getVoteHistory,
   removeCandidate,
   startNewRound,
   subscribeCandidates,
   subscribeLatestSession,
-  VoteCategory,
   VoteSession,
 } from './index';
 
-const CATEGORIES: VoteCategory[] = ['food', 'activity', 'travel', 'etc'];
+// 예시 제안 (탭하면 입력창에 바로 들어감)
+const EXAMPLES = [
+  '한강 피크닉 🌅', '스시 오마카세 🍣', '노래방 🎤', '보드게임 카페 🎲',
+  '드라이브 🚗', '전시회 관람 🎨', '홈파티 🍕', '방탈출 🔐',
+  '영화관 🎬', '카페 투어 ☕', '마사지 💆', '새벽 편의점 🌙',
+  '수영 🏊', '클라이밍 🧗', '야구 직관 ⚾', '빵집 투어 🥐',
+];
+
+type ScreenMode = 'list' | 'history';
 
 // ─── screen ───────────────────────────────────────────────────────────────────
 
@@ -41,26 +50,28 @@ export default function DateDecisionScreen() {
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   const { user, coupleId } = useAuthStore();
-  const [candidates, setCandidates]       = useState<DateCandidate[]>([]);
-  const [session, setSession]             = useState<VoteSession | null>(null);
-  const [lastRevealed, setLastRevealed]   = useState<VoteSession | null>(null);
-  const [memberIds, setMemberIds]         = useState<string[]>([]);
-  const [loading, setLoading]             = useState(true);
+  const [candidates, setCandidates]     = useState<DateCandidate[]>([]);
+  const [session, setSession]           = useState<VoteSession | null>(null);
+  const [lastRevealed, setLastRevealed] = useState<VoteSession | null>(null);
+  const [memberIds, setMemberIds]       = useState<string[]>([]);
+  const [loading, setLoading]           = useState(true);
+  const [mode, setMode]                 = useState<ScreenMode>('list');
 
-  const [newTitle, setNewTitle]           = useState('');
-  const [newCategory, setNewCategory]     = useState<VoteCategory>('food');
-  const [showAddForm, setShowAddForm]     = useState(false);
-  const [saving, setSaving]              = useState(false);
+  const [newTitle, setNewTitle]         = useState('');
+  const [showAddForm, setShowAddForm]   = useState(false);
+  const [saving, setSaving]             = useState(false);
+
+  // 히스토리
+  const [history, setHistory]           = useState<VoteSession[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
 
   const inputRef = useRef<TextInput>(null);
 
-  // 커플 memberIds 구독
   useEffect(() => {
     if (!coupleId) return;
     return subscribeCouple(coupleId, couple => setMemberIds(couple.memberIds as string[]));
   }, [coupleId]);
 
-  // 후보 목록 구독
   useEffect(() => {
     if (!coupleId) return;
     return subscribeCandidates(coupleId, list => {
@@ -69,7 +80,6 @@ export default function DateDecisionScreen() {
     });
   }, [coupleId]);
 
-  // 세션 구독
   useEffect(() => {
     if (!coupleId) return;
     return subscribeLatestSession(coupleId, (inProg, rev) => {
@@ -78,18 +88,35 @@ export default function DateDecisionScreen() {
     });
   }, [coupleId]);
 
-  const myUid   = user?.uid ?? '';
-  const myVote  = session?.choices[myUid];
+  const loadHistory = useCallback(async () => {
+    if (!coupleId) return;
+    setHistoryLoading(true);
+    try {
+      setHistory(await getVoteHistory(coupleId));
+    } catch {
+      // ignore
+    } finally {
+      setHistoryLoading(false);
+    }
+  }, [coupleId]);
+
+  useEffect(() => {
+    if (mode === 'history') loadHistory();
+  }, [mode, loadHistory]);
+
+  const myUid      = user?.uid ?? '';
+  const myVote     = session?.choices[myUid];
   const partnerVoted = session
     ? memberIds.some(id => id !== myUid && id in session.choices)
     : false;
 
-  // 후보 추가
+  // ── handlers ────────────────────────────────────────────────────────────────
+
   const handleAdd = useCallback(async () => {
     if (!newTitle.trim() || !coupleId || !user || saving) return;
     setSaving(true);
     try {
-      await addCandidate(coupleId, user.uid, newTitle, newCategory);
+      await addCandidate(coupleId, user.uid, newTitle);
       setNewTitle('');
       setShowAddForm(false);
     } catch {
@@ -97,9 +124,8 @@ export default function DateDecisionScreen() {
     } finally {
       setSaving(false);
     }
-  }, [newTitle, newCategory, coupleId, user, saving]);
+  }, [newTitle, coupleId, user, saving]);
 
-  // 후보 삭제
   const handleDelete = useCallback((candidate: DateCandidate) => {
     Alert.alert(
       '후보 삭제',
@@ -118,11 +144,8 @@ export default function DateDecisionScreen() {
     );
   }, []);
 
-  // 투표
   const handleVote = useCallback(async (candidateId: string) => {
-    if (!session || !user) return;
-    // 이미 같은 후보 선택 시 무시
-    if (myVote === candidateId) return;
+    if (!session || !user || myVote === candidateId) return;
     try {
       await castVote(session.id, user.uid, candidateId, memberIds);
     } catch {
@@ -130,44 +153,75 @@ export default function DateDecisionScreen() {
     }
   }, [session, user, myVote, memberIds]);
 
-  // 새 라운드
-  const handleNewRound = useCallback(async () => {
-    if (!coupleId || saving) return;
-    if (candidates.length === 0) {
-      Alert.alert('후보 없음', '먼저 후보를 추가해주세요');
-      return;
-    }
+  const handleStartRound = useCallback(async () => {
+    if (!coupleId || saving || candidates.length === 0) return;
     setSaving(true);
-    try {
-      await startNewRound(coupleId);
-    } catch {
-      Alert.alert('오류', '새 라운드를 시작하지 못했어요');
-    } finally {
-      setSaving(false);
-    }
+    try { await startNewRound(coupleId); } catch {
+      Alert.alert('오류', '라운드를 시작하지 못했어요');
+    } finally { setSaving(false); }
   }, [coupleId, candidates.length, saving]);
 
-  // ─── 결과 화면 ───────────────────────────────────────────────────────────────
-  const showResults = lastRevealed && !session;
-  if (showResults) {
-    const rev = lastRevealed;
-    const myRevVote    = rev.choices[myUid];
-    const partnerRevId = Object.entries(rev.choices).find(([id]) => id !== myUid)?.[1];
-    const isMatch = myRevVote && partnerRevId && myRevVote === partnerRevId;
+  // ── history mode ─────────────────────────────────────────────────────────────
+  if (mode === 'history') {
+    return (
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
+        <Header
+          title="이전 결과"
+          onBack={() => setMode('list')}
+          styles={styles}
+          colors={colors}
+        />
+        {historyLoading ? (
+          <View style={styles.center}><Spinner /></View>
+        ) : history.length === 0 ? (
+          <View style={styles.center}>
+            <Text style={styles.emptyIcon}>🗒</Text>
+            <Text style={styles.emptyText}>아직 투표 결과가 없어요</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={history}
+            keyExtractor={s => s.id}
+            contentContainerStyle={styles.historyList}
+            renderItem={({ item: s }) => (
+              <HistoryCard
+                session={s}
+                candidates={candidates}
+                myUid={myUid}
+                styles={styles}
+                colors={colors}
+              />
+            )}
+          />
+        )}
+      </SafeAreaView>
+    );
+  }
 
-    const myCand     = candidates.find(c => c.id === myRevVote);
-    const partnerCand = candidates.find(c => c.id === partnerRevId);
+  // ── results screen (revealed, no active session) ──────────────────────────
+  if (lastRevealed && !session) {
+    const rev           = lastRevealed;
+    const myRevVote     = rev.choices[myUid];
+    const partnerRevId  = Object.entries(rev.choices).find(([id]) => id !== myUid)?.[1];
+    const isMatch       = myRevVote && partnerRevId && myRevVote === partnerRevId;
+    const myCand        = candidates.find(c => c.id === myRevVote);
+    const partnerCand   = candidates.find(c => c.id === partnerRevId);
 
     return (
       <SafeAreaView style={styles.safeArea} edges={['top']}>
-        <Header styles={styles} colors={colors} />
+        <Header
+          title="결과"
+          onBack={() => setLastRevealed(null)}
+          onHistory={() => setMode('history')}
+          styles={styles}
+          colors={colors}
+        />
         <View style={styles.resultsContainer}>
           {isMatch ? (
             <>
               <Text style={styles.resultEmoji}>🎉</Text>
-              <Text style={styles.resultTitle}>같은 걸 골랐어요!</Text>
+              <Text style={styles.resultTitle}>둘 다 같은 걸 골랐어요!</Text>
               <View style={styles.matchCard}>
-                <Text style={styles.matchCategory}>{CATEGORY_LABELS[myCand?.category ?? 'etc']}</Text>
                 <Text style={styles.matchTitle}>{myCand?.title ?? '?'}</Text>
               </View>
             </>
@@ -176,32 +230,47 @@ export default function DateDecisionScreen() {
               <Text style={styles.resultEmoji}>🤔</Text>
               <Text style={styles.resultTitle}>아쉽게 달랐어요</Text>
               <View style={styles.noMatchRow}>
-                <VoteResultCard label="나" candidate={myCand} styles={styles} />
+                <ResultCard label="나" title={myCand?.title} styles={styles} />
                 <Text style={styles.vsText}>VS</Text>
-                <VoteResultCard label="상대방" candidate={partnerCand} styles={styles} />
+                <ResultCard label="상대방" title={partnerCand?.title} styles={styles} />
               </View>
             </>
           )}
-          <TouchableOpacity style={styles.newRoundBtn} onPress={handleNewRound} disabled={saving}>
-            <Text style={styles.newRoundBtnText}>다시 하기</Text>
+          <TouchableOpacity style={styles.confirmBtn} onPress={handleStartRound} disabled={saving}>
+            <Text style={styles.confirmBtnText}>한 번 더 🎲</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.backToListBtn} onPress={() => setLastRevealed(null)}>
+            <Text style={styles.backToListText}>후보 목록으로</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
     );
   }
 
-  // ─── 대기 화면 (내가 투표했고 상대방 대기 중) ─────────────────────────────────
-  const iWaiting = session && myVote && !partnerVoted && session.status === 'in_progress';
+  // ── main list screen ─────────────────────────────────────────────────────────
+  const iWaiting = session && myVote && !partnerVoted;
 
-  // ─── 메인 화면 ───────────────────────────────────────────────────────────────
   return (
     <SafeAreaView testID="screen-date-decision" style={styles.safeArea} edges={['top']}>
-      <Header styles={styles} colors={colors} />
+      <Header
+        title="둘다좋아 💑"
+        onBack={() => router.back()}
+        onHistory={() => setMode('history')}
+        styles={styles}
+        colors={colors}
+      />
 
-      {/* 세션 상태 배너 */}
       {iWaiting && (
         <View style={styles.waitingBanner}>
           <Text style={styles.waitingText}>✅ 투표 완료 — 상대방 기다리는 중...</Text>
+        </View>
+      )}
+
+      {session && !myVote && (
+        <View style={[styles.waitingBanner, { backgroundColor: colors.accent.warm + '20' }]}>
+          <Text style={[styles.waitingText, { color: colors.accent.warm }]}>
+            🗳 라운드 진행 중 — 고르고 싶은 걸 탭하세요
+          </Text>
         </View>
       )}
 
@@ -214,7 +283,8 @@ export default function DateDecisionScreen() {
             loading ? null : (
               <View style={styles.empty}>
                 <Text style={styles.emptyIcon}>🗒</Text>
-                <Text style={styles.emptyText}>후보를 추가해보세요</Text>
+                <Text style={styles.emptyText}>아직 후보가 없어요</Text>
+                <Text style={styles.emptySubText}>아래에서 둘이 가고 싶은 곳을 추가해보세요</Text>
               </View>
             )
           }
@@ -233,62 +303,33 @@ export default function DateDecisionScreen() {
             <View style={styles.footer}>
               {/* 후보 추가 폼 */}
               {showAddForm ? (
-                <View style={styles.addForm}>
-                  <TextInput
-                    ref={inputRef}
-                    style={styles.addInput}
-                    value={newTitle}
-                    onChangeText={setNewTitle}
-                    placeholder="후보 이름 (예: 스시집 삼청동)"
-                    placeholderTextColor={colors.text.muted}
-                    returnKeyType="done"
-                    onSubmitEditing={handleAdd}
-                    autoFocus
-                    maxLength={40}
-                  />
-                  {/* 카테고리 */}
-                  <View style={styles.categoryRow}>
-                    {CATEGORIES.map(cat => (
-                      <TouchableOpacity
-                        key={cat}
-                        style={[styles.catChip, newCategory === cat && styles.catChipActive]}
-                        onPress={() => setNewCategory(cat)}
-                      >
-                        <Text style={[styles.catChipText, newCategory === cat && styles.catChipTextActive]}>
-                          {CATEGORY_LABELS[cat]}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                  <View style={styles.addActions}>
-                    <TouchableOpacity onPress={() => setShowAddForm(false)} style={styles.cancelBtn}>
-                      <Text style={styles.cancelBtnText}>취소</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={handleAdd}
-                      disabled={!newTitle.trim() || saving}
-                      style={[styles.confirmBtn, (!newTitle.trim() || saving) && styles.confirmBtnDisabled]}
-                    >
-                      <Text style={styles.confirmBtnText}>{saving ? '추가 중...' : '추가'}</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
+                <AddForm
+                  value={newTitle}
+                  onChange={setNewTitle}
+                  onSubmit={handleAdd}
+                  onCancel={() => { setShowAddForm(false); setNewTitle(''); }}
+                  saving={saving}
+                  inputRef={inputRef}
+                  styles={styles}
+                  colors={colors}
+                />
               ) : (
-                <TouchableOpacity style={styles.addBtn} onPress={() => { setShowAddForm(true); }}>
-                  <Plus size={18} color={colors.accent.primary} />
-                  <Text style={styles.addBtnText}>후보 추가</Text>
+                <TouchableOpacity
+                  style={styles.addBtn}
+                  onPress={() => setShowAddForm(true)}
+                >
+                  <Text style={styles.addBtnText}>+ 후보 추가</Text>
                 </TouchableOpacity>
               )}
 
-              {/* 새 라운드 / 현재 세션 없으면 시작 버튼 */}
               {!session && candidates.length > 0 && (
                 <TouchableOpacity
                   style={[styles.startBtn, saving && styles.startBtnDisabled]}
-                  onPress={handleNewRound}
+                  onPress={handleStartRound}
                   disabled={saving}
                 >
                   <Text style={styles.startBtnText}>
-                    {saving ? '시작 중...' : '라운드 시작 🎲'}
+                    {saving ? '시작 중...' : '🎲 라운드 시작'}
                   </Text>
                 </TouchableOpacity>
               )}
@@ -300,20 +341,159 @@ export default function DateDecisionScreen() {
   );
 }
 
-// ─── sub-components ───────────────────────────────────────────────────────────
+// ─── add form ────────────────────────────────────────────────────────────────
 
-type StylesType = ReturnType<typeof makeStyles>;
-
-function Header({ styles, colors }: { styles: StylesType; colors: Colors }) {
+function AddForm({
+  value,
+  onChange,
+  onSubmit,
+  onCancel,
+  saving,
+  inputRef,
+  styles,
+  colors,
+}: {
+  value: string;
+  onChange: (t: string) => void;
+  onSubmit: () => void;
+  onCancel: () => void;
+  saving: boolean;
+  inputRef: React.RefObject<TextInput | null>;
+  styles: StylesType;
+  colors: Colors;
+}) {
   return (
-    <View style={styles.header}>
-      <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="뒤로 가기">
-        <ChevronLeft size={24} color={colors.text.primary} />
-      </TouchableOpacity>
-      <Text style={styles.headerTitle}>둘다좋아 💑</Text>
+    <View style={styles.addForm}>
+      <TextInput
+        ref={inputRef}
+        style={styles.addInput}
+        value={value}
+        onChangeText={onChange}
+        placeholder="예: 한강 피크닉, 스시 오마카세, 방탈출..."
+        placeholderTextColor={colors.text.muted}
+        returnKeyType="done"
+        onSubmitEditing={onSubmit}
+        autoFocus
+        maxLength={40}
+      />
+
+      {/* 예시 제안 칩 */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.examplesScroll} contentContainerStyle={styles.examplesContent}>
+        {EXAMPLES.map(ex => (
+          <TouchableOpacity key={ex} style={styles.exampleChip} onPress={() => onChange(ex)}>
+            <Text style={styles.exampleChipText}>{ex}</Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+
+      <View style={styles.addActions}>
+        <TouchableOpacity onPress={onCancel} style={styles.cancelBtn}>
+          <Text style={styles.cancelBtnText}>취소</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={onSubmit}
+          disabled={!value.trim() || saving}
+          style={[styles.submitBtn, (!value.trim() || saving) && styles.submitBtnDisabled]}
+        >
+          <Text style={styles.submitBtnText}>{saving ? '추가 중...' : '추가'}</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
+
+// ─── history card ─────────────────────────────────────────────────────────────
+
+function HistoryCard({
+  session,
+  candidates,
+  myUid,
+  styles,
+  colors,
+}: {
+  session: VoteSession;
+  candidates: DateCandidate[];
+  myUid: string;
+  styles: StylesType;
+  colors: Colors;
+}) {
+  const myId        = session.choices[myUid];
+  const partnerId   = Object.entries(session.choices).find(([id]) => id !== myUid)?.[1];
+  const myCand      = candidates.find(c => c.id === myId);
+  const partnerCand = candidates.find(c => c.id === partnerId);
+  const isMatch     = myId && partnerId && myId === partnerId;
+
+  const dateStr = session.revealedAt
+    ? `${session.revealedAt.getFullYear()}년 ${session.revealedAt.getMonth() + 1}월 ${session.revealedAt.getDate()}일`
+    : '-';
+
+  return (
+    <View style={[styles.historyCard, isMatch && { borderColor: colors.accent.primary + '60' }]}>
+      <View style={styles.historyCardHeader}>
+        <Text style={styles.historyCardDate}>{dateStr}</Text>
+        <Text style={[styles.historyCardMatch, { color: isMatch ? colors.accent.primary : colors.text.muted }]}>
+          {isMatch ? '🎉 매치!' : '🤔 불일치'}
+        </Text>
+      </View>
+      <View style={styles.historyCardBody}>
+        <View style={styles.historyChoice}>
+          <Text style={styles.historyChoiceLabel}>나</Text>
+          <Text style={styles.historyChoiceTitle} numberOfLines={1}>
+            {myCand?.title ?? '삭제된 항목'}
+          </Text>
+        </View>
+        {!isMatch && (
+          <>
+            <Text style={styles.vsText}>VS</Text>
+            <View style={styles.historyChoice}>
+              <Text style={styles.historyChoiceLabel}>상대방</Text>
+              <Text style={styles.historyChoiceTitle} numberOfLines={1}>
+                {partnerCand?.title ?? '삭제된 항목'}
+              </Text>
+            </View>
+          </>
+        )}
+      </View>
+    </View>
+  );
+}
+
+// ─── header ───────────────────────────────────────────────────────────────────
+
+type StylesType = ReturnType<typeof makeStyles>;
+
+function Header({
+  title,
+  onBack,
+  onHistory,
+  styles,
+  colors,
+}: {
+  title: string;
+  onBack: () => void;
+  onHistory?: () => void;
+  styles: StylesType;
+  colors: Colors;
+}) {
+  return (
+    <View style={styles.header}>
+      <TouchableOpacity onPress={onBack} style={styles.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="뒤로 가기">
+        <ChevronLeft size={24} color={colors.text.primary} />
+      </TouchableOpacity>
+      <Text style={styles.headerTitle}>{title}</Text>
+      <View style={styles.headerRight}>
+        {onHistory && (
+          <TouchableOpacity onPress={onHistory} style={styles.iconBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="이전 결과">
+            <Clock size={20} color={colors.text.secondary} />
+          </TouchableOpacity>
+        )}
+        {!onHistory && <View style={{ width: 36 }} />}
+      </View>
+    </View>
+  );
+}
+
+// ─── candidate row ────────────────────────────────────────────────────────────
 
 function CandidateRow({
   candidate, isSelected, sessionActive, onVote, onDelete, styles, colors,
@@ -332,38 +512,29 @@ function CandidateRow({
       onPress={sessionActive ? onVote : undefined}
       activeOpacity={sessionActive ? 0.7 : 1}
     >
-      <View style={styles.candidateInfo}>
-        <Text style={styles.candidateCategory}>{CATEGORY_LABELS[candidate.category]}</Text>
-        <Text style={[styles.candidateTitle, isSelected && styles.candidateTitleSelected]}>
-          {candidate.title}
-        </Text>
-      </View>
-      {isSelected && (
+      <Text style={[styles.candidateTitle, isSelected && styles.candidateTitleSelected]} numberOfLines={1}>
+        {candidate.title}
+      </Text>
+      {isSelected ? (
         <View style={styles.selectedBadge}>
           <Text style={styles.selectedBadgeText}>내 선택 ✓</Text>
         </View>
-      )}
-      {!sessionActive && (
+      ) : !sessionActive ? (
         <TouchableOpacity onPress={onDelete} style={styles.deleteBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="후보 삭제">
           <Trash2 size={18} color={colors.text.muted} />
         </TouchableOpacity>
-      )}
+      ) : null}
     </TouchableOpacity>
   );
 }
 
-function VoteResultCard({ label, candidate, styles }: { label: string; candidate: DateCandidate | undefined; styles: StylesType }) {
+// ─── result card ──────────────────────────────────────────────────────────────
+
+function ResultCard({ label, title, styles }: { label: string; title: string | undefined; styles: StylesType }) {
   return (
     <View style={styles.resultCard}>
       <Text style={styles.resultCardLabel}>{label}</Text>
-      {candidate ? (
-        <>
-          <Text style={styles.resultCardCategory}>{CATEGORY_LABELS[candidate.category]}</Text>
-          <Text style={styles.resultCardTitle}>{candidate.title}</Text>
-        </>
-      ) : (
-        <Text style={styles.resultCardEmpty}>선택 없음</Text>
-      )}
+      <Text style={styles.resultCardTitle} numberOfLines={2}>{title ?? '선택 없음'}</Text>
     </View>
   );
 }
@@ -373,47 +544,51 @@ function VoteResultCard({ label, candidate, styles }: { label: string; candidate
 const makeStyles = (colors: Colors) => StyleSheet.create({
   safeArea:              { flex: 1, backgroundColor: colors.bg.base },
   flex:                  { flex: 1 },
+  center:                { flex: 1, alignItems: 'center', justifyContent: 'center', gap: space[3] },
 
-  header:                { flexDirection: 'row', alignItems: 'center', gap: space[3], paddingHorizontal: space[4], paddingVertical: space[4], borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
-  backBtn:               { padding: space[1] },
-  headerTitle:           { ...typography.title2, color: colors.text.primary },
+  header:                { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space[4], paddingVertical: space[4], borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
+  backBtn:               { padding: space[1], width: 36 },
+  headerTitle:           { ...typography.title2, color: colors.text.primary, flex: 1, textAlign: 'center' },
+  headerRight:           { width: 36, alignItems: 'flex-end' },
+  iconBtn:               { padding: space[2] },
 
   waitingBanner:         { backgroundColor: colors.accent.primary + '20', paddingHorizontal: space[4], paddingVertical: space[3] },
   waitingText:           { ...typography.caption, color: colors.accent.primary },
 
   listContent:           { padding: space[4], gap: space[2], paddingBottom: space[8] },
 
-  candidateRow:          { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.bg.surface, borderRadius: radius.md, padding: space[4], borderWidth: 1.5, borderColor: 'transparent' },
+  candidateRow:          { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.bg.surface, borderRadius: radius.md, paddingHorizontal: space[4], paddingVertical: space[4], borderWidth: 1.5, borderColor: 'transparent', gap: space[2] },
   candidateRowSelected:  { borderColor: colors.accent.primary, backgroundColor: colors.accent.primary + '10' },
-  candidateInfo:         { flex: 1, gap: 2 },
-  candidateCategory:     { ...typography.tiny, color: colors.text.muted },
-  candidateTitle:        { ...typography.bodyBold, color: colors.text.primary },
+  candidateTitle:        { ...typography.bodyBold, color: colors.text.primary, flex: 1 },
   candidateTitleSelected:{ color: colors.accent.primary },
   selectedBadge:         { backgroundColor: colors.accent.primary, borderRadius: radius.pill, paddingHorizontal: space[3], paddingVertical: space[1] },
   selectedBadgeText:     { ...typography.tiny, color: colors.text.inverse },
   deleteBtn:             { padding: space[2] },
 
-  empty:                 { paddingVertical: space[10], alignItems: 'center', gap: space[3] },
+  empty:                 { paddingVertical: space[10], alignItems: 'center', gap: space[2] },
   emptyIcon:             { fontSize: 36 },
-  emptyText:             { ...typography.body, color: colors.text.muted },
+  emptyText:             { ...typography.bodyBold, color: colors.text.muted },
+  emptySubText:          { ...typography.caption, color: colors.text.muted, textAlign: 'center' },
 
   footer:                { marginTop: space[4], gap: space[4] },
 
-  addBtn:                { flexDirection: 'row', alignItems: 'center', gap: space[2], paddingVertical: space[3], justifyContent: 'center' },
+  addBtn:                { paddingVertical: space[3], alignItems: 'center' },
   addBtnText:            { ...typography.body, color: colors.accent.primary },
+
   addForm:               { backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[4], gap: space[3] },
   addInput:              { ...typography.body, color: colors.text.primary, backgroundColor: colors.bg.subtle, borderRadius: radius.md, paddingHorizontal: space[4], paddingVertical: space[3] },
-  categoryRow:           { flexDirection: 'row', flexWrap: 'wrap', gap: space[2] },
-  catChip:               { paddingVertical: space[2], paddingHorizontal: space[3], borderRadius: radius.pill, borderWidth: 1, borderColor: colors.border.subtle },
-  catChipActive:         { borderColor: colors.accent.primary, backgroundColor: colors.accent.primary + '15' },
-  catChipText:           { ...typography.caption, color: colors.text.secondary },
-  catChipTextActive:     { color: colors.accent.primary, fontFamily: 'Pretendard-SemiBold' },
+
+  examplesScroll:        { marginHorizontal: -space[1] },
+  examplesContent:       { gap: space[2], paddingHorizontal: space[1] },
+  exampleChip:           { backgroundColor: colors.bg.subtle, borderRadius: radius.pill, paddingHorizontal: space[3], paddingVertical: space[2], borderWidth: 1, borderColor: colors.border.subtle },
+  exampleChipText:       { ...typography.caption, color: colors.text.secondary },
+
   addActions:            { flexDirection: 'row', justifyContent: 'flex-end', gap: space[3] },
   cancelBtn:             { paddingVertical: space[2], paddingHorizontal: space[3] },
   cancelBtnText:         { ...typography.body, color: colors.text.muted },
-  confirmBtn:            { backgroundColor: colors.accent.primary, borderRadius: radius.md, paddingVertical: space[2], paddingHorizontal: space[5] },
-  confirmBtnDisabled:    { backgroundColor: colors.border.subtle },
-  confirmBtnText:        { ...typography.bodyBold, color: colors.text.inverse },
+  submitBtn:             { backgroundColor: colors.accent.primary, borderRadius: radius.md, paddingVertical: space[2], paddingHorizontal: space[5] },
+  submitBtnDisabled:     { backgroundColor: colors.border.subtle },
+  submitBtnText:         { ...typography.bodyBold, color: colors.text.inverse },
 
   startBtn:              { backgroundColor: colors.accent.primary, borderRadius: radius.lg, paddingVertical: space[4], alignItems: 'center' },
   startBtnDisabled:      { opacity: 0.6 },
@@ -423,16 +598,26 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   resultsContainer:      { flex: 1, alignItems: 'center', justifyContent: 'center', padding: space[6], gap: space[5] },
   resultEmoji:           { fontSize: 64 },
   resultTitle:           { ...typography.title1, color: colors.text.primary, textAlign: 'center' },
-  matchCard:             { backgroundColor: colors.bg.surface, borderRadius: radius.xl, padding: space[6], alignItems: 'center', gap: space[2], width: '100%', borderWidth: 2, borderColor: colors.accent.primary },
-  matchCategory:         { ...typography.caption, color: colors.text.muted },
+  matchCard:             { backgroundColor: colors.bg.surface, borderRadius: radius.xl, padding: space[6], alignItems: 'center', width: '100%', borderWidth: 2, borderColor: colors.accent.primary },
   matchTitle:            { ...typography.title1, color: colors.accent.primary, textAlign: 'center' },
-  noMatchRow:            { flexDirection: 'row', gap: space[3], alignItems: 'center' },
+  noMatchRow:            { flexDirection: 'row', gap: space[3], alignItems: 'center', width: '100%' },
   vsText:                { ...typography.bodyBold, color: colors.text.muted },
   resultCard:            { flex: 1, backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[4], alignItems: 'center', gap: space[1] },
   resultCardLabel:       { ...typography.tiny, color: colors.text.muted },
-  resultCardCategory:    { ...typography.tiny, color: colors.text.muted },
   resultCardTitle:       { ...typography.bodyBold, color: colors.text.primary, textAlign: 'center' },
-  resultCardEmpty:       { ...typography.caption, color: colors.text.muted },
-  newRoundBtn:           { backgroundColor: colors.accent.primary, borderRadius: radius.lg, paddingVertical: space[4], paddingHorizontal: space[8], marginTop: space[3] },
-  newRoundBtnText:       { ...typography.bodyBold, color: colors.text.inverse },
+  confirmBtn:            { backgroundColor: colors.accent.primary, borderRadius: radius.lg, paddingVertical: space[4], paddingHorizontal: space[8] },
+  confirmBtnText:        { ...typography.bodyBold, color: colors.text.inverse },
+  backToListBtn:         { paddingVertical: space[2] },
+  backToListText:        { ...typography.caption, color: colors.text.muted },
+
+  // history
+  historyList:           { padding: space[4], gap: space[3], paddingBottom: space[8] },
+  historyCard:           { backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[4], gap: space[3], borderWidth: 1.5, borderColor: 'transparent' },
+  historyCardHeader:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  historyCardDate:       { ...typography.caption, color: colors.text.muted },
+  historyCardMatch:      { ...typography.caption, fontFamily: 'Pretendard-SemiBold' },
+  historyCardBody:       { flexDirection: 'row', alignItems: 'center', gap: space[3] },
+  historyChoice:         { flex: 1, gap: 2 },
+  historyChoiceLabel:    { ...typography.tiny, color: colors.text.muted },
+  historyChoiceTitle:    { ...typography.bodyBold, color: colors.text.primary },
 });
