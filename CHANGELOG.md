@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-06-19 | 개인 빙고 모드 | feat(bingo): 함께/개인 모드 토글, 각자 보드 등록·체크, VS 점수바, 칸 비우기, 번호 위치 미리보기 그리드.
 ## 2026-06-19 | Maestro E2E 전체 통과 | test: 21개 시나리오 중 19개 PASS (2개는 2nd-device 필요). test_mood_save_a scroll 추가, text-detail-header testID 추가.
 ## 2026-06-19 | 빙고 멀티보드 | feat(bingo): 최대 3개 동시 활성 보드 + 탭 전환 + "기록으로 넘기기" 강제 완료. BR-1 변경, subscribeActiveBoards, completeBoard 추가.
 ## 2026-06-19 | 빙고 이전 기록 | feat(bingo): 이전 기록 조회(Clock 아이콘) + 언제든 새 빙고 시작(RefreshCw) + 완료된 빙고판 읽기 전용 뷰. getBoardHistory() + completedAt DESC 복합 인덱스 추가.

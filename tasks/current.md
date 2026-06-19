@@ -92,6 +92,8 @@
 - ✅ Maestro E2E 전체 점검: 21개 시나리오 19 PASS (2개는 2nd-device B 전용 — 단일기기 환경에서 expected failure)
 - ✅ test_mood_save_a: scroll 추가로 btn-mood-save 노출 문제 해결
 - ✅ HistoryDetailView text-detail-header testID 추가로 assertVisible PASS
+- ✅ 개인 빙고 모드(boardType=personal) — 각자 보드 등록, 본인만 체크, VS 점수바
+- ✅ SetupView: 전체 비우기 버튼 + 칸 번호 위치 미리보기 그리드
 - 다음: TestFlight 준비 또는 추가 기능 개선
 
 ## 진행 중인 작업 (시뮬레이터 전용)
