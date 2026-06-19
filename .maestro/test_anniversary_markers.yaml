@@ -1,0 +1,46 @@
+appId: host.exp.Exponent
+---
+# 기념일 마커 테스트: 기념일 설정 → 달력 100일·주년 표시 확인
+# 기념일 = 2026-03-12 → 오늘(6/19)이 정확히 100일
+- launchApp
+- tapOn:
+    text: "둘다좋아"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 90000
+
+# 설정 탭 진입 후 기념일 설정
+- tapOn:
+    id: "tab-settings"
+- waitForAnimationToEnd
+- takeScreenshot: "anniversary_01_settings"
+
+# 기념일 편집
+- tapOn:
+    id: "btn-edit-anniversary"
+- waitForAnimationToEnd
+- tapOn:
+    id: "input-anniversary"
+- eraseText: 20
+- inputText: "2026-03-12"
+- tapOn: "저장"
+- waitForAnimationToEnd
+- takeScreenshot: "anniversary_02_saved"
+
+# 캘린더로 이동
+- tapOn:
+    id: "tab-calendar"
+- extendedWaitUntil:
+    visible:
+      id: "screen-calendar"
+    timeout: 10000
+
+# 월간 뷰 — 오늘(6/19)에 100일 마커 확인
+- takeScreenshot: "anniversary_03_month_view"
+
+# 주간 뷰로 전환 — 헤더 chip 확인
+- tapOn: "주"
+- waitForAnimationToEnd
+- takeScreenshot: "anniversary_04_week_view"

@@ -172,6 +172,7 @@ export default function SettingsScreen() {
           {anniversaryEditing ? (
             <View style={styles.editRow}>
               <TextInput
+                testID="input-anniversary"
                 style={styles.input}
                 value={anniversaryInput}
                 onChangeText={setAnniversaryInput}
@@ -187,7 +188,7 @@ export default function SettingsScreen() {
               </TouchableOpacity>
             </View>
           ) : (
-            <TouchableOpacity onPress={() => { setAnniversaryInput(anniversaryStr); setAnniversaryEditing(true); }}>
+            <TouchableOpacity testID="btn-edit-anniversary" onPress={() => { setAnniversaryInput(anniversaryStr); setAnniversaryEditing(true); }}>
               <Text style={styles.rowValue}>{anniversaryStr || '설정 안 됨'} ✏️</Text>
             </TouchableOpacity>
           )}

@@ -22,6 +22,7 @@ import { usePartnerProfile } from '../../core/couple/usePartnerProfile';
 import { useCalendarEvents, useCalendarEventsByType, useEventThumbnails, usePhotoEvents } from '../../core/memory';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { addDays, getAnniversaryMarkers, parseYMD, startOfWeek, toYMD } from '../../core/utils/date';
+import { tsToDate } from '../../core/utils/firestore';
 import { EmptyState } from '../../design-system/EmptyState';
 import { CalendarEmpty } from '../../design-system/illustrations';
 import { Skeleton } from '../../design-system/Skeleton';
@@ -91,7 +92,10 @@ export default function CalendarScreen() {
 
   const thumbnails = useEventThumbnails(events);
 
-  const anniversaryBase = couple?.anniversaryDate ?? couple?.createdAt;
+  const anniversaryBase = useMemo(() => {
+    const raw = couple?.anniversaryDate ?? couple?.createdAt;
+    return raw ? tsToDate(raw) : null;
+  }, [couple?.anniversaryDate, couple?.createdAt]);
   const anniversaryMarkers = useMemo<Record<string, string>>(() => {
     if (!anniversaryBase) return {};
     const list = getAnniversaryMarkers(anniversaryBase, rangeFrom, rangeTo);
