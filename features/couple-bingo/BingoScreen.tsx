@@ -538,6 +538,7 @@ function PersonalBingoView({
           myUid={myUid}
           onToggle={isMyTurn ? onToggle : () => {}}
           readOnly={!isMyTurn}
+          masked={!isMyTurn && activeBoard.status === 'active'}
           styles={styles}
         />
       )}
@@ -889,16 +890,37 @@ function GameView({
   myUid,
   onToggle,
   readOnly = false,
+  masked = false,
   styles,
 }: {
   board: BingoBoard;
   myUid: string;
   onToggle: (index: number) => void;
   readOnly?: boolean;
+  masked?: boolean;   // 상대방 개인 보드 진행 중: 내용·체크·빙고 위치 숨김
   styles: StylesType;
 }) {
   const checkedCount = Object.keys(board.checkedItems).length;
   const bingoCells = useMemo(() => getBingoCells(board.completedLines), [board.completedLines]);
+
+  if (masked) {
+    return (
+      <ScrollView contentContainerStyle={styles.gameContainer} showsVerticalScrollIndicator={false}>
+        <View style={styles.progress}>
+          <Text style={styles.progressText}>게임 진행 중 — 내용 비공개</Text>
+          {board.completedLines.length > 0
+            ? <Text style={styles.progressBingo}>🎯 빙고 {board.completedLines.length}줄!</Text>
+            : <Text style={styles.progressText}>빙고 0줄</Text>
+          }
+        </View>
+        <View style={styles.grid}>
+          {Array.from({ length: 25 }, (_, idx) => (
+            <View key={idx} style={styles.cellMasked} />
+          ))}
+        </View>
+      </ScrollView>
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.gameContainer} showsVerticalScrollIndicator={false}>
@@ -1042,6 +1064,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   cellChecked:       { backgroundColor: colors.accent.primary, borderColor: colors.accent.primary },
   cellBingo:         { backgroundColor: colors.accent.warm, borderColor: colors.accent.warm },
   cellReadonly:      { opacity: 0.85 },
+  cellMasked:        { width: CELL_SIZE, height: CELL_SIZE, backgroundColor: colors.bg.subtle, borderRadius: radius.sm, borderWidth: 1, borderColor: colors.border.subtle },
   cellText:          { ...typography.tiny, color: colors.text.secondary, textAlign: 'center', lineHeight: 14 },
   cellTextChecked:   { color: colors.text.inverse, fontFamily: 'Pretendard-SemiBold' },
   cellCheck:         { position: 'absolute', top: 2, right: 4, fontSize: 10, color: 'rgba(255,255,255,0.8)' },
