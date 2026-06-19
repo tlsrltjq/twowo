@@ -901,13 +901,10 @@ function GameView({
   useEffect(() => {
     if (board.completedLines.length > prevLineCount.current) {
       shimmer.setValue(0);
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(shimmer, { toValue: 1, duration: 180, useNativeDriver: true }),
-          Animated.timing(shimmer, { toValue: 0, duration: 180, useNativeDriver: true }),
-        ]),
-        { iterations: 5 },
-      ).start();
+      Animated.sequence([
+        Animated.timing(shimmer, { toValue: 1, duration: 80, useNativeDriver: true }),
+        Animated.timing(shimmer, { toValue: 0, duration: 350, useNativeDriver: true }),
+      ]).start();
     }
     prevLineCount.current = board.completedLines.length;
   }, [board.completedLines.length, shimmer]);
