@@ -131,7 +131,7 @@ export default function BingoScreen() {
       [
         { text: '취소', style: 'cancel' },
         {
-          text: '기록으로 넘기기',
+          text: '확인',
           onPress: async () => {
             try {
               await completeBoard(board.id);
@@ -227,9 +227,13 @@ export default function BingoScreen() {
             board={board!}
             myUid={user?.uid ?? ''}
             onToggle={handleToggle}
-            onComplete={handleComplete}
             styles={styles}
           />
+          {board?.status !== 'completed' && (
+            <TouchableOpacity testID="btn-archive" style={styles.archiveFooter} onPress={handleComplete}>
+              <Text style={styles.archiveBtnText}>기록으로 넘기기</Text>
+            </TouchableOpacity>
+          )}
         </View>
       )}
     </SafeAreaView>
@@ -257,18 +261,18 @@ function Header({
 }) {
   return (
     <View style={styles.header}>
-      <TouchableOpacity onPress={onBack} style={styles.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="뒤로 가기">
+      <TouchableOpacity testID="btn-bingo-back" onPress={onBack} style={styles.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="뒤로 가기">
         <ChevronLeft size={24} color={colors.text.primary} />
       </TouchableOpacity>
       <Text style={styles.headerTitle}>{title}</Text>
       <View style={styles.headerRight}>
         {onHistory && (
-          <TouchableOpacity onPress={onHistory} style={styles.iconBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="이전 기록">
+          <TouchableOpacity testID="btn-history" onPress={onHistory} style={styles.iconBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="이전 기록">
             <Clock size={20} color={colors.text.secondary} />
           </TouchableOpacity>
         )}
         {onNewBoard && (
-          <TouchableOpacity onPress={onNewBoard} style={styles.iconBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="새 빙고 시작">
+          <TouchableOpacity testID="btn-new-board" onPress={onNewBoard} style={styles.iconBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="새 빙고 시작">
             <RefreshCw size={20} color={colors.accent.primary} />
           </TouchableOpacity>
         )}
@@ -382,7 +386,7 @@ function HistoryView({
         const checkedCount = Object.keys(b.checkedItems).length;
         const completedDate = b.completedAt ? formatDate(b.completedAt) : '-';
         return (
-          <TouchableOpacity style={styles.historyCard} onPress={() => onSelectBoard(b)} activeOpacity={0.7}>
+          <TouchableOpacity testID={`btn-history-card-${index}`} style={styles.historyCard} onPress={() => onSelectBoard(b)} activeOpacity={0.7}>
             <View style={styles.historyCardLeft}>
               <Text style={styles.historyNum}>#{boards.length - index}</Text>
               <View>
@@ -419,7 +423,7 @@ function HistoryDetailView({ board, styles }: { board: BingoBoard; styles: Style
   return (
     <ScrollView contentContainerStyle={styles.gameContainer} showsVerticalScrollIndicator={false}>
       <View style={styles.progress}>
-        <Text style={styles.progressText}>{board.completedAt ? formatDate(board.completedAt) : '-'} 완료</Text>
+        <Text testID="text-detail-header" style={styles.progressText}>{board.completedAt ? formatDate(board.completedAt) : '-'} 완료</Text>
         <Text style={styles.progressText}>{checkedCount}/25 · 빙고 {board.completedLines.length}줄</Text>
       </View>
       <View style={styles.grid}>
@@ -533,13 +537,11 @@ function GameView({
   board,
   myUid,
   onToggle,
-  onComplete,
   styles,
 }: {
   board: BingoBoard;
   myUid: string;
   onToggle: (index: number) => void;
-  onComplete: () => void;
   styles: StylesType;
 }) {
   const checkedCount = Object.keys(board.checkedItems).length;
@@ -577,14 +579,10 @@ function GameView({
         })}
       </View>
 
-      {board.status === 'completed' ? (
+      {board.status === 'completed' && (
         <View style={styles.completedBanner}>
           <Text style={styles.completedText}>🏆 빙고판 완성! 새 판을 시작해보세요 (우상단 ↺)</Text>
         </View>
-      ) : (
-        <TouchableOpacity testID="btn-archive" style={styles.archiveBtn} onPress={onComplete}>
-          <Text style={styles.archiveBtnText}>기록으로 넘기기</Text>
-        </TouchableOpacity>
       )}
     </ScrollView>
   );
@@ -677,6 +675,6 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   completedBanner:   { backgroundColor: colors.accent.warm + '25', borderRadius: radius.lg, padding: space[4] },
   completedText:     { ...typography.body, color: colors.accent.warm, textAlign: 'center' },
 
-  archiveBtn:        { alignItems: 'center', paddingVertical: space[3], borderWidth: 1, borderColor: colors.border.subtle, borderRadius: radius.lg },
+  archiveFooter:     { borderTopWidth: 1, borderTopColor: colors.border.subtle, alignItems: 'center', paddingVertical: space[4] },
   archiveBtnText:    { ...typography.caption, color: colors.text.muted },
 });

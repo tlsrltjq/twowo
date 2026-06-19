@@ -5,7 +5,6 @@ import {
   getDocs,
   limit,
   onSnapshot,
-  orderBy,
   query,
   QueryDocumentSnapshot,
   runTransaction,
@@ -48,6 +47,7 @@ function mapBoard(d: QueryDocumentSnapshot<DocumentData>): BingoBoard {
 // ─── subscriptions ────────────────────────────────────────────────────────────
 
 // 활성 보드 최대 3개 구독 (BR-1: 동시 최대 3개)
+// orderBy 없이 기존 (coupleId, status) 인덱스 사용, 클라이언트 정렬
 export function subscribeActiveBoards(
   coupleId: string,
   cb: (boards: BingoBoard[]) => void,
@@ -56,13 +56,19 @@ export function subscribeActiveBoards(
     collection(db, 'bingoBoards'),
     where('coupleId', '==', coupleId),
     where('status', '==', 'active'),
-    orderBy('startedAt', 'asc'),
     limit(3),
   );
   return onSnapshot(
     q,
-    snap => cb(snap.docs.map(mapBoard)),
-    ()   => cb([]),
+    snap => {
+      const boards = snap.docs.map(mapBoard).sort((a, b) => {
+        const at = a.startedAt?.getTime() ?? 0;
+        const bt = b.startedAt?.getTime() ?? 0;
+        return at - bt;
+      });
+      cb(boards);
+    },
+    () => cb([]),
   );
 }
 
@@ -122,11 +128,12 @@ export async function getBoardHistory(coupleId: string, limitCount = 20): Promis
     collection(db, 'bingoBoards'),
     where('coupleId', '==', coupleId),
     where('status', '==', 'completed'),
-    orderBy('completedAt', 'desc'),
     limit(limitCount),
   );
   const snap = await getDocs(q);
-  return snap.docs.map(mapBoard);
+  return snap.docs
+    .map(mapBoard)
+    .sort((a, b) => (b.completedAt?.getTime() ?? 0) - (a.completedAt?.getTime() ?? 0));
 }
 
 // ─── BR-4: 체크/해제 트랜잭션. BR-5: 라인 재계산. BR-6: 25칸 완성 → completed. ────

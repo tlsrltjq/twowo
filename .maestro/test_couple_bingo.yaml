@@ -23,7 +23,8 @@ appId: host.exp.Exponent
     timeout: 15000
 - takeScreenshot: "bingo_01_enter"
 
-# 기존 활성 보드가 있으면 모두 기록으로 넘겨서 초기화
+# ──── 기존 보드 초기화 (최대 3개 archive) ────────────────────────────────────
+# 활성 보드가 있으면 탭 1 선택 후 archive
 - runFlow:
     when:
       visible:
@@ -31,11 +32,20 @@ appId: host.exp.Exponent
     commands:
       - tapOn: { id: "btn-archive" }
       - waitForAnimationToEnd
-      - tapOn: "기록으로 넘기기"
+      - tapOn: "확인"
       - waitForAnimationToEnd
-      # 이전 기록 → 게임으로 돌아가기
-      - tapOn: { accessibilityLabel: "뒤로 가기" }
+      # history 화면에서 게임으로 복귀
+      - tapOn: { id: "btn-bingo-back" }
       - waitForAnimationToEnd
+
+- runFlow:
+    when:
+      visible:
+        id: "btn-tab-1"
+    commands:
+      - tapOn: { id: "btn-tab-1" }
+      - waitForAnimationToEnd
+
 - runFlow:
     when:
       visible:
@@ -43,57 +53,68 @@ appId: host.exp.Exponent
     commands:
       - tapOn: { id: "btn-archive" }
       - waitForAnimationToEnd
-      - tapOn: "기록으로 넘기기"
+      - tapOn: "확인"
       - waitForAnimationToEnd
-      - tapOn: { accessibilityLabel: "뒤로 가기" }
+      - tapOn: { id: "btn-bingo-back" }
       - waitForAnimationToEnd
 
-# ──── EmptyState 확인 ─────────────────────────────────────────────────────────
 - runFlow:
     when:
       visible:
-        id: "btn-empty-new"
+        id: "btn-tab-1"
     commands:
-      - takeScreenshot: "bingo_02_empty_state"
-      - assertVisible:
-          id: "btn-empty-history"
+      - tapOn: { id: "btn-tab-1" }
+      - waitForAnimationToEnd
 
-# ──── EmptyState → 이전 기록 진입 / 나오기 ───────────────────────────────────
 - runFlow:
     when:
       visible:
-        id: "btn-empty-history"
+        id: "btn-archive"
     commands:
-      - tapOn: { id: "btn-empty-history" }
+      - tapOn: { id: "btn-archive" }
       - waitForAnimationToEnd
-      - takeScreenshot: "bingo_03_history_from_empty"
-      # 이전 기록 → 게임(EmptyState)로 돌아가기
-      - tapOn: { accessibilityLabel: "뒤로 가기" }
+      - tapOn: "확인"
+      - waitForAnimationToEnd
+      - tapOn: { id: "btn-bingo-back" }
       - waitForAnimationToEnd
 
-# ──── 새 빙고판 만들기 (빙고 1) ────────────────────────────────────────────────
-- tapOn:
-    id: "btn-empty-new"
+# ──── EmptyState 대기 및 확인 ────────────────────────────────────────────────
+- extendedWaitUntil:
+    visible:
+      id: "btn-empty-new"
+    timeout: 8000
+- takeScreenshot: "bingo_02_empty_state"
+- assertVisible: { id: "btn-empty-history" }
+
+# ──── EmptyState → 이전 기록 진입/복귀 ───────────────────────────────────────
+- tapOn: { id: "btn-empty-history" }
+- waitForAnimationToEnd
+- takeScreenshot: "bingo_03_history_from_empty"
+- tapOn: { id: "btn-bingo-back" }
+- extendedWaitUntil:
+    visible:
+      id: "btn-empty-new"
+    timeout: 5000
+
+# ──── 새 빙고판 만들기 (빙고 1) ───────────────────────────────────────────────
+- tapOn: { id: "btn-empty-new" }
 - waitForAnimationToEnd
 - takeScreenshot: "bingo_04_setup_view"
 
-# 기본 항목으로 채우기
 - tapOn: { id: "btn-fill-default" }
 - waitForAnimationToEnd
 - takeScreenshot: "bingo_05_setup_filled"
 - assertVisible: { id: "btn-start-board" }
 
-# 시작
 - tapOn: { id: "btn-start-board" }
 - extendedWaitUntil:
     visible:
       id: "btn-archive"
     timeout: 10000
-- waitForAnimationToEnd
 - takeScreenshot: "bingo_06_game_board1"
 - assertVisible: "0 / 25 완료"
 
-# ──── 기록으로 넘기기 — 취소 확인 ────────────────────────────────────────────
+# ──── 기록으로 넘기기 취소 확인 ──────────────────────────────────────────────
 - tapOn: { id: "btn-archive" }
 - waitForAnimationToEnd
 - takeScreenshot: "bingo_07_archive_alert"
@@ -101,19 +122,18 @@ appId: host.exp.Exponent
 - waitForAnimationToEnd
 - assertVisible: { id: "btn-archive" }
 
-# ──── Clock 아이콘 → 이전 기록 화면 ──────────────────────────────────────────
-- tapOn:
-    accessibilityLabel: "이전 기록"
+# ──── Clock → 이전 기록 → 복귀 ────────────────────────────────────────────────
+- tapOn: { id: "btn-history" }
 - waitForAnimationToEnd
-- takeScreenshot: "bingo_08_history_clock"
-# 뒤로 가기 → 게임 복귀
-- tapOn: { accessibilityLabel: "뒤로 가기" }
-- waitForAnimationToEnd
-- assertVisible: { id: "btn-archive" }
+- takeScreenshot: "bingo_08_history_view"
+- tapOn: { id: "btn-bingo-back" }
+- extendedWaitUntil:
+    visible:
+      id: "btn-archive"
+    timeout: 5000
 
-# ──── 두 번째 빙고 추가 → 탭 확인 ───────────────────────────────────────────
-- tapOn:
-    accessibilityLabel: "새 빙고 시작"
+# ──── 두 번째 빙고 추가 → 탭 바 확인 ────────────────────────────────────────
+- tapOn: { id: "btn-new-board" }
 - waitForAnimationToEnd
 - tapOn: { id: "btn-fill-default" }
 - waitForAnimationToEnd
@@ -122,23 +142,20 @@ appId: host.exp.Exponent
     visible:
       id: "btn-tab-1"
     timeout: 10000
-- waitForAnimationToEnd
 - takeScreenshot: "bingo_09_two_boards_tabs"
 - assertVisible: { id: "btn-tab-2" }
 
-# 탭 전환: 빙고 2 선택
+# 탭 전환
 - tapOn: { id: "btn-tab-2" }
 - waitForAnimationToEnd
 - takeScreenshot: "bingo_10_tab2_active"
 
-# 탭 전환: 빙고 1 복귀
 - tapOn: { id: "btn-tab-1" }
 - waitForAnimationToEnd
 - takeScreenshot: "bingo_11_tab1_active"
 
 # ──── 세 번째 빙고 추가 → 최대 3개 확인 ──────────────────────────────────────
-- tapOn:
-    accessibilityLabel: "새 빙고 시작"
+- tapOn: { id: "btn-new-board" }
 - waitForAnimationToEnd
 - tapOn: { id: "btn-fill-default" }
 - tapOn: { id: "btn-start-board" }
@@ -146,40 +163,38 @@ appId: host.exp.Exponent
     visible:
       id: "btn-tab-3"
     timeout: 10000
-- waitForAnimationToEnd
 - takeScreenshot: "bingo_12_three_boards"
-# 3개 시 "새 빙고 시작" 버튼 없어야 함
 - assertNotVisible:
-    accessibilityLabel: "새 빙고 시작"
+    id: "btn-new-board"
 
-# ──── 기록으로 넘기기 후 이전 기록 카드 확인 ─────────────────────────────────
+# ──── 기록으로 넘기기 → 이전 기록 카드 확인 ──────────────────────────────────
 - tapOn: { id: "btn-archive" }
 - waitForAnimationToEnd
-- tapOn: "기록으로 넘기기"
+- tapOn: "확인"
 - extendedWaitUntil:
     visible:
-      text: "#1"
+      id: "btn-history-card-0"
     timeout: 10000
-- waitForAnimationToEnd
 - takeScreenshot: "bingo_13_history_with_card"
 
 # 카드 탭 → 상세 읽기 전용 뷰
-- tapOn:
-    text: "#1"
+- tapOn: { id: "btn-history-card-0" }
 - waitForAnimationToEnd
 - takeScreenshot: "bingo_14_history_detail"
-- assertVisible: "완료"
+- assertVisible:
+    id: "text-detail-header"
 
 # 상세 → 이전 기록 목록
-- tapOn: { accessibilityLabel: "뒤로 가기" }
+- tapOn: { id: "btn-bingo-back" }
 - waitForAnimationToEnd
+- assertVisible: { id: "btn-history-card-0" }
 - takeScreenshot: "bingo_15_history_list"
-- assertVisible: { text: "#1" }
 
 # 이전 기록 → 게임으로
-- tapOn: { accessibilityLabel: "뒤로 가기" }
-- waitForAnimationToEnd
+- tapOn: { id: "btn-bingo-back" }
+- extendedWaitUntil:
+    visible:
+      id: "btn-archive"
+    timeout: 5000
 - takeScreenshot: "bingo_16_back_to_game"
-
-# ──── 최종: 화면 정상 노출 확인 ──────────────────────────────────────────────
 - assertVisible: { id: "screen-bingo" }
