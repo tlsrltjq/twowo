@@ -102,6 +102,7 @@ function RootLayout() {
           <Stack.Screen name="event/new" options={{ presentation: 'modal' }} />
           <Stack.Screen name="event/[id]" />
           <Stack.Screen name="event/edit/[id]" />
+          <Stack.Screen name="legal/[slug]" />
         </Stack>
         <OfflineBanner />
       </GestureHandlerRootView>
