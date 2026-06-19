@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-06-19 | Maestro E2E 전체 통과 | test: 21개 시나리오 중 19개 PASS (2개는 2nd-device 필요). test_mood_save_a scroll 추가, text-detail-header testID 추가.
 ## 2026-06-19 | 빙고 멀티보드 | feat(bingo): 최대 3개 동시 활성 보드 + 탭 전환 + "기록으로 넘기기" 강제 완료. BR-1 변경, subscribeActiveBoards, completeBoard 추가.
 ## 2026-06-19 | 빙고 이전 기록 | feat(bingo): 이전 기록 조회(Clock 아이콘) + 언제든 새 빙고 시작(RefreshCw) + 완료된 빙고판 읽기 전용 뷰. getBoardHistory() + completedAt DESC 복합 인덱스 추가.
 ## 2026-06-19 | 운동 히트맵 | feat(calendar): 운동 탭 월별 히트맵 달력(3단계 색상) + 월 네비게이션 + 이달/전체/현재연속/최고연속 스탯 + 해당 월 운동 목록.

@@ -28,6 +28,7 @@ appId: host.exp.Exponent
 - tapOn:
     id: "btn-mood-good"
 - waitForAnimationToEnd
+- scroll
 - tapOn:
     id: "btn-mood-save"
 - extendedWaitUntil:
