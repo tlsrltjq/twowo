@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { ChevronLeft, RefreshCw } from 'lucide-react-native';
+import { ChevronLeft, Clock, RefreshCw } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
@@ -23,6 +23,7 @@ import {
   BingoBoard,
   DEFAULT_BINGO_ITEMS,
   getBingoCells,
+  getBoardHistory,
   startBoard,
   subscribeActiveBoard,
   toggleCell,
@@ -33,6 +34,8 @@ const GRID_PAD  = space[4];
 const CELL_GAP  = 4;
 const CELL_SIZE = Math.floor((SCREEN_W - GRID_PAD * 2 - CELL_GAP * 4) / 5);
 
+type ScreenMode = 'game' | 'setup' | 'history' | 'history-detail';
+
 // ─── main screen ──────────────────────────────────────────────────────────────
 
 export default function BingoScreen() {
@@ -41,7 +44,12 @@ export default function BingoScreen() {
 
   const { user, coupleId }  = useAuthStore();
   const [board, setBoard]   = useState<BingoBoard | null | 'loading'>('loading');
-  const [mode, setMode]     = useState<'game' | 'setup'>('game');
+  const [mode, setMode]     = useState<ScreenMode>('game');
+
+  const [historyBoards, setHistoryBoards]   = useState<BingoBoard[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [selectedBoard, setSelectedBoard]   = useState<BingoBoard | null>(null);
+  const [setupFromHistory, setSetupFromHistory] = useState(false);
 
   // 이전 completedLines 추적 → 새 빙고 감지 (BR-5/BR-7)
   const prevLinesRef = useRef<number[]>([]);
@@ -50,7 +58,6 @@ export default function BingoScreen() {
     if (!coupleId) return;
     return subscribeActiveBoard(coupleId, b => {
       if (b && board !== 'loading' && typeof board === 'object' && board !== null) {
-        // 새로 완성된 라인 감지
         const newLines = b.completedLines.filter(l => !prevLinesRef.current.includes(l));
         if (newLines.length > 0) {
           Alert.alert('🎉 빙고!', `빙고 ${newLines.length}줄을 완성했어요!`);
@@ -65,6 +72,23 @@ export default function BingoScreen() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coupleId]);
 
+  const loadHistory = useCallback(async () => {
+    if (!coupleId) return;
+    setHistoryLoading(true);
+    try {
+      const boards = await getBoardHistory(coupleId);
+      setHistoryBoards(boards);
+    } catch {
+      // ignore — empty list shown
+    } finally {
+      setHistoryLoading(false);
+    }
+  }, [coupleId]);
+
+  useEffect(() => {
+    if (mode === 'history') loadHistory();
+  }, [mode, loadHistory]);
+
   const handleToggle = useCallback(async (index: number) => {
     if (!board || board === 'loading' || !user) return;
     try {
@@ -74,31 +98,80 @@ export default function BingoScreen() {
     }
   }, [board, user]);
 
-  const handleStartSetup = () => setMode('setup');
+  const handleStartSetup = (fromHistory = false) => {
+    setSetupFromHistory(fromHistory);
+    setMode('setup');
+  };
+
+  const handleCancelSetup = () => {
+    setMode(setupFromHistory ? 'history' : board ? 'game' : 'history');
+  };
+
+  const handleSelectHistory = (b: BingoBoard) => {
+    setSelectedBoard(b);
+    setMode('history-detail');
+  };
 
   if (board === 'loading') {
     return (
       <SafeAreaView style={styles.safeArea} edges={['top']}>
-        <Header onBack={() => router.back()} onNewBoard={undefined} styles={styles} colors={colors} />
+        <Header
+          onBack={() => router.back()}
+          styles={styles}
+          colors={colors}
+        />
         <View style={styles.center}><Spinner /></View>
       </SafeAreaView>
     );
   }
 
+  const headerTitle = mode === 'history' ? '이전 기록'
+    : mode === 'history-detail' ? '완료된 빙고판'
+    : '데이트 빙고 🎯';
+
+  const headerOnBack = mode === 'history-detail'
+    ? () => setMode('history')
+    : mode === 'history'
+    ? () => setMode(board ? 'game' : 'history')
+    : () => router.back();
+
+  const headerOnNewBoard = mode !== 'setup'
+    ? () => handleStartSetup(mode === 'history' || mode === 'history-detail')
+    : undefined;
+
+  const headerOnHistory = (mode === 'game' || (!board && mode !== 'history'))
+    ? () => setMode('history')
+    : undefined;
+
   return (
     <SafeAreaView testID="screen-bingo" style={styles.safeArea} edges={['top']}>
       <Header
-        onBack={() => router.back()}
-        onNewBoard={board ? handleStartSetup : undefined}
+        onBack={headerOnBack}
+        title={headerTitle}
         styles={styles}
         colors={colors}
+        {...(headerOnNewBoard !== undefined ? { onNewBoard: headerOnNewBoard } : {})}
+        {...(headerOnHistory !== undefined ? { onHistory: headerOnHistory } : {})}
       />
 
-      {mode === 'setup' || !board ? (
+      {mode === 'history' ? (
+        <HistoryView
+          boards={historyBoards}
+          loading={historyLoading}
+          onSelectBoard={handleSelectHistory}
+          styles={styles}
+          colors={colors}
+        />
+      ) : mode === 'history-detail' && selectedBoard ? (
+        <HistoryDetailView
+          board={selectedBoard}
+          styles={styles}
+        />
+      ) : mode === 'setup' || !board ? (
         <SetupView
           coupleId={coupleId!}
           onStarted={() => setMode('game')}
-          onCancel={board ? () => setMode('game') : undefined}
+          onCancel={board || setupFromHistory ? handleCancelSetup : undefined}
           styles={styles}
           colors={colors}
         />
@@ -116,11 +189,15 @@ type StylesType = ReturnType<typeof makeStyles>;
 function Header({
   onBack,
   onNewBoard,
+  onHistory,
+  title = '데이트 빙고 🎯',
   styles,
   colors,
 }: {
   onBack: () => void;
-  onNewBoard: (() => void) | undefined;
+  onNewBoard?: () => void;
+  onHistory?: () => void;
+  title?: string;
   styles: StylesType;
   colors: Colors;
 }) {
@@ -129,15 +206,138 @@ function Header({
       <TouchableOpacity onPress={onBack} style={styles.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="뒤로 가기">
         <ChevronLeft size={24} color={colors.text.primary} />
       </TouchableOpacity>
-      <Text style={styles.headerTitle}>데이트 빙고 🎯</Text>
-      {onNewBoard ? (
-        <TouchableOpacity onPress={onNewBoard} style={styles.newBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="새 빙고 시작">
-          <RefreshCw size={20} color={colors.accent.primary} />
-        </TouchableOpacity>
-      ) : (
-        <View style={{ width: 36 }} />
-      )}
+      <Text style={styles.headerTitle}>{title}</Text>
+      <View style={styles.headerRight}>
+        {onHistory && (
+          <TouchableOpacity onPress={onHistory} style={styles.iconBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="이전 기록">
+            <Clock size={20} color={colors.text.secondary} />
+          </TouchableOpacity>
+        )}
+        {onNewBoard && (
+          <TouchableOpacity onPress={onNewBoard} style={styles.iconBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="새 빙고 시작">
+            <RefreshCw size={20} color={colors.accent.primary} />
+          </TouchableOpacity>
+        )}
+        {!onHistory && !onNewBoard && <View style={{ width: 44 }} />}
+      </View>
     </View>
+  );
+}
+
+// ─── history view ─────────────────────────────────────────────────────────────
+
+function HistoryView({
+  boards,
+  loading,
+  onSelectBoard,
+  styles,
+  colors,
+}: {
+  boards: BingoBoard[];
+  loading: boolean;
+  onSelectBoard: (b: BingoBoard) => void;
+  styles: StylesType;
+  colors: Colors;
+}) {
+  if (loading) {
+    return <View style={styles.center}><Spinner /></View>;
+  }
+
+  if (boards.length === 0) {
+    return (
+      <View style={styles.center}>
+        <Text style={styles.emptyTitle}>아직 완성된 빙고판이 없어요</Text>
+        <Text style={styles.emptySub}>빙고판을 완성하면 여기에 기록이 남아요</Text>
+      </View>
+    );
+  }
+
+  return (
+    <FlatList
+      data={boards}
+      keyExtractor={b => b.id}
+      contentContainerStyle={styles.historyList}
+      renderItem={({ item: b, index }) => {
+        const checkedCount = Object.keys(b.checkedItems).length;
+        const completedDate = b.completedAt
+          ? formatDate(b.completedAt)
+          : b.startedAt ? formatDate(b.startedAt) : '-';
+        return (
+          <TouchableOpacity style={styles.historyCard} onPress={() => onSelectBoard(b)} activeOpacity={0.7}>
+            <View style={styles.historyCardLeft}>
+              <Text style={styles.historyNum}>#{boards.length - index}</Text>
+              <View>
+                <Text style={styles.historyDate}>{completedDate}</Text>
+                <Text style={styles.historyStats}>
+                  {checkedCount}/25 완성 · 빙고 {b.completedLines.length}줄
+                </Text>
+              </View>
+            </View>
+            <View style={styles.historyMiniGrid}>
+              {b.items.slice(0, 9).map((_, idx) => {
+                const isChecked = String(idx) in b.checkedItems;
+                return (
+                  <View
+                    key={idx}
+                    style={[
+                      styles.miniCell,
+                      isChecked && { backgroundColor: colors.accent.primary },
+                    ]}
+                  />
+                );
+              })}
+            </View>
+          </TouchableOpacity>
+        );
+      }}
+    />
+  );
+}
+
+// ─── history detail view ──────────────────────────────────────────────────────
+
+function HistoryDetailView({
+  board,
+  styles,
+}: {
+  board: BingoBoard;
+  styles: StylesType;
+}) {
+  const checkedCount = Object.keys(board.checkedItems).length;
+  const bingoCells = useMemo(() => getBingoCells(board.completedLines), [board.completedLines]);
+  const completedDate = board.completedAt ? formatDate(board.completedAt) : '-';
+
+  return (
+    <ScrollView contentContainerStyle={styles.gameContainer} showsVerticalScrollIndicator={false}>
+      <View style={styles.progress}>
+        <Text style={styles.progressText}>{completedDate} 완료</Text>
+        <Text style={styles.progressText}>{checkedCount}/25 · 빙고 {board.completedLines.length}줄</Text>
+      </View>
+
+      <View style={styles.grid}>
+        {board.items.map((item, idx) => {
+          const key = String(idx);
+          const isChecked = key in board.checkedItems;
+          const isBingo   = bingoCells.has(idx);
+          return (
+            <View
+              key={idx}
+              style={[
+                styles.cell,
+                isChecked && styles.cellChecked,
+                isBingo   && styles.cellBingo,
+                styles.cellReadOnly,
+              ]}
+            >
+              <Text style={[styles.cellText, isChecked && styles.cellTextChecked]} numberOfLines={3}>
+                {item}
+              </Text>
+              {isChecked && <Text style={styles.cellCheck}>✓</Text>}
+            </View>
+          );
+        })}
+      </View>
+    </ScrollView>
   );
 }
 
@@ -249,7 +449,6 @@ function GameView({
 
   return (
     <ScrollView contentContainerStyle={styles.gameContainer} showsVerticalScrollIndicator={false}>
-      {/* 진행률 */}
       <View style={styles.progress}>
         <Text style={styles.progressText}>{checkedCount} / 25 완료</Text>
         {board.completedLines.length > 0 && (
@@ -257,7 +456,6 @@ function GameView({
         )}
       </View>
 
-      {/* 5x5 그리드 */}
       <View style={styles.grid}>
         {board.items.map((item, idx) => {
           const key = String(idx);
@@ -296,17 +494,37 @@ function GameView({
   );
 }
 
+// ─── helpers ──────────────────────────────────────────────────────────────────
+
+function formatDate(d: Date): string {
+  return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
+}
+
 // ─── styles ───────────────────────────────────────────────────────────────────
 
 const makeStyles = (colors: Colors) => StyleSheet.create({
   safeArea:          { flex: 1, backgroundColor: colors.bg.base },
   flex:              { flex: 1 },
-  center:            { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  center:            { flex: 1, alignItems: 'center', justifyContent: 'center', gap: space[3] },
 
   header:            { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space[4], paddingVertical: space[4], borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
-  backBtn:           { padding: space[1] },
-  headerTitle:       { ...typography.title2, color: colors.text.primary },
-  newBtn:            { padding: space[2] },
+  backBtn:           { padding: space[1], width: 36 },
+  headerTitle:       { ...typography.title2, color: colors.text.primary, flex: 1, textAlign: 'center' },
+  headerRight:       { flexDirection: 'row', alignItems: 'center', width: 72, justifyContent: 'flex-end' },
+  iconBtn:           { padding: space[2] },
+
+  emptyTitle:        { ...typography.bodyBold, color: colors.text.primary },
+  emptySub:          { ...typography.caption, color: colors.text.muted, textAlign: 'center' },
+
+  // history list
+  historyList:       { padding: space[4], gap: space[3], paddingBottom: space[8] },
+  historyCard:       { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[4], gap: space[3] },
+  historyCardLeft:   { flexDirection: 'row', alignItems: 'center', gap: space[3], flex: 1 },
+  historyNum:        { ...typography.title2, color: colors.accent.primary, minWidth: 32 },
+  historyDate:       { ...typography.bodyBold, color: colors.text.primary },
+  historyStats:      { ...typography.caption, color: colors.text.muted, marginTop: 2 },
+  historyMiniGrid:   { flexDirection: 'row', flexWrap: 'wrap', width: 36, gap: 2 },
+  miniCell:          { width: 10, height: 10, borderRadius: 2, backgroundColor: colors.border.subtle },
 
   // setup
   setupToolbar:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space[4], paddingVertical: space[3] },
@@ -345,6 +563,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   },
   cellChecked:       { backgroundColor: colors.accent.primary, borderColor: colors.accent.primary },
   cellBingo:         { backgroundColor: colors.accent.warm, borderColor: colors.accent.warm },
+  cellReadOnly:      { opacity: 0.9 },
   cellText:          { ...typography.tiny, color: colors.text.secondary, textAlign: 'center', lineHeight: 14 },
   cellTextChecked:   { color: colors.text.inverse, fontFamily: 'Pretendard-SemiBold' },
   cellCheck:         { position: 'absolute', top: 2, right: 4, fontSize: 10, color: 'rgba(255,255,255,0.8)' },

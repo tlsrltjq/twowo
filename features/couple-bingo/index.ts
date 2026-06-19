@@ -5,6 +5,7 @@ import {
   getDocs,
   limit,
   onSnapshot,
+  orderBy,
   query,
   QueryDocumentSnapshot,
   runTransaction,
@@ -99,6 +100,20 @@ export async function startBoard(coupleId: string, items: string[]): Promise<str
   });
   await batch.commit();
   return newRef.id;
+}
+
+// ─── history ──────────────────────────────────────────────────────────────────
+
+export async function getBoardHistory(coupleId: string, limitCount = 20): Promise<BingoBoard[]> {
+  const q = query(
+    collection(db, 'bingoBoards'),
+    where('coupleId', '==', coupleId),
+    where('status', '==', 'completed'),
+    orderBy('completedAt', 'desc'),
+    limit(limitCount),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map(mapBoard);
 }
 
 // BR-4: 체크/해제 트랜잭션. BR-5: 라인 재계산. BR-6: 25칸 완성 → completed.

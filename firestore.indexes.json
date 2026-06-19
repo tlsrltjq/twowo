@@ -52,6 +52,15 @@
       ]
     },
     {
+      "collectionGroup": "bingoBoards",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "coupleId", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "completedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "dateCandidates",
       "queryScope": "COLLECTION",
       "fields": [
