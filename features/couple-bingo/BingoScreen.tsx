@@ -490,7 +490,11 @@ function PersonalBingoView({
             상대방
           </Text>
           <Text style={[styles.tabProgress, personalView === 'partner' && { color: colors.accent.warm }]}>
-            {partnerBoards.length > 0 ? `${Object.keys(partnerBoard?.checkedItems ?? {}).length}/25` : '-'}
+            {partnerBoards.length > 0
+              ? partnerBoard?.status === 'completed'
+                ? `${Object.keys(partnerBoard.checkedItems).length}/25`
+                : `빙고 ${partnerBoard?.completedLines.length ?? 0}줄`
+              : '-'}
           </Text>
         </TouchableOpacity>
       </View>
