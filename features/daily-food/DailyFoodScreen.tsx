@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   KeyboardAvoidingView,
@@ -18,7 +18,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { usePartnerProfile } from '../../core/couple';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { Skeleton } from '../../design-system/Skeleton';
-import { black, colors, radius, space, typography } from '../../design-system/tokens';
+import { useColors } from '../../design-system/ThemeContext';
+import { Colors } from '../../design-system/themes';
+import { black, radius, space, typography } from '../../design-system/tokens';
 import {
 deleteFood,   FoodLog,   logFood, MEAL_EMOJI, MEAL_LABEL, MEAL_TYPES,
 MealType, subscribeTodayFood, suggestMealType,
@@ -33,6 +35,9 @@ function formatTime(d: Date): string {
 }
 
 export default function DailyFoodScreen() {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
   const { user, coupleId }        = useAuthStore();
   const { partnerUid, partnerName } = usePartnerProfile(coupleId, user?.uid ?? null);
   const [logs, setLogs]           = useState<FoodLog[] | null>(null);
@@ -106,7 +111,7 @@ export default function DailyFoodScreen() {
             </View>
           ) : (
             partnerLogs.map(log => (
-              <FoodCard key={log.id} log={log} onDelete={undefined} />
+              <FoodCard key={log.id} log={log} onDelete={undefined} styles={styles} />
             ))
           )}
 
@@ -127,7 +132,7 @@ export default function DailyFoodScreen() {
             </TouchableOpacity>
           ) : (
             myLogs.map(log => (
-              <FoodCard key={log.id} log={log} onDelete={() => handleDelete(log)} />
+              <FoodCard key={log.id} log={log} onDelete={() => handleDelete(log)} styles={styles} />
             ))
           )}
         </ScrollView>
@@ -198,12 +203,16 @@ export default function DailyFoodScreen() {
   );
 }
 
+type StylesType = ReturnType<typeof makeStyles>;
+
 function FoodCard({
   log,
   onDelete,
+  styles,
 }: {
   log: FoodLog;
   onDelete: (() => void) | undefined;
+  styles: StylesType;
 }) {
   return (
     <TouchableOpacity
@@ -225,7 +234,7 @@ function FoodCard({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   safeArea:       { flex: 1, backgroundColor: colors.bg.base },
   flex:           { flex: 1 },
 

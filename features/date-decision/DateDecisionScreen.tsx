@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { ChevronLeft, Plus, Trash2 } from 'lucide-react-native';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -16,7 +16,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { subscribeCouple } from '../../core/couple';
 import { useAuthStore } from '../../core/stores/auth.store';
-import { colors, radius, space, typography } from '../../design-system/tokens';
+import { useColors } from '../../design-system/ThemeContext';
+import { Colors } from '../../design-system/themes';
+import { radius, space, typography } from '../../design-system/tokens';
 import {
   addCandidate,
   castVote,
@@ -35,6 +37,9 @@ const CATEGORIES: VoteCategory[] = ['food', 'activity', 'travel', 'etc'];
 // ─── screen ───────────────────────────────────────────────────────────────────
 
 export default function DateDecisionScreen() {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
   const { user, coupleId } = useAuthStore();
   const [candidates, setCandidates]       = useState<DateCandidate[]>([]);
   const [session, setSession]             = useState<VoteSession | null>(null);
@@ -155,7 +160,7 @@ export default function DateDecisionScreen() {
 
     return (
       <SafeAreaView style={styles.safeArea} edges={['top']}>
-        <Header />
+        <Header styles={styles} colors={colors} />
         <View style={styles.resultsContainer}>
           {isMatch ? (
             <>
@@ -171,9 +176,9 @@ export default function DateDecisionScreen() {
               <Text style={styles.resultEmoji}>🤔</Text>
               <Text style={styles.resultTitle}>아쉽게 달랐어요</Text>
               <View style={styles.noMatchRow}>
-                <VoteResultCard label="나" candidate={myCand} />
+                <VoteResultCard label="나" candidate={myCand} styles={styles} />
                 <Text style={styles.vsText}>VS</Text>
-                <VoteResultCard label="상대방" candidate={partnerCand} />
+                <VoteResultCard label="상대방" candidate={partnerCand} styles={styles} />
               </View>
             </>
           )}
@@ -191,7 +196,7 @@ export default function DateDecisionScreen() {
   // ─── 메인 화면 ───────────────────────────────────────────────────────────────
   return (
     <SafeAreaView testID="screen-date-decision" style={styles.safeArea} edges={['top']}>
-      <Header />
+      <Header styles={styles} colors={colors} />
 
       {/* 세션 상태 배너 */}
       {iWaiting && (
@@ -220,6 +225,8 @@ export default function DateDecisionScreen() {
               sessionActive={!!session}
               onVote={() => handleVote(item.id)}
               onDelete={() => handleDelete(item)}
+              styles={styles}
+              colors={colors}
             />
           )}
           ListFooterComponent={
@@ -295,7 +302,9 @@ export default function DateDecisionScreen() {
 
 // ─── sub-components ───────────────────────────────────────────────────────────
 
-function Header() {
+type StylesType = ReturnType<typeof makeStyles>;
+
+function Header({ styles, colors }: { styles: StylesType; colors: Colors }) {
   return (
     <View style={styles.header}>
       <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="뒤로 가기">
@@ -307,13 +316,15 @@ function Header() {
 }
 
 function CandidateRow({
-  candidate, isSelected, sessionActive, onVote, onDelete,
+  candidate, isSelected, sessionActive, onVote, onDelete, styles, colors,
 }: {
   candidate: DateCandidate;
   isSelected: boolean;
   sessionActive: boolean;
   onVote: () => void;
   onDelete: () => void;
+  styles: StylesType;
+  colors: Colors;
 }) {
   return (
     <TouchableOpacity
@@ -341,7 +352,7 @@ function CandidateRow({
   );
 }
 
-function VoteResultCard({ label, candidate }: { label: string; candidate: DateCandidate | undefined }) {
+function VoteResultCard({ label, candidate, styles }: { label: string; candidate: DateCandidate | undefined; styles: StylesType }) {
   return (
     <View style={styles.resultCard}>
       <Text style={styles.resultCardLabel}>{label}</Text>
@@ -359,7 +370,7 @@ function VoteResultCard({ label, candidate }: { label: string; candidate: DateCa
 
 // ─── styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   safeArea:              { flex: 1, backgroundColor: colors.bg.base },
   flex:                  { flex: 1 },
 

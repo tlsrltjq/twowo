@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -19,7 +19,9 @@ import { usePartnerProfile } from '../../core/couple';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { EmptyState } from '../../design-system/EmptyState';
 import { Skeleton } from '../../design-system/Skeleton';
-import { black, colors, radius, space, typography } from '../../design-system/tokens';
+import { useColors } from '../../design-system/ThemeContext';
+import { Colors } from '../../design-system/themes';
+import { black, radius, space, typography } from '../../design-system/tokens';
 import { addCompliment, Compliment, subscribeCompliments } from './index';
 
 type ViewTab = 'received' | 'sent';
@@ -29,6 +31,9 @@ function formatDate(d: Date): string {
 }
 
 export default function ComplimentJarScreen() {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
   const { user, coupleId } = useAuthStore();
   const { partnerUid, partnerName, couple } = usePartnerProfile(coupleId, user?.uid ?? null);
   const [all, setAll]               = useState<Compliment[] | null>(null);
@@ -122,7 +127,7 @@ export default function ComplimentJarScreen() {
           data={displayed}
           keyExtractor={item => item.id}
           contentContainerStyle={styles.listContent}
-          renderItem={({ item }) => <ComplimentCard compliment={item} />}
+          renderItem={({ item }) => <ComplimentCard compliment={item} styles={styles} />}
         />
       )}
 
@@ -174,7 +179,9 @@ export default function ComplimentJarScreen() {
   );
 }
 
-function ComplimentCard({ compliment }: { compliment: Compliment }) {
+type StylesType = ReturnType<typeof makeStyles>;
+
+function ComplimentCard({ compliment, styles }: { compliment: Compliment; styles: StylesType }) {
   return (
     <View testID="compliment-card" style={styles.card}>
       <Text style={styles.cardText}>{compliment.text}</Text>
@@ -183,7 +190,7 @@ function ComplimentCard({ compliment }: { compliment: Compliment }) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   safeArea:    { flex: 1, backgroundColor: colors.bg.base },
   flex:        { flex: 1 },
 

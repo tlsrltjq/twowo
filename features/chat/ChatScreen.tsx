@@ -1,6 +1,6 @@
 import * as ImagePicker from 'expo-image-picker';
 import { ImageIcon, RefreshCw, Send } from 'lucide-react-native';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -19,7 +19,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { usePartnerProfile } from '../../core/couple';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { ChatEmpty } from '../../design-system/illustrations';
-import { colors, radius, space, typography } from '../../design-system/tokens';
+import { useColors } from '../../design-system/ThemeContext';
+import { Colors } from '../../design-system/themes';
+import { radius, space, typography } from '../../design-system/tokens';
 import { formatDateLabel, getDateKey } from './helpers';
 import { Message, PendingImage,sendImageMessage, sendMessage, subscribeMessages } from './index';
 
@@ -60,6 +62,9 @@ function buildItems(messages: Message[]): (MsgItem | SepItem)[] {
 // ─── component ────────────────────────────────────────────────────────────────
 
 export default function ChatScreen() {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
   const { user, coupleId } = useAuthStore();
   const { partnerName } = usePartnerProfile(coupleId, user?.uid ?? null);
   const [messages, setMessages]       = useState<Message[]>([]);
@@ -260,7 +265,7 @@ export default function ChatScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   safeArea:          { flex: 1, backgroundColor: colors.bg.base },
   flex:              { flex: 1 },
 

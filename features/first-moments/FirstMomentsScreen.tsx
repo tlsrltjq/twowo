@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -19,7 +19,9 @@ import { useAuthStore } from '../../core/stores/auth.store';
 import { getTodayKST } from '../../core/utils/date';
 import { EmptyState } from '../../design-system/EmptyState';
 import { Skeleton } from '../../design-system/Skeleton';
-import { black, colors, radius, space, typography } from '../../design-system/tokens';
+import { useColors } from '../../design-system/ThemeContext';
+import { Colors } from '../../design-system/themes';
+import { black, radius, space, typography } from '../../design-system/tokens';
 import { addFirstMoment, deleteFirstMoment, FirstMoment, subscribeFirstMoments } from './index';
 
 function formatDisplayDate(dateStr: string): string {
@@ -28,6 +30,9 @@ function formatDisplayDate(dateStr: string): string {
 }
 
 export default function FirstMomentsScreen() {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
   const { user, coupleId }        = useAuthStore();
   const [moments, setMoments]     = useState<FirstMoment[] | null>(null);
   const [modalVisible, setModal]  = useState(false);
@@ -109,6 +114,7 @@ export default function FirstMomentsScreen() {
               moment={item}
               isOwner={item.addedBy === user?.uid}
               onDelete={() => handleDelete(item)}
+              styles={styles}
             />
           )}
         />
@@ -191,14 +197,18 @@ export default function FirstMomentsScreen() {
   );
 }
 
+type StylesType = ReturnType<typeof makeStyles>;
+
 function MomentCard({
   moment,
   isOwner,
   onDelete,
+  styles,
 }: {
   moment: FirstMoment;
   isOwner: boolean;
   onDelete: () => void;
+  styles: StylesType;
 }) {
   return (
     <TouchableOpacity
@@ -222,7 +232,7 @@ function MomentCard({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   safeArea:    { flex: 1, backgroundColor: colors.bg.base },
   flex:        { flex: 1 },
 

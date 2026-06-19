@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -17,7 +17,9 @@ import { Button } from '../../design-system/Button';
 import { EmptyState } from '../../design-system/EmptyState';
 import { Spinner } from '../../design-system/Spinner';
 import { Toast } from '../../design-system/Toast';
-import { black, colors, radius, space, typography } from '../../design-system/tokens';
+import { useColors } from '../../design-system/ThemeContext';
+import { Colors } from '../../design-system/themes';
+import { black, radius, space, typography } from '../../design-system/tokens';
 import {
   getRecent7Days,
   getTodayMood,
@@ -33,16 +35,20 @@ const MOOD_LABELS: Record<Mood, string> = {
   okay:  '보통 😐',
   bad:   '별로 😔',
 };
-const MOOD_COLORS: Record<Mood, string> = {
-  great: colors.status.success,
-  good:  colors.accent.primary,
-  okay:  colors.accent.warm,
-  bad:   colors.status.danger,
-};
 
 type ToastState = { message: string; type: 'success' | 'error' | 'info'; visible: boolean };
 
 export default function MoodScreen() {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
+  const MOOD_COLORS: Record<Mood, string> = {
+    great: colors.status.success,
+    good:  colors.accent.primary,
+    okay:  colors.accent.warm,
+    bad:   colors.status.danger,
+  };
+
   const { user, coupleId } = useAuthStore();
   const [myMood, setMyMood]         = useState<MoodCheck | null>(null);
   const [partnerMood, setPartnerMood] = useState<MoodCheck | null>(null);
@@ -209,7 +215,7 @@ export default function MoodScreen() {
             </View>
           </>
         ) : (
-          <MoodDisplay check={myMood} />
+          <MoodDisplay check={myMood} moodColors={MOOD_COLORS} styles={styles} />
         )}
       </View>
 
@@ -217,7 +223,7 @@ export default function MoodScreen() {
       <View style={styles.card}>
         <Text style={styles.cardLabel}>상대방 컨디션</Text>
         {partnerMood ? (
-          <MoodDisplay check={partnerMood} readonly />
+          <MoodDisplay check={partnerMood} readonly moodColors={MOOD_COLORS} styles={styles} />
         ) : (
           <View style={styles.partnerEmpty}>
             <Text style={styles.partnerEmptyText}>아직 입력 전이에요 💭</Text>
@@ -233,7 +239,7 @@ export default function MoodScreen() {
         ) : (
           <View style={styles.historyGrid}>
             {history.map(h => (
-              <HistoryRow key={h.id} check={h} isToday={isToday(h)} />
+              <HistoryRow key={h.id} check={h} isToday={isToday(h)} moodColors={MOOD_COLORS} styles={styles} />
             ))}
           </View>
         )}
@@ -250,11 +256,13 @@ export default function MoodScreen() {
   );
 }
 
-function MoodDisplay({ check, readonly: _readonly = false }: { check: MoodCheck; readonly?: boolean }) {
+type StylesType = ReturnType<typeof makeStyles>;
+
+function MoodDisplay({ check, readonly: _readonly = false, moodColors, styles }: { check: MoodCheck; readonly?: boolean; moodColors: Record<Mood, string>; styles: StylesType }) {
   return (
     <View style={styles.displayRow}>
       <Text style={styles.displayEnergy}>{ENERGY_EMOJIS[check.energy]} {check.energy}</Text>
-      <View style={[styles.moodBadge, { backgroundColor: MOOD_COLORS[check.mood] }]}>
+      <View style={[styles.moodBadge, { backgroundColor: moodColors[check.mood] }]}>
         <Text style={styles.moodBadgeText}>{MOOD_LABELS[check.mood]}</Text>
       </View>
       <Text style={styles.displayMeet}>{check.canMeet ? '✅ 만남 가능' : '❌ 오늘은 어렵대요'}</Text>
@@ -263,20 +271,20 @@ function MoodDisplay({ check, readonly: _readonly = false }: { check: MoodCheck;
   );
 }
 
-function HistoryRow({ check, isToday }: { check: MoodCheck; isToday: boolean }) {
+function HistoryRow({ check, isToday, moodColors, styles }: { check: MoodCheck; isToday: boolean; moodColors: Record<Mood, string>; styles: StylesType }) {
   return (
     <View style={styles.historyRow}>
       <Text style={[styles.historyDate, isToday && styles.historyDateToday]}>
         {isToday ? '오늘' : check.date.slice(5)}
       </Text>
       <Text style={styles.historyEnergy}>{ENERGY_EMOJIS[check.energy]}</Text>
-      <View style={[styles.historyMoodDot, { backgroundColor: MOOD_COLORS[check.mood] }]} />
+      <View style={[styles.historyMoodDot, { backgroundColor: moodColors[check.mood] }]} />
       <Text style={styles.historyMeet}>{check.canMeet ? '✅' : '❌'}</Text>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   safeArea:           { flex: 1, backgroundColor: colors.bg.base },
   container:          { flex: 1 },
   body:               { padding: space[5], gap: space[4], paddingBottom: space[12] },

@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -19,7 +19,9 @@ import { usePartnerProfile } from '../../core/couple';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { EmptyState } from '../../design-system/EmptyState';
 import { Skeleton } from '../../design-system/Skeleton';
-import { black, colors, radius, space, typography } from '../../design-system/tokens';
+import { useColors } from '../../design-system/ThemeContext';
+import { Colors } from '../../design-system/themes';
+import { black, radius, space, typography } from '../../design-system/tokens';
 import {
   addWishlistItem,
   deleteWishlistItem,
@@ -31,6 +33,9 @@ import {
 type ViewTab = 'partner' | 'mine';
 
 export default function GiftWishlistScreen() {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
   const { user, coupleId }        = useAuthStore();
   const { partnerUid, partnerName } = usePartnerProfile(coupleId, user?.uid ?? null);
   const [all, setAll]             = useState<WishlistItem[] | null>(null);
@@ -136,6 +141,7 @@ export default function GiftWishlistScreen() {
               canDelete={item.addedBy === user?.uid}
               onToggleReceived={() => handleToggleReceived(item)}
               onDelete={() => handleDelete(item)}
+              styles={styles}
             />
           )}
         />
@@ -217,18 +223,22 @@ export default function GiftWishlistScreen() {
   );
 }
 
+type StylesType = ReturnType<typeof makeStyles>;
+
 function WishlistCard({
   item,
   showReceiveBtn,
   canDelete,
   onToggleReceived,
   onDelete,
+  styles,
 }: {
   item: WishlistItem;
   showReceiveBtn: boolean;
   canDelete: boolean;
   onToggleReceived: () => void;
   onDelete: () => void;
+  styles: StylesType;
 }) {
   return (
     <TouchableOpacity
@@ -261,7 +271,7 @@ function WishlistCard({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   safeArea:    { flex: 1, backgroundColor: colors.bg.base },
   flex:        { flex: 1 },
 

@@ -16,7 +16,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAuthStore } from '../../core/stores/auth.store';
 import { Spinner } from '../../design-system/Spinner';
-import { colors, radius, space, typography } from '../../design-system/tokens';
+import { useColors } from '../../design-system/ThemeContext';
+import { Colors } from '../../design-system/themes';
+import { radius, space, typography } from '../../design-system/tokens';
 import {
   BingoBoard,
   DEFAULT_BINGO_ITEMS,
@@ -34,6 +36,9 @@ const CELL_SIZE = Math.floor((SCREEN_W - GRID_PAD * 2 - CELL_GAP * 4) / 5);
 // ─── main screen ──────────────────────────────────────────────────────────────
 
 export default function BingoScreen() {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
   const { user, coupleId }  = useAuthStore();
   const [board, setBoard]   = useState<BingoBoard | null | 'loading'>('loading');
   const [mode, setMode]     = useState<'game' | 'setup'>('game');
@@ -74,7 +79,7 @@ export default function BingoScreen() {
   if (board === 'loading') {
     return (
       <SafeAreaView style={styles.safeArea} edges={['top']}>
-        <Header onBack={() => router.back()} onNewBoard={undefined} />
+        <Header onBack={() => router.back()} onNewBoard={undefined} styles={styles} colors={colors} />
         <View style={styles.center}><Spinner /></View>
       </SafeAreaView>
     );
@@ -85,6 +90,8 @@ export default function BingoScreen() {
       <Header
         onBack={() => router.back()}
         onNewBoard={board ? handleStartSetup : undefined}
+        styles={styles}
+        colors={colors}
       />
 
       {mode === 'setup' || !board ? (
@@ -92,9 +99,11 @@ export default function BingoScreen() {
           coupleId={coupleId!}
           onStarted={() => setMode('game')}
           onCancel={board ? () => setMode('game') : undefined}
+          styles={styles}
+          colors={colors}
         />
       ) : (
-        <GameView board={board} myUid={user?.uid ?? ''} onToggle={handleToggle} />
+        <GameView board={board} myUid={user?.uid ?? ''} onToggle={handleToggle} styles={styles} />
       )}
     </SafeAreaView>
   );
@@ -102,12 +111,18 @@ export default function BingoScreen() {
 
 // ─── header ───────────────────────────────────────────────────────────────────
 
+type StylesType = ReturnType<typeof makeStyles>;
+
 function Header({
   onBack,
   onNewBoard,
+  styles,
+  colors,
 }: {
   onBack: () => void;
   onNewBoard: (() => void) | undefined;
+  styles: StylesType;
+  colors: Colors;
 }) {
   return (
     <View style={styles.header}>
@@ -132,10 +147,14 @@ function SetupView({
   coupleId,
   onStarted,
   onCancel,
+  styles,
+  colors,
 }: {
   coupleId: string;
   onStarted: () => void;
   onCancel: (() => void) | undefined;
+  styles: StylesType;
+  colors: Colors;
 }) {
   const [items, setItems] = useState<string[]>([...DEFAULT_BINGO_ITEMS]);
   const [saving, setSaving] = useState(false);
@@ -218,10 +237,12 @@ function GameView({
   board,
   myUid,
   onToggle,
+  styles,
 }: {
   board: BingoBoard;
   myUid: string;
   onToggle: (index: number) => void;
+  styles: StylesType;
 }) {
   const checkedCount = Object.keys(board.checkedItems).length;
   const bingoCells = useMemo(() => getBingoCells(board.completedLines), [board.completedLines]);
@@ -277,7 +298,7 @@ function GameView({
 
 // ─── styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   safeArea:          { flex: 1, backgroundColor: colors.bg.base },
   flex:              { flex: 1 },
   center:            { flex: 1, alignItems: 'center', justifyContent: 'center' },

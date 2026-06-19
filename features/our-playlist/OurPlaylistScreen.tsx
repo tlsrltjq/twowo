@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -21,7 +21,9 @@ import { ListEmpty } from '../../design-system/illustrations';
 import { Skeleton } from '../../design-system/Skeleton';
 import { Spinner } from '../../design-system/Spinner';
 import { Toast } from '../../design-system/Toast';
-import { black, colors, radius, space, typography } from '../../design-system/tokens';
+import { useColors } from '../../design-system/ThemeContext';
+import { Colors } from '../../design-system/themes';
+import { black, radius, space, typography } from '../../design-system/tokens';
 import { addSong, deleteSong, subscribePlaylist } from './index';
 import { PlaylistSong } from './schema';
 
@@ -29,6 +31,9 @@ type ToastState = { message: string; type: 'success' | 'error' | 'info'; visible
 
 export default function OurPlaylistScreen() {
   const router = useRouter();
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
   const { user, coupleId } = useAuthStore();
   const [songs, setSongs]   = useState<PlaylistSong[]>([]);
   const [loading, setLoading] = useState(true);
@@ -151,7 +156,7 @@ export default function OurPlaylistScreen() {
             activeOpacity={0.85}
             testID={`song-card-${song.id}`}
           >
-            <SongCard song={song} isMe={song.addedBy === user?.uid} />
+            <SongCard song={song} isMe={song.addedBy === user?.uid} styles={styles} colors={colors} />
           </TouchableOpacity>
         )}
       />
@@ -244,7 +249,9 @@ export default function OurPlaylistScreen() {
   );
 }
 
-function SongCard({ song, isMe }: { song: PlaylistSong; isMe: boolean }) {
+type StylesType = ReturnType<typeof makeStyles>;
+
+function SongCard({ song, isMe, styles, colors }: { song: PlaylistSong; isMe: boolean; styles: StylesType; colors: Colors }) {
   return (
     <View testID="song-card" style={styles.card}>
       <View style={styles.cardTop}>
@@ -268,7 +275,7 @@ function SongCard({ song, isMe }: { song: PlaylistSong; isMe: boolean }) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   safeArea:      { flex: 1, backgroundColor: colors.bg.base },
   header:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space[4], paddingVertical: space[4], borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
   backBtn:       { padding: space[1] },

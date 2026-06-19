@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -21,7 +21,9 @@ import { EmptyState } from '../../design-system/EmptyState';
 import { ListEmpty } from '../../design-system/illustrations';
 import { Spinner } from '../../design-system/Spinner';
 import { Toast } from '../../design-system/Toast';
-import { black, colors, radius, space, typography } from '../../design-system/tokens';
+import { useColors } from '../../design-system/ThemeContext';
+import { Colors } from '../../design-system/themes';
+import { black, radius, space, typography } from '../../design-system/tokens';
 import {
   getRecent7DaysGratitude,
   getTodayGratitude,
@@ -36,6 +38,9 @@ type ToastState = { message: string; type: 'success' | 'error' | 'info'; visible
 
 export default function GratitudeScreen() {
   const router = useRouter();
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
   const { user, coupleId } = useAuthStore();
   const [myEntry, setMyEntry]         = useState<GratitudeEntry | null>(null);
   const [partnerEntry, setPartnerEntry] = useState<GratitudeEntry | null>(null);
@@ -161,7 +166,7 @@ export default function GratitudeScreen() {
             </View>
           </>
         ) : (
-          <GratitudeDisplay entry={myEntry} />
+          <GratitudeDisplay entry={myEntry} styles={styles} />
         )}
       </View>
 
@@ -169,7 +174,7 @@ export default function GratitudeScreen() {
       <View style={styles.card}>
         <Text style={styles.cardLabel}>상대방의 고마움</Text>
         {partnerEntry ? (
-          <GratitudeDisplay entry={partnerEntry} readonly testID="partner-gratitude" />
+          <GratitudeDisplay entry={partnerEntry} readonly testID="partner-gratitude" styles={styles} />
         ) : (
           <View style={styles.partnerEmpty}>
             <Text style={styles.partnerEmptyText}>아직 입력 전이에요 💭</Text>
@@ -185,7 +190,7 @@ export default function GratitudeScreen() {
         ) : (
           <View style={styles.historyList}>
             {history.map(h => (
-              <HistoryRow key={h.id} entry={h} isToday={isToday(h)} />
+              <HistoryRow key={h.id} entry={h} isToday={isToday(h)} styles={styles} />
             ))}
           </View>
         )}
@@ -203,7 +208,9 @@ export default function GratitudeScreen() {
   );
 }
 
-function GratitudeDisplay({ entry, readonly: _readonly = false, testID }: { entry: GratitudeEntry; readonly?: boolean; testID?: string }) {
+type StylesType = ReturnType<typeof makeStyles>;
+
+function GratitudeDisplay({ entry, readonly: _readonly = false, testID, styles }: { entry: GratitudeEntry; readonly?: boolean; testID?: string; styles: StylesType }) {
   return (
     <View testID={testID} style={styles.displayBox}>
       <Text style={styles.displayMessage}>"{entry.message}"</Text>
@@ -211,7 +218,7 @@ function GratitudeDisplay({ entry, readonly: _readonly = false, testID }: { entr
   );
 }
 
-function HistoryRow({ entry, isToday }: { entry: GratitudeEntry; isToday: boolean }) {
+function HistoryRow({ entry, isToday, styles }: { entry: GratitudeEntry; isToday: boolean; styles: StylesType }) {
   return (
     <View style={styles.historyRow}>
       <Text style={[styles.historyDate, isToday && styles.historyDateToday]}>
@@ -222,7 +229,7 @@ function HistoryRow({ entry, isToday }: { entry: GratitudeEntry; isToday: boolea
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   safeArea:           { flex: 1, backgroundColor: colors.bg.base },
   flex:               { flex: 1 },
   container:          { flex: 1 },

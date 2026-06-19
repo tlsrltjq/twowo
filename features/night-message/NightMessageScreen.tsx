@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   KeyboardAvoidingView,
@@ -17,7 +17,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { usePartnerProfile } from '../../core/couple';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { Skeleton } from '../../design-system/Skeleton';
-import { colors, radius, space, typography } from '../../design-system/tokens';
+import { useColors } from '../../design-system/ThemeContext';
+import { Colors } from '../../design-system/themes';
+import { radius, space, typography } from '../../design-system/tokens';
 import { MessageType, NightMessage, sendNightMessage, subscribeTodayMessages } from './index';
 
 const TABS: { key: MessageType; label: string; emoji: string }[] = [
@@ -32,6 +34,9 @@ function formatTime(d: Date): string {
 }
 
 export default function NightMessageScreen() {
+  const colors = useColors();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
   const { user, coupleId } = useAuthStore();
   const { partnerUid, partnerName } = usePartnerProfile(coupleId, user?.uid ?? null);
   const [activeType, setActiveType] = useState<MessageType>('night');
@@ -167,7 +172,7 @@ export default function NightMessageScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   safeArea:    { flex: 1, backgroundColor: colors.bg.base },
   flex:        { flex: 1 },
 
