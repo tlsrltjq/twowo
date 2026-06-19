@@ -64,9 +64,17 @@ export default function LabScreen() {
 
             return (
               <View key={feature.id} style={[styles.card, enabled && styles.cardOn]}>
-                <View style={styles.cardTop}>
+                <TouchableOpacity
+                  style={styles.cardTop}
+                  activeOpacity={enabled && route ? 0.65 : 1}
+                  onPress={() => enabled && route && router.push(route as Href)}
+                  disabled={!enabled || !route}
+                >
                   <View style={styles.cardInfo}>
-                    <Text style={styles.featureName}>{feature.name}</Text>
+                    <View style={styles.nameRow}>
+                      <Text style={styles.featureName}>{feature.name}</Text>
+                      {enabled && route && <Text style={styles.chevron}>›</Text>}
+                    </View>
                     <Text style={styles.featureDesc}>{feature.description}</Text>
                   </View>
                   <Switch
@@ -78,17 +86,7 @@ export default function LabScreen() {
                     thumbColor={colors.bg.surface}
                     ios_backgroundColor={colors.border.subtle}
                   />
-                </View>
-
-                {enabled && route && (
-                  <TouchableOpacity
-                    style={styles.openBtn}
-                    onPress={() => router.push(route as Href)}
-                    activeOpacity={0.75}
-                  >
-                    <Text style={styles.openBtnText}>화면 열기 →</Text>
-                  </TouchableOpacity>
-                )}
+                </TouchableOpacity>
               </View>
             );
           })
@@ -104,32 +102,27 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   title:       { ...typography.title1, color: colors.text.primary },
   subtitle:    { ...typography.caption, color: colors.text.secondary },
 
-  body:        { padding: space[4], gap: space[3] },
+  body:        { padding: space[4], gap: space[2] },
 
   empty:       { flex: 1, alignItems: 'center', justifyContent: 'center', gap: space[3], paddingTop: space[10] },
   emptyText:   { ...typography.body, color: colors.text.muted },
 
   card:        {
     backgroundColor: colors.bg.surface,
-    borderRadius: radius.lg,
-    padding: space[4],
-    gap: space[3],
+    borderRadius: radius.md,
+    paddingVertical: space[3],
+    paddingHorizontal: space[4],
+    gap: space[2],
     borderWidth: 1,
     borderColor: colors.border.subtle,
   },
   cardOn:      { borderColor: colors.accent.primary + '66' },
 
-  cardTop:     { flexDirection: 'row', alignItems: 'flex-start', gap: space[3] },
-  cardInfo:    { flex: 1, gap: space[1] },
-  featureName: { ...typography.bodyBold, color: colors.text.primary },
-  featureDesc: { ...typography.caption, color: colors.text.secondary },
+  cardTop:     { flexDirection: 'row', alignItems: 'center', gap: space[3] },
+  cardInfo:    { flex: 1, gap: 2 },
+  nameRow:     { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  featureName: { ...typography.body, color: colors.text.primary },
+  chevron:     { fontSize: 16, color: colors.accent.primary, lineHeight: 20 },
+  featureDesc: { ...typography.tiny, color: colors.text.secondary },
 
-  openBtn:     {
-    alignSelf: 'flex-end',
-    paddingVertical: space[2],
-    paddingHorizontal: space[4],
-    backgroundColor: colors.accent.primary,
-    borderRadius: radius.pill,
-  },
-  openBtnText: { ...typography.caption, color: colors.text.inverse, fontFamily: 'Pretendard-SemiBold' },
 });
