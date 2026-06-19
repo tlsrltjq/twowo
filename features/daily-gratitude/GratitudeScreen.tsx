@@ -64,6 +64,7 @@ export default function GratitudeScreen() {
   const [mode, setMode]               = useState<ScreenMode>('main');
   const [pairs, setPairs]             = useState<GratitudePair[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [limitDays, setLimitDays]     = useState(15);
 
   const [toast, setToast] = useState<ToastState>({ message: '', type: 'success', visible: false });
   const show = (msg: string, type: ToastState['type']) =>
@@ -103,11 +104,11 @@ export default function GratitudeScreen() {
     };
   }, [user, coupleId]);
 
-  const loadHistory = useCallback(async () => {
+  const loadHistory = useCallback(async (days: number) => {
     if (!coupleId || !user || !partnerUid) return;
     setHistoryLoading(true);
     try {
-      setPairs(await getPairedGratitudeHistory(coupleId, user.uid, partnerUid, 15));
+      setPairs(await getPairedGratitudeHistory(coupleId, user.uid, partnerUid, days));
     } catch {
       // ignore
     } finally {
@@ -116,8 +117,8 @@ export default function GratitudeScreen() {
   }, [coupleId, user?.uid, partnerUid]);
 
   useEffect(() => {
-    if (mode === 'history') loadHistory();
-  }, [mode, loadHistory]);
+    if (mode === 'history') loadHistory(limitDays);
+  }, [mode, limitDays, loadHistory]);
 
   const handleSave = useCallback(async () => {
     if (!user || !coupleId || saving) return;
@@ -177,6 +178,19 @@ export default function GratitudeScreen() {
                 colors={colors}
               />
             )}
+            ListFooterComponent={
+              pairs.length === limitDays ? (
+                <TouchableOpacity
+                  style={styles.loadMoreBtn}
+                  onPress={() => setLimitDays(prev => prev + 15)}
+                  disabled={historyLoading}
+                >
+                  <Text style={styles.loadMoreText}>
+                    {historyLoading ? '불러오는 중...' : '15일 더 보기'}
+                  </Text>
+                </TouchableOpacity>
+              ) : null
+            }
           />
         )}
       </SafeAreaView>
@@ -194,7 +208,7 @@ export default function GratitudeScreen() {
           <ChevronLeft size={24} color={colors.text.primary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>오늘의 고마움</Text>
-        <TouchableOpacity onPress={() => setMode('history')} style={styles.iconBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="지난 고마움">
+        <TouchableOpacity onPress={() => { setLimitDays(15); setMode('history'); }} style={styles.iconBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="지난 고마움">
           <Clock size={20} color={colors.text.secondary} />
         </TouchableOpacity>
       </View>
@@ -350,4 +364,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   pairMsgLabel:    { ...typography.tiny, color: colors.text.muted },
   pairMsgText:     { ...typography.body, color: colors.text.primary, lineHeight: 22 },
   pairEmpty:       { ...typography.caption, color: colors.text.muted, textAlign: 'center' },
+
+  loadMoreBtn:     { marginTop: space[2], paddingVertical: space[4], alignItems: 'center', borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border.subtle },
+  loadMoreText:    { ...typography.body, color: colors.accent.primary },
 });
