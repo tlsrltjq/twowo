@@ -24,6 +24,7 @@ import { radius, space, typography } from '../../design-system/tokens';
 import {
   addCandidate,
   castVote,
+  clearAllCandidates,
   DateCandidate,
   getVoteHistory,
   removeCandidate,
@@ -161,6 +162,25 @@ export default function DateDecisionScreen() {
     } finally { setSaving(false); }
   }, [coupleId, candidates.length, saving]);
 
+  const handleClearAll = useCallback(() => {
+    if (!coupleId || candidates.length === 0) return;
+    Alert.alert(
+      '전체 삭제',
+      '후보 목록을 전부 지우고 새로 시작할까요?',
+      [
+        { text: '취소', style: 'cancel' },
+        {
+          text: '전부 지우기', style: 'destructive',
+          onPress: async () => {
+            try { await clearAllCandidates(coupleId); } catch {
+              Alert.alert('오류', '삭제에 실패했어요');
+            }
+          },
+        },
+      ],
+    );
+  }, [coupleId, candidates.length]);
+
   // ── history mode ─────────────────────────────────────────────────────────────
   if (mode === 'history') {
     return (
@@ -256,6 +276,7 @@ export default function DateDecisionScreen() {
         title="둘다좋아 💑"
         onBack={() => router.back()}
         onHistory={() => setMode('history')}
+        {...(candidates.length > 0 ? { onClear: handleClearAll } : {})}
         styles={styles}
         colors={colors}
       />
@@ -466,12 +487,14 @@ function Header({
   title,
   onBack,
   onHistory,
+  onClear,
   styles,
   colors,
 }: {
   title: string;
   onBack: () => void;
   onHistory?: () => void;
+  onClear?: () => void;
   styles: StylesType;
   colors: Colors;
 }) {
@@ -482,12 +505,17 @@ function Header({
       </TouchableOpacity>
       <Text style={styles.headerTitle}>{title}</Text>
       <View style={styles.headerRight}>
+        {onClear && (
+          <TouchableOpacity onPress={onClear} style={styles.iconBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="전체 삭제">
+            <Trash2 size={20} color={colors.text.muted} />
+          </TouchableOpacity>
+        )}
         {onHistory && (
           <TouchableOpacity onPress={onHistory} style={styles.iconBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="이전 결과">
             <Clock size={20} color={colors.text.secondary} />
           </TouchableOpacity>
         )}
-        {!onHistory && <View style={{ width: 36 }} />}
+        {!onHistory && !onClear && <View style={{ width: 36 }} />}
       </View>
     </View>
   );
@@ -549,7 +577,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   header:                { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space[4], paddingVertical: space[4], borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
   backBtn:               { padding: space[1], width: 36 },
   headerTitle:           { ...typography.title2, color: colors.text.primary, flex: 1, textAlign: 'center' },
-  headerRight:           { width: 36, alignItems: 'flex-end' },
+  headerRight:           { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: space[1], minWidth: 36 },
   iconBtn:               { padding: space[2] },
 
   waitingBanner:         { backgroundColor: colors.accent.primary + '20', paddingHorizontal: space[4], paddingVertical: space[3] },

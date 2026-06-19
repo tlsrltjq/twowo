@@ -12,6 +12,7 @@ import {
   runTransaction,
   serverTimestamp,
   where,
+  writeBatch,
 } from 'firebase/firestore';
 
 import { db } from '../../core/config/firebase';
@@ -77,6 +78,15 @@ export async function addCandidate(
 
 export async function removeCandidate(candidateId: string): Promise<void> {
   await deleteDoc(doc(db, 'dateCandidates', candidateId));
+}
+
+export async function clearAllCandidates(coupleId: string): Promise<void> {
+  const q = query(collection(db, 'dateCandidates'), where('coupleId', '==', coupleId));
+  const snap = await getDocs(q);
+  if (snap.empty) return;
+  const batch = writeBatch(db);
+  snap.docs.forEach(d => batch.delete(d.ref));
+  await batch.commit();
 }
 
 // ─── sessions ─────────────────────────────────────────────────────────────────
