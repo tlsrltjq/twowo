@@ -151,6 +151,7 @@ export default function SettingsScreen() {
           <View style={styles.darkRow}>
             <Text style={styles.darkLabel}>다크 모드</Text>
             <Switch
+              testID="switch-dark-mode"
               value={isDark}
               onValueChange={setDark}
               trackColor={{ false: colors.border.subtle, true: colors.accent.primary }}

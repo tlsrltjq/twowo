@@ -212,7 +212,8 @@ export default function CalendarScreen() {
           ) : (
             <>
               <Calendar
-                key={calendarKey}
+                key={`${calendarKey}-${colors.bg.base}`}
+                style={{ backgroundColor: colors.bg.base }}
                 current={toYMD(currentMonth)}
                 markingType="multi-dot"
                 markedDates={markedDates}
