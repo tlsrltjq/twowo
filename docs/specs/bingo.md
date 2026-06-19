@@ -49,8 +49,17 @@
 ```
 - 라인 완성 시 Lottie + 햅틱 success(BR-5/7). 셀 토글 = Reanimated scale 0.9→1.0.
 
+## 빙고 모드
+- **함께 빙고(couple)**: 커플이 하나의 보드를 공유. 둘 다 체크 가능. `boardType='couple'`
+- **개인 빙고(personal)**: 각자 자신의 보드를 만들고 본인만 체크. `boardType='personal'`, `ownerUid` 지정. 상대방 보드는 실시간 구독 가능(읽기 전용). 빙고줄 VS 비교로 경쟁.
+
 ## 비즈니스 룰
-- **BR-1**: 한 커플에 활성 빙고판은 최대 3개. 3개 초과 시 새 판 시작 거부. 탭으로 구분. 미완성이어도 "기록으로 넘기기"로 completed 처리 가능.
+- **BR-1**: 한 커플에 함께 빙고판은 최대 3개. 3개 초과 시 새 판 시작 거부. 탭으로 구분. 미완성이어도 "기록으로 넘기기"로 completed 처리 가능.
+- **BR-P1**: 개인 빙고는 각자 별도 5x5 항목 등록. 서로 다른 항목 가능. `boardType='personal'`, `ownerUid=uid`.
+- **BR-P2**: 개인 보드는 `ownerUid` 본인만 체크/해제 가능. 상대방 보드는 읽기 전용(Firestore rules + 앱 UX 양쪽 보장).
+- **BR-P3**: 개인 빙고도 본인 기준 최대 3개 동시 활성. 상대방 보드 수는 무관.
+- **BR-P4**: 상대방 개인 보드 실시간 구독 — `subscribePersonalBoards(coupleId, cb)` 반환값 중 `ownerUid !== myUid` 필터.
+- **BR-P5**: 점수바 — 각 쪽 활성 보드의 `completedLines.length` 합산 표시.
 - **BR-2**: 그리드 크기 5x5 고정. 향후 확장 시 ADR.
 - **BR-3**: 항목 25개 채워지지 않은 상태에서는 시작 불가 (빈 셀 허용 안 함).
 - **BR-4**: 체크/해제는 둘 다 가능. `checkedBy: { [itemId]: { uid, at } }` 로 누가 언제 체크했는지 보존.
@@ -126,7 +135,10 @@ await runTransaction(db, async (tx) => {
 ## BR ↔ 테스트 매핑
 | BR | 종류 | 위치 | 테스트 이름 |
 |----|------|------|-------------|
-| BR-1 | 단위 | features/couple-bingo/__tests__/startBoard.test.ts | '[BR-B1] 기존 active 보드가 있으면 completed로 전환 후 새 보드 생성' |
+| BR-1 | 단위 | features/couple-bingo/__tests__/startBoard.test.ts | '[BR-B1] 기존 활성 보드가 있어도 새 보드를 추가 생성한다 (최대 3개)', '[BR-B1] 활성 보드가 3개면 새 보드 시작 거부' |
+| BR-P1 | 단위 | features/couple-bingo/__tests__/startBoard.test.ts | '[BR-P1] boardType=personal, ownerUid 지정으로 개인 보드 생성' |
+| BR-P2 | 단위 | features/couple-bingo/__tests__/toggleCell.test.ts | (active 승격 시 추가) |
+| BR-P3 | 단위 | features/couple-bingo/__tests__/startBoard.test.ts | '[BR-P3] 개인 보드 3개 초과 시 거부', '[BR-P3] 상대방 개인 보드 3개가 있어도 내 개인 보드는 생성 가능' |
 | BR-2 | 단위 | features/couple-bingo/__tests__/schema.test.ts | '[BR-2] items.length가 25가 아니면 시작 거부 (26개)', '[BR-2] items.length가 25가 아니면 시작 거부 (24개)' |
 | BR-3 | 단위 | features/couple-bingo/__tests__/startBoard.test.ts | '[BR-B3] 25개 미만이면 에러', '[BR-B3] 빈 항목(공백만) 포함 시 에러' |
 | BR-4 | 단위 | features/couple-bingo/__tests__/toggleCell.test.ts | '[BR-4] 체크 시 checkedBy에 uid와 시각이 기록된다', '[BR-4] 체크 해제 시 checkedBy에서 해당 항목이 제거된다' |

@@ -1,6 +1,8 @@
 export interface BingoBoard {
   id: string;
   coupleId: string;
+  boardType: 'couple' | 'personal';                 // 'couple'=공유, 'personal'=개인 (BR-P1)
+  ownerUid: string | null;                           // personal board 소유자; couple board는 null
   status: 'active' | 'completed';
   items: string[];                                    // 길이 25 고정 (BR-2)
   checkedItems: Record<string, true>;                // stringified index → true

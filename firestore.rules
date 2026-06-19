@@ -273,8 +273,11 @@ service cloud.firestore {
       allow get:  if canReadCoupleDoc();
       allow list: if isSignedIn();
       allow create: if isMyCouple(request.resource.data.coupleId);
+      // 개인 보드(boardType=='personal')는 ownerUid 본인만 체크 가능 (BR-P2)
       allow update: if isMyCouple(resource.data.coupleId)
-                    && request.resource.data.coupleId == resource.data.coupleId;
+                    && request.resource.data.coupleId == resource.data.coupleId
+                    && (resource.data.boardType != 'personal'
+                        || resource.data.ownerUid == request.auth.uid);
       allow delete: if isMyCouple(resource.data.coupleId);
     }
 

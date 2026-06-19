@@ -25,8 +25,10 @@ import {
   completeBoard,
   getBingoCells,
   getBoardHistory,
+  getPersonalBoardHistory,
   startBoard,
   subscribeActiveBoards,
+  subscribePersonalBoards,
   toggleCell,
 } from './index';
 
@@ -36,35 +38,45 @@ const CELL_GAP  = 4;
 const CELL_SIZE = Math.floor((SCREEN_W - GRID_PAD * 2 - CELL_GAP * 4) / 5);
 
 type ScreenMode = 'game' | 'setup' | 'history' | 'history-detail';
+type BingoMode  = 'couple' | 'personal';
 
 // ─── main screen ──────────────────────────────────────────────────────────────
 
 export default function BingoScreen() {
   const colors = useColors();
   const styles = useMemo(() => makeStyles(colors), [colors]);
-
   const { user, coupleId } = useAuthStore();
 
-  const [boards, setBoards]       = useState<BingoBoard[] | 'loading'>('loading');
-  const [activeIdx, setActiveIdx] = useState(0);
+  // ── top-level mode ──────────────────────────────────────────────────────────
+  const [bingoMode, setBingoMode] = useState<BingoMode>('couple');
   const [mode, setMode]           = useState<ScreenMode>('game');
 
+  // ── couple boards ───────────────────────────────────────────────────────────
+  const [coupleBoards, setCoupleBoards]   = useState<BingoBoard[] | 'loading'>('loading');
+  const [coupleActiveIdx, setCoupleActiveIdx] = useState(0);
+  const couplePrevLinesRef = useRef<Record<string, number[]>>({});
+
+  // ── personal boards ─────────────────────────────────────────────────────────
+  const [personalBoards, setPersonalBoards] = useState<BingoBoard[] | 'loading'>('loading');
+  const [personalView, setPersonalView]     = useState<'mine' | 'partner'>('mine');
+  const [myBoardIdx, setMyBoardIdx]         = useState(0);
+  const [partnerBoardIdx, setPartnerBoardIdx] = useState(0);
+  const personalPrevLinesRef = useRef<Record<string, number[]>>({});
+
+  // ── history (shared) ────────────────────────────────────────────────────────
   const [historyBoards, setHistoryBoards]   = useState<BingoBoard[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [selectedBoard, setSelectedBoard]   = useState<BingoBoard | null>(null);
   const [setupFromHistory, setSetupFromHistory] = useState(false);
 
-  // boardId → completedLines 추적 (BR-5 새 라인 감지)
-  const prevLinesRef = useRef<Record<string, number[]>>({});
-
+  // ── couple subscription ─────────────────────────────────────────────────────
   useEffect(() => {
     if (!coupleId) return;
     return subscribeActiveBoards(coupleId, incoming => {
-      setBoards(prev => {
+      setCoupleBoards(prev => {
         const prevArr = prev === 'loading' ? [] : prev;
-
         incoming.forEach(b => {
-          const prev = prevLinesRef.current[b.id] ?? [];
+          const prev = couplePrevLinesRef.current[b.id] ?? [];
           const newLines = b.completedLines.filter(l => !prev.includes(l));
           if (newLines.length > 0 && prevArr.length > 0) {
             Alert.alert('🎉 빙고!', `빙고 ${newLines.length}줄을 완성했어요!`);
@@ -73,46 +85,83 @@ export default function BingoScreen() {
           if (b.status === 'completed' && prevBoard?.status !== 'completed') {
             Alert.alert('🏆 완성!', '빙고판을 모두 채웠어요!');
           }
-          prevLinesRef.current[b.id] = b.completedLines;
+          couplePrevLinesRef.current[b.id] = b.completedLines;
         });
-
         return incoming;
       });
-
-      // activeIdx 범위 보정
-      setActiveIdx(prev => (incoming.length === 0 ? 0 : Math.min(prev, incoming.length - 1)));
+      setCoupleActiveIdx(prev => (incoming.length === 0 ? 0 : Math.min(prev, incoming.length - 1)));
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coupleId]);
 
-  const activeBoards = boards === 'loading' ? [] : boards;
-  const board = activeBoards[activeIdx] ?? null;
+  // ── personal subscription ───────────────────────────────────────────────────
+  useEffect(() => {
+    if (!coupleId) return;
+    return subscribePersonalBoards(coupleId, incoming => {
+      setPersonalBoards(prev => {
+        const prevArr = prev === 'loading' ? [] : prev;
+        incoming.filter(b => b.ownerUid === user?.uid).forEach(b => {
+          const prev = personalPrevLinesRef.current[b.id] ?? [];
+          const newLines = b.completedLines.filter(l => !prev.includes(l));
+          if (newLines.length > 0 && prevArr.length > 0) {
+            Alert.alert('🎉 빙고!', `내 개인 빙고 ${newLines.length}줄 완성!`);
+          }
+          personalPrevLinesRef.current[b.id] = b.completedLines;
+        });
+        return incoming;
+      });
+      setMyBoardIdx(prev => {
+        const myCount = incoming.filter(b => b.ownerUid === user?.uid).length;
+        return myCount === 0 ? 0 : Math.min(prev, myCount - 1);
+      });
+      setPartnerBoardIdx(prev => {
+        const partnerCount = incoming.filter(b => b.ownerUid !== user?.uid).length;
+        return partnerCount === 0 ? 0 : Math.min(prev, partnerCount - 1);
+      });
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [coupleId, user?.uid]);
 
+  // ── derived ─────────────────────────────────────────────────────────────────
+  const activeCouple  = coupleBoards === 'loading' ? [] : coupleBoards;
+  const activePersonal = personalBoards === 'loading' ? [] : personalBoards;
+  const myBoards      = activePersonal.filter(b => b.ownerUid === user?.uid);
+  const partnerBoards = activePersonal.filter(b => b.ownerUid !== user?.uid);
+
+  const coupleBoard  = activeCouple[coupleActiveIdx] ?? null;
+  const myBoard      = myBoards[myBoardIdx] ?? null;
+  const partnerBoard = partnerBoards[partnerBoardIdx] ?? null;
+
+  // ── history load ────────────────────────────────────────────────────────────
   const loadHistory = useCallback(async () => {
     if (!coupleId) return;
     setHistoryLoading(true);
     try {
-      const list = await getBoardHistory(coupleId);
+      const list = bingoMode === 'personal' && user?.uid
+        ? await getPersonalBoardHistory(coupleId, user.uid)
+        : await getBoardHistory(coupleId);
       setHistoryBoards(list);
     } catch {
       // ignore
     } finally {
       setHistoryLoading(false);
     }
-  }, [coupleId]);
+  }, [coupleId, bingoMode, user?.uid]);
 
   useEffect(() => {
     if (mode === 'history') loadHistory();
   }, [mode, loadHistory]);
 
+  // ── handlers ────────────────────────────────────────────────────────────────
   const handleToggle = useCallback(async (index: number) => {
+    const board = bingoMode === 'couple' ? coupleBoard : myBoard;
     if (!board || !user) return;
     try {
       await toggleCell(board.id, user.uid, index);
     } catch {
       Alert.alert('오류', '다시 시도해주세요');
     }
-  }, [board, user]);
+  }, [bingoMode, coupleBoard, myBoard, user]);
 
   const handleStartSetup = (fromHistory = false) => {
     setSetupFromHistory(fromHistory);
@@ -120,10 +169,10 @@ export default function BingoScreen() {
   };
 
   const handleCancelSetup = () => {
-    setMode(setupFromHistory ? 'history' : activeBoards.length > 0 ? 'game' : 'history');
+    setMode(setupFromHistory ? 'history' : 'game');
   };
 
-  const handleComplete = () => {
+  const makeHandleComplete = (board: BingoBoard | null) => () => {
     if (!board) return;
     Alert.alert(
       '기록으로 넘기기',
@@ -150,7 +199,15 @@ export default function BingoScreen() {
     setMode('history-detail');
   };
 
-  if (boards === 'loading') {
+  const handleSwitchBingoMode = (next: BingoMode) => {
+    setBingoMode(next);
+    setMode('game');
+    setHistoryBoards([]);
+    setSelectedBoard(null);
+  };
+
+  // ── loading guard ───────────────────────────────────────────────────────────
+  if (coupleBoards === 'loading' || personalBoards === 'loading') {
     return (
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <Header onBack={() => router.back()} styles={styles} colors={colors} />
@@ -159,25 +216,28 @@ export default function BingoScreen() {
     );
   }
 
-  const headerTitle = mode === 'history' ? '이전 기록'
-    : mode === 'history-detail' ? '완료된 빙고판'
+  // ── header config ───────────────────────────────────────────────────────────
+  const headerTitle = mode === 'history'        ? '이전 기록'
+    : mode === 'history-detail'                 ? '완료된 빙고판'
+    : mode === 'setup'                          ? (bingoMode === 'personal' ? '개인 빙고판 만들기' : '함께 빙고판 만들기')
+    : bingoMode === 'personal'                  ? '개인 빙고 ⚔️'
     : '데이트 빙고 🎯';
 
-  const headerOnBack = mode === 'history-detail'
-    ? () => setMode('history')
-    : mode === 'history'
-    ? () => setMode('game')
+  const headerOnBack = mode === 'history-detail' ? () => setMode('history')
+    : mode === 'history' || mode === 'setup'     ? () => setMode('game')
     : () => router.back();
 
-  // 이미 history/history-detail에 있으면 Clock 아이콘 숨김
-  const headerOnHistory = mode !== 'history' && mode !== 'history-detail'
-    ? () => setMode('history')
-    : undefined;
+  const headerOnHistory = (mode !== 'history' && mode !== 'history-detail' && mode !== 'setup')
+    ? () => setMode('history') : undefined;
 
-  const headerOnNewBoard = mode !== 'setup' && activeBoards.length < 3
-    ? () => handleStartSetup(mode === 'history' || mode === 'history-detail')
-    : undefined;
+  const canAddBoard = bingoMode === 'couple'
+    ? activeCouple.length < 3
+    : myBoards.length < 3;
 
+  const headerOnNewBoard = (mode !== 'setup' && canAddBoard && mode !== 'history' && mode !== 'history-detail')
+    ? () => handleStartSetup(false) : undefined;
+
+  // ── render ──────────────────────────────────────────────────────────────────
   return (
     <SafeAreaView testID="screen-bingo" style={styles.safeArea} edges={['top']}>
       <Header
@@ -189,6 +249,17 @@ export default function BingoScreen() {
         {...(headerOnNewBoard !== undefined ? { onNewBoard: headerOnNewBoard } : {})}
       />
 
+      {/* 모드 토글: 함께 / 개인 — game·setup 화면에서만 표시 */}
+      {(mode === 'game' || mode === 'setup') && (
+        <BingoModeToggle
+          value={bingoMode}
+          onChange={handleSwitchBingoMode}
+          styles={styles}
+          colors={colors}
+        />
+      )}
+
+      {/* ── 공통: 이전 기록 / 상세 ── */}
       {mode === 'history' ? (
         <HistoryView
           boards={historyBoards}
@@ -199,44 +270,294 @@ export default function BingoScreen() {
         />
       ) : mode === 'history-detail' && selectedBoard ? (
         <HistoryDetailView board={selectedBoard} styles={styles} />
+
+      // ── 설정 화면 ──
       ) : mode === 'setup' ? (
         <SetupView
           coupleId={coupleId!}
+          boardType={bingoMode}
+          ownerUid={bingoMode === 'personal' ? (user?.uid ?? '') : null}
           onStarted={() => {
-            setActiveIdx(activeBoards.length); // 새 보드는 마지막에 추가됨
+            if (bingoMode === 'couple') {
+              setCoupleActiveIdx(activeCouple.length);
+            } else {
+              setMyBoardIdx(myBoards.length);
+            }
             setMode('game');
           }}
           onCancel={handleCancelSetup}
           styles={styles}
           colors={colors}
         />
-      ) : activeBoards.length === 0 ? (
-        <EmptyState onNew={() => handleStartSetup()} onHistory={() => setMode('history')} styles={styles} colors={colors} />
-      ) : (
-        <View style={styles.flex}>
-          {activeBoards.length > 1 && (
-            <BoardTabs
-              boards={activeBoards}
-              activeIdx={activeIdx}
-              onSelect={setActiveIdx}
-              styles={styles}
-              colors={colors}
-            />
-          )}
-          <GameView
-            board={board!}
-            myUid={user?.uid ?? ''}
-            onToggle={handleToggle}
+
+      // ── 함께 빙고 게임 ──
+      ) : bingoMode === 'couple' ? (
+        activeCouple.length === 0 ? (
+          <EmptyState
+            onNew={() => handleStartSetup()}
+            onHistory={() => setMode('history')}
             styles={styles}
+            colors={colors}
           />
-          {board?.status !== 'completed' && (
-            <TouchableOpacity testID="btn-archive" style={styles.archiveFooter} onPress={handleComplete}>
-              <Text style={styles.archiveBtnText}>기록으로 넘기기</Text>
-            </TouchableOpacity>
-          )}
-        </View>
+        ) : (
+          <View style={styles.flex}>
+            {activeCouple.length > 1 && (
+              <BoardTabs
+                boards={activeCouple}
+                activeIdx={coupleActiveIdx}
+                onSelect={setCoupleActiveIdx}
+                styles={styles}
+                colors={colors}
+              />
+            )}
+            <GameView
+              board={coupleBoard!}
+              myUid={user?.uid ?? ''}
+              onToggle={handleToggle}
+              styles={styles}
+            />
+            {coupleBoard?.status !== 'completed' && (
+              <TouchableOpacity
+                testID="btn-archive"
+                style={styles.archiveFooter}
+                onPress={makeHandleComplete(coupleBoard)}
+              >
+                <Text style={styles.archiveBtnText}>기록으로 넘기기</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        )
+
+      // ── 개인 빙고 게임 ──
+      ) : (
+        <PersonalBingoView
+          myBoards={myBoards}
+          partnerBoards={partnerBoards}
+          myBoardIdx={myBoardIdx}
+          partnerBoardIdx={partnerBoardIdx}
+          myBoard={myBoard}
+          partnerBoard={partnerBoard}
+          personalView={personalView}
+          myUid={user?.uid ?? ''}
+          onSelectMyIdx={setMyBoardIdx}
+          onSelectPartnerIdx={setPartnerBoardIdx}
+          onSetPersonalView={setPersonalView}
+          onToggle={handleToggle}
+          onComplete={makeHandleComplete(myBoard)}
+          onNew={() => handleStartSetup()}
+          onHistory={() => setMode('history')}
+          styles={styles}
+          colors={colors}
+        />
       )}
     </SafeAreaView>
+  );
+}
+
+// ─── bingo mode toggle ────────────────────────────────────────────────────────
+
+function BingoModeToggle({
+  value,
+  onChange,
+  styles,
+  colors,
+}: {
+  value: BingoMode;
+  onChange: (m: BingoMode) => void;
+  styles: StylesType;
+  colors: Colors;
+}) {
+  return (
+    <View style={styles.modeToggleRow}>
+      <TouchableOpacity
+        testID="btn-mode-couple"
+        style={[styles.modeBtn, value === 'couple' && { backgroundColor: colors.accent.primary }]}
+        onPress={() => onChange('couple')}
+      >
+        <Text style={[styles.modeBtnText, value === 'couple' && { color: colors.text.inverse }]}>
+          🤝 함께
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        testID="btn-mode-personal"
+        style={[styles.modeBtn, value === 'personal' && { backgroundColor: colors.accent.warm }]}
+        onPress={() => onChange('personal')}
+      >
+        <Text style={[styles.modeBtnText, value === 'personal' && { color: colors.text.inverse }]}>
+          ⚔️ 개인
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+// ─── personal bingo view ──────────────────────────────────────────────────────
+
+function PersonalBingoView({
+  myBoards,
+  partnerBoards,
+  myBoardIdx,
+  partnerBoardIdx,
+  myBoard,
+  partnerBoard,
+  personalView,
+  myUid,
+  onSelectMyIdx,
+  onSelectPartnerIdx,
+  onSetPersonalView,
+  onToggle,
+  onComplete,
+  onNew,
+  onHistory,
+  styles,
+  colors,
+}: {
+  myBoards: BingoBoard[];
+  partnerBoards: BingoBoard[];
+  myBoardIdx: number;
+  partnerBoardIdx: number;
+  myBoard: BingoBoard | null;
+  partnerBoard: BingoBoard | null;
+  personalView: 'mine' | 'partner';
+  myUid: string;
+  onSelectMyIdx: (i: number) => void;
+  onSelectPartnerIdx: (i: number) => void;
+  onSetPersonalView: (v: 'mine' | 'partner') => void;
+  onToggle: (i: number) => void;
+  onComplete: () => void;
+  onNew: () => void;
+  onHistory: () => void;
+  styles: StylesType;
+  colors: Colors;
+}) {
+  if (myBoards.length === 0 && partnerBoards.length === 0) {
+    return (
+      <View style={styles.emptyContainer}>
+        <Text style={styles.emptyTitle}>개인 빙고판이 없어요</Text>
+        <Text style={styles.emptySub}>각자 자신만의 빙고판을 만들고{'\n'}먼저 빙고를 달성해보세요!</Text>
+        <TouchableOpacity testID="btn-empty-new" style={styles.emptyNewBtn} onPress={onNew}>
+          <Text style={styles.emptyNewBtnText}>내 빙고판 만들기</Text>
+        </TouchableOpacity>
+        <TouchableOpacity testID="btn-empty-history" onPress={onHistory} style={styles.emptyHistBtn}>
+          <Text style={[styles.emptySub, { color: colors.accent.primary }]}>이전 기록 보기</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  // 점수 비교
+  const myLines     = myBoards.reduce((acc, b) => acc + b.completedLines.length, 0);
+  const partnerLines = partnerBoards.reduce((acc, b) => acc + b.completedLines.length, 0);
+
+  const activeBoard = personalView === 'mine' ? myBoard : partnerBoard;
+  const isMyTurn    = personalView === 'mine';
+
+  return (
+    <View style={styles.flex}>
+      {/* 점수바 */}
+      <View style={styles.scorebar}>
+        <View style={styles.scoreItem}>
+          <Text style={[styles.scoreNum, { color: colors.accent.primary }]}>{myLines}</Text>
+          <Text style={styles.scoreLabel}>나 (빙고줄)</Text>
+        </View>
+        <Text style={styles.scoreVs}>VS</Text>
+        <View style={styles.scoreItem}>
+          <Text style={[styles.scoreNum, { color: colors.accent.warm }]}>{partnerLines}</Text>
+          <Text style={styles.scoreLabel}>상대방 (빙고줄)</Text>
+        </View>
+      </View>
+
+      {/* 나 / 상대방 탭 */}
+      <View style={styles.tabBar}>
+        <TouchableOpacity
+          testID="btn-personal-mine"
+          style={[styles.tab, personalView === 'mine' && { borderBottomColor: colors.accent.primary }]}
+          onPress={() => onSetPersonalView('mine')}
+        >
+          <Text style={[styles.tabLabel, personalView === 'mine' && { color: colors.accent.primary, fontFamily: 'Pretendard-SemiBold' }]}>
+            나
+          </Text>
+          <Text style={[styles.tabProgress, personalView === 'mine' && { color: colors.accent.primary }]}>
+            {myBoards.length > 0 ? `${Object.keys(myBoard?.checkedItems ?? {}).length}/25` : '-'}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          testID="btn-personal-partner"
+          style={[styles.tab, personalView === 'partner' && { borderBottomColor: colors.accent.warm }]}
+          onPress={() => onSetPersonalView('partner')}
+        >
+          <Text style={[styles.tabLabel, personalView === 'partner' && { color: colors.accent.warm, fontFamily: 'Pretendard-SemiBold' }]}>
+            상대방
+          </Text>
+          <Text style={[styles.tabProgress, personalView === 'partner' && { color: colors.accent.warm }]}>
+            {partnerBoards.length > 0 ? `${Object.keys(partnerBoard?.checkedItems ?? {}).length}/25` : '-'}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* 하위 보드 탭 (여러 개일 때) */}
+      {isMyTurn && myBoards.length > 1 && (
+        <BoardTabs
+          boards={myBoards}
+          activeIdx={myBoardIdx}
+          onSelect={onSelectMyIdx}
+          styles={styles}
+          colors={colors}
+        />
+      )}
+      {!isMyTurn && partnerBoards.length > 1 && (
+        <BoardTabs
+          boards={partnerBoards}
+          activeIdx={partnerBoardIdx}
+          onSelect={onSelectPartnerIdx}
+          styles={styles}
+          colors={colors}
+        />
+      )}
+
+      {/* 보드 없음 */}
+      {isMyTurn && !myBoard && (
+        <View style={styles.center}>
+          <Text style={styles.emptyTitle}>내 빙고판이 없어요</Text>
+          <TouchableOpacity testID="btn-empty-new" style={styles.emptyNewBtn} onPress={onNew}>
+            <Text style={styles.emptyNewBtnText}>내 빙고판 만들기</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+      {!isMyTurn && !partnerBoard && (
+        <View style={styles.center}>
+          <Text style={styles.emptyTitle}>상대방이 아직 빙고판을 만들지 않았어요</Text>
+          <Text style={styles.emptySub}>상대방이 시작하면 여기에 표시됩니다</Text>
+        </View>
+      )}
+
+      {/* 게임 뷰 */}
+      {activeBoard && (
+        <GameView
+          board={activeBoard}
+          myUid={myUid}
+          onToggle={isMyTurn ? onToggle : () => {}}
+          readOnly={!isMyTurn}
+          styles={styles}
+        />
+      )}
+
+      {/* 기록으로 넘기기 — 내 보드에만 */}
+      {isMyTurn && myBoard?.status !== 'completed' && (
+        <TouchableOpacity
+          testID="btn-archive"
+          style={styles.archiveFooter}
+          onPress={onComplete}
+        >
+          <Text style={styles.archiveBtnText}>기록으로 넘기기</Text>
+        </TouchableOpacity>
+      )}
+      {!isMyTurn && (
+        <View style={styles.readonlyFooter}>
+          <Text style={styles.readonlyText}>상대방 보드 — 읽기 전용</Text>
+        </View>
+      )}
+    </View>
   );
 }
 
@@ -447,12 +768,16 @@ function HistoryDetailView({ board, styles }: { board: BingoBoard; styles: Style
 
 function SetupView({
   coupleId,
+  boardType,
+  ownerUid,
   onStarted,
   onCancel,
   styles,
   colors,
 }: {
   coupleId: string;
+  boardType: 'couple' | 'personal';
+  ownerUid: string | null;
   onStarted: () => void;
   onCancel: () => void;
   styles: StylesType;
@@ -475,11 +800,14 @@ function SetupView({
     }
     setSaving(true);
     try {
-      await startBoard(coupleId, items.map(t => t.trim()));
+      await startBoard(coupleId, items.map(t => t.trim()), {
+        boardType,
+        ...(ownerUid !== null ? { ownerUid } : {}),
+      });
       onStarted();
     } catch (e) {
       const msg = e instanceof Error ? e.message : '';
-      Alert.alert('오류', msg.includes('최대 3개') ? msg : '빙고판 시작에 실패했어요');
+      Alert.alert('오류', (msg.includes('최대 3개') || msg.includes('BR-P3')) ? msg : '빙고판 시작에 실패했어요');
     } finally {
       setSaving(false);
     }
@@ -489,9 +817,14 @@ function SetupView({
     <View style={styles.flex}>
       <View style={styles.setupToolbar}>
         <Text style={styles.setupHint}>25개 항목을 채우세요 ({items.filter(t => t.trim()).length}/25)</Text>
-        <TouchableOpacity testID="btn-fill-default" onPress={() => setItems([...DEFAULT_BINGO_ITEMS])} style={styles.fillBtn}>
-          <Text style={styles.fillBtnText}>기본으로 채우기</Text>
-        </TouchableOpacity>
+        <View style={styles.setupToolbarBtns}>
+          <TouchableOpacity testID="btn-fill-default" onPress={() => setItems([...DEFAULT_BINGO_ITEMS])} style={styles.fillBtn}>
+            <Text style={styles.fillBtnText}>기본값</Text>
+          </TouchableOpacity>
+          <TouchableOpacity testID="btn-clear-all" onPress={() => setItems(Array(25).fill(''))} style={[styles.fillBtn, { marginLeft: space[2] }]}>
+            <Text style={[styles.fillBtnText, { color: colors.text.muted }]}>전체 비우기</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <FlatList
@@ -512,6 +845,7 @@ function SetupView({
             />
           </View>
         )}
+        ListFooterComponent={<GridPreview styles={styles} colors={colors} />}
       />
 
       <View style={styles.setupFooter}>
@@ -531,17 +865,36 @@ function SetupView({
   );
 }
 
+// ─── grid number preview ──────────────────────────────────────────────────────
+
+function GridPreview({ styles, colors }: { styles: StylesType; colors: Colors }) {
+  return (
+    <View style={styles.previewContainer}>
+      <Text style={styles.previewTitle}>칸 번호 위치 미리보기</Text>
+      <View style={styles.previewGrid}>
+        {Array.from({ length: 25 }, (_, i) => (
+          <View key={i} style={styles.previewCell}>
+            <Text style={[styles.previewCellNum, { color: colors.accent.primary }]}>{i + 1}</Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 // ─── game view ────────────────────────────────────────────────────────────────
 
 function GameView({
   board,
   myUid,
   onToggle,
+  readOnly = false,
   styles,
 }: {
   board: BingoBoard;
   myUid: string;
   onToggle: (index: number) => void;
+  readOnly?: boolean;
   styles: StylesType;
 }) {
   const checkedCount = Object.keys(board.checkedItems).length;
@@ -566,9 +919,9 @@ function GameView({
           return (
             <TouchableOpacity
               key={idx}
-              style={[styles.cell, isChecked && styles.cellChecked, isBingo && styles.cellBingo]}
-              onPress={() => onToggle(idx)}
-              activeOpacity={0.7}
+              style={[styles.cell, isChecked && styles.cellChecked, isBingo && styles.cellBingo, readOnly && styles.cellReadonly]}
+              onPress={() => !readOnly && onToggle(idx)}
+              activeOpacity={readOnly ? 1 : 0.7}
             >
               <Text style={[styles.cellText, isChecked && styles.cellTextChecked]} numberOfLines={3}>
                 {item}
@@ -581,7 +934,7 @@ function GameView({
 
       {board.status === 'completed' && (
         <View style={styles.completedBanner}>
-          <Text style={styles.completedText}>🏆 빙고판 완성! 새 판을 시작해보세요 (우상단 ↺)</Text>
+          <Text style={styles.completedText}>🏆 빙고판 완성!</Text>
         </View>
       )}
     </ScrollView>
@@ -607,9 +960,21 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   headerRight:       { flexDirection: 'row', alignItems: 'center', width: 72, justifyContent: 'flex-end' },
   iconBtn:           { padding: space[2] },
 
+  // mode toggle
+  modeToggleRow:     { flexDirection: 'row', gap: space[2], paddingHorizontal: space[4], paddingVertical: space[3], borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
+  modeBtn:           { flex: 1, paddingVertical: space[3], alignItems: 'center', borderRadius: radius.lg, backgroundColor: colors.bg.subtle },
+  modeBtnText:       { ...typography.caption, color: colors.text.secondary, fontFamily: 'Pretendard-SemiBold' },
+
+  // scorebar
+  scorebar:          { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: space[3], gap: space[6], backgroundColor: colors.bg.surface },
+  scoreItem:         { alignItems: 'center', gap: 2 },
+  scoreNum:          { ...typography.title2, fontFamily: 'Pretendard-SemiBold' },
+  scoreLabel:        { ...typography.tiny, color: colors.text.muted },
+  scoreVs:           { ...typography.bodyBold, color: colors.text.muted },
+
   // empty state
   emptyContainer:    { flex: 1, alignItems: 'center', justifyContent: 'center', padding: space[6], gap: space[4] },
-  emptyTitle:        { ...typography.bodyBold, color: colors.text.primary },
+  emptyTitle:        { ...typography.bodyBold, color: colors.text.primary, textAlign: 'center' },
   emptySub:          { ...typography.caption, color: colors.text.muted, textAlign: 'center' },
   emptyNewBtn:       { paddingHorizontal: space[6], paddingVertical: space[4], backgroundColor: colors.accent.primary, borderRadius: radius.lg },
   emptyNewBtnText:   { ...typography.bodyBold, color: colors.text.inverse },
@@ -633,7 +998,8 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
 
   // setup
   setupToolbar:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space[4], paddingVertical: space[3] },
-  setupHint:         { ...typography.caption, color: colors.text.muted },
+  setupToolbarBtns:  { flexDirection: 'row', alignItems: 'center' },
+  setupHint:         { ...typography.caption, color: colors.text.muted, flex: 1 },
   fillBtn:           { paddingHorizontal: space[3], paddingVertical: space[2], backgroundColor: colors.bg.subtle, borderRadius: radius.pill },
   fillBtnText:       { ...typography.caption, color: colors.accent.primary },
   setupList:         { paddingHorizontal: space[4], gap: space[2], paddingBottom: space[4] },
@@ -646,6 +1012,13 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   startBtn:          { flex: 2, paddingVertical: space[4], alignItems: 'center', borderRadius: radius.lg, backgroundColor: colors.accent.primary },
   startBtnDisabled:  { backgroundColor: colors.border.subtle },
   startBtnText:      { ...typography.bodyBold, color: colors.text.inverse },
+
+  // grid number preview
+  previewContainer:  { marginTop: space[6], marginBottom: space[4], paddingHorizontal: space[4] },
+  previewTitle:      { ...typography.caption, color: colors.text.muted, marginBottom: space[3], textAlign: 'center' },
+  previewGrid:       { flexDirection: 'row', flexWrap: 'wrap', gap: CELL_GAP },
+  previewCell:       { width: CELL_SIZE, height: CELL_SIZE * 0.6, backgroundColor: colors.bg.surface, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.border.subtle },
+  previewCellNum:    { ...typography.caption, fontFamily: 'Pretendard-SemiBold' },
 
   // game
   gameContainer:     { padding: GRID_PAD, gap: space[4], paddingBottom: space[8] },
@@ -668,6 +1041,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   },
   cellChecked:       { backgroundColor: colors.accent.primary, borderColor: colors.accent.primary },
   cellBingo:         { backgroundColor: colors.accent.warm, borderColor: colors.accent.warm },
+  cellReadonly:      { opacity: 0.85 },
   cellText:          { ...typography.tiny, color: colors.text.secondary, textAlign: 'center', lineHeight: 14 },
   cellTextChecked:   { color: colors.text.inverse, fontFamily: 'Pretendard-SemiBold' },
   cellCheck:         { position: 'absolute', top: 2, right: 4, fontSize: 10, color: 'rgba(255,255,255,0.8)' },
@@ -677,4 +1051,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
 
   archiveFooter:     { borderTopWidth: 1, borderTopColor: colors.border.subtle, alignItems: 'center', paddingVertical: space[4] },
   archiveBtnText:    { ...typography.caption, color: colors.text.muted },
+
+  readonlyFooter:    { borderTopWidth: 1, borderTopColor: colors.border.subtle, alignItems: 'center', paddingVertical: space[3] },
+  readonlyText:      { ...typography.tiny, color: colors.text.muted },
 });

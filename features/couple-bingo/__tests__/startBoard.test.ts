@@ -60,4 +60,49 @@ describe('[BR-B1/3] startBoard', () => {
     }
     await expect(startBoard('couple1', ITEMS_25)).rejects.toThrow('최대 3개까지');
   });
+
+  test('[BR-P1] boardType=personal, ownerUid 지정으로 개인 보드 생성', async () => {
+    const id = await startBoard('couple1', ITEMS_25, { boardType: 'personal', ownerUid: 'uid-a' });
+    expect(typeof id).toBe('string');
+    const db = getMockDb();
+    const board = db.get(`bingoBoards/${id}`)!;
+    expect(board.boardType).toBe('personal');
+    expect(board.ownerUid).toBe('uid-a');
+    expect(board.status).toBe('active');
+  });
+
+  test('[BR-P3] 개인 보드 3개 초과 시 거부', async () => {
+    for (let i = 1; i <= 3; i++) {
+      seedMockDb(`bingoBoards/personal${i}`, {
+        coupleId: 'couple1',
+        boardType: 'personal',
+        ownerUid: 'uid-a',
+        status: 'active',
+        items: ITEMS_25,
+        checkedItems: {},
+        checkedBy: {},
+        completedLines: [],
+      });
+    }
+    await expect(
+      startBoard('couple1', ITEMS_25, { boardType: 'personal', ownerUid: 'uid-a' }),
+    ).rejects.toThrow('BR-P3');
+  });
+
+  test('[BR-P3] 상대방 개인 보드 3개가 있어도 내 개인 보드는 생성 가능', async () => {
+    for (let i = 1; i <= 3; i++) {
+      seedMockDb(`bingoBoards/partner${i}`, {
+        coupleId: 'couple1',
+        boardType: 'personal',
+        ownerUid: 'uid-b', // partner's UID
+        status: 'active',
+        items: ITEMS_25,
+        checkedItems: {},
+        checkedBy: {},
+        completedLines: [],
+      });
+    }
+    const id = await startBoard('couple1', ITEMS_25, { boardType: 'personal', ownerUid: 'uid-a' });
+    expect(typeof id).toBe('string');
+  });
 });
