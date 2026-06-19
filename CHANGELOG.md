@@ -5,6 +5,10 @@
 
 ---
 
+## 2026-06-19 | 오늘의 고마움 히스토리 페이지네이션 | feat(daily-gratitude): 히스토리 화면 분리 + 15일 양측 쌍 보기 + 15일씩 더 보기 버튼(limitDays += 15 재조회).
+## 2026-06-19 | 오늘의 밥 전면 개편 | feat(daily-food): 이름 변경(오늘 뭐 먹었어→오늘의 밥), 4칸 사진 슬롯(아침/점심/간식/저녁), setMealPhoto/addExtraPhoto, 파트너 위·나 아래, 날짜 목록 히스토리.
+## 2026-06-19 | 자기 전 한마디 개선 | feat(night-message): 히스토리 화면(Clock) + 빠른 문구 칩 7종(잘자/아침 탭별).
+## 2026-06-19 | 둘다좋아 전체 삭제 | feat(date-decision): Trash2 아이콘 → clearAllCandidates() writeBatch 삭제.
 ## 2026-06-19 | 둘다좋아 개선 | feat(date-decision): 히스토리 화면(Clock 아이콘) + 예시 제안 칩(가로 스크롤) + 카테고리 탭/칩·다시하기 버튼 제거. getVoteHistory() 추가.
 ## 2026-06-19 | 개인 빙고 모드 | feat(bingo): 함께/개인 모드 토글, 각자 보드 등록·체크, VS 점수바, 칸 비우기, 번호 위치 미리보기 그리드.
 ## 2026-06-19 | Maestro E2E 전체 통과 | test: 21개 시나리오 중 19개 PASS (2개는 2nd-device 필요). test_mood_save_a scroll 추가, text-detail-header testID 추가.

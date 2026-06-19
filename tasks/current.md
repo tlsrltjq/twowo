@@ -87,14 +87,11 @@
 - [ ] **security-rules 통합 테스트 확대** — 컬렉션당 "타인 차단" 1개씩 추가. 현재 3개뿐인데 rules 352줄이 사실상 백엔드
 - [ ] **subscribeUnreadCount 정확도** — `limit(10)` 후 클라이언트 필터라 10개 초과 시 배지 부정확. 실사용 중 문제되면 서버사이드 카운터로 교체
 
-## 이전 세션에서 멈춘 곳 (2026-06-19 27차)
-- ✅ 빙고 멀티보드(탭, 최대 3개) + 기록으로 넘기기 + 이전 기록 뷰
-- ✅ Maestro E2E 전체 점검: 21개 시나리오 19 PASS (2개는 2nd-device B 전용 — 단일기기 환경에서 expected failure)
-- ✅ test_mood_save_a: scroll 추가로 btn-mood-save 노출 문제 해결
-- ✅ HistoryDetailView text-detail-header testID 추가로 assertVisible PASS
-- ✅ 개인 빙고 모드(boardType=personal) — 각자 보드 등록, 본인만 체크, VS 점수바, 상대 보드 마스킹, 랜덤 셔플, 빙고 팡! 애니메이션
-- ✅ SetupView: 전체 비우기 버튼 + 칸 번호 위치 미리보기 그리드
-- ✅ 둘다좋아 개선: 히스토리 화면 + 예시 제안 칩 + 카테고리/다시하기 제거
+## 이전 세션에서 멈춘 곳 (2026-06-19 28차)
+- ✅ 둘다좋아: 전체 삭제(Trash2 → clearAllCandidates writeBatch)
+- ✅ 자기 전 한마디: 히스토리 화면(Clock) + 빠른 문구 칩 7종(잘자/아침 탭별)
+- ✅ 오늘의 밥(daily-food): 이름 변경, 4칸 사진 슬롯(setMealPhoto/addExtraPhoto), 파트너 위·나 아래, 날짜 목록 히스토리
+- ✅ 오늘의 고마움: 히스토리 화면 분리, 15일 양측 쌍 카드, 15일씩 더 보기 페이지네이션
 - 다음: TestFlight 준비 또는 추가 기능 개선
 
 ## 진행 중인 작업 (시뮬레이터 전용)
