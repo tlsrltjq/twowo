@@ -822,8 +822,11 @@ function SetupView({
           <TouchableOpacity testID="btn-fill-default" onPress={() => setItems([...DEFAULT_BINGO_ITEMS])} style={styles.fillBtn}>
             <Text style={styles.fillBtnText}>기본값</Text>
           </TouchableOpacity>
+          <TouchableOpacity testID="btn-shuffle" onPress={() => setItems(prev => shuffleArray([...prev]))} style={[styles.fillBtn, { marginLeft: space[2] }]}>
+            <Text style={styles.fillBtnText}>🔀 섞기</Text>
+          </TouchableOpacity>
           <TouchableOpacity testID="btn-clear-all" onPress={() => setItems(Array(25).fill(''))} style={[styles.fillBtn, { marginLeft: space[2] }]}>
-            <Text style={[styles.fillBtnText, { color: colors.text.muted }]}>전체 비우기</Text>
+            <Text style={[styles.fillBtnText, { color: colors.text.muted }]}>비우기</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -967,6 +970,14 @@ function GameView({
 
 function formatDate(d: Date): string {
   return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
+}
+
+function shuffleArray<T>(arr: T[]): T[] {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j]!, arr[i]!];
+  }
+  return arr;
 }
 
 // ─── styles ───────────────────────────────────────────────────────────────────
