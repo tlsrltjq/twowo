@@ -87,15 +87,12 @@
 - [ ] **security-rules 통합 테스트 확대** — 컬렉션당 "타인 차단" 1개씩 추가. 현재 3개뿐인데 rules 352줄이 사실상 백엔드
 - [ ] **subscribeUnreadCount 정확도** — `limit(10)` 후 클라이언트 필터라 10개 초과 시 배지 부정확. 실사용 중 문제되면 서버사이드 카운터로 교체
 
-## 이전 세션에서 멈춘 곳 (2026-06-19 24차)
+## 이전 세션에서 멈춘 곳 (2026-06-19 25차)
 - ✅ 기념일 100일·주년·만난날 마커 — 달력 날짜칸 + 주간 뷰 헤더 chip
-  - getAnniversaryMarkers 유틸 (만난날/N×100일/N주년), Timestamp→Date 변환(tsToDate)
-  - _CalendarDayCell anniversaryLabel prop, _WeekAgenda anniversaryChip
-- ✅ 다크 모드 미적용 화면 전체 수정
-  - chat/mood + features 11종: static colors → useColors() + makeStyles 패턴
-  - react-native-calendars: key에 colors.bg.base 추가 → 테마 변경 시 재마운트
-  - Calendar theme에 dayTextColor/monthTextColor 등 4개 추가
-- 다음: 추가 작업 필요 시 사용자 선택, 또는 TestFlight 준비
+- ✅ 다크 모드 미적용 화면 전체 수정 (chat/mood + features 11종 + react-native-calendars)
+- ✅ 실험실 탭: 기능 카드 컴팩트화 + 화면열기 → 이름 탭 + › 쉐브론
+- ✅ 운동 탭 히트맵: 월별 히트맵 달력(3단계 색상) + 월 네비게이션 + 4종 스탯 + 해당 월 이벤트 목록
+- 다음: 데이트 탭 추가 개선, 또는 TestFlight 준비
 
 ## 진행 중인 작업 (시뮬레이터 전용)
 > **보류 항목 (비용 발생)**: Apple Developer Program · Firebase Storage Blaze · TestFlight 등. 언급하지 않음.

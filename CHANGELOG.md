@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-06-19 | 운동 히트맵 | feat(calendar): 운동 탭 월별 히트맵 달력(3단계 색상) + 월 네비게이션 + 이달/전체/현재연속/최고연속 스탯 + 해당 월 운동 목록.
 ## 2026-06-19 | 다크모드 전면 수정 | fix(theme): chat·mood·features 11종 static colors → useColors() 전환. react-native-calendars key에 bg.base 추가로 배경 재마운트 보장. dayTextColor 등 4개 theme prop 추가.
 ## 2026-06-19 | 기념일 마커 | feat(calendar): 만난날·100일·200일·…·1주년·2주년… 달력 날짜칸(작은 텍스트) + 주간 뷰 헤더 chip 표시. Timestamp→Date 변환 버그 수정.
 ## 2026-06-17 | 런타임 테마 시스템 | feat(theme): accent 6종(rose/coral/violet/blue/green/amber) × 라이트/다크 — buildColors, ThemeContext, useColors 훅, theme.store(AsyncStorage 영속), 31개 컴포넌트 makeStyles 패턴 전환. 설정 화면에 accent picker + 다크모드 스위치 추가.
