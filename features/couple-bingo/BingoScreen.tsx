@@ -1014,7 +1014,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   startBtnText:      { ...typography.bodyBold, color: colors.text.inverse },
 
   // grid number preview
-  previewContainer:  { marginTop: space[6], marginBottom: space[4], paddingHorizontal: space[4] },
+  previewContainer:  { marginTop: space[6], marginBottom: space[4] },
   previewTitle:      { ...typography.caption, color: colors.text.muted, marginBottom: space[3], textAlign: 'center' },
   previewGrid:       { flexDirection: 'row', flexWrap: 'wrap', gap: CELL_GAP },
   previewCell:       { width: CELL_SIZE, height: CELL_SIZE * 0.6, backgroundColor: colors.bg.surface, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.border.subtle },
