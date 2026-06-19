@@ -61,6 +61,11 @@ export type AnniversaryMarker = { dateString: string; label: string; isYearly: b
 export function getAnniversaryMarkers(base: Date, from: Date, to: Date): AnniversaryMarker[] {
   const markers: AnniversaryMarker[] = [];
 
+  // 만난날 (기념일 당일)
+  if (base >= from && base <= to) {
+    markers.push({ dateString: toLocalYMD(base), label: '만난날', isYearly: true });
+  }
+
   // 주년
   for (let year = 1; year <= 100; year++) {
     const d = new Date(base.getFullYear() + year, base.getMonth(), base.getDate());
@@ -68,7 +73,7 @@ export function getAnniversaryMarkers(base: Date, from: Date, to: Date): Anniver
     if (d >= from) markers.push({ dateString: toLocalYMD(d), label: `${year}주년`, isYearly: true });
   }
 
-  // 100일 (주년과 겹치면 제외)
+  // 100일 (만난날·주년과 겹치면 제외)
   const yearlySet = new Set(markers.map(m => m.dateString));
   for (let n = 1; n <= 5000; n++) {
     const d = addDays(base, n * 100 - 1);
