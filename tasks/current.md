@@ -87,12 +87,14 @@
 - [ ] **security-rules 통합 테스트 확대** — 컬렉션당 "타인 차단" 1개씩 추가. 현재 3개뿐인데 rules 352줄이 사실상 백엔드
 - [ ] **subscribeUnreadCount 정확도** — `limit(10)` 후 클라이언트 필터라 10개 초과 시 배지 부정확. 실사용 중 문제되면 서버사이드 카운터로 교체
 
-## 이전 세션에서 멈춘 곳 (2026-06-17 23차)
-- ✅ 캘린더 포토 썸네일 원형 배경 표시 수정 완료 (22차)
-- ✅ 주간 아젠다 뷰 구현 완료 — WeekAgenda로 WeekStrip 교체, 7일 세로 목록, 오늘 강조
-- ✅ 런타임 테마 시스템 구현 완료 — accent 6종 × 라이트/다크, 설정 화면 picker
-  - design-system/themes.ts, ThemeContext.tsx, core/stores/theme.store.ts 신규
-  - 31개 컴포넌트 makeStyles(colors) 패턴으로 전환, tsc 0 errors
+## 이전 세션에서 멈춘 곳 (2026-06-19 24차)
+- ✅ 기념일 100일·주년·만난날 마커 — 달력 날짜칸 + 주간 뷰 헤더 chip
+  - getAnniversaryMarkers 유틸 (만난날/N×100일/N주년), Timestamp→Date 변환(tsToDate)
+  - _CalendarDayCell anniversaryLabel prop, _WeekAgenda anniversaryChip
+- ✅ 다크 모드 미적용 화면 전체 수정
+  - chat/mood + features 11종: static colors → useColors() + makeStyles 패턴
+  - react-native-calendars: key에 colors.bg.base 추가 → 테마 변경 시 재마운트
+  - Calendar theme에 dayTextColor/monthTextColor 등 4개 추가
 - 다음: 추가 작업 필요 시 사용자 선택, 또는 TestFlight 준비
 
 ## 진행 중인 작업 (시뮬레이터 전용)

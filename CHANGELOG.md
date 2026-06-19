@@ -5,6 +5,8 @@
 
 ---
 
+## 2026-06-19 | 다크모드 전면 수정 | fix(theme): chat·mood·features 11종 static colors → useColors() 전환. react-native-calendars key에 bg.base 추가로 배경 재마운트 보장. dayTextColor 등 4개 theme prop 추가.
+## 2026-06-19 | 기념일 마커 | feat(calendar): 만난날·100일·200일·…·1주년·2주년… 달력 날짜칸(작은 텍스트) + 주간 뷰 헤더 chip 표시. Timestamp→Date 변환 버그 수정.
 ## 2026-06-17 | 런타임 테마 시스템 | feat(theme): accent 6종(rose/coral/violet/blue/green/amber) × 라이트/다크 — buildColors, ThemeContext, useColors 훅, theme.store(AsyncStorage 영속), 31개 컴포넌트 makeStyles 패턴 전환. 설정 화면에 accent picker + 다크모드 스위치 추가.
 ## 2026-06-17 | 주간 아젠다 뷰 | feat(calendar): WeekStrip을 WeekAgenda로 교체 — 7일 날짜+이벤트 세로 목록, 오늘 강조(배경+chip), 이전/다음 주 탐색, 빈 날 "일정 없음". 테마 시스템 완전 연동.
 ## 2026-06-17 | 캘린더 포토 썸네일 원형 배경 표시 수정 | fix(calendar): 날짜칸 사진이 원형 배경으로 표시 안 되던 문제 수정 — addDoc→setDoc(문서 ID 일치), toLocalYMD(타임존), photoIds[last](최신 사진), hasThumbnail marking으로 Day 리렌더 보장, marking.selected로 선택 상태 수정. Maestro E2E test_photo_upload PASS, 캘린더 17일 원형 썸네일 확인.
