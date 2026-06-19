@@ -53,6 +53,35 @@ export function startOfWeek(d: Date): Date {
   return date;
 }
 
+export type AnniversaryMarker = { dateString: string; label: string; isYearly: boolean };
+
+// 사귀기 시작한 날(base)부터 [from, to] 범위 내의 100일·주년 마커 목록 반환.
+// 100일: base +99일, +199일, ... (N×100 번째 날)
+// 주년: 같은 월일로 N년 후 (주년이 100일과 겹치면 주년 우선)
+export function getAnniversaryMarkers(base: Date, from: Date, to: Date): AnniversaryMarker[] {
+  const markers: AnniversaryMarker[] = [];
+
+  // 주년
+  for (let year = 1; year <= 100; year++) {
+    const d = new Date(base.getFullYear() + year, base.getMonth(), base.getDate());
+    if (d > to) break;
+    if (d >= from) markers.push({ dateString: toLocalYMD(d), label: `${year}주년`, isYearly: true });
+  }
+
+  // 100일 (주년과 겹치면 제외)
+  const yearlySet = new Set(markers.map(m => m.dateString));
+  for (let n = 1; n <= 5000; n++) {
+    const d = addDays(base, n * 100 - 1);
+    if (d > to) break;
+    if (d >= from) {
+      const ds = toLocalYMD(d);
+      if (!yearlySet.has(ds)) markers.push({ dateString: ds, label: `${n * 100}일`, isYearly: false });
+    }
+  }
+
+  return markers;
+}
+
 export function isBeforeMidnightKST(date: Date): boolean {
   const kst = new Date(date.getTime() + KST_OFFSET_MS);
   const todayKST = nowKST();

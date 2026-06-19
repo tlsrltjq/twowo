@@ -17,6 +17,7 @@ export function WeekAgenda({
   loading,
   myUid,
   partnerName,
+  anniversaryMarkers = {},
   onPrevWeek,
   onNextWeek,
 }: {
@@ -25,6 +26,7 @@ export function WeekAgenda({
   loading: boolean;
   myUid: string;
   partnerName?: string;
+  anniversaryMarkers?: Record<string, string>;
   onPrevWeek: () => void;
   onNextWeek: () => void;
 }) {
@@ -78,6 +80,11 @@ export function WeekAgenda({
                     {day.getMonth() + 1}.{String(day.getDate()).padStart(2, '0')}
                   </Text>
                   {isToday && <View style={styles.todayChip}><Text style={styles.todayChipText}>오늘</Text></View>}
+                  {anniversaryMarkers[ymd] && (
+                    <View style={styles.anniversaryChip}>
+                      <Text style={styles.anniversaryChipText}>{anniversaryMarkers[ymd]}</Text>
+                    </View>
+                  )}
                 </View>
               </View>
 
@@ -115,8 +122,10 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   weekdayText:     { ...typography.caption, color: colors.text.muted, width: 14 },
   dateText:        { ...typography.bodyBold, color: colors.text.primary },
   todayAccent:     { color: colors.accent.primary },
-  todayChip:       { backgroundColor: colors.accent.primary, borderRadius: radius.pill, paddingHorizontal: space[2], paddingVertical: 1 },
-  todayChipText:   { ...typography.tiny, color: colors.text.inverse, fontFamily: 'Pretendard-SemiBold' },
+  todayChip:          { backgroundColor: colors.accent.primary, borderRadius: radius.pill, paddingHorizontal: space[2], paddingVertical: 1 },
+  todayChipText:      { ...typography.tiny, color: colors.text.inverse, fontFamily: 'Pretendard-SemiBold' },
+  anniversaryChip:    { backgroundColor: colors.accent.coral + '22', borderRadius: radius.pill, paddingHorizontal: space[2], paddingVertical: 1, borderWidth: 1, borderColor: colors.accent.coral + '66' },
+  anniversaryChipText: { ...typography.tiny, color: colors.accent.coral, fontFamily: 'Pretendard-SemiBold' },
   emptyText:       { ...typography.caption, color: colors.text.muted, paddingLeft: space[2] + 14 + space[2], paddingBottom: space[2] },
   eventList:       { gap: space[2], paddingBottom: space[2] },
   skeleton:        { height: 56, borderRadius: radius.md, marginBottom: space[2] },

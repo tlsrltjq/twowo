@@ -12,6 +12,7 @@ export function CalendarDayCell({
   isDisabled = false,
   dots,
   thumbnailUrl,
+  anniversaryLabel,
   onPress,
 }: {
   day: number;
@@ -20,6 +21,7 @@ export function CalendarDayCell({
   isDisabled?: boolean;
   dots: { color: string }[];
   thumbnailUrl?: string | undefined;
+  anniversaryLabel?: string;
   onPress?: () => void;
 }) {
   const colors = useColors();
@@ -59,6 +61,9 @@ export function CalendarDayCell({
           ))}
         </View>
       )}
+      {anniversaryLabel && (
+        <Text style={styles.anniversaryLabel}>{anniversaryLabel}</Text>
+      )}
     </TouchableOpacity>
   );
 }
@@ -68,12 +73,14 @@ export function MonthDayComponent({
   state,
   dots,
   thumbnailUrl,
+  anniversaryLabel,
   onPress,
 }: {
   date?: { day: number; dateString: string } | undefined;
   state?: string | undefined;
   dots: { color: string }[];
   thumbnailUrl?: string | undefined;
+  anniversaryLabel?: string;
   onPress: () => void;
 }) {
   if (!date) return null;
@@ -85,6 +92,7 @@ export function MonthDayComponent({
       isDisabled={state === 'disabled'}
       dots={dots}
       thumbnailUrl={thumbnailUrl}
+      {...(anniversaryLabel !== undefined ? { anniversaryLabel } : {})}
       onPress={onPress}
     />
   );
@@ -105,4 +113,5 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   dayNumberOnPhoto:     { color: colors.text.inverse, fontFamily: 'Pretendard-SemiBold', textShadowColor: 'rgba(0,0,0,0.6)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3 },
   dotsRow:              { flexDirection: 'row', gap: 2, marginTop: 2 },
   dot:                  { width: 5, height: 5, borderRadius: 2.5 },
+  anniversaryLabel:     { fontSize: 8, lineHeight: 10, color: colors.accent.primary, fontFamily: 'Pretendard-SemiBold', marginTop: 1 },
 });

@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   FlatList,
   Pressable,
@@ -17,10 +17,11 @@ import { ExerciseView } from '../../components/calendar/_ExerciseView';
 import { PhotoView } from '../../components/calendar/_PhotoView';
 import { CalendarEventCard, useDotColor } from '../../components/calendar/_shared';
 import { WeekAgenda } from '../../components/calendar/_WeekAgenda';
+import { Couple, subscribeCouple } from '../../core/couple';
 import { usePartnerProfile } from '../../core/couple/usePartnerProfile';
 import { useCalendarEvents, useCalendarEventsByType, useEventThumbnails, usePhotoEvents } from '../../core/memory';
 import { useAuthStore } from '../../core/stores/auth.store';
-import { addDays, parseYMD, startOfWeek, toYMD } from '../../core/utils/date';
+import { addDays, getAnniversaryMarkers, parseYMD, startOfWeek, toYMD } from '../../core/utils/date';
 import { EmptyState } from '../../design-system/EmptyState';
 import { CalendarEmpty } from '../../design-system/illustrations';
 import { Skeleton } from '../../design-system/Skeleton';
@@ -49,6 +50,11 @@ export default function CalendarScreen() {
   const { coupleId, user } = useAuthStore();
   const myUid = user?.uid ?? '';
   const { partnerName } = usePartnerProfile(coupleId, myUid || null);
+  const [couple, setCouple] = useState<Couple | null>(null);
+  useEffect(() => {
+    if (!coupleId) return;
+    return subscribeCouple(coupleId, setCouple);
+  }, [coupleId]);
 
   const [activeView, setActiveView]     = useState<ViewTab>('calendar');
   const [calendarMode, setCalendarMode] = useState<CalendarMode>('month');
@@ -84,6 +90,13 @@ export default function CalendarScreen() {
   );
 
   const thumbnails = useEventThumbnails(events);
+
+  const anniversaryBase = couple?.anniversaryDate ?? couple?.createdAt;
+  const anniversaryMarkers = useMemo<Record<string, string>>(() => {
+    if (!anniversaryBase) return {};
+    const list = getAnniversaryMarkers(anniversaryBase, rangeFrom, rangeTo);
+    return Object.fromEntries(list.map(m => [m.dateString, m.label]));
+  }, [anniversaryBase, rangeFrom, rangeTo]);
 
   const dotsByDate = useMemo(() => {
     const marks: Record<string, { color: string }[]> = {};
@@ -188,6 +201,7 @@ export default function CalendarScreen() {
               loading={loading}
               myUid={myUid}
               partnerName={partnerName}
+              anniversaryMarkers={anniversaryMarkers}
               onPrevWeek={goPrevWeek}
               onNextWeek={goNextWeek}
             />
@@ -206,6 +220,7 @@ export default function CalendarScreen() {
                     state={marking?.selected ? 'selected' : state}
                     dots={date ? dotsByDate[date.dateString] ?? [] : []}
                     thumbnailUrl={date ? thumbnails[date.dateString] : undefined}
+                    {...(date && anniversaryMarkers[date.dateString] ? { anniversaryLabel: anniversaryMarkers[date.dateString] } : {})}
                     onPress={() => onPress?.(date)}
                   />
                 )}
