@@ -3,6 +3,7 @@ import { ChevronLeft, Clock, RefreshCw } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
+  Animated,
   Dimensions,
   FlatList,
   ScrollView,
@@ -73,18 +74,8 @@ export default function BingoScreen() {
   useEffect(() => {
     if (!coupleId) return;
     return subscribeActiveBoards(coupleId, incoming => {
-      setCoupleBoards(prev => {
-        const prevArr = prev === 'loading' ? [] : prev;
+      setCoupleBoards(() => {
         incoming.forEach(b => {
-          const prev = couplePrevLinesRef.current[b.id] ?? [];
-          const newLines = b.completedLines.filter(l => !prev.includes(l));
-          if (newLines.length > 0 && prevArr.length > 0) {
-            Alert.alert('🎉 빙고!', `빙고 ${newLines.length}줄을 완성했어요!`);
-          }
-          const prevBoard = prevArr.find(pb => pb.id === b.id);
-          if (b.status === 'completed' && prevBoard?.status !== 'completed') {
-            Alert.alert('🏆 완성!', '빙고판을 모두 채웠어요!');
-          }
           couplePrevLinesRef.current[b.id] = b.completedLines;
         });
         return incoming;
@@ -98,14 +89,8 @@ export default function BingoScreen() {
   useEffect(() => {
     if (!coupleId) return;
     return subscribePersonalBoards(coupleId, incoming => {
-      setPersonalBoards(prev => {
-        const prevArr = prev === 'loading' ? [] : prev;
+      setPersonalBoards(() => {
         incoming.filter(b => b.ownerUid === user?.uid).forEach(b => {
-          const prev = personalPrevLinesRef.current[b.id] ?? [];
-          const newLines = b.completedLines.filter(l => !prev.includes(l));
-          if (newLines.length > 0 && prevArr.length > 0) {
-            Alert.alert('🎉 빙고!', `내 개인 빙고 ${newLines.length}줄 완성!`);
-          }
           personalPrevLinesRef.current[b.id] = b.completedLines;
         });
         return incoming;
@@ -904,11 +889,28 @@ function GameView({
   myUid: string;
   onToggle: (index: number) => void;
   readOnly?: boolean;
-  masked?: boolean;   // 상대방 개인 보드 진행 중: 내용·체크·빙고 위치 숨김
+  masked?: boolean;
   styles: StylesType;
 }) {
   const checkedCount = Object.keys(board.checkedItems).length;
   const bingoCells = useMemo(() => getBingoCells(board.completedLines), [board.completedLines]);
+
+  // 빙고 라인 달성 시 반짝임 애니메이션
+  const shimmer = useRef(new Animated.Value(0)).current;
+  const prevLineCount = useRef(board.completedLines.length);
+  useEffect(() => {
+    if (board.completedLines.length > prevLineCount.current) {
+      shimmer.setValue(0);
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(shimmer, { toValue: 1, duration: 180, useNativeDriver: true }),
+          Animated.timing(shimmer, { toValue: 0, duration: 180, useNativeDriver: true }),
+        ]),
+        { iterations: 5 },
+      ).start();
+    }
+    prevLineCount.current = board.completedLines.length;
+  }, [board.completedLines.length, shimmer]);
 
   if (masked) {
     return (
@@ -956,6 +958,12 @@ function GameView({
                 {item}
               </Text>
               {isChecked && <Text style={styles.cellCheck}>{checkedByMe ? '✓' : '✔'}</Text>}
+              {isBingo && (
+                <Animated.View
+                  pointerEvents="none"
+                  style={[StyleSheet.absoluteFill, styles.cellShimmer, { opacity: shimmer }]}
+                />
+              )}
             </TouchableOpacity>
           );
         })}
@@ -1080,6 +1088,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   cellBingo:         { backgroundColor: colors.accent.warm, borderColor: colors.accent.warm },
   cellReadonly:      { opacity: 0.85 },
   cellMasked:        { width: CELL_SIZE, height: CELL_SIZE, backgroundColor: colors.bg.subtle, borderRadius: radius.sm, borderWidth: 1, borderColor: colors.border.subtle },
+  cellShimmer:       { backgroundColor: 'rgba(255,255,255,0.55)', borderRadius: radius.sm },
   cellText:          { ...typography.tiny, color: colors.text.secondary, textAlign: 'center', lineHeight: 14 },
   cellTextChecked:   { color: colors.text.inverse, fontFamily: 'Pretendard-SemiBold' },
   cellCheck:         { position: 'absolute', top: 2, right: 4, fontSize: 10, color: 'rgba(255,255,255,0.8)' },
