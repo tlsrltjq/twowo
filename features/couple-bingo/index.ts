@@ -10,6 +10,7 @@ import {
   QueryDocumentSnapshot,
   runTransaction,
   serverTimestamp,
+  updateDoc,
   where,
   writeBatch,
 } from 'firebase/firestore';
@@ -44,29 +45,39 @@ function mapBoard(d: QueryDocumentSnapshot<DocumentData>): BingoBoard {
   };
 }
 
-// ─── subscription ──────────────────────────────────────────────────────────────
+// ─── subscriptions ────────────────────────────────────────────────────────────
 
-export function subscribeActiveBoard(
+// 활성 보드 최대 3개 구독 (BR-1: 동시 최대 3개)
+export function subscribeActiveBoards(
   coupleId: string,
-  cb: (board: BingoBoard | null) => void,
+  cb: (boards: BingoBoard[]) => void,
 ): () => void {
   const q = query(
     collection(db, 'bingoBoards'),
     where('coupleId', '==', coupleId),
     where('status', '==', 'active'),
-    limit(1),
+    orderBy('startedAt', 'asc'),
+    limit(3),
   );
   return onSnapshot(
     q,
-    snap => cb(snap.empty ? null : mapBoard(snap.docs[0]!)),
-    ()   => cb(null),
+    snap => cb(snap.docs.map(mapBoard)),
+    ()   => cb([]),
   );
+}
+
+// 단일 구독 — 하위 호환 (기존 코드에서 사용 중인 경우 대비)
+export function subscribeActiveBoard(
+  coupleId: string,
+  cb: (board: BingoBoard | null) => void,
+): () => void {
+  return subscribeActiveBoards(coupleId, boards => cb(boards[0] ?? null));
 }
 
 // ─── mutations ────────────────────────────────────────────────────────────────
 
-// BR-1: 이전 활성 보드 completed 처리 후 새 보드 생성
-// BR-3: 25개 미만 or 빈 항목 있으면 에러
+// BR-1: 동시 최대 3개. 초과 시 에러.
+// BR-3: 25개 미만 or 빈 항목 있으면 에러.
 export async function startBoard(coupleId: string, items: string[]): Promise<string> {
   if (items.length !== 25) throw new Error('items must be exactly 25');
   if (items.some(t => !t.trim())) throw new Error('items cannot be empty (BR-3)');
@@ -76,18 +87,12 @@ export async function startBoard(coupleId: string, items: string[]): Promise<str
     collection(db, 'bingoBoards'),
     where('coupleId', '==', coupleId),
     where('status', '==', 'active'),
-    limit(1),
+    limit(3),
   );
   const activeSnap = await getDocs(activeQ);
+  if (activeSnap.size >= 3) throw new Error('최대 3개까지 동시에 진행할 수 있어요 (BR-1)');
 
   const batch = writeBatch(db);
-  if (!activeSnap.empty) {
-    batch.update(activeSnap.docs[0]!.ref, {
-      status: 'completed',
-      completedAt: serverTimestamp(),
-    });
-  }
-
   const newRef = doc(collection(db, 'bingoBoards'));
   batch.set(newRef, {
     coupleId,
@@ -100,6 +105,14 @@ export async function startBoard(coupleId: string, items: string[]): Promise<str
   });
   await batch.commit();
   return newRef.id;
+}
+
+// 강제 완료 처리 — 다 못 끝내도 기록으로 넘기기
+export async function completeBoard(boardId: string): Promise<void> {
+  await updateDoc(doc(db, 'bingoBoards', boardId), {
+    status: 'completed',
+    completedAt: serverTimestamp(),
+  });
 }
 
 // ─── history ──────────────────────────────────────────────────────────────────
@@ -116,7 +129,8 @@ export async function getBoardHistory(coupleId: string, limitCount = 20): Promis
   return snap.docs.map(mapBoard);
 }
 
-// BR-4: 체크/해제 트랜잭션. BR-5: 라인 재계산. BR-6: 25칸 완성 → completed.
+// ─── BR-4: 체크/해제 트랜잭션. BR-5: 라인 재계산. BR-6: 25칸 완성 → completed. ────
+
 export async function toggleCell(
   boardId: string,
   uid: string,

@@ -22,10 +22,11 @@ import { radius, space, typography } from '../../design-system/tokens';
 import {
   BingoBoard,
   DEFAULT_BINGO_ITEMS,
+  completeBoard,
   getBingoCells,
   getBoardHistory,
   startBoard,
-  subscribeActiveBoard,
+  subscribeActiveBoards,
   toggleCell,
 } from './index';
 
@@ -42,44 +43,59 @@ export default function BingoScreen() {
   const colors = useColors();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
-  const { user, coupleId }  = useAuthStore();
-  const [board, setBoard]   = useState<BingoBoard | null | 'loading'>('loading');
-  const [mode, setMode]     = useState<ScreenMode>('game');
+  const { user, coupleId } = useAuthStore();
+
+  const [boards, setBoards]       = useState<BingoBoard[] | 'loading'>('loading');
+  const [activeIdx, setActiveIdx] = useState(0);
+  const [mode, setMode]           = useState<ScreenMode>('game');
 
   const [historyBoards, setHistoryBoards]   = useState<BingoBoard[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [selectedBoard, setSelectedBoard]   = useState<BingoBoard | null>(null);
   const [setupFromHistory, setSetupFromHistory] = useState(false);
 
-  // 이전 completedLines 추적 → 새 빙고 감지 (BR-5/BR-7)
-  const prevLinesRef = useRef<number[]>([]);
+  // boardId → completedLines 추적 (BR-5 새 라인 감지)
+  const prevLinesRef = useRef<Record<string, number[]>>({});
 
   useEffect(() => {
     if (!coupleId) return;
-    return subscribeActiveBoard(coupleId, b => {
-      if (b && board !== 'loading' && typeof board === 'object' && board !== null) {
-        const newLines = b.completedLines.filter(l => !prevLinesRef.current.includes(l));
-        if (newLines.length > 0) {
-          Alert.alert('🎉 빙고!', `빙고 ${newLines.length}줄을 완성했어요!`);
-        }
-        if (b.status === 'completed' && board.status !== 'completed') {
-          Alert.alert('🏆 완성!', '빙고판을 모두 채웠어요! 새 판을 시작해볼까요?');
-        }
-      }
-      prevLinesRef.current = b?.completedLines ?? [];
-      setBoard(b);
+    return subscribeActiveBoards(coupleId, incoming => {
+      setBoards(prev => {
+        const prevArr = prev === 'loading' ? [] : prev;
+
+        incoming.forEach(b => {
+          const prev = prevLinesRef.current[b.id] ?? [];
+          const newLines = b.completedLines.filter(l => !prev.includes(l));
+          if (newLines.length > 0 && prevArr.length > 0) {
+            Alert.alert('🎉 빙고!', `빙고 ${newLines.length}줄을 완성했어요!`);
+          }
+          const prevBoard = prevArr.find(pb => pb.id === b.id);
+          if (b.status === 'completed' && prevBoard?.status !== 'completed') {
+            Alert.alert('🏆 완성!', '빙고판을 모두 채웠어요!');
+          }
+          prevLinesRef.current[b.id] = b.completedLines;
+        });
+
+        return incoming;
+      });
+
+      // activeIdx 범위 보정
+      setActiveIdx(prev => (incoming.length === 0 ? 0 : Math.min(prev, incoming.length - 1)));
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coupleId]);
+
+  const activeBoards = boards === 'loading' ? [] : boards;
+  const board = activeBoards[activeIdx] ?? null;
 
   const loadHistory = useCallback(async () => {
     if (!coupleId) return;
     setHistoryLoading(true);
     try {
-      const boards = await getBoardHistory(coupleId);
-      setHistoryBoards(boards);
+      const list = await getBoardHistory(coupleId);
+      setHistoryBoards(list);
     } catch {
-      // ignore — empty list shown
+      // ignore
     } finally {
       setHistoryLoading(false);
     }
@@ -90,7 +106,7 @@ export default function BingoScreen() {
   }, [mode, loadHistory]);
 
   const handleToggle = useCallback(async (index: number) => {
-    if (!board || board === 'loading' || !user) return;
+    if (!board || !user) return;
     try {
       await toggleCell(board.id, user.uid, index);
     } catch {
@@ -104,7 +120,29 @@ export default function BingoScreen() {
   };
 
   const handleCancelSetup = () => {
-    setMode(setupFromHistory ? 'history' : board ? 'game' : 'history');
+    setMode(setupFromHistory ? 'history' : activeBoards.length > 0 ? 'game' : 'history');
+  };
+
+  const handleComplete = () => {
+    if (!board) return;
+    Alert.alert(
+      '기록으로 넘기기',
+      '미완성 항목이 있어도 지금까지의 기록을 저장하고 완료 처리합니다.',
+      [
+        { text: '취소', style: 'cancel' },
+        {
+          text: '기록으로 넘기기',
+          onPress: async () => {
+            try {
+              await completeBoard(board.id);
+              setMode('history');
+            } catch {
+              Alert.alert('오류', '다시 시도해주세요');
+            }
+          },
+        },
+      ],
+    );
   };
 
   const handleSelectHistory = (b: BingoBoard) => {
@@ -112,14 +150,10 @@ export default function BingoScreen() {
     setMode('history-detail');
   };
 
-  if (board === 'loading') {
+  if (boards === 'loading') {
     return (
       <SafeAreaView style={styles.safeArea} edges={['top']}>
-        <Header
-          onBack={() => router.back()}
-          styles={styles}
-          colors={colors}
-        />
+        <Header onBack={() => router.back()} styles={styles} colors={colors} />
         <View style={styles.center}><Spinner /></View>
       </SafeAreaView>
     );
@@ -132,15 +166,15 @@ export default function BingoScreen() {
   const headerOnBack = mode === 'history-detail'
     ? () => setMode('history')
     : mode === 'history'
-    ? () => setMode(board ? 'game' : 'history')
+    ? () => setMode(activeBoards.length > 0 ? 'game' : 'history')
     : () => router.back();
 
-  const headerOnNewBoard = mode !== 'setup'
-    ? () => handleStartSetup(mode === 'history' || mode === 'history-detail')
+  const headerOnHistory = (mode === 'game' || mode === 'setup' || activeBoards.length === 0)
+    ? () => setMode('history')
     : undefined;
 
-  const headerOnHistory = (mode === 'game' || (!board && mode !== 'history'))
-    ? () => setMode('history')
+  const headerOnNewBoard = mode !== 'setup' && activeBoards.length < 3
+    ? () => handleStartSetup(mode === 'history' || mode === 'history-detail')
     : undefined;
 
   return (
@@ -150,8 +184,8 @@ export default function BingoScreen() {
         title={headerTitle}
         styles={styles}
         colors={colors}
-        {...(headerOnNewBoard !== undefined ? { onNewBoard: headerOnNewBoard } : {})}
         {...(headerOnHistory !== undefined ? { onHistory: headerOnHistory } : {})}
+        {...(headerOnNewBoard !== undefined ? { onNewBoard: headerOnNewBoard } : {})}
       />
 
       {mode === 'history' ? (
@@ -163,20 +197,39 @@ export default function BingoScreen() {
           colors={colors}
         />
       ) : mode === 'history-detail' && selectedBoard ? (
-        <HistoryDetailView
-          board={selectedBoard}
-          styles={styles}
-        />
-      ) : mode === 'setup' || !board ? (
+        <HistoryDetailView board={selectedBoard} styles={styles} />
+      ) : mode === 'setup' ? (
         <SetupView
           coupleId={coupleId!}
-          onStarted={() => setMode('game')}
-          onCancel={board || setupFromHistory ? handleCancelSetup : undefined}
+          onStarted={() => {
+            setActiveIdx(activeBoards.length); // 새 보드는 마지막에 추가됨
+            setMode('game');
+          }}
+          onCancel={handleCancelSetup}
           styles={styles}
           colors={colors}
         />
+      ) : activeBoards.length === 0 ? (
+        <EmptyState onNew={() => handleStartSetup()} onHistory={() => setMode('history')} styles={styles} colors={colors} />
       ) : (
-        <GameView board={board} myUid={user?.uid ?? ''} onToggle={handleToggle} styles={styles} />
+        <View style={styles.flex}>
+          {activeBoards.length > 1 && (
+            <BoardTabs
+              boards={activeBoards}
+              activeIdx={activeIdx}
+              onSelect={setActiveIdx}
+              styles={styles}
+              colors={colors}
+            />
+          )}
+          <GameView
+            board={board!}
+            myUid={user?.uid ?? ''}
+            onToggle={handleToggle}
+            onComplete={handleComplete}
+            styles={styles}
+          />
+        </View>
       )}
     </SafeAreaView>
   );
@@ -224,6 +277,72 @@ function Header({
   );
 }
 
+// ─── empty state ──────────────────────────────────────────────────────────────
+
+function EmptyState({
+  onNew,
+  onHistory,
+  styles,
+  colors,
+}: {
+  onNew: () => void;
+  onHistory: () => void;
+  styles: StylesType;
+  colors: Colors;
+}) {
+  return (
+    <View style={styles.emptyContainer}>
+      <Text style={styles.emptyTitle}>진행 중인 빙고판이 없어요</Text>
+      <Text style={styles.emptySub}>새 빙고판을 만들어 커플과 함께 도전해보세요!</Text>
+      <TouchableOpacity style={styles.emptyNewBtn} onPress={onNew}>
+        <Text style={styles.emptyNewBtnText}>새 빙고판 만들기</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={onHistory} style={styles.emptyHistBtn}>
+        <Text style={[styles.emptySub, { color: colors.accent.primary }]}>이전 기록 보기</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+// ─── board tabs ───────────────────────────────────────────────────────────────
+
+function BoardTabs({
+  boards,
+  activeIdx,
+  onSelect,
+  styles,
+  colors,
+}: {
+  boards: BingoBoard[];
+  activeIdx: number;
+  onSelect: (i: number) => void;
+  styles: StylesType;
+  colors: Colors;
+}) {
+  return (
+    <View style={styles.tabBar}>
+      {boards.map((b, i) => {
+        const checked = Object.keys(b.checkedItems).length;
+        const isActive = i === activeIdx;
+        return (
+          <TouchableOpacity
+            key={b.id}
+            style={[styles.tab, isActive && { borderBottomColor: colors.accent.primary }]}
+            onPress={() => onSelect(i)}
+          >
+            <Text style={[styles.tabLabel, isActive && { color: colors.accent.primary, fontFamily: 'Pretendard-SemiBold' }]}>
+              빙고 {i + 1}
+            </Text>
+            <Text style={[styles.tabProgress, isActive && { color: colors.accent.primary }]}>
+              {checked}/25
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+}
+
 // ─── history view ─────────────────────────────────────────────────────────────
 
 function HistoryView({
@@ -259,9 +378,7 @@ function HistoryView({
       contentContainerStyle={styles.historyList}
       renderItem={({ item: b, index }) => {
         const checkedCount = Object.keys(b.checkedItems).length;
-        const completedDate = b.completedAt
-          ? formatDate(b.completedAt)
-          : b.startedAt ? formatDate(b.startedAt) : '-';
+        const completedDate = b.completedAt ? formatDate(b.completedAt) : '-';
         return (
           <TouchableOpacity style={styles.historyCard} onPress={() => onSelectBoard(b)} activeOpacity={0.7}>
             <View style={styles.historyCardLeft}>
@@ -274,18 +391,15 @@ function HistoryView({
               </View>
             </View>
             <View style={styles.historyMiniGrid}>
-              {b.items.slice(0, 9).map((_, idx) => {
-                const isChecked = String(idx) in b.checkedItems;
-                return (
-                  <View
-                    key={idx}
-                    style={[
-                      styles.miniCell,
-                      isChecked && { backgroundColor: colors.accent.primary },
-                    ]}
-                  />
-                );
-              })}
+              {b.items.slice(0, 9).map((_, idx) => (
+                <View
+                  key={idx}
+                  style={[
+                    styles.miniCell,
+                    (String(idx) in b.checkedItems) && { backgroundColor: colors.accent.primary },
+                  ]}
+                />
+              ))}
             </View>
           </TouchableOpacity>
         );
@@ -296,42 +410,24 @@ function HistoryView({
 
 // ─── history detail view ──────────────────────────────────────────────────────
 
-function HistoryDetailView({
-  board,
-  styles,
-}: {
-  board: BingoBoard;
-  styles: StylesType;
-}) {
+function HistoryDetailView({ board, styles }: { board: BingoBoard; styles: StylesType }) {
   const checkedCount = Object.keys(board.checkedItems).length;
   const bingoCells = useMemo(() => getBingoCells(board.completedLines), [board.completedLines]);
-  const completedDate = board.completedAt ? formatDate(board.completedAt) : '-';
 
   return (
     <ScrollView contentContainerStyle={styles.gameContainer} showsVerticalScrollIndicator={false}>
       <View style={styles.progress}>
-        <Text style={styles.progressText}>{completedDate} 완료</Text>
+        <Text style={styles.progressText}>{board.completedAt ? formatDate(board.completedAt) : '-'} 완료</Text>
         <Text style={styles.progressText}>{checkedCount}/25 · 빙고 {board.completedLines.length}줄</Text>
       </View>
-
       <View style={styles.grid}>
         {board.items.map((item, idx) => {
           const key = String(idx);
           const isChecked = key in board.checkedItems;
           const isBingo   = bingoCells.has(idx);
           return (
-            <View
-              key={idx}
-              style={[
-                styles.cell,
-                isChecked && styles.cellChecked,
-                isBingo   && styles.cellBingo,
-                styles.cellReadOnly,
-              ]}
-            >
-              <Text style={[styles.cellText, isChecked && styles.cellTextChecked]} numberOfLines={3}>
-                {item}
-              </Text>
+            <View key={idx} style={[styles.cell, isChecked && styles.cellChecked, isBingo && styles.cellBingo]}>
+              <Text style={[styles.cellText, isChecked && styles.cellTextChecked]} numberOfLines={3}>{item}</Text>
               {isChecked && <Text style={styles.cellCheck}>✓</Text>}
             </View>
           );
@@ -352,7 +448,7 @@ function SetupView({
 }: {
   coupleId: string;
   onStarted: () => void;
-  onCancel: (() => void) | undefined;
+  onCancel: () => void;
   styles: StylesType;
   colors: Colors;
 }) {
@@ -360,8 +456,6 @@ function SetupView({
   const [saving, setSaving] = useState(false);
 
   const allFilled = items.every(t => t.trim().length > 0);
-
-  const handleFillDefault = () => setItems([...DEFAULT_BINGO_ITEMS]);
 
   const handleEdit = (i: number, text: string) => {
     setItems(prev => { const next = [...prev]; next[i] = text; return next; });
@@ -377,8 +471,9 @@ function SetupView({
     try {
       await startBoard(coupleId, items.map(t => t.trim()));
       onStarted();
-    } catch {
-      Alert.alert('오류', '빙고판 시작에 실패했어요');
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : '';
+      Alert.alert('오류', msg.includes('최대 3개') ? msg : '빙고판 시작에 실패했어요');
     } finally {
       setSaving(false);
     }
@@ -388,7 +483,7 @@ function SetupView({
     <View style={styles.flex}>
       <View style={styles.setupToolbar}>
         <Text style={styles.setupHint}>25개 항목을 채우세요 ({items.filter(t => t.trim()).length}/25)</Text>
-        <TouchableOpacity onPress={handleFillDefault} style={styles.fillBtn}>
+        <TouchableOpacity onPress={() => setItems([...DEFAULT_BINGO_ITEMS])} style={styles.fillBtn}>
           <Text style={styles.fillBtnText}>기본으로 채우기</Text>
         </TouchableOpacity>
       </View>
@@ -414,11 +509,9 @@ function SetupView({
       />
 
       <View style={styles.setupFooter}>
-        {onCancel && (
-          <TouchableOpacity onPress={onCancel} style={styles.cancelSetupBtn}>
-            <Text style={styles.cancelSetupText}>취소</Text>
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity onPress={onCancel} style={styles.cancelSetupBtn}>
+          <Text style={styles.cancelSetupText}>취소</Text>
+        </TouchableOpacity>
         <TouchableOpacity
           style={[styles.startBtn, (!allFilled || saving) && styles.startBtnDisabled]}
           onPress={handleStart}
@@ -437,11 +530,13 @@ function GameView({
   board,
   myUid,
   onToggle,
+  onComplete,
   styles,
 }: {
   board: BingoBoard;
   myUid: string;
   onToggle: (index: number) => void;
+  onComplete: () => void;
   styles: StylesType;
 }) {
   const checkedCount = Object.keys(board.checkedItems).length;
@@ -466,29 +561,27 @@ function GameView({
           return (
             <TouchableOpacity
               key={idx}
-              style={[
-                styles.cell,
-                isChecked && styles.cellChecked,
-                isBingo   && styles.cellBingo,
-              ]}
+              style={[styles.cell, isChecked && styles.cellChecked, isBingo && styles.cellBingo]}
               onPress={() => onToggle(idx)}
               activeOpacity={0.7}
             >
               <Text style={[styles.cellText, isChecked && styles.cellTextChecked]} numberOfLines={3}>
                 {item}
               </Text>
-              {isChecked && (
-                <Text style={styles.cellCheck}>{checkedByMe ? '✓' : '✔'}</Text>
-              )}
+              {isChecked && <Text style={styles.cellCheck}>{checkedByMe ? '✓' : '✔'}</Text>}
             </TouchableOpacity>
           );
         })}
       </View>
 
-      {board.status === 'completed' && (
+      {board.status === 'completed' ? (
         <View style={styles.completedBanner}>
           <Text style={styles.completedText}>🏆 빙고판 완성! 새 판을 시작해보세요 (우상단 ↺)</Text>
         </View>
+      ) : (
+        <TouchableOpacity style={styles.archiveBtn} onPress={onComplete}>
+          <Text style={styles.archiveBtnText}>기록으로 넘기기</Text>
+        </TouchableOpacity>
       )}
     </ScrollView>
   );
@@ -513,8 +606,19 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   headerRight:       { flexDirection: 'row', alignItems: 'center', width: 72, justifyContent: 'flex-end' },
   iconBtn:           { padding: space[2] },
 
+  // empty state
+  emptyContainer:    { flex: 1, alignItems: 'center', justifyContent: 'center', padding: space[6], gap: space[4] },
   emptyTitle:        { ...typography.bodyBold, color: colors.text.primary },
   emptySub:          { ...typography.caption, color: colors.text.muted, textAlign: 'center' },
+  emptyNewBtn:       { paddingHorizontal: space[6], paddingVertical: space[4], backgroundColor: colors.accent.primary, borderRadius: radius.lg },
+  emptyNewBtnText:   { ...typography.bodyBold, color: colors.text.inverse },
+  emptyHistBtn:      { paddingVertical: space[2] },
+
+  // tabs
+  tabBar:            { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
+  tab:               { flex: 1, alignItems: 'center', paddingVertical: space[3], borderBottomWidth: 2, borderBottomColor: 'transparent' },
+  tabLabel:          { ...typography.caption, color: colors.text.secondary, fontFamily: 'Pretendard-SemiBold' },
+  tabProgress:       { ...typography.tiny, color: colors.text.muted, marginTop: 2 },
 
   // history list
   historyList:       { padding: space[4], gap: space[3], paddingBottom: space[8] },
@@ -563,11 +667,13 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   },
   cellChecked:       { backgroundColor: colors.accent.primary, borderColor: colors.accent.primary },
   cellBingo:         { backgroundColor: colors.accent.warm, borderColor: colors.accent.warm },
-  cellReadOnly:      { opacity: 0.9 },
   cellText:          { ...typography.tiny, color: colors.text.secondary, textAlign: 'center', lineHeight: 14 },
   cellTextChecked:   { color: colors.text.inverse, fontFamily: 'Pretendard-SemiBold' },
   cellCheck:         { position: 'absolute', top: 2, right: 4, fontSize: 10, color: 'rgba(255,255,255,0.8)' },
 
   completedBanner:   { backgroundColor: colors.accent.warm + '25', borderRadius: radius.lg, padding: space[4] },
   completedText:     { ...typography.body, color: colors.accent.warm, textAlign: 'center' },
+
+  archiveBtn:        { alignItems: 'center', paddingVertical: space[3], borderWidth: 1, borderColor: colors.border.subtle, borderRadius: radius.lg },
+  archiveBtnText:    { ...typography.caption, color: colors.text.muted },
 });

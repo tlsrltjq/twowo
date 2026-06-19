@@ -30,7 +30,7 @@ describe('[BR-B1/3] startBoard', () => {
     await expect(startBoard('couple1', items)).rejects.toThrow('items cannot be empty');
   });
 
-  test('[BR-B1] 기존 active 보드가 있으면 completed로 전환 후 새 보드 생성', async () => {
+  test('[BR-B1] 기존 활성 보드가 있어도 새 보드를 추가 생성한다 (최대 3개)', async () => {
     seedMockDb('bingoBoards/old', {
       coupleId: 'couple1',
       status: 'active',
@@ -41,8 +41,23 @@ describe('[BR-B1/3] startBoard', () => {
     });
     await startBoard('couple1', ITEMS_25);
     const db = getMockDb();
-    expect(db.get('bingoBoards/old')?.status).toBe('completed');
+    // 기존 보드는 그대로 active 유지
+    expect(db.get('bingoBoards/old')?.status).toBe('active');
     const active = [...db.entries()].filter(([, v]) => v.status === 'active');
-    expect(active).toHaveLength(1);
+    expect(active).toHaveLength(2);
+  });
+
+  test('[BR-B1] 활성 보드가 3개면 새 보드 시작 거부', async () => {
+    for (let i = 1; i <= 3; i++) {
+      seedMockDb(`bingoBoards/board${i}`, {
+        coupleId: 'couple1',
+        status: 'active',
+        items: ITEMS_25,
+        checkedItems: {},
+        checkedBy: {},
+        completedLines: [],
+      });
+    }
+    await expect(startBoard('couple1', ITEMS_25)).rejects.toThrow('최대 3개까지');
   });
 });
