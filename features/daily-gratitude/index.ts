@@ -94,7 +94,7 @@ export function subscribePartnerGratitudeToday(
   );
 }
 
-// BR-5: 최근 7일 고마움 조회
+// BR-5: 최근 7일 고마움 조회 (레거시 — 화면 내 인라인 히스토리용)
 export async function getRecent7DaysGratitude(coupleId: string, userId: string): Promise<GratitudeEntry[]> {
   const q = query(
     collection(db, 'gratitudeEntries'),
@@ -105,6 +105,50 @@ export async function getRecent7DaysGratitude(coupleId: string, userId: string):
   );
   const snap = await getDocs(q);
   return snap.docs.map(d => fromFirestore(d.id, d.data() as DocumentData));
+}
+
+// 히스토리 화면용: 나 + 파트너 최근 N일 쌍으로 반환
+export interface GratitudePair {
+  date: string;
+  mine: GratitudeEntry | null;
+  partner: GratitudeEntry | null;
+}
+
+export async function getPairedGratitudeHistory(
+  coupleId: string,
+  myUid: string,
+  partnerUid: string,
+  limitDays = 15,
+): Promise<GratitudePair[]> {
+  const [mySnap, partnerSnap] = await Promise.all([
+    getDocs(query(
+      collection(db, 'gratitudeEntries'),
+      where('coupleId', '==', coupleId),
+      where('userId', '==', myUid),
+      orderBy('date', 'desc'),
+      limit(limitDays),
+    )),
+    getDocs(query(
+      collection(db, 'gratitudeEntries'),
+      where('coupleId', '==', coupleId),
+      where('userId', '==', partnerUid),
+      orderBy('date', 'desc'),
+      limit(limitDays),
+    )),
+  ]);
+
+  const myMap      = new Map(mySnap.docs.map(d => [d.data().date as string, fromFirestore(d.id, d.data() as DocumentData)]));
+  const partnerMap = new Map(partnerSnap.docs.map(d => [d.data().date as string, fromFirestore(d.id, d.data() as DocumentData)]));
+
+  const dates = Array.from(new Set([...myMap.keys(), ...partnerMap.keys()]))
+    .sort((a, b) => b.localeCompare(a))
+    .slice(0, limitDays);
+
+  return dates.map(date => ({
+    date,
+    mine:    myMap.get(date)    ?? null,
+    partner: partnerMap.get(date) ?? null,
+  }));
 }
 
 export type { GratitudeEntry, GratitudeInput } from './schema';
