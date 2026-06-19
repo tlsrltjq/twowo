@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-06-19 | 둘다좋아 개선 | feat(date-decision): 히스토리 화면(Clock 아이콘) + 예시 제안 칩(가로 스크롤) + 카테고리 탭/칩·다시하기 버튼 제거. getVoteHistory() 추가.
 ## 2026-06-19 | 개인 빙고 모드 | feat(bingo): 함께/개인 모드 토글, 각자 보드 등록·체크, VS 점수바, 칸 비우기, 번호 위치 미리보기 그리드.
 ## 2026-06-19 | Maestro E2E 전체 통과 | test: 21개 시나리오 중 19개 PASS (2개는 2nd-device 필요). test_mood_save_a scroll 추가, text-detail-header testID 추가.
 ## 2026-06-19 | 빙고 멀티보드 | feat(bingo): 최대 3개 동시 활성 보드 + 탭 전환 + "기록으로 넘기기" 강제 완료. BR-1 변경, subscribeActiveBoards, completeBoard 추가.
