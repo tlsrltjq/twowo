@@ -132,9 +132,10 @@ export async function startBoard(
       if (boardType === 'personal') return d.boardType === 'personal' && d.ownerUid === ownerUid;
       return d.boardType === 'couple';
     });
-  if (activeOfType.length >= 3) {
+  const maxActive = boardType === 'personal' ? 1 : 3; // BR-P3: 개인 빙고는 동시 1개
+  if (activeOfType.length >= maxActive) {
     throw new Error(boardType === 'personal'
-      ? '내 개인 빙고는 최대 3개까지 동시에 진행할 수 있어요 (BR-P3)'
+      ? '개인 빙고는 한 번에 1개만 진행할 수 있어요 (BR-P3)'
       : '최대 3개까지 동시에 진행할 수 있어요 (BR-1)');
   }
 

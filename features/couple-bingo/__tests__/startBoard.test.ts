@@ -71,19 +71,17 @@ describe('[BR-B1/3] startBoard', () => {
     expect(board.status).toBe('active');
   });
 
-  test('[BR-P3] 개인 보드 3개 초과 시 거부', async () => {
-    for (let i = 1; i <= 3; i++) {
-      seedMockDb(`bingoBoards/personal${i}`, {
-        coupleId: 'couple1',
-        boardType: 'personal',
-        ownerUid: 'uid-a',
-        status: 'active',
-        items: ITEMS_25,
-        checkedItems: {},
-        checkedBy: {},
-        completedLines: [],
-      });
-    }
+  test('[BR-P3] 개인 보드가 이미 1개 있으면 추가 거부', async () => {
+    seedMockDb('bingoBoards/personal1', {
+      coupleId: 'couple1',
+      boardType: 'personal',
+      ownerUid: 'uid-a',
+      status: 'active',
+      items: ITEMS_25,
+      checkedItems: {},
+      checkedBy: {},
+      completedLines: [],
+    });
     await expect(
       startBoard('couple1', ITEMS_25, { boardType: 'personal', ownerUid: 'uid-a' }),
     ).rejects.toThrow('BR-P3');

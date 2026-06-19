@@ -232,7 +232,7 @@ export default function BingoScreen() {
 
   const canAddBoard = bingoMode === 'couple'
     ? activeCouple.length < 3
-    : myBoards.length < 3;
+    : myBoards.length < 1; // BR-P3: 개인 빙고는 동시 1개
 
   const headerOnNewBoard = (mode !== 'setup' && canAddBoard && mode !== 'history' && mode !== 'history-detail')
     ? () => handleStartSetup(false) : undefined;
