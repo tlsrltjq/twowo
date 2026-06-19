@@ -265,7 +265,7 @@ export default function CalendarScreen() {
       )}
 
       {activeView === 'exercise' && <ExerciseView events={exerciseEvents} loading={exerciseLoading} myUid={myUid} partnerName={partnerName} />}
-      {activeView === 'date'     && <DateView     events={dateEvents}     loading={dateLoading}     />}
+      {activeView === 'date'     && <DateView     events={dateEvents}     loading={dateLoading}     myUid={myUid} partnerName={partnerName} />}
       {activeView === 'photos'   && <PhotoView    events={photoEvents}    loading={photoLoading}    />}
 
       <Pressable
