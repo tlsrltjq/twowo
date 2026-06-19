@@ -52,7 +52,7 @@ const ALL_SIDEBAR_ITEMS: (SidebarItem & { featureId: string })[] = [
   { label: '둘다좋아',          Icon: Users,     route: '/(features)/vote',            featureId: 'date-decision' },
   { label: '자기 전 한 마디',   Icon: Moon,      route: '/(features)/night-message',   featureId: 'night-message' },
   { label: '칭찬 저금통',       Icon: ThumbsUp,  route: '/(features)/compliment-jar',  featureId: 'compliment-jar' },
-  { label: '오늘 뭐 먹었어',    Icon: Utensils,  route: '/(features)/daily-food',      featureId: 'daily-food' },
+  { label: '오늘의 밥',         Icon: Utensils,  route: '/(features)/daily-food',      featureId: 'daily-food' },
   { label: '처음 한 것들',      Icon: Sparkles,  route: '/(features)/first-moments',   featureId: 'first-moments' },
   { label: '선물 위시리스트',   Icon: Gift,      route: '/(features)/gift-wishlist',   featureId: 'gift-wishlist' },
   { label: '오늘의 고마움',     Icon: HandHeart, route: '/(features)/daily-gratitude', featureId: 'daily-gratitude' },

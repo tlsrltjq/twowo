@@ -67,6 +67,15 @@ service firebase.storage {
       allow delete: if false;
     }
 
+    // 오늘의 밥 사진
+    match /couples/{coupleId}/food/{photoFile} {
+      allow read: if isMyCouple(coupleId);
+      allow create, update: if isMyCouple(coupleId)
+                            && isImage()
+                            && isReasonableSize();
+      allow delete: if isMyCouple(coupleId);
+    }
+
     // 기본 차단
     match /{allPaths=**} {
       allow read, write: if false;

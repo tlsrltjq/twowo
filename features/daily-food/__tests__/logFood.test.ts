@@ -2,7 +2,9 @@ import { getMockDb,resetMockDb } from '../../../__mocks__/firebase';
 import { deleteFood,logFood } from '../index';
 
 jest.mock('firebase/firestore', () => require('../../../__mocks__/firebase'));
-jest.mock('../../../core/config/firebase', () => ({ db: {} }));
+jest.mock('firebase/storage', () => ({ getDownloadURL: jest.fn(), ref: jest.fn(), uploadBytes: jest.fn() }));
+jest.mock('expo-image-manipulator', () => ({ manipulateAsync: jest.fn(), SaveFormat: { JPEG: 'jpeg' } }));
+jest.mock('../../../core/config/firebase', () => ({ db: {}, storage: {} }));
 jest.mock('../../../core/utils/date', () => ({ getTodayKST: () => '2026-06-10' }));
 
 beforeEach(() => resetMockDb());

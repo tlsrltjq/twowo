@@ -318,14 +318,14 @@ service cloud.firestore {
       allow delete: if resource.data.addedBy == request.auth.uid;
     }
 
-    // ---------- foodLogs (오늘 뭐 먹었어) ----------
+    // ---------- foodLogs (오늘의 밥) ----------
     match /foodLogs/{docId} {
       allow get:    if isMyCouple(resource.data.coupleId);
       allow list:   if isSignedIn();
       allow create: if isMyCouple(request.resource.data.coupleId)
-                    && request.resource.data.userId == request.auth.uid
-                    && request.resource.data.name.size() <= 50;
-      allow update: if false;
+                    && request.resource.data.userId == request.auth.uid;
+      allow update: if resource.data.userId == request.auth.uid
+                    && request.resource.data.coupleId == resource.data.coupleId;
       allow delete: if resource.data.userId == request.auth.uid;
     }
 

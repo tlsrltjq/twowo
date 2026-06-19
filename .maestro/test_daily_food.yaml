@@ -17,7 +17,7 @@ appId: host.exp.Exponent
 - tapOn:
     id: "btn-sidebar-open"
 - waitForAnimationToEnd
-- tapOn: "오늘 뭐 먹었어"
+- tapOn: "오늘의 밥"
 - extendedWaitUntil:
     visible:
       id: "screen-daily-food"
