@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-06-19 | 빙고 멀티보드 | feat(bingo): 최대 3개 동시 활성 보드 + 탭 전환 + "기록으로 넘기기" 강제 완료. BR-1 변경, subscribeActiveBoards, completeBoard 추가.
 ## 2026-06-19 | 빙고 이전 기록 | feat(bingo): 이전 기록 조회(Clock 아이콘) + 언제든 새 빙고 시작(RefreshCw) + 완료된 빙고판 읽기 전용 뷰. getBoardHistory() + completedAt DESC 복합 인덱스 추가.
 ## 2026-06-19 | 운동 히트맵 | feat(calendar): 운동 탭 월별 히트맵 달력(3단계 색상) + 월 네비게이션 + 이달/전체/현재연속/최고연속 스탯 + 해당 월 운동 목록.
 ## 2026-06-19 | 다크모드 전면 수정 | fix(theme): chat·mood·features 11종 static colors → useColors() 전환. react-native-calendars key에 bg.base 추가로 배경 재마운트 보장. dayTextColor 등 4개 theme prop 추가.
