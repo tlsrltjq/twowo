@@ -49,3 +49,8 @@ coverage/
 
 expo-env.d.ts
 # @end expo-cli
+# Claude Code agent worktrees (로컬 전용)
+.claude/
+
+# 개발용 임시 스크립트
+setup_couple.mjs

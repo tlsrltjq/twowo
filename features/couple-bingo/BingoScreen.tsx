@@ -22,8 +22,8 @@ import { Colors } from '../../design-system/themes';
 import { radius, space, typography } from '../../design-system/tokens';
 import {
   BingoBoard,
-  DEFAULT_BINGO_ITEMS,
   completeBoard,
+  DEFAULT_BINGO_ITEMS,
   getBingoCells,
   getBoardHistory,
   getPersonalBoardHistory,
@@ -82,7 +82,6 @@ export default function BingoScreen() {
       });
       setCoupleActiveIdx(prev => (incoming.length === 0 ? 0 : Math.min(prev, incoming.length - 1)));
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coupleId]);
 
   // ── personal subscription ───────────────────────────────────────────────────
@@ -104,7 +103,6 @@ export default function BingoScreen() {
         return partnerCount === 0 ? 0 : Math.min(prev, partnerCount - 1);
       });
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coupleId, user?.uid]);
 
   // ── derived ─────────────────────────────────────────────────────────────────

@@ -68,5 +68,5 @@
       }
     }
   ],
-  "ignorePatterns": ["node_modules", "dist", "android", "ios", ".expo"]
+  "ignorePatterns": ["node_modules", "dist", "android", "ios", ".expo", ".claude/**", "setup_couple.mjs", "functions/**"]
 }

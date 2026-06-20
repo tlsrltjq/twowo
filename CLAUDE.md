@@ -47,8 +47,9 @@
 - **작업 단위 끝나면 자동 커밋**. 단위 = `stage-N.md` 체크박스 1개 이상 / 새 모듈 동작 가능 / 버그 1건 / 문서 변경 1건.
 - **커밋 전 자동 검증** (실패 시 멈춤):
   - `npx tsc --noEmit`
+  - `npx eslint . --max-warnings=0` (코드 변경이 있는 경우 항상)
   - 변경된 모듈의 `jest --findRelatedTests` (core/* 수정 시)
-  - 문서/하네스만 변경한 경우 생략
+  - 문서/하네스/YAML만 변경한 경우 생략
 - **메시지 형식**: `<type>(<scope>): <설명>` (type: feat/fix/chore/docs/test/refactor)
 - **자동 push 금지**. push 는 사람이 직접.
 - 세션 종료 시 미커밋 0건. 어중간하면 `chore(wip): ...`.

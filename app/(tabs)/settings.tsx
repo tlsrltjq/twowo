@@ -1,4 +1,3 @@
-import Constants from 'expo-constants';
 import * as Linking from 'expo-linking';
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
@@ -11,6 +10,7 @@ import {
 // TextInput은 닉네임/기념일 편집에 사용
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import appJson from '../../app.json';
 import { signOut } from '../../core/auth';
 import { db } from '../../core/config/firebase';
 import { usePartnerProfile } from '../../core/couple';
@@ -21,7 +21,7 @@ import { useColors } from '../../design-system/ThemeContext';
 import { ACCENT_META, AccentId, Colors } from '../../design-system/themes';
 import { space, typography } from '../../design-system/tokens';
 
-const APP_VERSION = Constants.expoConfig?.version ?? '1.0.0';
+const APP_VERSION = appJson.expo.version;
 const SUPPORT_EMAIL = 'psl87531@gmail.com';
 
 function timestampToKST(ts: { seconds: number } | Date | null | undefined): string {

@@ -433,7 +433,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   slotLabel:  { ...typography.bodyBold, color: colors.text.secondary },
   slotHint:   { ...typography.tiny, color: colors.text.muted, textAlign: 'center' },
   slotOverlay:      { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(0,0,0,0.35)', paddingVertical: 4, alignItems: 'center' },
-  slotOverlayText:  { ...typography.tiny, color: '#fff', fontFamily: 'Pretendard-SemiBold' },
+  slotOverlayText:  { ...typography.tiny, color: colors.text.inverse, fontFamily: 'Pretendard-SemiBold' },
 
   extraScroll:     { marginTop: space[2] },
   extraContent:    { gap: space[2], paddingVertical: space[1] },

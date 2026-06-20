@@ -19,9 +19,9 @@ import { useAuthStore } from '../../core/stores/auth.store';
 import { getTodayKST } from '../../core/utils/date';
 import { Button } from '../../design-system/Button';
 import { Spinner } from '../../design-system/Spinner';
-import { Toast } from '../../design-system/Toast';
 import { useColors } from '../../design-system/ThemeContext';
 import { Colors } from '../../design-system/themes';
+import { Toast } from '../../design-system/Toast';
 import { black, radius, space, typography } from '../../design-system/tokens';
 import {
   getPairedGratitudeHistory,
@@ -114,7 +114,7 @@ export default function GratitudeScreen() {
     } finally {
       setHistoryLoading(false);
     }
-  }, [coupleId, user?.uid, partnerUid]);
+  }, [coupleId, user, partnerUid]);
 
   useEffect(() => {
     if (mode === 'history') loadHistory(limitDays);
@@ -175,7 +175,6 @@ export default function GratitudeScreen() {
                 pair={pair}
                 partnerName={partnerName}
                 styles={styles}
-                colors={colors}
               />
             )}
             ListFooterComponent={
@@ -294,12 +293,11 @@ function GratitudeDisplay({ entry, testID, styles }: { entry: GratitudeEntry; te
 }
 
 function HistoryPairCard({
-  pair, partnerName, styles, colors,
+  pair, partnerName, styles,
 }: {
   pair: GratitudePair;
   partnerName: string;
   styles: StylesType;
-  colors: Colors;
 }) {
   return (
     <View style={styles.pairCard}>

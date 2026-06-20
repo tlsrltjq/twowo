@@ -256,3 +256,23 @@
 - **이유**: 기능 완성도가 비용보다 우선. 시뮬레이터만으로 실험실 탭·UI 완성도·캘린더 추가 뷰 등 핵심 개발이 가능함.
 - **현재 우선순위**: 실험실 탭(stage-5) → UI 완성도(stage-7 일부) → 캘린더 추가 뷰(stage-2′).
 - **재검토 시점**: 사용자가 직접 언급할 때. AI가 먼저 제안하지 않음.
+
+## ADR-030: Storage Rules — isSignedIn() 임시 대체 (2026-06-15)
+- **결정**: `storage.rules` 의 `isMyCouple()` 헬퍼를 `isSignedIn()` 으로 임시 교체.
+- **배경**: Firebase Storage Security Rules 는 Firestore Rules 처럼 `get()`으로 다른 컬렉션을 읽을 수 없다 (cross-service IAM 미비). `isMyCouple(coupleId)` 는 `firestore.rules` 에서만 동작한다.
+- **현재 상태**: `isSignedIn()` — 로그인된 사용자라면 coupleId 경로를 읽고 쓸 수 있다. 커플 멤버십 검증은 클라이언트 라우팅 수준에서만 차단.
+- **보안 영향**: 인증된 사용자가 타인 coupleId 경로에 이론적으로 접근 가능. 실서비스 대규모 노출 전(App Store 출시 전)에 해결 필요.
+- **해결 경로** (향후): Firebase Admin SDK 기반 Cloud Function에서 파일 업로드를 중계하거나, Storage Metadata 기반 커스텀 토큰 발급 방식으로 교체. 구현 복잡도 상 1차 MVP에서는 보류.
+- **재검토 시점**: 공개 출시(8단계) 전. `storage.rules` 의 관련 라인에 `// ADR-030` 주석으로 마킹됨.
+
+## ADR-031: ESLint v10 Flat Config — eslintrc.json 무시 주의 (2026-06-20)
+- **결정**: 린트 설정의 단일 진실 소스는 `eslint.config.mjs`. `.eslintrc.json` 은 유지는 되어 있으나 ESLint v10이 `eslint.config.mjs` 를 발견하면 레거시 파일을 완전히 무시한다.
+- **배경**: ESLint v10 은 `eslint.config.js/mjs` 존재 시 flat config로만 동작. 프로젝트에 `.eslintrc.json` 이 남아 있어 두 파일이 공존하지만, 실제로는 `eslint.config.mjs` 만 적용된다. 이를 모르고 `.eslintrc.json` 에 규칙을 추가하면 CI에서 무시된다.
+- **CI 실패 패턴 (2026-06-20 분석)**:
+  1. `Constants.expoConfig` 직접 참조 → `no-restricted-properties` error — `app.json` static import로 교체.
+  2. HEX 리터럴 (`'#fff'` 등) → `no-restricted-syntax` error — `colors.text.inverse` 등 tokens 사용.
+  3. 사용되지 않는 컴포넌트 파라미터 (`colors`) → `no-unused-vars` error — 파라미터 제거 또는 `_colors` 리네임.
+  4. 불필요한 `eslint-disable` 주석 → `reportUnusedDisableDirectives` warning — 주석 삭제.
+  5. import 순서 → `simple-import-sort` warning (`--max-warnings=0`) — `npx eslint --fix`.
+- **재발 방지**: 코드 변경 커밋 전 `npx eslint . --max-warnings=0` 필수 (CLAUDE.md 커밋 체크리스트 반영).
+- **로컬 제외 경로**: `.claude/**`(agent worktree), `**/*.mjs`(개발 스크립트)는 `eslint.config.mjs` ignores에 등록됨. `.gitignore` 에도 `.claude/` 추가.

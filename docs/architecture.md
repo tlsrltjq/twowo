@@ -182,7 +182,7 @@ createdAt: Timestamp
 | 데이트 빙고        | `couple-bingo`     | 사이드바 → `(features)/bingo`  | bingoBoards                           | experimental |
 | 자기 전 한 마디    | `night-message`    | 사이드바 → `(features)/night-message` | nightMessages                  | experimental |
 | 칭찬 저금통        | `compliment-jar`   | 사이드바 → `(features)/compliment-jar` | compliments                   | experimental |
-| 오늘 뭐 먹었어     | `daily-food`       | 사이드바 → `(features)/daily-food` | foodLogs                          | experimental |
+| 오늘의 밥          | `daily-food`       | 사이드바 → `(features)/daily-food` | foodLogs                          | experimental |
 | 우리가 처음 한 것들 | `first-moments`   | 사이드바 → `(features)/first-moments` | firstMoments                   | experimental |
 | 선물 위시리스트    | `gift-wishlist`    | 사이드바 → `(features)/gift-wishlist` | wishlistItems                  | experimental |
 | 오늘의 고마움      | `daily-gratitude`  | 사이드바 → `(features)/daily-gratitude` | gratitudeEntries             | experimental |
@@ -200,7 +200,7 @@ createdAt: Timestamp
 | 둘다좋아 | dateCandidates | coupleId, title, category, votedBy[] |
 | 둘다좋아 | voteSessions | coupleId, status, choices, startedAt, revealedAt? |
 | 오늘의 컨디션 | moodChecks | coupleId, userId, energy, mood, canMeet, memo |
-| 데이트 빙고 | bingoBoards | coupleId, items[], checkedItems[], date |
+| 데이트 빙고 | bingoBoards | coupleId, boardType('couple'/'personal'), ownerUid(personal만), status, items[], checkedItems{}, checkedBy{}, completedLines[], startedAt, completedAt? |
 | 자기 전 한 마디 | nightMessages | coupleId, userId, type(night/morning), text, date |
 | 칭찬 저금통 | compliments | coupleId, fromUid, toUid, text, createdAt |
 | 오늘 뭐 먹었어 | foodLogs | coupleId, userId, mealType, name, date |

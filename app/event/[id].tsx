@@ -24,9 +24,9 @@ import { EventPhoto, useEventPhotos } from '../../core/memory';
 import { guardPhotoLimit, uploadPhoto } from '../../core/storage';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { Spinner } from '../../design-system/Spinner';
-import { Toast } from '../../design-system/Toast';
 import { useColors } from '../../design-system/ThemeContext';
 import { Colors } from '../../design-system/themes';
+import { Toast } from '../../design-system/Toast';
 import { black, radius, space, typography } from '../../design-system/tokens';
 
 const SCREEN_W = Dimensions.get('window').width;

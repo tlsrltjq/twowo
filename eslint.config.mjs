@@ -122,6 +122,8 @@ export default [
       'ios/**',
       '.expo/**',
       'functions/**',   // 독립 Node 패키지 — 자체 tsconfig/빌드 스코프. lib/ 컴파일 출력 포함.
+      '.claude/**',     // Claude Code agent worktrees (로컬 전용, git 추적 제외)
+      '**/*.mjs',       // Node.js 개발 스크립트 (setup_couple.mjs 등)
     ],
   },
 ];

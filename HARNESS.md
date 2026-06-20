@@ -42,7 +42,7 @@ __mocks__/, __tests__/, .github/workflows/
 | 2′ | 캘린더 운동/데이트 뷰 | 2차 | ✅ |
 | — | 자기 전 한 마디 (night-message) | 2차 | ✅ |
 | — | 칭찬 저금통 (compliment-jar) | 2차 | ✅ |
-| — | 오늘 뭐 먹었어 (daily-food) | 2차 | ✅ |
+| — | 오늘의 밥 (daily-food) | 2차 | ✅ |
 | — | 우리가 처음 한 것들 (first-moments) | 2차 | ✅ |
 | — | 선물 위시리스트 (gift-wishlist) | 2차 | ✅ |
 | — | 오늘의 고마움 (daily-gratitude) | 2차 | ✅ |

@@ -92,7 +92,7 @@ export default function NightMessageScreen() {
     } finally {
       setHistoryLoading(false);
     }
-  }, [coupleId, user?.uid, partnerUid]);
+  }, [coupleId, user, partnerUid]);
 
   useEffect(() => {
     if (mode === 'history') loadHistory();
@@ -150,7 +150,6 @@ export default function NightMessageScreen() {
                 entry={entry}
                 partnerName={partnerName ?? '상대방'}
                 styles={styles}
-                colors={colors}
               />
             )}
           />
@@ -269,12 +268,10 @@ function HistoryCard({
   entry,
   partnerName,
   styles,
-  colors,
 }: {
   entry: MessageHistoryEntry;
   partnerName: string;
   styles: StylesType;
-  colors: Colors;
 }) {
   return (
     <View style={styles.historyCard}>

@@ -20,9 +20,9 @@ import { EmptyState } from '../../design-system/EmptyState';
 import { ListEmpty } from '../../design-system/illustrations';
 import { Skeleton } from '../../design-system/Skeleton';
 import { Spinner } from '../../design-system/Spinner';
-import { Toast } from '../../design-system/Toast';
 import { useColors } from '../../design-system/ThemeContext';
 import { Colors } from '../../design-system/themes';
+import { Toast } from '../../design-system/Toast';
 import { black, radius, space, typography } from '../../design-system/tokens';
 import { addSong, deleteSong, subscribePlaylist } from './index';
 import { PlaylistSong } from './schema';
@@ -156,7 +156,7 @@ export default function OurPlaylistScreen() {
             activeOpacity={0.85}
             testID={`song-card-${song.id}`}
           >
-            <SongCard song={song} isMe={song.addedBy === user?.uid} styles={styles} colors={colors} />
+            <SongCard song={song} isMe={song.addedBy === user?.uid} styles={styles} />
           </TouchableOpacity>
         )}
       />
@@ -251,7 +251,7 @@ export default function OurPlaylistScreen() {
 
 type StylesType = ReturnType<typeof makeStyles>;
 
-function SongCard({ song, isMe, styles, colors }: { song: PlaylistSong; isMe: boolean; styles: StylesType; colors: Colors }) {
+function SongCard({ song, isMe, styles }: { song: PlaylistSong; isMe: boolean; styles: StylesType }) {
   return (
     <View testID="song-card" style={styles.card}>
       <View style={styles.cardTop}>

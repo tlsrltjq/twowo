@@ -4,8 +4,8 @@ import NetInfo from '@react-native-community/netinfo';
 import * as Sentry from '@sentry/react-native';
 import { useFonts } from 'expo-font';
 import { Stack, useNavigationContainerRef } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
+import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
@@ -14,8 +14,8 @@ import { ensureUserDoc, getUserCoupleId, subscribeCouple } from '../core/couple'
 import { ensurePermissionAndToken } from '../core/notifications';
 import { useAuthStore } from '../core/stores/auth.store';
 import { useThemeStore } from '../core/stores/theme.store';
-import { ThemeProvider } from '../design-system/ThemeContext';
 import { OfflineBanner } from '../design-system/OfflineBanner';
+import { ThemeProvider } from '../design-system/ThemeContext';
 
 const routingInstrumentation = Sentry.reactNavigationIntegration();
 

@@ -9,9 +9,9 @@ import { SignUpInput,signUpSchema } from '../../core/auth/schema';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { Button } from '../../design-system/Button';
 import { TextField } from '../../design-system/TextField';
-import { Toast } from '../../design-system/Toast';
 import { useColors } from '../../design-system/ThemeContext';
 import { Colors } from '../../design-system/themes';
+import { Toast } from '../../design-system/Toast';
 import { space, typography } from '../../design-system/tokens';
 
 export default function SignUpScreen() {

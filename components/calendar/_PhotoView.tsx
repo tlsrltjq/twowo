@@ -1,10 +1,10 @@
-import { doc, getDoc } from 'firebase/firestore';
 import { router } from 'expo-router';
+import { doc, getDoc } from 'firebase/firestore';
 import { useEffect, useMemo, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { db } from '../../core/config/firebase';
 import { CalendarEvent } from '../../core/calendar/schema';
+import { db } from '../../core/config/firebase';
 import { EmptyState } from '../../design-system/EmptyState';
 import { Skeleton } from '../../design-system/Skeleton';
 import { useColors } from '../../design-system/ThemeContext';
