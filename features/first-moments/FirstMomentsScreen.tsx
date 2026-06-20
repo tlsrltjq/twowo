@@ -74,7 +74,7 @@ export default function FirstMomentsScreen() {
     <SafeAreaView testID="screen-first-moments" style={styles.safeArea} edges={['top']}>
       {/* 헤더 */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+        <TouchableOpacity testID="btn-back" onPress={() => router.back()} style={styles.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
           <ChevronLeft size={24} color={colors.text.primary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>우리가 처음 한 것들</Text>

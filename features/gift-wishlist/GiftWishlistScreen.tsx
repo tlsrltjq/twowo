@@ -86,7 +86,7 @@ export default function GiftWishlistScreen() {
     <SafeAreaView testID="screen-gift-wishlist" style={styles.safeArea} edges={['top']}>
       {/* 헤더 */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+        <TouchableOpacity testID="btn-back" onPress={() => router.back()} style={styles.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
           <ChevronLeft size={24} color={colors.text.primary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>선물 위시리스트</Text>

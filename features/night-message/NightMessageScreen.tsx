@@ -163,7 +163,7 @@ export default function NightMessageScreen() {
   return (
     <SafeAreaView testID="screen-night-message" style={styles.safeArea} edges={['top']}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+        <TouchableOpacity testID="btn-back" onPress={() => router.back()} style={styles.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
           <ChevronLeft size={24} color={colors.text.primary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>자기 전 한 마디</Text>

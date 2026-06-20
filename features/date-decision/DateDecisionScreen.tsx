@@ -336,6 +336,7 @@ export default function DateDecisionScreen() {
                 />
               ) : (
                 <TouchableOpacity
+                  testID="btn-add-candidate"
                   style={styles.addBtn}
                   onPress={() => setShowAddForm(true)}
                 >
@@ -345,6 +346,7 @@ export default function DateDecisionScreen() {
 
               {!session && candidates.length > 0 && (
                 <TouchableOpacity
+                  testID="btn-start-round"
                   style={[styles.startBtn, saving && styles.startBtnDisabled]}
                   onPress={handleStartRound}
                   disabled={saving}
@@ -386,6 +388,7 @@ function AddForm({
   return (
     <View style={styles.addForm}>
       <TextInput
+        testID="input-candidate-title"
         ref={inputRef}
         style={styles.addInput}
         value={value}
@@ -412,6 +415,7 @@ function AddForm({
           <Text style={styles.cancelBtnText}>취소</Text>
         </TouchableOpacity>
         <TouchableOpacity
+          testID="btn-candidate-submit"
           onPress={onSubmit}
           disabled={!value.trim() || saving}
           style={[styles.submitBtn, (!value.trim() || saving) && styles.submitBtnDisabled]}
@@ -500,7 +504,7 @@ function Header({
 }) {
   return (
     <View style={styles.header}>
-      <TouchableOpacity onPress={onBack} style={styles.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="뒤로 가기">
+      <TouchableOpacity testID="btn-back" onPress={onBack} style={styles.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="뒤로 가기">
         <ChevronLeft size={24} color={colors.text.primary} />
       </TouchableOpacity>
       <Text style={styles.headerTitle}>{title}</Text>

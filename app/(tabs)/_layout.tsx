@@ -197,7 +197,7 @@ export default function TabsLayout() {
             >
               <View style={styles.sidebarHeader}>
                 <Text style={styles.sidebarTitle}>더 많은 기능</Text>
-                <TouchableOpacity onPress={closeSidebar} style={styles.closeBtn}>
+                <TouchableOpacity testID="btn-sidebar-close" onPress={closeSidebar} style={styles.closeBtn}>
                   <X size={20} color={colors.text.muted} strokeWidth={1.8} />
                 </TouchableOpacity>
               </View>
@@ -212,6 +212,7 @@ export default function TabsLayout() {
                 enabledSidebarItems.map(item => (
                   <TouchableOpacity
                     key={item.route}
+                    testID={`sidebar-item-${item.featureId}`}
                     style={styles.sidebarItem}
                     onPress={() => handleSidebarItem(item)}
                     activeOpacity={0.7}

@@ -64,19 +64,19 @@ export default function LabScreen() {
 
             return (
               <View key={feature.id} style={[styles.card, enabled && styles.cardOn]}>
-                <TouchableOpacity
-                  style={styles.cardTop}
-                  activeOpacity={enabled && route ? 0.65 : 1}
-                  onPress={() => enabled && route && router.push(route as Href)}
-                  disabled={!enabled || !route}
-                >
-                  <View style={styles.cardInfo}>
+                <View style={styles.cardTop}>
+                  <TouchableOpacity
+                    style={styles.cardInfo}
+                    activeOpacity={enabled && route ? 0.65 : 1}
+                    onPress={() => enabled && route && router.push(route as Href)}
+                    disabled={!enabled || !route}
+                  >
                     <View style={styles.nameRow}>
                       <Text style={styles.featureName}>{feature.name}</Text>
                       {enabled && route && <Text style={styles.chevron}>›</Text>}
                     </View>
                     <Text style={styles.featureDesc}>{feature.description}</Text>
-                  </View>
+                  </TouchableOpacity>
                   <Switch
                     testID={`switch-${feature.id}`}
                     value={enabled}
@@ -86,7 +86,7 @@ export default function LabScreen() {
                     thumbColor={colors.bg.surface}
                     ios_backgroundColor={colors.border.subtle}
                   />
-                </TouchableOpacity>
+                </View>
               </View>
             );
           })

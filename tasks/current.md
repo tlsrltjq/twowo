@@ -87,11 +87,11 @@
 - [ ] **security-rules 통합 테스트 확대** — 컬렉션당 "타인 차단" 1개씩 추가. 현재 3개뿐인데 rules 352줄이 사실상 백엔드
 - [ ] **subscribeUnreadCount 정확도** — `limit(10)` 후 클라이언트 필터라 10개 초과 시 배지 부정확. 실사용 중 문제되면 서버사이드 카운터로 교체
 
-## 이전 세션에서 멈춘 곳 (2026-06-19 28차)
-- ✅ 둘다좋아: 전체 삭제(Trash2 → clearAllCandidates writeBatch)
-- ✅ 자기 전 한마디: 히스토리 화면(Clock) + 빠른 문구 칩 7종(잘자/아침 탭별)
-- ✅ 오늘의 밥(daily-food): 이름 변경, 4칸 사진 슬롯(setMealPhoto/addExtraPhoto), 파트너 위·나 아래, 날짜 목록 히스토리
-- ✅ 오늘의 고마움: 히스토리 화면 분리, 15일 양측 쌍 카드, 15일씩 더 보기 페이지네이션
+## 이전 세션에서 멈춘 곳 (2026-06-20 29차)
+- ✅ Maestro E2E 전체 스크린샷 플로우 완료
+  - Account A (iPhone 16): 39장 → `screenshots/a/`
+  - Account B (iPhone 14 Pro): 23장 → `screenshots/b/`
+  - 수정 내용: DateDecisionScreen testID 4종 추가, 비밀번호 저장 다이얼로그 처리, 채팅 후 hideKeyboard, gear recovery 전 openLink 전부 적용
 - 다음: TestFlight 준비 또는 추가 기능 개선
 
 ## 진행 중인 작업 (시뮬레이터 전용)

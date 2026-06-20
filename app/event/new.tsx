@@ -223,6 +223,7 @@ export default function NewEventScreen() {
 
         <View style={styles.submitBtn}>
           <Button
+            testID="btn-event-save-bottom"
             label={isSubmitting ? '저장 중...' : '저장'}
             onPress={handleSubmit(onSubmit)}
             disabled={isSubmitting}
