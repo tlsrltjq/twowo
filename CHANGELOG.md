@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-06-22 | E2E 전체 재검증 + ESLint CI 수정 | test(e2e): e2e_full_a(45장)·e2e_full_b(39장) — 빙고·운동탭·컨디션값·히스토리·빈입력·오늘의밥 등 갭 전면 보강. fix(lint): ESLint CI 재발방지 — CLAUDE.md pre-commit에 eslint 추가, ADR-031 문서화.
 ## 2026-06-20 | Maestro 전체 스크린샷 플로우 완료 | test(e2e): 양계정(A 39장·B 23장) 시뮬레이터 E2E 스크린샷 — DateDecisionScreen testID 추가, gear/비밀번호다이얼로그/키보드 처리 YAML 수정.
 ## 2026-06-19 | 오늘의 고마움 히스토리 페이지네이션 | feat(daily-gratitude): 히스토리 화면 분리 + 15일 양측 쌍 보기 + 15일씩 더 보기 버튼(limitDays += 15 재조회).
 ## 2026-06-19 | 오늘의 밥 전면 개편 | feat(daily-food): 이름 변경(오늘 뭐 먹었어→오늘의 밥), 4칸 사진 슬롯(아침/점심/간식/저녁), setMealPhoto/addExtraPhoto, 파트너 위·나 아래, 날짜 목록 히스토리.

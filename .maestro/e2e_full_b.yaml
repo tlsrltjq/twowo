@@ -1,0 +1,654 @@
+appId: host.exp.Exponent
+---
+# Account B (iPhone 14 Pro) — 전체 E2E 플로우 v2
+# B는 A와의 동기화 확인 + 자체 입력 + 갭 보강 (빙고, 밥, 탭 전환, 검증)
+
+# ── 앱 진입 ──────────────────────────────────────────────────────────
+- launchApp
+- waitForAnimationToEnd
+- openLink: "exp://192.168.10.213:8081"
+- waitForAnimationToEnd
+- runFlow:
+    when:
+      visible: "열기"
+    commands:
+      - tapOn: "열기"
+      - waitForAnimationToEnd
+- runFlow:
+    when:
+      visible: "열기"
+    commands:
+      - tapOn: "열기"
+      - waitForAnimationToEnd
+- runFlow:
+    when:
+      visible: "열기"
+    commands:
+      - tapOn: "열기"
+      - waitForAnimationToEnd
+- runFlow:
+    when:
+      visible: "Continue"
+    commands:
+      - tapOn: "Continue"
+      - waitForAnimationToEnd
+- runFlow:
+    when:
+      visible: "Go home"
+    commands:
+      - tapOn: "Close"
+      - waitForAnimationToEnd
+- runFlow:
+    when:
+      visible: "허용 안 함"
+    commands:
+      - tapOn: "허용 안 함"
+      - waitForAnimationToEnd
+- runFlow:
+    when:
+      visible: "둘다좋아"
+    commands:
+      - tapOn:
+          text: "둘다좋아"
+          index: 0
+      - waitForAnimationToEnd
+
+# ── 로그인 (이미 로그인된 경우 스킵) ───────────────────────────────
+- runFlow:
+    when:
+      visible:
+        id: "input-email"
+    commands:
+      - tapOn:
+          id: "input-email"
+      - inputText: "test_b_1781871829@mailinator.com"
+      - tapOn:
+          id: "input-password"
+      - inputText: "Test@1234"
+      - tapOn: "로그인"
+      - runFlow:
+          when:
+            visible: "허용 안 함"
+          commands:
+            - tapOn: "허용 안 함"
+            - waitForAnimationToEnd
+      - runFlow:
+          when:
+            visible: "지금 안 함"
+          commands:
+            - tapOn: "지금 안 함"
+            - waitForAnimationToEnd
+
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 60000
+- takeScreenshot: "B_01_home"
+
+# ── 채팅 — A메시지 확인 + 빈 입력 검증 + 답장 ──────────────────────
+- tapOn:
+    id: "tab-chat"
+- waitForAnimationToEnd
+- takeScreenshot: "B_02_chat_a_messages"
+
+# [검증] 빈 입력 전송 시도 — disabled 상태여야 함
+- tapOn:
+    id: "btn-chat-send"
+- waitForAnimationToEnd
+- takeScreenshot: "B_03_chat_empty_blocked"
+
+# 답장
+- tapOn:
+    id: "input-chat"
+- inputText: "나도 저녁 같이 먹자! 🍜"
+- tapOn:
+    id: "btn-chat-send"
+- waitForAnimationToEnd
+- tapOn:
+    id: "input-chat"
+- inputText: "오늘 정말 보고 싶어 💕"
+- tapOn:
+    id: "btn-chat-send"
+- waitForAnimationToEnd
+- takeScreenshot: "B_04_chat_replied"
+- hideKeyboard
+
+# ── 캘린더 — A 이벤트 동기화 + 뷰 탭 전환 ──────────────────────────
+- tapOn:
+    id: "tab-calendar"
+- extendedWaitUntil:
+    visible:
+      id: "screen-calendar"
+    timeout: 15000
+- takeScreenshot: "B_05_calendar_synced"
+
+# B도 일정 추가
+- tapOn:
+    id: "btn-new-event"
+- waitForAnimationToEnd
+- tapOn:
+    id: "input-event-title"
+- inputText: "같이 요리하기 🍳"
+- pressKey: enter
+- scrollUntilVisible:
+    element:
+      id: "btn-event-save-bottom"
+- tapOn:
+    id: "btn-event-save-bottom"
+- waitForAnimationToEnd
+- takeScreenshot: "B_06_calendar_b_event"
+- runFlow:
+    when:
+      visible: "Go home"
+    commands:
+      - tapOn: "Close"
+      - waitForAnimationToEnd
+
+# 운동 탭
+- tapOn: "운동"
+- waitForAnimationToEnd
+- takeScreenshot: "B_07_calendar_exercise_tab"
+
+# 데이트 탭
+- tapOn: "데이트"
+- waitForAnimationToEnd
+- takeScreenshot: "B_08_calendar_date_tab"
+
+# 달력으로 복귀
+- tapOn: "달력"
+- waitForAnimationToEnd
+
+# ── 컨디션 — 에너지/기분 값 선택 ────────────────────────────────────
+- tapOn:
+    id: "tab-mood"
+- waitForAnimationToEnd
+- takeScreenshot: "B_09_mood_screen"
+- runFlow:
+    when:
+      visible: "수정"
+    commands:
+      - tapOn: "수정"
+      - waitForAnimationToEnd
+
+# 에너지 레벨 4 선택 (B는 4)
+- runFlow:
+    when:
+      visible:
+        id: "btn-energy-4"
+    commands:
+      - tapOn:
+          id: "btn-energy-4"
+      - waitForAnimationToEnd
+
+# 기분 '최고' 선택
+- runFlow:
+    when:
+      visible:
+        id: "btn-mood-great"
+    commands:
+      - tapOn:
+          id: "btn-mood-great"
+      - waitForAnimationToEnd
+
+- runFlow:
+    when:
+      visible:
+        id: "btn-mood-save"
+    commands:
+      - scrollUntilVisible:
+          element:
+            id: "btn-mood-save"
+      - tapOn:
+          id: "btn-mood-save"
+      - waitForAnimationToEnd
+- takeScreenshot: "B_10_mood_saved"
+- runFlow:
+    when:
+      visible: "Go home"
+    commands:
+      - tapOn: "Close"
+      - waitForAnimationToEnd
+
+# ── 실험실 — 기능 ON ─────────────────────────────────────────────────
+- tapOn:
+    id: "tab-lab"
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+- takeScreenshot: "B_11_lab_screen"
+- tapOn:
+    id: "switch-date-decision"
+- waitForAnimationToEnd
+- tapOn:
+    id: "switch-couple-bingo"
+- waitForAnimationToEnd
+- tapOn:
+    id: "switch-night-message"
+- waitForAnimationToEnd
+- tapOn:
+    id: "switch-compliment-jar"
+- waitForAnimationToEnd
+- tapOn:
+    id: "switch-daily-food"
+- waitForAnimationToEnd
+- tapOn:
+    id: "switch-first-moments"
+- waitForAnimationToEnd
+- tapOn:
+    id: "switch-gift-wishlist"
+- waitForAnimationToEnd
+- tapOn:
+    id: "switch-daily-gratitude"
+- waitForAnimationToEnd
+- swipe:
+    direction: UP
+    duration: 400
+- waitForAnimationToEnd
+- runFlow:
+    when:
+      visible:
+        id: "switch-our-playlist"
+    commands:
+      - tapOn:
+          id: "switch-our-playlist"
+      - waitForAnimationToEnd
+- takeScreenshot: "B_12_lab_all_on"
+- runFlow:
+    when:
+      visible: "Go home"
+    commands:
+      - tapOn: "Close"
+      - waitForAnimationToEnd
+
+# ── 사이드바 ─────────────────────────────────────────────────────────
+- tapOn:
+    id: "tab-home"
+- extendedWaitUntil:
+    visible:
+      id: "screen-home"
+    timeout: 15000
+- tapOn:
+    id: "btn-sidebar-open"
+- waitForAnimationToEnd
+- runFlow:
+    when:
+      visible: "Go home"
+    commands:
+      - tapOn: "Close"
+      - waitForAnimationToEnd
+      - tapOn:
+          id: "btn-sidebar-open"
+      - waitForAnimationToEnd
+- takeScreenshot: "B_13_sidebar"
+- tapOn:
+    point: "5%, 50%"
+- waitForAnimationToEnd
+
+# ── 둘다좋아 — A 투표 참여 ──────────────────────────────────────────
+- openLink: "exp://192.168.10.213:8081/--/(features)/vote"
+- runFlow:
+    when:
+      visible: "Go home"
+    commands:
+      - tapOn: "Close"
+      - waitForAnimationToEnd
+- extendedWaitUntil:
+    visible:
+      id: "screen-date-decision"
+    timeout: 20000
+- takeScreenshot: "B_14_vote_screen"
+# B도 투표
+- runFlow:
+    when:
+      visible: "라운드 진행 중"
+    commands:
+      - tapOn: "영화 보기 🎬"
+      - waitForAnimationToEnd
+- takeScreenshot: "B_15_vote_voted"
+- tapOn:
+    id: "btn-back"
+- waitForAnimationToEnd
+
+# ── 자기 전 한 마디 — 아침·잘자 탭 + 히스토리 ──────────────────────
+- openLink: "exp://192.168.10.213:8081/--/(features)/night-message"
+- runFlow:
+    when:
+      visible: "Go home"
+    commands:
+      - tapOn: "Close"
+      - waitForAnimationToEnd
+- extendedWaitUntil:
+    visible:
+      id: "screen-night-message"
+    timeout: 20000
+- takeScreenshot: "B_16_night_message"
+
+# 잘자 탭 전송
+- tapOn:
+    id: "tab-night"
+- waitForAnimationToEnd
+- tapOn:
+    id: "input-night-message"
+- inputText: "나도 수고했어! 오늘 좋은 꿈 꿔 🌙"
+- tapOn:
+    id: "btn-send-message"
+- waitForAnimationToEnd
+- takeScreenshot: "B_17_night_message_sent"
+
+# 아침 탭
+- tapOn:
+    id: "tab-morning"
+- waitForAnimationToEnd
+- takeScreenshot: "B_18_night_message_morning_tab"
+
+# 히스토리
+- tapOn: "지난 메시지"
+- waitForAnimationToEnd
+- runFlow:
+    when:
+      visible: "Go home"
+    commands:
+      - tapOn: "Close"
+      - waitForAnimationToEnd
+- takeScreenshot: "B_19_night_message_history"
+# history 모드 back 버튼 testID 없음 → 좌상단 좌표 탭
+- tapOn:
+    point: "7%, 12%"
+- waitForAnimationToEnd
+- runFlow:
+    when:
+      visible:
+        id: "btn-back"
+    commands:
+      - tapOn:
+          id: "btn-back"
+      - waitForAnimationToEnd
+
+# ── 칭찬 저금통 — 받은 칭찬 + 내가 쓴 칭찬 탭 전환 ──────────────────
+- openLink: "exp://192.168.10.213:8081/--/(features)/compliment-jar"
+- runFlow:
+    when:
+      visible: "Go home"
+    commands:
+      - tapOn: "Close"
+      - waitForAnimationToEnd
+- extendedWaitUntil:
+    visible:
+      id: "screen-compliment-jar"
+    timeout: 20000
+- takeScreenshot: "B_20_compliment_jar"
+
+# B도 칭찬 작성
+- tapOn:
+    id: "fab-compliment"
+- waitForAnimationToEnd
+- tapOn:
+    id: "input-compliment"
+- inputText: "매일 나를 행복하게 해줘서 고마워 💖"
+- tapOn:
+    id: "btn-compliment-send"
+- waitForAnimationToEnd
+- takeScreenshot: "B_21_compliment_sent"
+
+# 받은 탭 (A가 쓴 칭찬이 여기에)
+- tapOn:
+    id: "tab-compliment-received"
+- waitForAnimationToEnd
+- takeScreenshot: "B_22_compliment_received_tab"
+
+# 내가 쓴 탭으로 복귀
+- tapOn:
+    id: "tab-compliment-sent"
+- waitForAnimationToEnd
+- tapOn:
+    id: "btn-back"
+- waitForAnimationToEnd
+
+# ── 오늘의 밥 — 슬롯 탭 → Alert → 취소 ────────────────────────────
+- openLink: "exp://192.168.10.213:8081/--/(features)/daily-food"
+- runFlow:
+    when:
+      visible: "Go home"
+    commands:
+      - tapOn: "Close"
+      - waitForAnimationToEnd
+- extendedWaitUntil:
+    visible:
+      id: "screen-daily-food"
+    timeout: 20000
+- extendedWaitUntil:
+    visible:
+      id: "daily-food-ready"
+    timeout: 15000
+- takeScreenshot: "B_23_daily_food"
+
+# 내 섹션 아침 슬롯 탭 — 스크롤 후 좌상단 좌표 탭
+- scroll
+- waitForAnimationToEnd
+- tapOn:
+    point: "25%, 57%"
+- waitForAnimationToEnd
+- takeScreenshot: "B_24_daily_food_slot_alert"
+- runFlow:
+    when:
+      visible: "취소"
+    commands:
+      - tapOn: "취소"
+      - waitForAnimationToEnd
+- tapOn:
+    id: "btn-back"
+- waitForAnimationToEnd
+
+# ── 처음 한 것들 — A 입력 동기화 확인 ──────────────────────────────
+- openLink: "exp://192.168.10.213:8081/--/(features)/first-moments"
+- runFlow:
+    when:
+      visible: "Go home"
+    commands:
+      - tapOn: "Close"
+      - waitForAnimationToEnd
+- extendedWaitUntil:
+    visible:
+      id: "screen-first-moments"
+    timeout: 20000
+- takeScreenshot: "B_25_first_moments_synced"
+- tapOn:
+    id: "btn-back"
+- waitForAnimationToEnd
+
+# ── 선물 위시리스트 — 파트너 탭(A 목록) + 내 탭 ─────────────────────
+- openLink: "exp://192.168.10.213:8081/--/(features)/gift-wishlist"
+- runFlow:
+    when:
+      visible: "Go home"
+    commands:
+      - tapOn: "Close"
+      - waitForAnimationToEnd
+- extendedWaitUntil:
+    visible:
+      id: "screen-gift-wishlist"
+    timeout: 20000
+# 파트너 탭 먼저 (A가 입력한 목록 확인)
+- tapOn:
+    id: "tab-wishlist-partner"
+- waitForAnimationToEnd
+- takeScreenshot: "B_26_wishlist_partner_tab"
+
+# 내 탭으로 전환 + 아이템 추가
+- tapOn:
+    id: "tab-wishlist-mine"
+- waitForAnimationToEnd
+- takeScreenshot: "B_27_wishlist_mine"
+- tapOn:
+    id: "fab-wishlist"
+- waitForAnimationToEnd
+- tapOn:
+    id: "input-wishlist-name"
+- inputText: "향수 🌸"
+- tapOn:
+    id: "btn-wishlist-save"
+- waitForAnimationToEnd
+- tapOn:
+    id: "fab-wishlist"
+- waitForAnimationToEnd
+- tapOn:
+    id: "input-wishlist-name"
+- inputText: "네일 케어 세트 💅"
+- tapOn:
+    id: "btn-wishlist-save"
+- waitForAnimationToEnd
+- takeScreenshot: "B_28_wishlist_b_filled"
+- tapOn:
+    id: "btn-back"
+- waitForAnimationToEnd
+
+# ── 오늘의 고마움 — B 작성 + 히스토리 ─────────────────────────────
+- openLink: "exp://192.168.10.213:8081/--/(features)/daily-gratitude"
+- runFlow:
+    when:
+      visible: "Go home"
+    commands:
+      - tapOn: "Close"
+      - waitForAnimationToEnd
+- extendedWaitUntil:
+    visible:
+      id: "screen-gratitude"
+    timeout: 20000
+- takeScreenshot: "B_29_gratitude_screen"
+- runFlow:
+    when:
+      visible: "수정"
+    commands:
+      - tapOn: "수정"
+      - waitForAnimationToEnd
+- runFlow:
+    when:
+      visible:
+        id: "input-gratitude"
+    commands:
+      - tapOn:
+          id: "input-gratitude"
+      - inputText: "언제나 내 이야기를 들어줘서 진심으로 고마워 💝"
+      - tapOn:
+          id: "btn-gratitude-save"
+      - waitForAnimationToEnd
+- takeScreenshot: "B_30_gratitude_saved"
+
+# 히스토리 확인
+- tapOn: "지난 고마움"
+- waitForAnimationToEnd
+- runFlow:
+    when:
+      visible: "Go home"
+    commands:
+      - tapOn: "Close"
+      - waitForAnimationToEnd
+- takeScreenshot: "B_31_gratitude_history"
+# history 모드 back 버튼 testID 없음 → 좌상단 좌표 탭
+- tapOn:
+    point: "7%, 12%"
+- waitForAnimationToEnd
+- runFlow:
+    when:
+      visible:
+        id: "btn-back"
+    commands:
+      - tapOn:
+          id: "btn-back"
+      - waitForAnimationToEnd
+
+# ── 우리의 플레이리스트 — A 곡 확인 + B도 추가 ─────────────────────
+- openLink: "exp://192.168.10.213:8081/--/(features)/our-playlist"
+- runFlow:
+    when:
+      visible: "Go home"
+    commands:
+      - tapOn: "Close"
+      - waitForAnimationToEnd
+- extendedWaitUntil:
+    visible:
+      id: "screen-our-playlist"
+    timeout: 20000
+- takeScreenshot: "B_32_playlist_synced"
+- tapOn:
+    id: "fab-add-song"
+- waitForAnimationToEnd
+- tapOn:
+    id: "input-song-title"
+- inputText: "I Will Always Love You"
+- tapOn:
+    id: "input-song-artist"
+- inputText: "Whitney Houston"
+- hideKeyboard
+- tapOn:
+    id: "btn-song-add"
+- extendedWaitUntil:
+    visible:
+      id: "fab-add-song"
+    timeout: 15000
+- takeScreenshot: "B_33_playlist_b_added"
+- tapOn:
+    id: "btn-back"
+- waitForAnimationToEnd
+
+# ── 데이트 빙고 — 보드 생성 + 셀 체크 ──────────────────────────────
+- openLink: "exp://192.168.10.213:8081/--/(features)/bingo"
+- runFlow:
+    when:
+      visible: "Go home"
+    commands:
+      - tapOn: "Close"
+      - waitForAnimationToEnd
+- extendedWaitUntil:
+    visible:
+      id: "screen-bingo"
+    timeout: 20000
+- takeScreenshot: "B_34_bingo_screen"
+
+# 보드가 없으면 새로 만들기
+- runFlow:
+    when:
+      visible:
+        id: "btn-empty-new"
+    commands:
+      - tapOn:
+          id: "btn-empty-new"
+      - waitForAnimationToEnd
+      - tapOn:
+          id: "btn-fill-default"
+      - waitForAnimationToEnd
+      - tapOn:
+          id: "btn-start-board"
+      - waitForAnimationToEnd
+- takeScreenshot: "B_35_bingo_board"
+
+# 셀 체크 (A가 이미 체크한 것과 다른 것)
+- tapOn: "야경 보기"
+- waitForAnimationToEnd
+- tapOn: "새벽 드라이브"
+- waitForAnimationToEnd
+- tapOn: "노래방"
+- waitForAnimationToEnd
+- takeScreenshot: "B_36_bingo_cells_checked"
+- tapOn:
+    id: "btn-bingo-back"
+- waitForAnimationToEnd
+
+# ── 설정 ─────────────────────────────────────────────────────────
+- tapOn:
+    id: "tab-settings"
+- waitForAnimationToEnd
+- takeScreenshot: "B_37_settings"
+- scroll
+- takeScreenshot: "B_38_settings_scrolled"
+- runFlow:
+    when:
+      visible: "Go home"
+    commands:
+      - tapOn: "Close"
+      - waitForAnimationToEnd
+
+# ── 최종 홈 ──────────────────────────────────────────────────────
+- tapOn:
+    id: "tab-home"
+- waitForAnimationToEnd
+- takeScreenshot: "B_39_home_final"

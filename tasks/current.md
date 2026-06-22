@@ -87,11 +87,17 @@
 - [ ] **security-rules 통합 테스트 확대** — 컬렉션당 "타인 차단" 1개씩 추가. 현재 3개뿐인데 rules 352줄이 사실상 백엔드
 - [ ] **subscribeUnreadCount 정확도** — `limit(10)` 후 클라이언트 필터라 10개 초과 시 배지 부정확. 실사용 중 문제되면 서버사이드 카운터로 교체
 
-## 이전 세션에서 멈춘 곳 (2026-06-20 29차)
-- ✅ Maestro E2E 전체 스크린샷 플로우 완료
-  - Account A (iPhone 16): 39장 → `screenshots/a/`
-  - Account B (iPhone 14 Pro): 23장 → `screenshots/b/`
-  - 수정 내용: DateDecisionScreen testID 4종 추가, 비밀번호 저장 다이얼로그 처리, 채팅 후 hideKeyboard, gear recovery 전 openLink 전부 적용
+## 이전 세션에서 멈춘 곳 (2026-06-22 30차)
+- ✅ CI ESLint 실패 원인 분석 + 전면 수정 완료 (ADR-031)
+  - eslint.config.mjs에 .claude/**·**/*.mjs 무시 추가
+  - 미사용 colors 파라미터 3종 제거, btn-energy/mood testID 기반 컨디션 선택, HEX→token 교체
+  - CLAUDE.md pre-commit에 `npx eslint . --max-warnings=0` 추가
+- ✅ Maestro 두 계정 전체 E2E 완전 재검증 완료 (`e2e_full_a.yaml` / `e2e_full_b.yaml`)
+  - Account A (iPhone 16): 45장 → `screenshots/a/`
+  - Account B (iPhone 14 Pro): 39장 → `screenshots/b/`
+  - 보강: 빙고 보드 생성+셀 체크, 캘린더 운동/데이트 탭, 컨디션 에너지/기분 선택,
+    자기전 한마디 아침탭+히스토리, 칭찬 탭 전환, 위시리스트 파트너탭,
+    오늘의 밥 슬롯탭→Alert, 고마움 히스토리, 다크모드 토글, 빈 입력 방어
 - 다음: TestFlight 준비 또는 추가 기능 개선
 
 ## 진행 중인 작업 (시뮬레이터 전용)
