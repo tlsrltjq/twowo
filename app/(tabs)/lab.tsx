@@ -95,7 +95,7 @@ export default function LabScreen() {
 
 const makeStyles = (colors: Colors) => StyleSheet.create({
   safeArea:    { flex: 1, backgroundColor: colors.bg.base },
-  header:      { paddingHorizontal: space[5], paddingTop: space[4], paddingBottom: space[4], gap: space[1], borderBottomWidth: hairline, borderBottomColor: colors.border.strong },
+  header:      { marginHorizontal: space[5], paddingTop: space[4], paddingBottom: space[4], gap: space[1], borderBottomWidth: hairline, borderBottomColor: colors.border.strong },
   title:       { ...typography.title1, color: colors.text.primary },
   subtitle:    { ...typography.caption, color: colors.text.secondary },
 

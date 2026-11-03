@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Calendar, DateData } from 'react-native-calendars';
+import { Calendar, DateData, LocaleConfig } from 'react-native-calendars';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { MonthDayComponent } from '../../components/calendar/_CalendarDayCell';
@@ -29,12 +29,21 @@ import { Skeleton } from '../../design-system/Skeleton';
 import { Spinner } from '../../design-system/Spinner';
 import { useColors } from '../../design-system/ThemeContext';
 import { Colors } from '../../design-system/themes';
-import { radius, shadow, space, typography } from '../../design-system/tokens';
+import { hairline, radius, shadow, space, typography } from '../../design-system/tokens';
 
 type ViewTab = 'calendar' | 'exercise' | 'date' | 'photos';
 type CalendarMode = 'month' | 'week';
 
 const DOTS_MAX = 5;
+
+LocaleConfig.locales.ko = {
+  monthNames:      ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+  monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+  dayNames:        ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
+  dayNamesShort:   ['일', '월', '화', '수', '목', '금', '토'],
+  today:           '오늘',
+};
+LocaleConfig.defaultLocale = 'ko';
 
 const VIEW_TABS: { key: ViewTab; label: string }[] = [
   { key: 'calendar', label: '달력' },
@@ -216,6 +225,7 @@ export default function CalendarScreen() {
                 style={{ backgroundColor: colors.bg.base }}
                 current={toYMD(currentMonth)}
                 markingType="multi-dot"
+                monthFormat="yyyy년 M월"
                 markedDates={markedDates}
                 onDayPress={onDayPress}
                 onMonthChange={onMonthChange}
@@ -239,7 +249,7 @@ export default function CalendarScreen() {
                   textDisabledColor:          colors.text.muted,
                   monthTextColor:             colors.text.primary,
                   textSectionTitleColor:      colors.text.secondary,
-                  arrowColor:                 colors.accent.primary,
+                  arrowColor:                 colors.text.secondary,
                   textDayFontFamily:          'Pretendard-Regular',
                   textMonthFontFamily:        'Pretendard-SemiBold',
                   textDayHeaderFontFamily:    'Pretendard-Regular',
@@ -283,22 +293,22 @@ export default function CalendarScreen() {
 const makeStyles = (colors: Colors) => StyleSheet.create({
   container:         { flex: 1, backgroundColor: colors.bg.base },
   flex:              { flex: 1 },
-  viewTabBar:        { flexDirection: 'row', backgroundColor: colors.bg.surface, borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
+  viewTabBar:        { flexDirection: 'row', backgroundColor: colors.bg.base, borderBottomWidth: hairline, borderBottomColor: colors.border.strong },
   viewTab:           { flex: 1, paddingVertical: space[3], alignItems: 'center' },
-  viewTabActive:     { borderBottomWidth: 2, borderBottomColor: colors.accent.primary },
+  viewTabActive:     { borderBottomWidth: 2, borderBottomColor: colors.text.primary },
   viewTabText:       { ...typography.caption, color: colors.text.secondary },
-  viewTabTextActive: { ...typography.caption, color: colors.accent.primary, fontFamily: 'Pretendard-SemiBold' },
+  viewTabTextActive: { ...typography.caption, color: colors.text.primary, fontFamily: typography.bodyBold.fontFamily },
   skeletonContainer: { padding: space[4], gap: space[3] },
   skeletonRow:       { height: 60, borderRadius: radius.md },
   listContent:       { padding: space[4], gap: space[3], paddingBottom: 96 },
-  calendarToolbar:      { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: space[4], paddingVertical: space[2], backgroundColor: colors.bg.base },
-  viewModeToggle:       { flexDirection: 'row', backgroundColor: colors.bg.surface, borderRadius: radius.pill, padding: 2 },
-  viewModeBtn:          { paddingHorizontal: space[3], paddingVertical: space[1], borderRadius: radius.pill },
-  viewModeBtnActive:    { backgroundColor: colors.accent.primary },
+  calendarToolbar:      { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: space[5], paddingVertical: space[3], backgroundColor: colors.bg.base },
+  viewModeToggle:       { flexDirection: 'row', borderWidth: hairline * 2, borderColor: colors.border.strong, borderRadius: radius.md, overflow: 'hidden' },
+  viewModeBtn:          { paddingHorizontal: space[4], paddingVertical: space[1], backgroundColor: colors.bg.surface },
+  viewModeBtnActive:    { backgroundColor: colors.text.primary },
   viewModeBtnText:      { ...typography.tiny, color: colors.text.secondary },
-  viewModeBtnTextActive: { color: colors.text.inverse, fontFamily: 'Pretendard-SemiBold' },
-  todayBtn:          { paddingHorizontal: space[3], paddingVertical: space[1], borderRadius: radius.pill, borderWidth: 1, borderColor: colors.accent.primary },
-  todayBtnText:      { ...typography.tiny, color: colors.accent.primary },
+  viewModeBtnTextActive: { color: colors.text.inverse, fontFamily: typography.bodyBold.fontFamily },
+  todayBtn:          { paddingHorizontal: space[3], paddingVertical: space[1], borderRadius: radius.md, borderWidth: hairline * 2, borderColor: colors.border.strong },
+  todayBtnText:      { ...typography.tiny, color: colors.text.primary },
   eventCard:         { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.bg.surface, borderRadius: radius.md, padding: space[4], gap: space[3] },
   typeDot:           { width: 10, height: 10, borderRadius: 5 },
   eventInfo:         { flex: 1 },

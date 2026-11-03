@@ -68,7 +68,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   container:    { backgroundColor: colors.bg.base, paddingBottom: space[2] },
   header:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space[4], paddingVertical: space[2] },
   navBtn:       { padding: space[2] },
-  navText:      { fontSize: 20, color: colors.accent.primary },
+  navText:      { fontSize: 20, color: colors.text.secondary },
   headerLabel:  { ...typography.bodyBold, color: colors.text.primary },
   row:          { flexDirection: 'row', justifyContent: 'space-around', paddingHorizontal: space[2] },
   column:       { alignItems: 'center', gap: 4 },

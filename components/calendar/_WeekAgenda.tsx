@@ -112,7 +112,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   container:       { flex: 1, backgroundColor: colors.bg.base },
   header:          { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space[4], paddingVertical: space[2], paddingHorizontal: space[4] },
   navBtn:          { padding: space[2] },
-  navText:         { fontSize: 20, color: colors.accent.primary },
+  navText:         { fontSize: 20, color: colors.text.secondary },
   headerLabel:     { ...typography.bodyBold, color: colors.text.primary, flex: 1, textAlign: 'center' },
   list:            { paddingHorizontal: space[4], gap: space[1] },
   daySection:      { gap: space[2] },

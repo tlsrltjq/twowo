@@ -10,15 +10,17 @@ interface EmptyStateProps {
   title: string;
   description?: string;
   action?: { label: string; onPress: () => void };
+  /** 화면 가장자리에서 바로 쓸 때 좌우 여백을 준다. 이미 여백이 있는 영역 안에서는 false. */
+  inset?: boolean;
 }
 
 /** 빈 상태·오류 안내. 그림 없이 짧은 문장 두 줄로만 알린다. */
-export function EmptyState({ title, description, action }: EmptyStateProps) {
+export function EmptyState({ title, description, action, inset = true }: EmptyStateProps) {
   const colors = useColors();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, inset && styles.inset]}>
       <Text style={styles.title}>{title}</Text>
       {description && <Text style={styles.description}>{description}</Text>}
       {action && (
@@ -33,9 +35,9 @@ export function EmptyState({ title, description, action }: EmptyStateProps) {
 const makeStyles = (colors: Colors) => StyleSheet.create({
   container: {
     paddingVertical: space[8],
-    paddingHorizontal: space[1],
     gap: space[1],
   },
+  inset: { paddingHorizontal: space[5] },
   title: { ...typography.body, color: colors.text.secondary },
   description: { ...typography.caption, color: colors.text.muted },
   action: { alignSelf: 'flex-start', marginTop: space[3] },

@@ -90,7 +90,7 @@ function MoodRow({ label, mood, loading, onWrite }: {
         <Text style={styles.rowValue}>{describeMood(mood)}</Text>
       ) : onWrite ? (
         <TouchableOpacity style={styles.rowValueWrap} onPress={onWrite} accessibilityRole="button">
-          <Text style={styles.rowLink}>아직 안 적었어요 · 적기</Text>
+          <Text style={styles.rowMuted}>아직 안 적었어요  <Text style={styles.rowLink}>적기</Text></Text>
         </TouchableOpacity>
       ) : (
         <Text style={styles.rowMuted}>아직 안 적었어요</Text>
@@ -236,7 +236,7 @@ export default function HomeScreen() {
         {events === null ? (
           <Skeleton style={styles.skeletonEvent} />
         ) : events.length === 0 ? (
-          <EmptyState title="일주일 안에 잡힌 일정이 없어요" description="캘린더에서 추가할 수 있어요" />
+          <EmptyState inset={false} title="일주일 안에 잡힌 일정이 없어요" description="캘린더에서 추가할 수 있어요" />
         ) : (
           events.map(ev => <EventRow key={ev.id} event={ev} />)
         )}

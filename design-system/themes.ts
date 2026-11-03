@@ -11,11 +11,11 @@ export type AccentId = 'rose' | 'coral' | 'violet' | 'blue' | 'green' | 'amber';
 
 export const ACCENT_META: Record<AccentId, { label: string; preview: string }> = {
   rose:   { label: '로즈',     preview: '#B5566B' },
-  coral:  { label: '코랄',     preview: '#E05C5C' },
-  violet: { label: '바이올렛', preview: '#7C3AED' },
-  blue:   { label: '블루',     preview: '#3B82F6' },
-  green:  { label: '그린',     preview: '#10B981' },
-  amber:  { label: '앰버',     preview: '#D97706' },
+  coral:  { label: '코랄',     preview: '#C0645A' },
+  violet: { label: '바이올렛', preview: '#6E5E96' },
+  blue:   { label: '블루',     preview: '#4A6A92' },
+  green:  { label: '그린',     preview: '#4E7F68' },
+  amber:  { label: '앰버',     preview: '#A8752E' },
 };
 
 const LIGHT_BASE = {
@@ -42,24 +42,24 @@ const ACCENT_PALETTES: Record<AccentId, { light: AccentTokens; dark: AccentToken
     dark:  { primary: '#DB8B9C', coral: '#E3AFA7', warm: '#FFCC80', calm: '#80CBC4' },
   },
   coral: {
-    light: { primary: '#E05C5C', coral: '#F4AEAE', warm: '#F0C87A', calm: '#90C5B5' },
-    dark:  { primary: '#FF8A80', coral: '#FFCCBC', warm: '#FFE082', calm: '#80DEEA' },
+    light: { primary: '#C0645A', coral: '#F4AEAE', warm: '#F0C87A', calm: '#90C5B5' },
+    dark:  { primary: '#E0958C', coral: '#FFCCBC', warm: '#FFE082', calm: '#80DEEA' },
   },
   violet: {
-    light: { primary: '#7C3AED', coral: '#C4B5FD', warm: '#DDD6FE', calm: '#A5B4FC' },
-    dark:  { primary: '#A78BFA', coral: '#D4B5FF', warm: '#EDE9FE', calm: '#BFDBFE' },
+    light: { primary: '#6E5E96', coral: '#C4B5FD', warm: '#DDD6FE', calm: '#A5B4FC' },
+    dark:  { primary: '#A898CC', coral: '#D4B5FF', warm: '#EDE9FE', calm: '#BFDBFE' },
   },
   blue: {
-    light: { primary: '#3B82F6', coral: '#93C5FD', warm: '#BAE6FD', calm: '#A5F3FC' },
-    dark:  { primary: '#60A5FA', coral: '#BAE6FD', warm: '#E0F2FE', calm: '#CCFBF1' },
+    light: { primary: '#4A6A92', coral: '#93C5FD', warm: '#BAE6FD', calm: '#A5F3FC' },
+    dark:  { primary: '#8FA9CC', coral: '#BAE6FD', warm: '#E0F2FE', calm: '#CCFBF1' },
   },
   green: {
-    light: { primary: '#10B981', coral: '#6EE7B7', warm: '#D1FAE5', calm: '#A7F3D0' },
-    dark:  { primary: '#34D399', coral: '#86EFAC', warm: '#ECFDF5', calm: '#D1FAE5' },
+    light: { primary: '#4E7F68', coral: '#6EE7B7', warm: '#D1FAE5', calm: '#A7F3D0' },
+    dark:  { primary: '#86B39E', coral: '#86EFAC', warm: '#ECFDF5', calm: '#D1FAE5' },
   },
   amber: {
-    light: { primary: '#D97706', coral: '#FCD34D', warm: '#FEF3C7', calm: '#FDE68A' },
-    dark:  { primary: '#FBBF24', coral: '#FDE68A', warm: '#FEF9C3', calm: '#FEF3C7' },
+    light: { primary: '#A8752E', coral: '#FCD34D', warm: '#FEF3C7', calm: '#FDE68A' },
+    dark:  { primary: '#D3A866', coral: '#FDE68A', warm: '#FEF9C3', calm: '#FEF3C7' },
   },
 };
 
