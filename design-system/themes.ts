@@ -10,7 +10,7 @@ export type Colors = {
 export type AccentId = 'rose' | 'coral' | 'violet' | 'blue' | 'green' | 'amber';
 
 export const ACCENT_META: Record<AccentId, { label: string; preview: string }> = {
-  rose:   { label: '로즈',     preview: '#E27396' },
+  rose:   { label: '로즈',     preview: '#B5566B' },
   coral:  { label: '코랄',     preview: '#E05C5C' },
   violet: { label: '바이올렛', preview: '#7C3AED' },
   blue:   { label: '블루',     preview: '#3B82F6' },
@@ -19,11 +19,11 @@ export const ACCENT_META: Record<AccentId, { label: string; preview: string }> =
 };
 
 const LIGHT_BASE = {
-  bg:     { base: '#FFFBF7', surface: '#FFFFFF', subtle: '#F5EFE8' },
-  text:   { primary: '#1A1614', secondary: '#6B635E', muted: '#9C938D', inverse: '#FFFFFF' },
-  border: { subtle: '#EDE5DD', strong: '#D4C8BE' },
+  bg:     { base: '#FAF8F5', surface: '#FFFFFF', subtle: '#F1EDE8' },
+  text:   { primary: '#1C1917', secondary: '#5F5853', muted: '#9A928B', inverse: '#FFFFFF' },
+  border: { subtle: '#E7E2DC', strong: '#CCC4BB' },
   status: { success: '#7BA88F', warning: '#D4A05C', danger: '#C77575' },
-  overlay: 'rgba(26,22,20,0.4)',
+  overlay: 'rgba(28,25,23,0.4)',
 };
 
 const DARK_BASE = {
@@ -38,8 +38,8 @@ type AccentTokens = { primary: string; coral: string; warm: string; calm: string
 
 const ACCENT_PALETTES: Record<AccentId, { light: AccentTokens; dark: AccentTokens }> = {
   rose: {
-    light: { primary: '#E27396', coral: '#F0A8A0', warm: '#E8B86D', calm: '#A8BDB5' },
-    dark:  { primary: '#F48FB1', coral: '#F8BBD9', warm: '#FFCC80', calm: '#80CBC4' },
+    light: { primary: '#B5566B', coral: '#D4948A', warm: '#E8B86D', calm: '#A8BDB5' },
+    dark:  { primary: '#DB8B9C', coral: '#E3AFA7', warm: '#FFCC80', calm: '#80CBC4' },
   },
   coral: {
     light: { primary: '#E05C5C', coral: '#F4AEAE', warm: '#F0C87A', calm: '#90C5B5' },

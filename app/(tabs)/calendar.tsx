@@ -24,7 +24,6 @@ import { useAuthStore } from '../../core/stores/auth.store';
 import { addDays, getAnniversaryMarkers, parseYMD, startOfWeek, toYMD } from '../../core/utils/date';
 import { tsToDate } from '../../core/utils/firestore';
 import { EmptyState } from '../../design-system/EmptyState';
-import { CalendarEmpty } from '../../design-system/illustrations';
 import { Skeleton } from '../../design-system/Skeleton';
 import { Spinner } from '../../design-system/Spinner';
 import { useColors } from '../../design-system/ThemeContext';
@@ -250,7 +249,7 @@ export default function CalendarScreen() {
                   {[0, 1, 2].map(i => <Skeleton key={i} style={styles.skeletonRow} />)}
                 </View>
               ) : dayEvents.length === 0 ? (
-                <EmptyState title="일정이 없어요" description="오른쪽 아래 + 버튼으로 추가해보세요" illustration={CalendarEmpty} />
+                <EmptyState title="이 날은 일정이 없어요" description="+ 버튼으로 추가할 수 있어요" />
               ) : (
                 <FlatList
                   data={dayEvents}

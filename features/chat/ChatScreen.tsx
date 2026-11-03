@@ -18,7 +18,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { usePartnerProfile } from '../../core/couple';
 import { useAuthStore } from '../../core/stores/auth.store';
-import { ChatEmpty } from '../../design-system/illustrations';
 import { useColors } from '../../design-system/ThemeContext';
 import { Colors } from '../../design-system/themes';
 import { radius, space, typography } from '../../design-system/tokens';
@@ -222,8 +221,7 @@ export default function ChatScreen() {
       >
         {isEmpty ? (
           <View style={styles.empty}>
-            <ChatEmpty />
-            <Text style={styles.emptyText}>대화를 시작해보세요</Text>
+            <Text style={styles.emptyText}>아직 주고받은 메시지가 없어요</Text>
           </View>
         ) : (
           <FlatList

@@ -18,27 +18,27 @@
 ---
 
 ## 색상 팔레트
-**원칙**: 너무 강한 핑크는 피한다. 베이지/크림 베이스에 핑크는 액센트로만.
+**원칙**: 너무 강한 핑크는 피한다. 중립에 가까운 종이색 베이스에 채도를 낮춘 로즈를 꼭 필요한 곳(현재 선택, 주요 버튼, 오늘)에만 쓴다.
 
 | 토큰 | 값 | 용도 |
 |------|----|------|
-| `bg.base`        | `#FFFBF7` | 앱 배경 (베이지 화이트) |
+| `bg.base`        | `#FAF8F5` | 앱 배경 (종이색) |
 | `bg.surface`     | `#FFFFFF` | 카드, 시트 배경 |
-| `bg.subtle`      | `#F5EFE8` | 비활성 영역, 회색 톤 카드 |
-| `text.primary`   | `#1A1614` | 본문, 헤더 |
-| `text.secondary` | `#6B635E` | 보조 문구, 라벨 |
-| `text.muted`     | `#9C938D` | 비활성/플레이스홀더 |
+| `bg.subtle`      | `#F1EDE8` | 비활성 영역, 회색 톤 카드 |
+| `text.primary`   | `#1C1917` | 본문, 헤더 |
+| `text.secondary` | `#5F5853` | 보조 문구, 라벨 |
+| `text.muted`     | `#9A928B` | 비활성/플레이스홀더 |
 | `text.inverse`   | `#FFFFFF` | 컬러 버튼 위 텍스트 |
-| `accent.primary` | `#E27396` | 주요 CTA, 매칭 성공 (핑크) |
-| `accent.coral`   | `#F0A8A0` | 운동 이벤트 점 |
+| `accent.primary` | `#B5566B` | 주요 CTA, 현재 선택, 오늘 (채도 낮춘 로즈) |
+| `accent.coral`   | `#D4948A` | 운동 이벤트 점 |
 | `accent.warm`    | `#E8B86D` | 데이트 이벤트 점, 빙고 강조 |
 | `accent.calm`    | `#A8BDB5` | 일반 일정 점, 컨디션 good |
-| `border.subtle`  | `#EDE5DD` | 카드 경계 |
-| `border.strong`  | `#D4C8BE` | 입력 필드, 강조 경계 |
+| `border.subtle`  | `#E7E2DC` | 목록 구분선 |
+| `border.strong`  | `#CCC4BB` | 입력 필드, 섹션 머리말 구분선 |
 | `status.success` | `#7BA88F` | 성공 토스트 |
 | `status.warning` | `#D4A05C` | 경고 |
 | `status.danger`  | `#C77575` | 위험(해제, 삭제) |
-| `overlay`        | `rgba(26,22,20,0.4)` | 모달 배경 |
+| `overlay`        | `rgba(28,25,23,0.4)` | 모달 배경 |
 
 이벤트 타입별 점 색상 (캘린더 스펙 BR-9 참조):
 - date → `accent.warm`
@@ -58,6 +58,7 @@
 | `caption`  | 14 / 20 | 400 | 보조 설명 |
 | `tiny`     | 12 / 16 | 500 | 라벨, 메타 |
 | `button`   | 16 / 20 | 600 | 버튼 텍스트 |
+| `label`    | 13 / 18 | 600 | 섹션 머리말 (`SectionHeader`) |
 
 > Pretendard 가 로드 안 됐을 때 fallback: 시스템 폰트 (`-apple-system`).
 > 폰트 로드는 0단계에서 `expo-font` 로 처리.
@@ -85,10 +86,10 @@
 ## 모서리 (radius)
 | 토큰 | 값 |
 |------|----|
-| `radius.sm` | 8 |
-| `radius.md` | 12 |
-| `radius.lg` | 16 |
-| `radius.xl` | 24 |
+| `radius.sm` | 4 |
+| `radius.md` | 6 |
+| `radius.lg` | 10 |
+| `radius.xl` | 14 |
 | `radius.pill` | 999 |
 
 ---
@@ -96,9 +97,11 @@
 ## 그림자 (iOS)
 | 토큰 | shadowColor/Opacity/Radius/Offset |
 |------|-----------------------------------|
-| `shadow.sm` | #000 / 0.04 / 4 / (0,1) |
-| `shadow.md` | #000 / 0.08 / 12 / (0,4) |
-| `shadow.lg` | #000 / 0.12 / 24 / (0,8) |
+| `shadow.sm` | #000 / 0.03 / 2 / (0,1) |
+| `shadow.md` | #000 / 0.06 / 8 / (0,4) |
+| `shadow.lg` | #000 / 0.1 / 16 / (0,8) |
+
+그림자는 떠 있는 요소(토스트·시트·FAB)에만 쓴다. 목록·섹션은 그림자 대신 `hairline`(0.5) 구분선.
 
 Android 는 `elevation` 으로 매핑 (sm=2, md=4, lg=8).
 
@@ -168,13 +171,24 @@ interface BottomSheetProps {
 ### EmptyState
 ```ts
 interface EmptyStateProps {
-  icon?: LucideIcon;
   title: string;
   description?: string;
   action?: { label: string; onPress: () => void };
 }
 ```
-- 캘린더 빈 날, 빙고 항목 없음, 후보 없음 등 빈 화면 표준
+- 그림(일러스트) 없이 왼쪽 정렬 문장 두 줄. 제목은 상황 서술("아직 ~가 없어요"), 설명은 할 수 있는 일을 담백하게("~할 수 있어요").
+
+### SectionHeader
+```ts
+interface SectionHeaderProps { title: string; right?: ReactNode; }
+```
+- 영역마다 카드를 씌우지 않는다. `label` 머리말 + 아래 hairline 으로 영역을 구분한다.
+
+### 화면 문구·장식 원칙 (2026-11 개편)
+- UI 문구·라벨·탭·버튼에 이모지를 쓰지 않는다. 사용자가 직접 입력한 내용(일정 제목, 메시지)은 그대로 둔다.
+- 아이콘은 의미가 필요한 곳에만 `lucide-react-native` 로. 장식용 아이콘 배지 금지.
+- "~해보세요" 권유형 대신 상태 서술형. 줄표(—)로 문장 잇지 않는다.
+- 같은 모양의 둥근 카드 반복 대신 목록 + 구분선. 강조는 굵기·크기·액센트 색 중 하나만.
 
 ### LoadingState
 - `Spinner` 컴포넌트: 화면 중앙 작은 스피너 (액션 로딩)

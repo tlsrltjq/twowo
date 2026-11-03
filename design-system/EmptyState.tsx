@@ -1,4 +1,4 @@
-import { ComponentType, ReactElement, useMemo } from 'react';
+import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Button } from './Button';
@@ -10,22 +10,21 @@ interface EmptyStateProps {
   title: string;
   description?: string;
   action?: { label: string; onPress: () => void };
-  illustration?: ReactElement | ComponentType;
 }
 
-export function EmptyState({ title, description, action, illustration }: EmptyStateProps) {
+/** 빈 상태·오류 안내. 그림 없이 짧은 문장 두 줄로만 알린다. */
+export function EmptyState({ title, description, action }: EmptyStateProps) {
   const colors = useColors();
   const styles = useMemo(() => makeStyles(colors), [colors]);
-  const Illus = illustration && typeof illustration === 'function' ? illustration : null;
 
   return (
     <View style={styles.container}>
-      {illustration && typeof illustration !== 'function' && illustration}
-      {Illus && <Illus />}
       <Text style={styles.title}>{title}</Text>
       {description && <Text style={styles.description}>{description}</Text>}
       {action && (
-        <Button label={action.label} onPress={action.onPress} variant="secondary" size="sm" />
+        <View style={styles.action}>
+          <Button label={action.label} onPress={action.onPress} variant="secondary" size="sm" />
+        </View>
       )}
     </View>
   );
@@ -33,11 +32,11 @@ export function EmptyState({ title, description, action, illustration }: EmptySt
 
 const makeStyles = (colors: Colors) => StyleSheet.create({
   container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: space[8],
-    gap: space[3],
+    paddingVertical: space[8],
+    paddingHorizontal: space[1],
+    gap: space[1],
   },
-  title: { ...typography.title2, color: colors.text.primary, textAlign: 'center' },
-  description: { ...typography.body, color: colors.text.secondary, textAlign: 'center' },
+  title: { ...typography.body, color: colors.text.secondary },
+  description: { ...typography.caption, color: colors.text.muted },
+  action: { alignSelf: 'flex-start', marginTop: space[3] },
 });

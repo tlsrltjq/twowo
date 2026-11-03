@@ -1,31 +1,31 @@
 export const colors = {
   bg: {
-    base: '#FFFBF7',
+    base: '#FAF8F5',
     surface: '#FFFFFF',
-    subtle: '#F5EFE8',
+    subtle: '#F1EDE8',
   },
   text: {
-    primary: '#1A1614',
-    secondary: '#6B635E',
-    muted: '#9C938D',
+    primary: '#1C1917',
+    secondary: '#5F5853',
+    muted: '#9A928B',
     inverse: '#FFFFFF',
   },
   accent: {
-    primary: '#E27396',
-    coral: '#F0A8A0',
+    primary: '#B5566B',
+    coral: '#D4948A',
     warm: '#E8B86D',
     calm: '#A8BDB5',
   },
   border: {
-    subtle: '#EDE5DD',
-    strong: '#D4C8BE',
+    subtle: '#E7E2DC',
+    strong: '#CCC4BB',
   },
   status: {
     success: '#7BA88F',
     warning: '#D4A05C',
     danger: '#C77575',
   },
-  overlay: 'rgba(26,22,20,0.4)',
+  overlay: 'rgba(28,25,23,0.4)',
 } as const;
 
 export const typography = {
@@ -37,6 +37,8 @@ export const typography = {
   caption:  { fontSize: 14, lineHeight: 20, fontWeight: '400' as const, fontFamily: 'Pretendard-Regular' },
   tiny:     { fontSize: 12, lineHeight: 16, fontWeight: '500' as const, fontFamily: 'Pretendard-Medium' },
   button:   { fontSize: 16, lineHeight: 20, fontWeight: '600' as const, fontFamily: 'Pretendard-SemiBold' },
+  /** 섹션 머리말. 카드 대신 이 라벨 + 구분선으로 영역을 나눈다. */
+  label:    { fontSize: 13, lineHeight: 18, fontWeight: '600' as const, fontFamily: 'Pretendard-SemiBold', letterSpacing: 0.2 },
 } as const;
 
 export const space = {
@@ -53,12 +55,15 @@ export const space = {
 } as const;
 
 export const radius = {
-  sm:   8,
-  md:   12,
-  lg:   16,
-  xl:   24,
+  sm:   4,
+  md:   6,
+  lg:   10,
+  xl:   14,
   pill: 999,
 } as const;
+
+/** 구분선 두께. 카드 테두리 대신 목록 사이에 쓴다. */
+export const hairline = 0.5 as const;
 
 /** 순수 검정 — shadowColor, 풀스크린 오버레이 배경 등에만 사용. 일반 텍스트/배경은 colors.text.* 사용. */
 export const black = '#000000' as const;
@@ -66,22 +71,22 @@ export const black = '#000000' as const;
 export const shadow = {
   sm: {
     shadowColor: '#000000',
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
+    shadowOpacity: 0.03,
+    shadowRadius: 2,
     shadowOffset: { width: 0, height: 1 },
     elevation: 2,
   },
   md: {
     shadowColor: '#000000',
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
     shadowOffset: { width: 0, height: 4 },
     elevation: 4,
   },
   lg: {
     shadowColor: '#000000',
-    shadowOpacity: 0.12,
-    shadowRadius: 24,
+    shadowOpacity: 0.1,
+    shadowRadius: 16,
     shadowOffset: { width: 0, height: 8 },
     elevation: 8,
   },

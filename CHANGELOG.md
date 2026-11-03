@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-11-03 | UI 톤 개편 1: 디자인 토대 | refactor(design-system): 로즈 채도 낮춤·종이색 배경, radius 4/6/10/14로 축소, 그림자 약화, label 타이포·hairline·SectionHeader 추가, EmptyState 일러스트 제거·왼쪽 정렬, 일러스트 SVG 3종 삭제.
 ## 2026-06-22 | E2E 전체 재검증 + ESLint CI 수정 | test(e2e): e2e_full_a(45장)·e2e_full_b(39장) — 빙고·운동탭·컨디션값·히스토리·빈입력·오늘의밥 등 갭 전면 보강. fix(lint): ESLint CI 재발방지 — CLAUDE.md pre-commit에 eslint 추가, ADR-031 문서화.
 ## 2026-06-20 | Maestro 전체 스크린샷 플로우 완료 | test(e2e): 양계정(A 39장·B 23장) 시뮬레이터 E2E 스크린샷 — DateDecisionScreen testID 추가, gear/비밀번호다이얼로그/키보드 처리 YAML 수정.
 ## 2026-06-19 | 오늘의 고마움 히스토리 페이지네이션 | feat(daily-gratitude): 히스토리 화면 분리 + 15일 양측 쌍 보기 + 15일씩 더 보기 버튼(limitDays += 15 재조회).

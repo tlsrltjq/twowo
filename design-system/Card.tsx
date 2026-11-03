@@ -39,5 +39,5 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border.subtle,
   },
-  pressed: { opacity: 0.9 },
+  pressed: { backgroundColor: colors.bg.subtle },
 });
