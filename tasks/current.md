@@ -95,7 +95,7 @@
   - tsc·ESLint 통과, Jest 655 통과(기존 `core/auth/signOut.test.ts` ESM 로드 실패 1건은 개편 전부터 동일)
 - ⬜ 시뮬레이터 화면 확인 미실시 — 이 Mac에서 Xcode 라이선스 미동의(`sudo xcodebuild -license`)로 simctl 사용 불가
 - ⬜ Maestro E2E 미실행 — 라벨만 새 문구로 갱신. e2e/10 오늘의 밥 흐름은 개편 전부터 예전 텍스트 입력 방식이라 별도 정리 필요
-- ⚠ `.husky/pre-commit` 실행 권한 없음 → 훅이 무시됨(이번엔 tsc·eslint 수동 실행)
+- ✅ 커밋 훅 복구: `core.hooksPath`가 `.husky`(실행 권한 없는 원본)를 가리켜 무시되던 문제 → `npx husky`로 `.husky/_` 재설정. 타입 오류 커밋 차단 확인. 새 clone 은 `npm install`(prepare) 시 자동 설정
 - ⚠ `docs/specs/home.md` 화면 상태 표는 일정 0개면 영역 숨김이라고 하나 코드는 빈 상태 문구 표시(개편 전부터 불일치, 유지)
 
 ## 이전 세션에서 멈춘 곳(이전) (2026-06-22 30차)
