@@ -2,6 +2,7 @@
 module.exports = {
   testEnvironment: 'node',
   testMatch: ['**/__tests__/integration/**/*.test.ts'],
+  testPathIgnorePatterns: ['/node_modules/', '/.claude/'],
   transform: {
     '^.+\\.tsx?$': ['ts-jest', { tsconfig: { module: 'commonjs' } }],
     '^.+\\.mjs$': ['babel-jest', { presets: ['babel-preset-expo'] }],

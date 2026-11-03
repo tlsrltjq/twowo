@@ -26,6 +26,18 @@ npm run test:integration:local
 firebase deploy --only firestore:rules,storage:rules
 ```
 
+#### Storage Rules 첫 cross-service 배포 (ADR-030, 한 번만)
+`storage.rules` 의 `isMyCouple()` 은 `firestore.get()` 으로 커플 문서를 읽는다. Storage 서비스 에이전트에
+**Firebase Rules Firestore Service Agent**(`roles/firebaserules.firestoreServiceAgent`) 역할이 없으면 모든 사진 요청이 거부된다.
+
+```bash
+npm run test:integration:local                 # storage-rules.test.ts 포함 통과 확인
+firebase deploy --only storage                 # CLI 가 Firestore 접근 권한 부여를 물으면 Yes
+```
+- 배포 후 앱에서 사진 업로드·보기 1회 확인. 실패하면 GCP 콘솔 IAM 에서 `…@gcp-sa-firebasestorage.iam.gserviceaccount.com` 에 위 역할이 있는지 확인.
+- 되돌릴 때는 **규칙을 먼저** 이전 버전으로 배포한 뒤 역할을 제거한다(반대 순서면 요청이 모두 실패).
+- 규칙 1회 평가당 Firestore 문서 읽기 1건이 추가되고 Firestore 사용량에 포함된다.
+
 ### 1-3. 앱 빌드 (EAS)
 ```bash
 # TestFlight 내부 검증

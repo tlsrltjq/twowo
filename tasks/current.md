@@ -94,6 +94,9 @@
   - 문구 원칙: `docs/_archive/design-system.md` "화면 문구·장식 원칙"
   - tsc·ESLint 통과, Jest 655 통과(기존 `core/auth/signOut.test.ts` ESM 로드 실패 1건은 개편 전부터 동일)
 - ⬜ 시뮬레이터 화면 확인 미실시 — 이 Mac에서 Xcode 라이선스 미동의(`sudo xcodebuild -license`)로 simctl 사용 불가
+- ✅ ADR-030 Storage 규칙: `firestore.get()` 멤버십 확인으로 교체, 에뮬레이터 테스트 6건 통과 — ⬜ **실제 배포·IAM 역할 부여 미실시**(runbook 1-2 절차)
+- ⬜ firestore.rules `couples` get 완화(비멤버 get 허용) — security-rules.test.ts 1건 실패, 초대 합류 흐름과 함께 별도 정리
+- ⬜ 개발 빌드 실패: 현재 Xcode 에서 `expo-modules-jsi` Swift 컴파일 오류(JavaScriptRuntime.swift:219) + Pods 최소 iOS 버전 경고 — Expo SDK 업그레이드 필요, 새 아이콘의 홈 화면 확인 보류
 - ⬜ Maestro E2E 미실행 — 라벨만 새 문구로 갱신. e2e/10 오늘의 밥 흐름은 개편 전부터 예전 텍스트 입력 방식이라 별도 정리 필요
 - ✅ 커밋 훅 복구: `core.hooksPath`가 `.husky`(실행 권한 없는 원본)를 가리켜 무시되던 문제 → `npx husky`로 `.husky/_` 재설정. 타입 오류 커밋 차단 확인. 새 clone 은 `npm install`(prepare) 시 자동 설정
 - ⚠ `docs/specs/home.md` 화면 상태 표는 일정 0개면 영역 숨김이라고 하나 코드는 빈 상태 문구 표시(개편 전부터 불일치, 유지)
