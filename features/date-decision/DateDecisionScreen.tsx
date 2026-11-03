@@ -20,7 +20,7 @@ import { useAuthStore } from '../../core/stores/auth.store';
 import { Spinner } from '../../design-system/Spinner';
 import { useColors } from '../../design-system/ThemeContext';
 import { Colors } from '../../design-system/themes';
-import { radius, space, typography } from '../../design-system/tokens';
+import { hairline, radius, space, typography } from '../../design-system/tokens';
 import {
   addCandidate,
   castVote,
@@ -574,7 +574,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   flex:                  { flex: 1 },
   center:                { flex: 1, alignItems: 'center', justifyContent: 'center', gap: space[3] },
 
-  header:                { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space[4], paddingVertical: space[4], borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
+  header:                { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space[4], paddingVertical: space[4], borderBottomWidth: hairline, borderBottomColor: colors.border.strong },
   backBtn:               { padding: space[1], width: 36 },
   headerTitle:           { ...typography.title2, color: colors.text.primary, flex: 1, textAlign: 'center' },
   headerRight:           { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: space[1], minWidth: 36 },
@@ -589,7 +589,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   candidateRowSelected:  { borderColor: colors.accent.primary, backgroundColor: colors.accent.primary + '10' },
   candidateTitle:        { ...typography.bodyBold, color: colors.text.primary, flex: 1 },
   candidateTitleSelected:{ color: colors.accent.primary },
-  selectedBadge:         { backgroundColor: colors.accent.primary, borderRadius: radius.pill, paddingHorizontal: space[3], paddingVertical: space[1] },
+  selectedBadge:         { backgroundColor: colors.accent.primary, borderRadius: radius.md, paddingHorizontal: space[3], paddingVertical: space[1] },
   selectedBadgeText:     { ...typography.tiny, color: colors.text.inverse },
   deleteBtn:             { padding: space[2] },
 
@@ -607,7 +607,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
 
   examplesScroll:        { marginHorizontal: -space[1] },
   examplesContent:       { gap: space[2], paddingHorizontal: space[1] },
-  exampleChip:           { backgroundColor: colors.bg.subtle, borderRadius: radius.pill, paddingHorizontal: space[3], paddingVertical: space[2], borderWidth: 1, borderColor: colors.border.subtle },
+  exampleChip:           { backgroundColor: colors.bg.subtle, borderRadius: radius.md, paddingHorizontal: space[3], paddingVertical: space[2], borderWidth: 1, borderColor: colors.border.subtle },
   exampleChipText:       { ...typography.caption, color: colors.text.secondary },
 
   addActions:            { flexDirection: 'row', justifyContent: 'flex-end', gap: space[3] },
@@ -638,7 +638,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
 
   // history
   historyList:           { padding: space[4], gap: space[3], paddingBottom: space[8] },
-  historyCard:           { backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[4], gap: space[3], borderWidth: 1.5, borderColor: 'transparent' },
+  historyCard:           { backgroundColor: colors.bg.surface, borderRadius: radius.md, padding: space[4], gap: space[3], borderWidth: 1.5, borderColor: 'transparent' },
   historyCardHeader:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   historyCardDate:       { ...typography.caption, color: colors.text.muted },
   historyCardMatch:      { ...typography.caption, fontFamily: 'Pretendard-SemiBold' },

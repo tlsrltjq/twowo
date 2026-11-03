@@ -20,7 +20,7 @@ env:
 - takeScreenshot: e2e/screenshots/10-night-message-enter
 
 # 메시지 입력
-- tapOn: "한 마디 남기기..."
+- tapOn: "한 마디 남기기"
 - inputText: "E2E 테스트 잘자 메시지"
 - takeScreenshot: e2e/screenshots/10-night-message-typed
 - tapOn: "보내기"

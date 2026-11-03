@@ -22,7 +22,7 @@ import { Skeleton } from '../../design-system/Skeleton';
 import { Spinner } from '../../design-system/Spinner';
 import { useColors } from '../../design-system/ThemeContext';
 import { Colors } from '../../design-system/themes';
-import { radius, space, typography } from '../../design-system/tokens';
+import { hairline, radius, space, typography } from '../../design-system/tokens';
 import {
   addExtraPhoto,
   deleteFood,
@@ -415,7 +415,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   safeArea:   { flex: 1, backgroundColor: colors.bg.base },
   center:     { flex: 1, alignItems: 'center', justifyContent: 'center', gap: space[3] },
 
-  header:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space[4], paddingVertical: space[4], borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
+  header:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space[4], paddingVertical: space[4], borderBottomWidth: hairline, borderBottomColor: colors.border.strong },
   backBtn:    { padding: space[1], width: 36 },
   headerTitle:{ ...typography.title2, color: colors.text.primary, flex: 1, textAlign: 'center' },
   iconBtn:    { padding: space[2], width: 36, alignItems: 'flex-end' },
@@ -445,7 +445,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   emptyText:  { ...typography.bodyBold, color: colors.text.muted },
 
   historyList:        { padding: space[4], gap: space[4], paddingBottom: space[8] },
-  historyCard:        { backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[4], gap: space[3], borderWidth: 1, borderColor: colors.border.subtle },
+  historyCard:        { backgroundColor: colors.bg.surface, borderRadius: radius.md, padding: space[4], gap: space[3], borderWidth: hairline * 2, borderColor: colors.border.subtle },
   historyDate:        { ...typography.bodyBold, color: colors.text.primary },
   historyPerson:      { gap: space[2] },
   historyPersonLabel: { ...typography.tiny, color: colors.text.muted },

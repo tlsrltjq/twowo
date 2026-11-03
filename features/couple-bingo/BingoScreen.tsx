@@ -19,7 +19,7 @@ import { useAuthStore } from '../../core/stores/auth.store';
 import { Spinner } from '../../design-system/Spinner';
 import { useColors } from '../../design-system/ThemeContext';
 import { Colors } from '../../design-system/themes';
-import { radius, space, typography } from '../../design-system/tokens';
+import { hairline, radius, space, typography } from '../../design-system/tokens';
 import {
   BingoBoard,
   completeBoard,
@@ -994,7 +994,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   flex:              { flex: 1 },
   center:            { flex: 1, alignItems: 'center', justifyContent: 'center', gap: space[3] },
 
-  header:            { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space[4], paddingVertical: space[4], borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
+  header:            { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space[4], paddingVertical: space[4], borderBottomWidth: hairline, borderBottomColor: colors.border.strong },
   backBtn:           { padding: space[1], width: 36 },
   headerTitle:       { ...typography.title2, color: colors.text.primary, flex: 1, textAlign: 'center' },
   headerRight:       { flexDirection: 'row', alignItems: 'center', width: 72, justifyContent: 'flex-end' },
@@ -1021,14 +1021,14 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   emptyHistBtn:      { paddingVertical: space[2] },
 
   // tabs
-  tabBar:            { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
+  tabBar:            { flexDirection: 'row', borderBottomWidth: hairline, borderBottomColor: colors.border.strong },
   tab:               { flex: 1, alignItems: 'center', paddingVertical: space[3], borderBottomWidth: 2, borderBottomColor: 'transparent' },
   tabLabel:          { ...typography.caption, color: colors.text.secondary, fontFamily: 'Pretendard-SemiBold' },
   tabProgress:       { ...typography.tiny, color: colors.text.muted, marginTop: 2 },
 
   // history list
   historyList:       { padding: space[4], gap: space[3], paddingBottom: space[8] },
-  historyCard:       { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[4], gap: space[3] },
+  historyCard:       { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: colors.bg.surface, borderRadius: radius.md, padding: space[4], gap: space[3] },
   historyCardLeft:   { flexDirection: 'row', alignItems: 'center', gap: space[3], flex: 1 },
   historyNum:        { ...typography.title2, color: colors.accent.primary, minWidth: 32 },
   historyDate:       { ...typography.bodyBold, color: colors.text.primary },
@@ -1040,7 +1040,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   setupToolbar:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space[4], paddingVertical: space[3] },
   setupToolbarBtns:  { flexDirection: 'row', alignItems: 'center' },
   setupHint:         { ...typography.caption, color: colors.text.muted, flex: 1 },
-  fillBtn:           { paddingHorizontal: space[3], paddingVertical: space[2], backgroundColor: colors.bg.subtle, borderRadius: radius.pill },
+  fillBtn:           { paddingHorizontal: space[3], paddingVertical: space[2], backgroundColor: colors.bg.subtle, borderRadius: radius.md },
   fillBtnText:       { ...typography.caption, color: colors.accent.primary },
   setupList:         { paddingHorizontal: space[4], gap: space[2], paddingBottom: space[4] },
   setupRow:          { flexDirection: 'row', alignItems: 'center', gap: space[3] },

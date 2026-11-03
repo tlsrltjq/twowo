@@ -21,7 +21,7 @@ import { Skeleton } from '../../design-system/Skeleton';
 import { Spinner } from '../../design-system/Spinner';
 import { useColors } from '../../design-system/ThemeContext';
 import { Colors } from '../../design-system/themes';
-import { radius, space, typography } from '../../design-system/tokens';
+import { hairline, radius, space, typography } from '../../design-system/tokens';
 import {
   getMessageHistory,
   MessageHistoryEntry,
@@ -223,7 +223,7 @@ export default function NightMessageScreen() {
                 ref={inputRef}
                 testID="input-night-message"
                 style={styles.textInput}
-                placeholder="한 마디 남기기..."
+                placeholder="한 마디 남기기"
                 placeholderTextColor={colors.text.muted}
                 value={draft}
                 onChangeText={setDraft}
@@ -311,16 +311,16 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   flex:        { flex: 1 },
   center:      { flex: 1, alignItems: 'center', justifyContent: 'center', gap: space[3] },
 
-  header:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space[4], paddingVertical: space[4], borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
+  header:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space[4], paddingVertical: space[4], borderBottomWidth: hairline, borderBottomColor: colors.border.strong },
   backBtn:     { padding: space[1], width: 36 },
   headerTitle: { ...typography.title2, color: colors.text.primary, flex: 1, textAlign: 'center' },
   iconBtn:     { padding: space[2], width: 36, alignItems: 'flex-end' },
 
-  tabBar:      { flexDirection: 'row', backgroundColor: colors.bg.surface, borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
+  tabBar:      { flexDirection: 'row', borderBottomWidth: hairline, borderBottomColor: colors.border.strong },
   tab:         { flex: 1, paddingVertical: space[3], alignItems: 'center' },
-  tabActive:   { borderBottomWidth: 2, borderBottomColor: colors.accent.primary },
+  tabActive:   { borderBottomWidth: 2, borderBottomColor: colors.text.primary },
   tabText:     { ...typography.body, color: colors.text.secondary },
-  tabTextActive: { ...typography.body, color: colors.accent.primary, fontFamily: 'Pretendard-SemiBold' },
+  tabTextActive: { ...typography.body, color: colors.text.primary, fontFamily: 'Pretendard-SemiBold' },
 
   body:        { padding: space[5], gap: space[3], paddingBottom: space[10] },
 
@@ -338,7 +338,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   messageText:    { ...typography.body, color: colors.text.primary, lineHeight: 22 },
   messageMeta:    { ...typography.tiny, color: colors.text.muted },
   myCardFooter:   { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  editBtn:        { paddingHorizontal: space[3], paddingVertical: space[1], backgroundColor: colors.bg.surface, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.border.subtle },
+  editBtn:        { paddingHorizontal: space[3], paddingVertical: space[1], backgroundColor: colors.bg.surface, borderRadius: radius.md, borderWidth: 1, borderColor: colors.border.subtle },
   editBtnText:    { ...typography.tiny, color: colors.text.secondary },
 
   inputWrapper:   { backgroundColor: colors.bg.surface, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border.subtle, overflow: 'hidden' },
@@ -346,21 +346,21 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
 
   phrasesScroll:   { borderTopWidth: 1, borderTopColor: colors.border.subtle },
   phrasesContent:  { flexDirection: 'row', gap: space[2], paddingHorizontal: space[3], paddingVertical: space[2] },
-  phraseChip:      { backgroundColor: colors.bg.subtle, borderRadius: radius.pill, paddingHorizontal: space[3], paddingVertical: space[2], borderWidth: 1, borderColor: colors.border.subtle },
+  phraseChip:      { backgroundColor: colors.bg.subtle, borderRadius: radius.md, paddingHorizontal: space[3], paddingVertical: space[2], borderWidth: 1, borderColor: colors.border.subtle },
   phraseChipText:  { ...typography.caption, color: colors.text.secondary },
 
   inputFooter:    { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: space[4], paddingBottom: space[3] },
   charCount:      { ...typography.tiny, color: colors.text.muted },
-  sendBtn:        { paddingHorizontal: space[4], paddingVertical: space[2], backgroundColor: colors.accent.primary, borderRadius: radius.pill },
+  sendBtn:        { paddingHorizontal: space[4], paddingVertical: space[2], backgroundColor: colors.accent.primary, borderRadius: radius.md },
   sendBtnDisabled: { backgroundColor: colors.border.subtle },
   sendBtnText:    { ...typography.caption, color: colors.text.inverse, fontFamily: 'Pretendard-SemiBold' },
 
   // history
   historyList:          { padding: space[4], gap: space[3], paddingBottom: space[8] },
-  historyCard:          { backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[4], gap: space[3], borderWidth: 1, borderColor: colors.border.subtle },
+  historyCard:          { backgroundColor: colors.bg.surface, borderRadius: radius.md, padding: space[4], gap: space[3], borderWidth: hairline * 2, borderColor: colors.border.subtle },
   historyCardHeader:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   historyCardDate:      { ...typography.bodyBold, color: colors.text.primary },
-  historyTypeBadge:     { backgroundColor: colors.bg.subtle, borderRadius: radius.pill, paddingHorizontal: space[3], paddingVertical: space[1] },
+  historyTypeBadge:     { backgroundColor: colors.bg.subtle, borderRadius: radius.md, paddingHorizontal: space[3], paddingVertical: space[1] },
   historyTypeBadgeText: { ...typography.tiny, color: colors.text.secondary },
   historyMsg:           { borderRadius: radius.md, padding: space[3], gap: 2 },
   historyMsgPartner:    { backgroundColor: colors.bg.subtle },

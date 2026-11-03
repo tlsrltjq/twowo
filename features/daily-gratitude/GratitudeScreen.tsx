@@ -329,13 +329,13 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   container:       { flex: 1 },
   center:          { flex: 1, alignItems: 'center', justifyContent: 'center', gap: space[3] },
 
-  header:          { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space[4], paddingVertical: space[4], borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
+  header:          { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space[4], paddingVertical: space[4], borderBottomWidth: hairline, borderBottomColor: colors.border.strong },
   backBtn:         { padding: space[1], width: 36 },
   headerTitle:     { ...typography.title2, color: colors.text.primary, flex: 1, textAlign: 'center' },
   iconBtn:         { padding: space[2], width: 36, alignItems: 'flex-end' },
 
   body:            { padding: space[5], gap: space[4], paddingBottom: space[12] },
-  card:            { backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[5], gap: space[3], borderWidth: hairline * 2, borderColor: colors.border.subtle },
+  card:            { backgroundColor: colors.bg.surface, borderRadius: radius.md, padding: space[5], gap: space[3], borderWidth: hairline * 2, borderColor: colors.border.subtle },
   cardHeader:      { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   cardLabel:       { ...typography.bodyBold, color: colors.text.primary },
   editLink:        { ...typography.caption, color: colors.accent.primary },

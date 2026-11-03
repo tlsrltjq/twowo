@@ -275,7 +275,7 @@ function SongCard({ song, isMe, styles }: { song: PlaylistSong; isMe: boolean; s
 
 const makeStyles = (colors: Colors) => StyleSheet.create({
   safeArea:      { flex: 1, backgroundColor: colors.bg.base },
-  header:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space[4], paddingVertical: space[4], borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
+  header:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space[4], paddingVertical: space[4], borderBottomWidth: hairline, borderBottomColor: colors.border.strong },
   backBtn:       { padding: space[1] },
   headerTitle:   { ...typography.title2, color: colors.text.primary },
   container:     { flex: 1 },
@@ -283,13 +283,13 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   skeletonWrap:  { gap: space[3], marginTop: space[4] },
   separator:     { height: space[3] },
 
-  card:          { backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[4], gap: space[2], borderWidth: hairline * 2, borderColor: colors.border.subtle },
+  card:          { backgroundColor: colors.bg.surface, borderRadius: radius.md, padding: space[4], gap: space[2], borderWidth: hairline * 2, borderColor: colors.border.subtle },
   cardTop:       { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   cardInfo:      { flex: 1, gap: space[1] },
   cardMeta:      { alignItems: 'flex-end', gap: space[1] },
   songTitle:     { ...typography.bodyBold, color: colors.text.primary },
   songArtist:    { ...typography.caption, color: colors.text.secondary },
-  periodBadge:   { backgroundColor: colors.accent.warm + '33', paddingVertical: 2, paddingHorizontal: space[2], borderRadius: radius.pill },
+  periodBadge:   { backgroundColor: colors.accent.warm + '33', paddingVertical: 2, paddingHorizontal: space[2], borderRadius: radius.md },
   periodText:    { ...typography.tiny, color: colors.accent.warm, fontFamily: 'Pretendard-SemiBold' },
   addedBy:       { ...typography.tiny, color: colors.text.muted },
   songMemo:      { ...typography.caption, color: colors.text.muted, fontStyle: 'italic' },

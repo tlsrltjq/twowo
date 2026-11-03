@@ -21,7 +21,7 @@ import { EmptyState } from '../../design-system/EmptyState';
 import { Skeleton } from '../../design-system/Skeleton';
 import { useColors } from '../../design-system/ThemeContext';
 import { Colors } from '../../design-system/themes';
-import { black, radius, space, typography } from '../../design-system/tokens';
+import { black, hairline, radius, space, typography } from '../../design-system/tokens';
 import { addFirstMoment, deleteFirstMoment, FirstMoment, subscribeFirstMoments } from './index';
 
 function formatDisplayDate(dateStr: string): string {
@@ -232,14 +232,14 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   safeArea:    { flex: 1, backgroundColor: colors.bg.base },
   flex:        { flex: 1 },
 
-  header:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space[4], paddingVertical: space[4], borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
+  header:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space[4], paddingVertical: space[4], borderBottomWidth: hairline, borderBottomColor: colors.border.strong },
   backBtn:     { padding: space[1] },
   headerTitle: { ...typography.title2, color: colors.text.primary },
 
   hintBar:     { paddingHorizontal: space[4], paddingVertical: space[2] },
   hintText:    { ...typography.tiny, color: colors.text.muted },
 
-  banner:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space[2], paddingVertical: space[3], backgroundColor: colors.bg.surface, borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
+  banner:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space[2], paddingVertical: space[3], borderBottomWidth: hairline, borderBottomColor: colors.border.strong },
   bannerText:  { ...typography.body, color: colors.text.secondary, fontFamily: 'Pretendard-SemiBold' },
 
   skeletonContainer: { padding: space[4], gap: space[3] },
@@ -247,7 +247,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
 
   listContent:  { padding: space[4], gap: space[3], paddingBottom: space[10] },
 
-  card:         { flexDirection: 'row', backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[4], gap: space[3], borderWidth: 1, borderColor: colors.border.subtle },
+  card:         { flexDirection: 'row', backgroundColor: colors.bg.surface, borderRadius: radius.md, padding: space[4], gap: space[3], borderWidth: hairline * 2, borderColor: colors.border.subtle },
   cardBody:     { flex: 1, gap: 2 },
   cardTitle:    { ...typography.bodyBold, color: colors.text.primary },
   cardDate:     { ...typography.caption, color: colors.accent.primary },
@@ -267,9 +267,9 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   charCount:    { ...typography.tiny, color: colors.text.muted, alignSelf: 'flex-end' },
 
   modalBtns:    { flexDirection: 'row', gap: space[2], justifyContent: 'flex-end' },
-  cancelBtn:    { paddingHorizontal: space[4], paddingVertical: space[2], borderRadius: radius.pill, borderWidth: 1, borderColor: colors.border.subtle },
+  cancelBtn:    { paddingHorizontal: space[4], paddingVertical: space[2], borderRadius: radius.md, borderWidth: 1, borderColor: colors.border.subtle },
   cancelBtnText: { ...typography.caption, color: colors.text.secondary },
-  saveBtn:      { paddingHorizontal: space[4], paddingVertical: space[2], borderRadius: radius.pill, backgroundColor: colors.accent.primary },
+  saveBtn:      { paddingHorizontal: space[4], paddingVertical: space[2], borderRadius: radius.md, backgroundColor: colors.accent.primary },
   saveBtnDisabled: { backgroundColor: colors.border.subtle },
   saveBtnText:  { ...typography.caption, color: colors.text.inverse, fontFamily: 'Pretendard-SemiBold' },
 });
