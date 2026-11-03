@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { ChevronLeft, Clock, RefreshCw } from 'lucide-react-native';
+import { Check, ChevronLeft, Clock, RefreshCw } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
@@ -726,6 +726,7 @@ function HistoryView({
 // ─── history detail view ──────────────────────────────────────────────────────
 
 function HistoryDetailView({ board, styles }: { board: BingoBoard; styles: StylesType }) {
+  const colors = useColors();
   const checkedCount = Object.keys(board.checkedItems).length;
   const bingoCells = useMemo(() => getBingoCells(board.completedLines), [board.completedLines]);
 
@@ -743,7 +744,7 @@ function HistoryDetailView({ board, styles }: { board: BingoBoard; styles: Style
           return (
             <View key={idx} style={[styles.cell, isChecked && styles.cellChecked, isBingo && styles.cellBingo]}>
               <Text style={[styles.cellText, isChecked && styles.cellTextChecked]} numberOfLines={3}>{item}</Text>
-              {isChecked && <Text style={styles.cellCheck}>✓</Text>}
+              {isChecked && <View style={styles.cellCheck}><Check size={12} color={colors.text.inverse} strokeWidth={2.5} /></View>}
             </View>
           );
         })}
@@ -890,6 +891,7 @@ function GameView({
   masked?: boolean;
   styles: StylesType;
 }) {
+  const colors = useColors();
   const checkedCount = Object.keys(board.checkedItems).length;
   const bingoCells = useMemo(() => getBingoCells(board.completedLines), [board.completedLines]);
 
@@ -952,7 +954,11 @@ function GameView({
               <Text style={[styles.cellText, isChecked && styles.cellTextChecked]} numberOfLines={3}>
                 {item}
               </Text>
-              {isChecked && <Text style={styles.cellCheck}>{checkedByMe ? '✓' : '✔'}</Text>}
+              {isChecked && (
+                <View style={styles.cellCheck}>
+                  <Check size={12} color={colors.text.inverse} strokeWidth={checkedByMe ? 2.5 : 1.5} />
+                </View>
+              )}
               {isBingo && (
                 <Animated.View
                   pointerEvents="none"
@@ -1087,7 +1093,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   cellShimmer:       { backgroundColor: 'rgba(255,255,255,0.55)', borderRadius: radius.sm },
   cellText:          { ...typography.tiny, color: colors.text.secondary, textAlign: 'center', lineHeight: 14 },
   cellTextChecked:   { color: colors.text.inverse, fontFamily: 'Pretendard-SemiBold' },
-  cellCheck:         { position: 'absolute', top: 2, right: 4, fontSize: 10, color: 'rgba(255,255,255,0.8)' },
+  cellCheck:         { position: 'absolute', top: space[1], right: space[1], opacity: 0.85 },
 
   completedBanner:   { backgroundColor: colors.accent.warm + '25', borderRadius: radius.lg, padding: space[4] },
   completedText:     { ...typography.body, color: colors.accent.warm, textAlign: 'center' },

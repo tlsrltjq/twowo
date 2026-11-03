@@ -221,7 +221,7 @@ export default function EventDetailScreen() {
         onRequestClose={() => setViewerIndex(null)}
       >
         <View style={styles.viewer}>
-          <Pressable style={styles.viewerClose} onPress={() => setViewerIndex(null)}>
+          <Pressable testID="btn-viewer-close" accessibilityLabel="사진 닫기" style={styles.viewerClose} onPress={() => setViewerIndex(null)}>
             <X size={24} color={colors.text.inverse} strokeWidth={1.8} />
           </Pressable>
           <FlatList

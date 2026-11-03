@@ -30,7 +30,8 @@ env:
 - takeScreenshot: e2e/screenshots/05-sidebar-open
 
 # 사이드바 닫기
-- tapOn: "✕"
+- tapOn:
+    id: "btn-sidebar-close"
 - waitForAnimationToEnd
 - assertVisible:
     id: "screen-home"

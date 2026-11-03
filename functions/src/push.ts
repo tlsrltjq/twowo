@@ -45,7 +45,7 @@ export const onNewMessage = onDocumentCreated(
 
     const coupleId = event.params.coupleId;
     const senderId = data.senderId as string;
-    const text = (data.text as string | undefined) || '📷 사진';
+    const text = (data.text as string | undefined) || '사진을 보냈어요';
 
     const info = await getPartnerInfo(coupleId, senderId);
     if (!info) return;
@@ -69,6 +69,6 @@ export const onNewCalendarEvent = onDocumentCreated(
     const info = await getPartnerInfo(coupleId, createdBy);
     if (!info) return;
 
-    await sendExpoPush(info.token, info.senderName, `📅 새 일정: ${title}`);
+    await sendExpoPush(info.token, info.senderName, `새 일정: ${title}`);
   },
 );

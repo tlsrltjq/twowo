@@ -74,6 +74,7 @@ appId: host.exp.Exponent
     id: "photo-thumb-0"
 - waitForAnimationToEnd
 - takeScreenshot: "photo_05_viewer_full"
-- tapOn: "✕"
+- tapOn:
+    id: "btn-viewer-close"
 - waitForAnimationToEnd
 - takeScreenshot: "photo_06_back_to_list"

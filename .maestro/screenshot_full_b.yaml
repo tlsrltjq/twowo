@@ -100,13 +100,13 @@ appId: host.exp.Exponent
 - takeScreenshot: "B_02_chat_with_a_messages"
 - tapOn:
     id: "input-chat"
-- inputText: "나도 저녁 같이 먹자! 🍜"
+- inputText: "나도 저녁 같이 먹자!"
 - tapOn:
     id: "btn-chat-send"
 - waitForAnimationToEnd
 - tapOn:
     id: "input-chat"
-- inputText: "오늘 정말 보고 싶어 💕"
+- inputText: "오늘 정말 보고 싶어"
 - tapOn:
     id: "btn-chat-send"
 - waitForAnimationToEnd
@@ -128,7 +128,7 @@ appId: host.exp.Exponent
 - waitForAnimationToEnd
 - tapOn:
     id: "input-event-title"
-- inputText: "같이 요리하기 🍳"
+- inputText: "같이 요리하기"
 - pressKey: enter
 - scrollUntilVisible:
     element:
@@ -264,7 +264,7 @@ appId: host.exp.Exponent
 - takeScreenshot: "B_12_night_message"
 - tapOn:
     id: "input-night-message"
-- inputText: "나도 수고했어! 오늘 좋은 꿈 꿔 🌙"
+- inputText: "나도 수고했어! 오늘 좋은 꿈 꿔"
 - tapOn:
     id: "btn-send-message"
 - waitForAnimationToEnd
@@ -291,7 +291,7 @@ appId: host.exp.Exponent
 - waitForAnimationToEnd
 - tapOn:
     id: "input-compliment"
-- inputText: "매일 나를 행복하게 해줘서 고마워 💖"
+- inputText: "매일 나를 행복하게 해줘서 고마워"
 - tapOn:
     id: "btn-compliment-send"
 - waitForAnimationToEnd
@@ -326,7 +326,7 @@ appId: host.exp.Exponent
     commands:
       - tapOn:
           id: "input-gratitude"
-      - inputText: "언제나 내 이야기를 들어줘서 진심으로 고마워 💝"
+      - inputText: "언제나 내 이야기를 들어줘서 진심으로 고마워"
       - tapOn:
           id: "btn-gratitude-save"
       - waitForAnimationToEnd

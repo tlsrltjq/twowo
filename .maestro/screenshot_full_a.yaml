@@ -78,19 +78,19 @@ appId: host.exp.Exponent
 - takeScreenshot: "04_chat_screen"
 - tapOn:
     id: "input-chat"
-- inputText: "안녕하세요! 오늘 뭐 해? 😊"
+- inputText: "안녕하세요! 오늘 뭐 해?"
 - tapOn:
     id: "btn-chat-send"
 - waitForAnimationToEnd
 - tapOn:
     id: "input-chat"
-- inputText: "오늘 날씨가 너무 좋다 🌞"
+- inputText: "오늘 날씨가 너무 좋다"
 - tapOn:
     id: "btn-chat-send"
 - waitForAnimationToEnd
 - tapOn:
     id: "input-chat"
-- inputText: "저녁에 뭐 먹을까? 🍕"
+- inputText: "저녁에 뭐 먹을까?"
 - tapOn:
     id: "btn-chat-send"
 - waitForAnimationToEnd
@@ -111,7 +111,7 @@ appId: host.exp.Exponent
 - takeScreenshot: "07_calendar_new_event_modal"
 - tapOn:
     id: "input-event-title"
-- inputText: "주말 데이트 🎬"
+- inputText: "주말 데이트"
 - pressKey: enter
 - runFlow:
     when:
@@ -274,7 +274,7 @@ appId: host.exp.Exponent
 - waitForAnimationToEnd
 - tapOn:
     id: "input-candidate-title"
-- inputText: "한강 피크닉 🌸"
+- inputText: "한강 피크닉"
 - pressKey: enter
 - waitForAnimationToEnd
 - waitForAnimationToEnd
@@ -288,7 +288,7 @@ appId: host.exp.Exponent
 - waitForAnimationToEnd
 - tapOn:
     id: "input-candidate-title"
-- inputText: "영화 보기 🎬"
+- inputText: "영화 보기"
 - pressKey: enter
 - waitForAnimationToEnd
 - waitForAnimationToEnd
@@ -302,7 +302,7 @@ appId: host.exp.Exponent
 - waitForAnimationToEnd
 - tapOn:
     id: "input-candidate-title"
-- inputText: "카페 투어 ☕"
+- inputText: "카페 투어"
 - pressKey: enter
 - waitForAnimationToEnd
 - waitForAnimationToEnd
@@ -316,7 +316,7 @@ appId: host.exp.Exponent
 - waitForAnimationToEnd
 - tapOn:
     id: "input-candidate-title"
-- inputText: "집에서 요리 🍳"
+- inputText: "집에서 요리"
 - pressKey: enter
 - waitForAnimationToEnd
 - waitForAnimationToEnd
@@ -336,7 +336,7 @@ appId: host.exp.Exponent
     when:
       visible: "라운드 진행 중"
     commands:
-      - tapOn: "한강 피크닉 🌸"
+      - tapOn: "한강 피크닉"
       - waitForAnimationToEnd
 - takeScreenshot: "18_vote_voting"
 - takeScreenshot: "19_vote_choice_made"
@@ -359,7 +359,7 @@ appId: host.exp.Exponent
 - takeScreenshot: "20_night_message_main"
 - tapOn:
     id: "input-night-message"
-- inputText: "오늘 하루도 수고했어 💕"
+- inputText: "오늘 하루도 수고했어"
 - takeScreenshot: "21_night_message_typing"
 - tapOn:
     id: "btn-send-message"
@@ -388,7 +388,7 @@ appId: host.exp.Exponent
 - takeScreenshot: "24_compliment_modal"
 - tapOn:
     id: "input-compliment"
-- inputText: "오늘 정말 멋있었어! ✨"
+- inputText: "오늘 정말 멋있었어!"
 - tapOn:
     id: "btn-compliment-send"
 - waitForAnimationToEnd
@@ -397,7 +397,7 @@ appId: host.exp.Exponent
 - waitForAnimationToEnd
 - tapOn:
     id: "input-compliment"
-- inputText: "항상 나를 웃게 해줘서 고마워 😄"
+- inputText: "항상 나를 웃게 해줘서 고마워"
 - tapOn:
     id: "btn-compliment-send"
 - waitForAnimationToEnd
@@ -491,7 +491,7 @@ appId: host.exp.Exponent
 - takeScreenshot: "31_gift_wishlist_modal"
 - tapOn:
     id: "input-wishlist-name"
-- inputText: "에어팟 프로 🎧"
+- inputText: "에어팟 프로"
 - tapOn:
     id: "btn-wishlist-save"
 - waitForAnimationToEnd
@@ -500,7 +500,7 @@ appId: host.exp.Exponent
 - waitForAnimationToEnd
 - tapOn:
     id: "input-wishlist-name"
-- inputText: "닌텐도 스위치 🎮"
+- inputText: "닌텐도 스위치"
 - tapOn:
     id: "btn-wishlist-save"
 - waitForAnimationToEnd
@@ -509,7 +509,7 @@ appId: host.exp.Exponent
 - waitForAnimationToEnd
 - tapOn:
     id: "input-wishlist-name"
-- inputText: "여행 가방 🧳"
+- inputText: "여행 가방"
 - tapOn:
     id: "btn-wishlist-save"
 - waitForAnimationToEnd
@@ -545,7 +545,7 @@ appId: host.exp.Exponent
     commands:
       - tapOn:
           id: "input-gratitude"
-      - inputText: "오늘도 항상 내 편이 되어줘서 고마워 🙏"
+      - inputText: "오늘도 항상 내 편이 되어줘서 고마워"
       - tapOn:
           id: "btn-gratitude-save"
       - waitForAnimationToEnd

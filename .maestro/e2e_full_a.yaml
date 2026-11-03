@@ -111,19 +111,19 @@ appId: host.exp.Exponent
 # 실제 메시지 전송
 - tapOn:
     id: "input-chat"
-- inputText: "안녕하세요! 오늘 뭐 해? 😊"
+- inputText: "안녕하세요! 오늘 뭐 해?"
 - tapOn:
     id: "btn-chat-send"
 - waitForAnimationToEnd
 - tapOn:
     id: "input-chat"
-- inputText: "저녁에 뭐 먹을까? 🍕"
+- inputText: "저녁에 뭐 먹을까?"
 - tapOn:
     id: "btn-chat-send"
 - waitForAnimationToEnd
 - tapOn:
     id: "input-chat"
-- inputText: "보고싶다 💕"
+- inputText: "보고싶다"
 - tapOn:
     id: "btn-chat-send"
 - waitForAnimationToEnd
@@ -145,7 +145,7 @@ appId: host.exp.Exponent
 - waitForAnimationToEnd
 - tapOn:
     id: "input-event-title"
-- inputText: "주말 데이트 🎬"
+- inputText: "주말 데이트"
 - pressKey: enter
 - runFlow:
     when:
@@ -360,7 +360,7 @@ appId: host.exp.Exponent
 - waitForAnimationToEnd
 - tapOn:
     id: "input-candidate-title"
-- inputText: "한강 피크닉 🌸"
+- inputText: "한강 피크닉"
 - pressKey: enter
 - waitForAnimationToEnd
 - waitForAnimationToEnd
@@ -374,7 +374,7 @@ appId: host.exp.Exponent
 - waitForAnimationToEnd
 - tapOn:
     id: "input-candidate-title"
-- inputText: "영화 보기 🎬"
+- inputText: "영화 보기"
 - pressKey: enter
 - waitForAnimationToEnd
 - waitForAnimationToEnd
@@ -414,7 +414,7 @@ appId: host.exp.Exponent
     when:
       visible: "가고 싶은 곳을 하나 고르세요"
     commands:
-      - tapOn: "한강 피크닉 🌸"
+      - tapOn: "한강 피크닉"
       - waitForAnimationToEnd
 - takeScreenshot: "A_23_vote_voted"
 - tapOn:
@@ -441,7 +441,7 @@ appId: host.exp.Exponent
 - waitForAnimationToEnd
 - tapOn:
     id: "input-night-message"
-- inputText: "오늘 하루도 수고했어 💕"
+- inputText: "오늘 하루도 수고했어"
 - tapOn:
     id: "btn-send-message"
 - waitForAnimationToEnd
@@ -498,7 +498,7 @@ appId: host.exp.Exponent
 - waitForAnimationToEnd
 - tapOn:
     id: "input-compliment"
-- inputText: "오늘 정말 멋있었어! ✨"
+- inputText: "오늘 정말 멋있었어!"
 - tapOn:
     id: "btn-compliment-send"
 - waitForAnimationToEnd
@@ -615,7 +615,7 @@ appId: host.exp.Exponent
 - waitForAnimationToEnd
 - tapOn:
     id: "input-wishlist-name"
-- inputText: "에어팟 프로 🎧"
+- inputText: "에어팟 프로"
 - tapOn:
     id: "btn-wishlist-save"
 - waitForAnimationToEnd
@@ -624,7 +624,7 @@ appId: host.exp.Exponent
 - waitForAnimationToEnd
 - tapOn:
     id: "input-wishlist-name"
-- inputText: "닌텐도 스위치 🎮"
+- inputText: "닌텐도 스위치"
 - tapOn:
     id: "btn-wishlist-save"
 - waitForAnimationToEnd
@@ -667,7 +667,7 @@ appId: host.exp.Exponent
     commands:
       - tapOn:
           id: "input-gratitude"
-      - inputText: "오늘도 항상 내 편이 되어줘서 고마워 🙏"
+      - inputText: "오늘도 항상 내 편이 되어줘서 고마워"
       - tapOn:
           id: "btn-gratitude-save"
       - waitForAnimationToEnd
