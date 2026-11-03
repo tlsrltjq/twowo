@@ -33,7 +33,7 @@ import { SidebarContext } from '../../core/sidebar.context';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { useColors } from '../../design-system/ThemeContext';
 import { Colors } from '../../design-system/themes';
-import { black, radius, space, typography } from '../../design-system/tokens';
+import { hairline, shadow, space, typography } from '../../design-system/tokens';
 import { subscribeUnreadCount } from '../../features/chat';
 
 const SIDEBAR_WIDTH = 280;
@@ -123,9 +123,11 @@ export default function TabsLayout() {
             tabBarActiveTintColor: colors.accent.primary,
             tabBarInactiveTintColor: colors.text.muted,
             tabBarStyle: {
-              backgroundColor: colors.bg.surface,
-              borderTopColor: colors.border.subtle,
+              backgroundColor: colors.bg.base,
+              borderTopColor: colors.border.strong,
+              borderTopWidth: hairline,
             },
+            tabBarLabelStyle: { ...typography.tiny },
           }}
         >
           <Tabs.Screen
@@ -133,7 +135,7 @@ export default function TabsLayout() {
             options={{
               title: '홈',
               tabBarButton: (props) => <Pressable {...(props as object)} testID="tab-home" />,
-              tabBarIcon: ({ color, size }) => <Home size={size} color={color as string} strokeWidth={1.8} />,
+              tabBarIcon: ({ color, size }) => <Home size={size} color={color as string} strokeWidth={1.6} />,
             }}
           />
           <Tabs.Screen
@@ -141,7 +143,7 @@ export default function TabsLayout() {
             options={{
               title: '채팅',
               tabBarButton: (props) => <Pressable {...(props as object)} testID="tab-chat" />,
-              tabBarIcon: ({ color, size }) => <MessageCircle size={size} color={color as string} strokeWidth={1.8} />,
+              tabBarIcon: ({ color, size }) => <MessageCircle size={size} color={color as string} strokeWidth={1.6} />,
               ...(unreadChat > 0 ? { tabBarBadge: Math.min(unreadChat, 9) } : {}),
             }}
           />
@@ -150,7 +152,7 @@ export default function TabsLayout() {
             options={{
               title: '캘린더',
               tabBarButton: (props) => <Pressable {...(props as object)} testID="tab-calendar" />,
-              tabBarIcon: ({ color, size }) => <Calendar size={size} color={color as string} strokeWidth={1.8} />,
+              tabBarIcon: ({ color, size }) => <Calendar size={size} color={color as string} strokeWidth={1.6} />,
             }}
           />
           <Tabs.Screen
@@ -158,7 +160,7 @@ export default function TabsLayout() {
             options={{
               title: '컨디션',
               tabBarButton: (props) => <Pressable {...(props as object)} testID="tab-mood" />,
-              tabBarIcon: ({ color, size }) => <Heart size={size} color={color as string} strokeWidth={1.8} />,
+              tabBarIcon: ({ color, size }) => <Heart size={size} color={color as string} strokeWidth={1.6} />,
             }}
           />
           <Tabs.Screen
@@ -166,7 +168,7 @@ export default function TabsLayout() {
             options={{
               title: '실험실',
               tabBarButton: (props) => <Pressable {...(props as object)} testID="tab-lab" />,
-              tabBarIcon: ({ color, size }) => <FlaskConical size={size} color={color as string} strokeWidth={1.8} />,
+              tabBarIcon: ({ color, size }) => <FlaskConical size={size} color={color as string} strokeWidth={1.6} />,
             }}
           />
           <Tabs.Screen
@@ -174,7 +176,7 @@ export default function TabsLayout() {
             options={{
               title: '설정',
               tabBarButton: (props) => <Pressable {...(props as object)} testID="tab-settings" />,
-              tabBarIcon: ({ color, size }) => <Settings size={size} color={color as string} strokeWidth={1.8} />,
+              tabBarIcon: ({ color, size }) => <Settings size={size} color={color as string} strokeWidth={1.6} />,
             }}
           />
         </Tabs>
@@ -205,7 +207,7 @@ export default function TabsLayout() {
               {enabledSidebarItems.length === 0 ? (
                 <View style={styles.sidebarEmpty}>
                   <Text style={styles.sidebarEmptyText}>
-                    실험실 탭에서 기능을 켜면{'\n'}여기에 나타나요
+                    실험실에서 켠 기능이 여기에 모여요
                   </Text>
                 </View>
               ) : (
@@ -218,7 +220,7 @@ export default function TabsLayout() {
                     activeOpacity={0.7}
                   >
                     <View style={styles.sidebarIconWrap}>
-                      <item.Icon size={20} color={colors.text.secondary} strokeWidth={1.8} />
+                      <item.Icon size={18} color={colors.text.secondary} strokeWidth={1.6} />
                     </View>
                     <Text style={styles.sidebarItemLabel}>{item.label}</Text>
                   </TouchableOpacity>
@@ -251,37 +253,31 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
     zIndex: 11,
     paddingHorizontal: space[5],
     paddingBottom: space[8],
-    gap: space[2],
-    shadowColor: black,
-    shadowOpacity: 0.15,
-    shadowRadius: 20,
-    shadowOffset: { width: -4, height: 0 },
-    elevation: 12,
+    ...shadow.lg,
   },
 
   sidebarHeader:         {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingBottom: space[4],
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border.subtle,
-    marginBottom: space[2],
+    paddingBottom: space[3],
+    borderBottomWidth: hairline,
+    borderBottomColor: colors.border.strong,
   },
-  sidebarTitle:          { ...typography.bodyBold, color: colors.text.primary },
+  sidebarTitle:          { ...typography.label, color: colors.text.secondary },
   closeBtn:              { padding: space[2] },
 
   sidebarItem:           {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: space[4],
+    gap: space[3],
     paddingVertical: space[4],
-    paddingHorizontal: space[3],
-    borderRadius: radius.md,
+    borderBottomWidth: hairline,
+    borderBottomColor: colors.border.subtle,
   },
   sidebarItemDisabled:   { opacity: 0.5 },
-  sidebarIconWrap:       { width: 32, alignItems: 'center', justifyContent: 'center' },
+  sidebarIconWrap:       { width: space[6], alignItems: 'flex-start', justifyContent: 'center' },
   sidebarItemLabel:      { ...typography.body, color: colors.text.primary, flex: 1 },
-  sidebarEmpty:          { paddingVertical: space[6], alignItems: 'center' },
-  sidebarEmptyText:      { ...typography.caption, color: colors.text.muted, textAlign: 'center', lineHeight: 20 },
+  sidebarEmpty:          { paddingVertical: space[6] },
+  sidebarEmptyText:      { ...typography.caption, color: colors.text.muted },
 });

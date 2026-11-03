@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { Calendar, Menu } from 'lucide-react-native';
+import { Menu } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -10,120 +10,89 @@ import { scheduleMoodReminderIfNeeded } from '../../core/notifications';
 import { useSidebar } from '../../core/sidebar.context';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { getDaysSince, getTodayKST } from '../../core/utils/date';
+import { EmptyState } from '../../design-system/EmptyState';
+import { SectionHeader } from '../../design-system/SectionHeader';
 import { Skeleton } from '../../design-system/Skeleton';
 import { Spinner } from '../../design-system/Spinner';
 import { useColors } from '../../design-system/ThemeContext';
 import { Colors } from '../../design-system/themes';
-import { space, typography } from '../../design-system/tokens';
+import { hairline, radius, space, typography } from '../../design-system/tokens';
 import { getUpcomingRange, sliceUpcoming } from '../../features/home/upcomingEvents';
 import { MoodCheck,subscribeMyMoodToday, subscribePartnerMoodToday } from '../../features/mood-share';
 
 const MOOD_LABELS: Record<string, string> = {
-  great: '최고 🌟',
-  good:  '좋아 😊',
-  okay:  '보통 😐',
-  bad:   '별로 😔',
+  great: '최고',
+  good:  '좋음',
+  okay:  '보통',
+  bad:   '별로',
 };
 
-const TYPE_EMOJI: Record<string, string> = { date: '💕', exercise: '🏃', general: '📅' };
+const DAY_KO = ['일', '월', '화', '수', '목', '금', '토'];
+
+function toKST(date: Date): Date {
+  return new Date(date.getTime() + 9 * 60 * 60 * 1000);
+}
 
 function toKSTDateStr(date: Date): string {
-  const kst = new Date(date.getTime() + 9 * 60 * 60 * 1000);
+  const kst = toKST(date);
   const y = kst.getUTCFullYear();
   const m = String(kst.getUTCMonth() + 1).padStart(2, '0');
   const d = String(kst.getUTCDate()).padStart(2, '0');
   return `${y}-${m}-${d}`;
 }
 
-function getDdayLabel(date: Date): string {
-  const eventStr = toKSTDateStr(date);
-  const todayStr = getTodayKST();
-  const diff = Math.round(
-    (new Date(eventStr).getTime() - new Date(todayStr).getTime()) / 86400000,
+function daysFromToday(date: Date): number {
+  return Math.round(
+    (new Date(toKSTDateStr(date)).getTime() - new Date(getTodayKST()).getTime()) / 86400000,
   );
-  if (diff === 0) return 'D-Day';
-  if (diff === 1) return 'D-1';
-  return `D-${diff}`;
 }
 
-const DAY_KO = ['일', '월', '화', '수', '목', '금', '토'];
+function formatToday(): string {
+  const kst = toKST(new Date());
+  return `${kst.getUTCMonth() + 1}월 ${kst.getUTCDate()}일 ${DAY_KO[kst.getUTCDay()]}요일`;
+}
+
 function formatEventDate(date: Date): string {
-  const eventStr = toKSTDateStr(date);
-  const todayStr = getTodayKST();
-  const kst = new Date(date.getTime() + 9 * 60 * 60 * 1000);
-  const dayOfWeek = DAY_KO[kst.getUTCDay()]!;
-  if (eventStr === todayStr) return `오늘 (${dayOfWeek})`;
-  const diff = Math.round(
-    (new Date(eventStr).getTime() - new Date(todayStr).getTime()) / 86400000,
-  );
-  if (diff === 1) return `내일 (${dayOfWeek})`;
-  const m = kst.getUTCMonth() + 1;
-  const d = kst.getUTCDate();
-  return `${m}월 ${d}일 (${dayOfWeek})`;
+  const diff = daysFromToday(date);
+  if (diff === 0) return '오늘';
+  if (diff === 1) return '내일';
+  const kst = toKST(date);
+  return `${kst.getUTCMonth() + 1}.${String(kst.getUTCDate()).padStart(2, '0')} ${DAY_KO[kst.getUTCDay()]}`;
 }
 
-function NextEventCard({ event }: { event: CalendarEvent }) {
-  const colors = useColors();
-  const styles = useMemo(() => makeStyles(colors), [colors]);
-  const ddayLabel  = getDdayLabel(event.date instanceof Date ? event.date : new Date((event.date as { seconds: number }).seconds * 1000));
-  const dateStr    = formatEventDate(event.date instanceof Date ? event.date : new Date((event.date as { seconds: number }).seconds * 1000));
-  const emoji      = TYPE_EMOJI[event.type] ?? '📅';
-  const isToday    = ddayLabel === 'D-Day';
-
-  return (
-    <TouchableOpacity
-      style={[styles.nextCard, isToday && styles.nextCardToday]}
-      onPress={() => router.push(`/event/${event.id}`)}
-      activeOpacity={0.85}
-    >
-      <View style={styles.nextCardTop}>
-        <View style={styles.nextCardTypeBadge}>
-          <Text style={styles.nextCardTypeEmoji}>{emoji}</Text>
-        </View>
-        <View style={[styles.ddayBadge, isToday && styles.ddayBadgeToday]}>
-          <Text style={[styles.ddayText, isToday && styles.ddayTextToday]}>{ddayLabel}</Text>
-        </View>
-      </View>
-
-      <Text style={styles.nextCardTitle} numberOfLines={2}>{event.title}</Text>
-
-      {event.placeName ? (
-        <Text style={styles.nextCardPlace} numberOfLines={1}>📍 {event.placeName}</Text>
-      ) : null}
-
-      <Text style={styles.nextCardDate}>{dateStr}</Text>
-    </TouchableOpacity>
-  );
+function toDate(value: CalendarEvent['date']): Date {
+  return value instanceof Date ? value : new Date((value as { seconds: number }).seconds * 1000);
 }
 
-function EmptyEventCard() {
+function describeMood(mood: MoodCheck): string {
+  return [
+    MOOD_LABELS[mood.mood] ?? mood.mood,
+    `에너지 ${mood.energy}/5`,
+    mood.canMeet ? '만날 수 있음' : '만나기 어려움',
+  ].join(' · ');
+}
+
+function MoodRow({ label, mood, loading, onWrite }: {
+  label: string;
+  mood: MoodCheck | null;
+  loading?: boolean;
+  onWrite?: () => void;
+}) {
   const colors = useColors();
   const styles = useMemo(() => makeStyles(colors), [colors]);
   return (
-    <View style={styles.emptyCard}>
-      <Calendar size={28} color={colors.text.muted} strokeWidth={1.5} />
-      <Text style={styles.emptyCardText}>아직 예정된 일정이 없어요</Text>
-      <Text style={styles.emptyCardSub}>캘린더에서 일정을 추가해보세요</Text>
-    </View>
-  );
-}
-
-function MoodCard({ label, mood, loading }: { label: string; mood: MoodCheck | null; loading?: boolean }) {
-  const colors = useColors();
-  const styles = useMemo(() => makeStyles(colors), [colors]);
-  return (
-    <View style={styles.moodCard}>
-      <Text style={styles.moodLabel}>{label}</Text>
+    <View style={styles.row}>
+      <Text style={styles.rowLabel}>{label}</Text>
       {loading ? (
-        <Spinner />
+        <View style={styles.rowValueWrap}><Spinner /></View>
       ) : mood ? (
-        <>
-          <Text style={styles.moodEnergy}>{'⚡'.repeat(mood.energy)}</Text>
-          <Text style={styles.moodMood}>{MOOD_LABELS[mood.mood] ?? mood.mood}</Text>
-          <Text style={styles.moodMeet}>{mood.canMeet ? '만남 가능 ✅' : '만남 어려움 ❌'}</Text>
-        </>
+        <Text style={styles.rowValue}>{describeMood(mood)}</Text>
+      ) : onWrite ? (
+        <TouchableOpacity style={styles.rowValueWrap} onPress={onWrite} accessibilityRole="button">
+          <Text style={styles.rowLink}>아직 안 적었어요 · 적기</Text>
+        </TouchableOpacity>
       ) : (
-        <Text style={styles.moodEmpty}>아직 입력 전이에요 ○</Text>
+        <Text style={styles.rowMuted}>아직 안 적었어요</Text>
       )}
     </View>
   );
@@ -132,15 +101,31 @@ function MoodCard({ label, mood, loading }: { label: string; mood: MoodCheck | n
 function EventRow({ event }: { event: CalendarEvent }) {
   const colors = useColors();
   const styles = useMemo(() => makeStyles(colors), [colors]);
-  const date    = event.date instanceof Date ? event.date : new Date((event.date as { seconds: number }).seconds * 1000);
-  const dateStr = formatEventDate(date);
-  const emoji   = TYPE_EMOJI[event.type] ?? '📅';
+  const date    = toDate(event.date);
+  const isToday = daysFromToday(date) === 0;
+  const typeColor = event.type === 'date'
+    ? colors.accent.warm
+    : event.type === 'exercise'
+      ? colors.accent.coral
+      : colors.accent.calm;
 
   return (
-    <View style={styles.eventRow}>
-      <Text style={styles.eventDate}>{dateStr}</Text>
-      <Text style={styles.eventTitle} numberOfLines={1}>{emoji} {event.title}</Text>
-    </View>
+    <TouchableOpacity
+      style={styles.row}
+      onPress={() => router.push(`/event/${event.id}`)}
+      activeOpacity={0.6}
+    >
+      <Text style={[styles.rowLabel, isToday && styles.rowLabelToday]}>{formatEventDate(date)}</Text>
+      <View style={styles.eventBody}>
+        <View style={styles.eventTitleLine}>
+          <View style={[styles.typeDot, { backgroundColor: typeColor }]} />
+          <Text style={styles.eventTitle} numberOfLines={1}>{event.title}</Text>
+        </View>
+        {event.placeName ? (
+          <Text style={styles.eventPlace} numberOfLines={1}>{event.placeName}</Text>
+        ) : null}
+      </View>
+    </TouchableOpacity>
   );
 }
 
@@ -226,37 +211,37 @@ export default function HomeScreen() {
     >
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Text style={styles.greeting}>안녕하세요 👋</Text>
+          <Text style={styles.today}>{formatToday()}</Text>
           {dDay !== null && (
-            <Text style={styles.dday}>함께한 지 D+{dDay}일</Text>
+            <Text style={styles.together}>
+              함께한 지 <Text style={styles.togetherNum}>{dDay}</Text>일
+            </Text>
           )}
         </View>
         <TouchableOpacity testID="btn-sidebar-open" onPress={openSidebar} style={styles.hamburger} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="메뉴 열기">
-          <Menu size={24} color={colors.text.secondary} strokeWidth={1.8} />
+          <Menu size={22} color={colors.text.secondary} strokeWidth={1.6} />
         </TouchableOpacity>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>오늘의 컨디션</Text>
-        <View style={styles.moodRow}>
-          <MoodCard label="나" mood={myMood === 'loading' ? null : myMood} loading={myMood === 'loading'} />
-          <MoodCard label="상대방" mood={partnerMood} />
-        </View>
+        <SectionHeader title="오늘의 컨디션" />
+        <MoodRow
+          label="나"
+          mood={myMood === 'loading' ? null : myMood}
+          loading={myMood === 'loading'}
+          onWrite={() => router.push('/mood')}
+        />
+        <MoodRow label="상대방" mood={partnerMood} />
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>다음 일정</Text>
+        <SectionHeader title="다가오는 일정" />
         {events === null ? (
           <Skeleton style={styles.skeletonEvent} />
         ) : events.length === 0 ? (
-          <EmptyEventCard />
+          <EmptyState title="일주일 안에 잡힌 일정이 없어요" description="캘린더에서 추가할 수 있어요" />
         ) : (
-          <>
-            <NextEventCard event={events[0]!} />
-            {events.slice(1).map(ev => (
-              <EventRow key={ev.id} event={ev} />
-            ))}
-          </>
+          events.map(ev => <EventRow key={ev.id} event={ev} />)
         )}
       </View>
     </ScrollView>
@@ -267,83 +252,38 @@ export default function HomeScreen() {
 const makeStyles = (colors: Colors) => StyleSheet.create({
   safeArea:     { flex: 1, backgroundColor: colors.bg.base },
   scroll:       { flex: 1 },
-  container:    { padding: space[4], gap: space[5], paddingBottom: space[8] },
+  container:    { paddingHorizontal: space[5], paddingTop: space[4], gap: space[8], paddingBottom: space[10] },
   center:       { flex: 1, backgroundColor: colors.bg.base, alignItems: 'center', justifyContent: 'center' },
 
-  skeletonEvent: { height: 72, borderRadius: 12 },
+  skeletonEvent: { height: space[12], borderRadius: radius.sm, marginTop: space[3] },
 
   header:       { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   headerLeft:   { gap: space[1], flex: 1 },
-  greeting:     { ...typography.title1, color: colors.text.primary },
-  dday:         { ...typography.body, color: colors.accent.primary },
+  today:        { ...typography.title1, color: colors.text.primary },
+  together:     { ...typography.body, color: colors.text.secondary },
+  togetherNum:  { ...typography.bodyBold, color: colors.accent.primary },
   hamburger:    { padding: space[2], marginTop: space[1] },
 
-  section:      { gap: space[3] },
-  sectionTitle: { ...typography.caption, color: colors.text.muted, textTransform: 'uppercase', letterSpacing: 0.5 },
+  section:      { gap: 0 },
 
-  moodRow:      { flexDirection: 'row', gap: space[3] },
-  moodCard:     {
-    flex: 1, backgroundColor: colors.bg.surface,
-    borderRadius: 12, padding: space[4], gap: space[1],
-    alignItems: 'center', minHeight: 110,
-    justifyContent: 'center',
-  },
-  moodLabel:    { ...typography.caption, color: colors.text.muted },
-  moodEnergy:   { fontSize: 14 },
-  moodMood:     { ...typography.body, color: colors.text.primary },
-  moodMeet:     { ...typography.body, color: colors.text.secondary, fontSize: 11 },
-  moodEmpty:    { ...typography.caption, color: colors.text.muted, textAlign: 'center' },
-
-  nextCard: {
-    backgroundColor: colors.bg.surface,
-    borderRadius: 16,
-    padding: space[4],
-    gap: space[2],
-    borderWidth: 1,
-    borderColor: colors.border.subtle,
-  },
-  nextCardToday: {
-    borderColor: colors.accent.primary,
-    backgroundColor: colors.accent.primary + '0D',
-  },
-  nextCardTop: {
+  row: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    gap: space[4],
+    paddingVertical: space[3],
+    borderBottomWidth: hairline,
+    borderBottomColor: colors.border.subtle,
   },
-  nextCardTypeBadge: {
-    width: 36, height: 36,
-    borderRadius: 10,
-    backgroundColor: colors.bg.subtle,
-    alignItems: 'center', justifyContent: 'center',
-  },
-  nextCardTypeEmoji: { fontSize: 18 },
-  ddayBadge: {
-    paddingHorizontal: space[3], paddingVertical: space[1],
-    backgroundColor: colors.bg.subtle,
-    borderRadius: 20,
-  },
-  ddayBadgeToday: { backgroundColor: colors.accent.primary },
-  ddayText:  { ...typography.caption, color: colors.accent.primary, fontFamily: 'Pretendard-SemiBold' },
-  ddayTextToday: { color: colors.text.inverse },
-  nextCardTitle: { ...typography.title2, color: colors.text.primary, lineHeight: 28 },
-  nextCardPlace: { ...typography.caption, color: colors.text.secondary },
-  nextCardDate:  { ...typography.caption, color: colors.text.muted },
+  rowLabel:      { ...typography.caption, color: colors.text.secondary, width: space[12] + space[2] },
+  rowLabelToday: { color: colors.accent.primary, fontFamily: typography.bodyBold.fontFamily },
+  rowValueWrap:  { flex: 1, alignItems: 'flex-start' },
+  rowValue:      { ...typography.caption, color: colors.text.primary, flex: 1 },
+  rowMuted:      { ...typography.caption, color: colors.text.muted, flex: 1 },
+  rowLink:       { ...typography.caption, color: colors.accent.primary },
 
-  emptyCard: {
-    backgroundColor: colors.bg.surface,
-    borderRadius: 16, padding: space[5],
-    alignItems: 'center', gap: space[2],
-    borderWidth: 1, borderColor: colors.border.subtle,
-    borderStyle: 'dashed',
-  },
-  emptyCardText: { ...typography.body, color: colors.text.secondary },
-  emptyCardSub:  { ...typography.caption, color: colors.text.muted },
-
-  eventRow:     {
-    flexDirection: 'row', gap: space[3], alignItems: 'center',
-    backgroundColor: colors.bg.surface, borderRadius: 10, padding: space[3],
-  },
-  eventDate:    { ...typography.caption, color: colors.accent.primary, width: 36 },
-  eventTitle:   { ...typography.body, color: colors.text.primary, flex: 1 },
+  eventBody:      { flex: 1, gap: space[1] },
+  eventTitleLine: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
+  typeDot:        { width: space[2] - 2, height: space[2] - 2, borderRadius: radius.pill },
+  eventTitle:     { ...typography.body, color: colors.text.primary, flex: 1 },
+  eventPlace:     { ...typography.caption, color: colors.text.muted, marginLeft: space[2] + space[2] - 2 },
 });

@@ -11,7 +11,8 @@ env:
 - runFlow: e2e/_login.yaml
 
 # 홈 탭에서 사이드바 열기
-- assertVisible: "안녕하세요"
+- assertVisible:
+    id: "screen-home"
 - tapOn:
     id: "btn-sidebar-open"
 - waitForAnimationToEnd

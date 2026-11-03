@@ -11,14 +11,15 @@ env:
 - runFlow: e2e/_login.yaml
 
 # 홈 탭 확인
-- assertVisible: "안녕하세요"
+- assertVisible:
+    id: "screen-home"
 - takeScreenshot: e2e/screenshots/05-home
 
 # 오늘의 컨디션 섹션 확인
 - assertVisible: "오늘의 컨디션"
 
-# 다음 일정 섹션 확인
-- assertVisible: "다음 일정"
+# 다가오는 일정 섹션 확인
+- assertVisible: "다가오는 일정"
 - takeScreenshot: e2e/screenshots/05-home-content
 
 # 사이드바 열기 (hamburger ≡)
@@ -31,5 +32,6 @@ env:
 # 사이드바 닫기
 - tapOn: "✕"
 - waitForAnimationToEnd
-- assertVisible: "안녕하세요"
+- assertVisible:
+    id: "screen-home"
 - takeScreenshot: e2e/screenshots/05-sidebar-closed
