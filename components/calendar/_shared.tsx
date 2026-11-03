@@ -5,7 +5,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { CalendarEvent } from '../../core/calendar/schema';
 import { useColors } from '../../design-system/ThemeContext';
 import { Colors } from '../../design-system/themes';
-import { radius, space, typography } from '../../design-system/tokens';
+import { hairline, radius, space, typography } from '../../design-system/tokens';
 
 export function useDotColor(): Record<string, string> {
   const colors = useColors();
@@ -62,44 +62,6 @@ export function groupByYearMonth(
     });
 }
 
-export const TYPE_EMOJI: Record<string, string> = {
-  date:     '💑',
-  exercise: '🏃',
-  general:  '📌',
-};
-
-export function TypeStatsBar({
-  emoji,
-  total,
-  monthCount,
-  accentColor,
-  unitLabel,
-}: {
-  emoji: string;
-  total: number;
-  monthCount: number;
-  accentColor: string;
-  unitLabel: string;
-}) {
-  const colors = useColors();
-  const sharedStyles = useMemo(() => makeSharedStyles(colors), [colors]);
-
-  return (
-    <View style={[sharedStyles.statsBar, { borderColor: accentColor + '40' }]}>
-      <Text style={sharedStyles.statsEmoji}>{emoji}</Text>
-      <View style={sharedStyles.statItem}>
-        <Text style={[sharedStyles.statNumber, { color: accentColor }]}>{total}</Text>
-        <Text style={sharedStyles.statLabel}>전체 {unitLabel}</Text>
-      </View>
-      <View style={sharedStyles.statDivider} />
-      <View style={sharedStyles.statItem}>
-        <Text style={[sharedStyles.statNumber, { color: accentColor }]}>{monthCount}</Text>
-        <Text style={sharedStyles.statLabel}>이번 달 {unitLabel}</Text>
-      </View>
-    </View>
-  );
-}
-
 export function TypeEventCard({
   event,
   myUid,
@@ -111,6 +73,7 @@ export function TypeEventCard({
 }) {
   const colors = useColors();
   const sharedStyles = useMemo(() => makeSharedStyles(colors), [colors]);
+  const dotColor = useDotColor();
   const showBadge = event.type !== 'date' && myUid != null;
   const isMe      = event.createdBy === myUid;
 
@@ -120,9 +83,7 @@ export function TypeEventCard({
       onPress={() => router.push(`/event/${event.id}`)}
       accessibilityLabel={event.title}
     >
-      <View style={sharedStyles.typeEventLeft}>
-        <Text style={sharedStyles.typeEventEmoji}>{TYPE_EMOJI[event.type] ?? '📌'}</Text>
-      </View>
+      <View style={[sharedStyles.calEventDot, sharedStyles.typeEventDot, { backgroundColor: dotColor[event.type] ?? colors.text.muted }]} />
       <View style={sharedStyles.typeEventBody}>
         <View style={sharedStyles.typeEventDateRow}>
           <Text style={sharedStyles.typeEventDate}>{formatDate(event.date)}</Text>
@@ -130,7 +91,7 @@ export function TypeEventCard({
         </View>
         <Text style={sharedStyles.typeEventTitle} numberOfLines={1}>{event.title}</Text>
         {event.placeName && (
-          <Text style={sharedStyles.typeEventPlace} numberOfLines={1}>📍 {event.placeName}</Text>
+          <Text style={sharedStyles.typeEventPlace} numberOfLines={1}>{event.placeName}</Text>
         )}
         {event.memo && (
           <Text style={sharedStyles.typeEventMemo} numberOfLines={2}>{event.memo}</Text>
@@ -151,11 +112,7 @@ export function CalendarEventCard({
 }) {
   const colors = useColors();
   const sharedStyles = useMemo(() => makeSharedStyles(colors), [colors]);
-  const dotColor = useMemo(() => ({
-    date:     colors.accent.primary,
-    exercise: colors.accent.warm,
-    general:  colors.text.muted,
-  }), [colors]);
+  const dotColor = useDotColor();
   const showBadge = event.type !== 'date' && myUid != null;
   const isMe      = event.createdBy === myUid;
 
@@ -165,11 +122,11 @@ export function CalendarEventCard({
       onPress={() => router.push(`/event/${event.id}`)}
       accessibilityLabel={event.title}
     >
-      <View style={[sharedStyles.calEventDot, { backgroundColor: dotColor[event.type as keyof typeof dotColor] ?? colors.text.muted }]} />
+      <View style={[sharedStyles.calEventDot, { backgroundColor: dotColor[event.type] ?? colors.text.muted }]} />
       <View style={sharedStyles.calEventInfo}>
         <Text style={sharedStyles.calEventTitle} numberOfLines={1}>{event.title}</Text>
         {event.placeName && (
-          <Text style={sharedStyles.calEventSub} numberOfLines={1}>📍 {event.placeName}</Text>
+          <Text style={sharedStyles.calEventSub} numberOfLines={1}>{event.placeName}</Text>
         )}
       </View>
       {showBadge && <PersonBadge isMe={isMe} name={partnerName ?? '상대방'} />}
@@ -180,35 +137,27 @@ export function CalendarEventCard({
 const makeSharedStyles = (colors: Colors) => StyleSheet.create({
   skeletonContainer: { padding: space[4], gap: space[3] },
   skeletonRow:       { height: 60, borderRadius: radius.md },
-  listContent:       { padding: space[4], gap: space[3], paddingBottom: 96 },
-  monthHeader:       { ...typography.caption, color: colors.text.muted, paddingTop: space[3], paddingBottom: space[2], textTransform: 'uppercase', letterSpacing: 0.5 },
+  listContent:       { paddingHorizontal: space[5], paddingBottom: space[12] * 2 },
+  monthHeader:       { ...typography.label, color: colors.text.secondary, paddingTop: space[6], paddingBottom: space[2], borderBottomWidth: hairline, borderBottomColor: colors.border.strong, backgroundColor: colors.bg.base },
 
-  statsBar:       { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[4], marginBottom: space[3], gap: space[5], borderWidth: 1 },
-  statsEmoji:     { fontSize: 32 },
-  statItem:       { alignItems: 'center', gap: 2 },
-  statNumber:     { ...typography.title1, fontFamily: 'Pretendard-Bold' },
-  statLabel:      { ...typography.tiny, color: colors.text.muted },
-  statDivider:    { width: 1, height: 32, backgroundColor: colors.border.subtle },
-
-  typeEventCard:    { flexDirection: 'row', backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[4], gap: space[3] },
-  typeEventLeft:    { width: 40, height: 40, borderRadius: radius.md, backgroundColor: colors.bg.subtle, alignItems: 'center', justifyContent: 'center' },
-  typeEventEmoji:   { fontSize: 20 },
+  typeEventCard:    { flexDirection: 'row', paddingVertical: space[4], gap: space[3], borderBottomWidth: hairline, borderBottomColor: colors.border.subtle },
+  typeEventDot:     { marginTop: space[1] + 1 },
   typeEventBody:    { flex: 1, gap: 2 },
   typeEventDateRow: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
   typeEventDate:    { ...typography.tiny, color: colors.text.muted },
-  typeEventTitle:   { ...typography.bodyBold, color: colors.text.primary },
+  typeEventTitle:   { ...typography.body, color: colors.text.primary },
   typeEventPlace:   { ...typography.caption, color: colors.text.secondary },
   typeEventMemo:    { ...typography.caption, color: colors.text.muted, marginTop: 2 },
 
-  calEventCard:  { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.bg.surface, borderRadius: radius.md, padding: space[4], gap: space[3] },
-  calEventDot:   { width: 10, height: 10, borderRadius: 5, flexShrink: 0 },
+  calEventCard:  { flexDirection: 'row', alignItems: 'center', paddingVertical: space[4], gap: space[3], borderBottomWidth: hairline, borderBottomColor: colors.border.subtle },
+  calEventDot:   { width: space[2], height: space[2], borderRadius: radius.pill, flexShrink: 0 },
   calEventInfo:  { flex: 1 },
-  calEventTitle: { ...typography.bodyBold, color: colors.text.primary },
+  calEventTitle: { ...typography.body, color: colors.text.primary },
   calEventSub:   { ...typography.caption, color: colors.text.secondary, marginTop: 2 },
 
-  personBadge:         { paddingHorizontal: space[2], paddingVertical: 2, borderRadius: radius.pill },
-  personBadgeMe:       { backgroundColor: colors.accent.primary + '22' },
-  personBadgeOther:    { backgroundColor: colors.accent.calm + '33' },
+  personBadge:         { paddingHorizontal: space[1], paddingVertical: 0 },
+  personBadgeMe:       {},
+  personBadgeOther:    {},
   personBadgeText:     { ...typography.tiny },
   personBadgeTextMe:   { color: colors.accent.primary },
   personBadgeTextOther: { color: colors.text.secondary },

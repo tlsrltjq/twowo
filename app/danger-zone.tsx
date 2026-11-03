@@ -162,13 +162,13 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   card:             { backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[5], gap: space[3] },
 
   desc:             { ...typography.caption, color: colors.text.secondary, lineHeight: 20 },
-  dangerBtn:        { marginTop: space[1], padding: space[4], backgroundColor: colors.status.danger, borderRadius: 10, alignItems: 'center' },
+  dangerBtn:        { marginTop: space[1], padding: space[4], backgroundColor: colors.status.danger, borderRadius: radius.md, alignItems: 'center' },
   dangerBtnOutline: { backgroundColor: 'transparent', borderWidth: 1.5, borderColor: colors.status.danger },
   dangerBtnText:    { ...typography.body, color: colors.text.inverse, fontFamily: 'Pretendard-SemiBold' },
 
   reauthBox:        { gap: space[3] },
   reauthLabel:      { ...typography.caption, color: colors.text.secondary },
-  reauthInput:      { ...typography.body, color: colors.text.primary, backgroundColor: colors.bg.subtle, borderRadius: 8, padding: space[3] },
+  reauthInput:      { ...typography.body, color: colors.text.primary, backgroundColor: colors.bg.subtle, borderRadius: radius.md, padding: space[3] },
   btnRow:           { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   cancelBtn:        { paddingHorizontal: space[2], paddingVertical: space[1] },
   cancelBtnText:    { ...typography.caption, color: colors.text.muted },

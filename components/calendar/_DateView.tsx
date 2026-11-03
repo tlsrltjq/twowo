@@ -165,7 +165,7 @@ export function DateView({
     );
   }
   if (events.length === 0) {
-    return <EmptyState title="데이트 기록이 없어요" description="일정 추가 시 '데이트' 타입을 선택해보세요" />;
+    return <EmptyState title="데이트 기록이 없어요" description="일정을 데이트로 저장하면 여기에 모여요" />;
   }
 
   return (

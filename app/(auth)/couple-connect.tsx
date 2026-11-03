@@ -178,7 +178,7 @@ export default function CoupleConnectScreen() {
 
     {showConfetti && (
       <View style={styles.confettiOverlay} pointerEvents="none">
-        <Text style={styles.confettiText}>연결됐어요! 🎉</Text>
+        <Text style={styles.confettiText}>연결됐어요</Text>
         <LottieView
           ref={confettiRef}
           source={require('../../assets/lottie/confetti.json')}

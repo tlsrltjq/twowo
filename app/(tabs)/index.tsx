@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useDotColor } from '../../components/calendar/_shared';
 import { CalendarEvent,subscribeEvents } from '../../core/calendar';
 import { Couple,subscribeCouple } from '../../core/couple';
 import { scheduleMoodReminderIfNeeded } from '../../core/notifications';
@@ -103,11 +104,7 @@ function EventRow({ event }: { event: CalendarEvent }) {
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const date    = toDate(event.date);
   const isToday = daysFromToday(date) === 0;
-  const typeColor = event.type === 'date'
-    ? colors.accent.warm
-    : event.type === 'exercise'
-      ? colors.accent.coral
-      : colors.accent.calm;
+  const typeColor = useDotColor()[event.type] ?? colors.text.muted;
 
   return (
     <TouchableOpacity

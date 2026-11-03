@@ -47,7 +47,7 @@ function toCalendarEvent(id: string, data: Record<string, unknown>): CalendarEve
 }
 
 const TYPE_LABEL: Record<string, string> = {
-  date: '💑 데이트', exercise: '🏃 운동', general: '📅 일정',
+  date: '데이트', exercise: '운동', general: '일정',
 };
 
 export default function EventDetailScreen() {
@@ -164,7 +164,7 @@ export default function EventDetailScreen() {
 
         {event.placeName && (
           <View style={styles.row}>
-            <Text style={styles.rowText}>📍 {event.placeName}</Text>
+            <Text style={styles.rowText}>{event.placeName}</Text>
           </View>
         )}
 
@@ -177,7 +177,7 @@ export default function EventDetailScreen() {
         <View style={styles.photoHeader}>
           <Text style={styles.sectionTitle}>사진 ({event.photoIds.length}/20)</Text>
           <Pressable testID="btn-add-photo" onPress={handleAddPhoto} style={styles.addPhotoBtn}>
-            <Text style={styles.addPhotoText}>＋ 추가</Text>
+            <Text style={styles.addPhotoText}>사진 추가</Text>
           </Pressable>
         </View>
 
@@ -267,17 +267,17 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   editText:         { ...typography.body, color: colors.text.secondary },
   deleteText:       { ...typography.body, color: colors.status.danger },
   body:             { padding: space[5], gap: space[4] },
-  typeLabel:        { ...typography.caption, color: colors.text.secondary },
+  typeLabel:        { ...typography.label, color: colors.accent.primary },
   title:            { ...typography.title1, color: colors.text.primary },
   date:             { ...typography.body, color: colors.text.secondary },
   row:              { flexDirection: 'row', alignItems: 'center', gap: space[2] },
   rowText:          { ...typography.body, color: colors.text.secondary },
-  memoBox:          { backgroundColor: colors.bg.subtle, borderRadius: radius.md, padding: space[4] },
+  memoBox:          { borderLeftWidth: 2, borderLeftColor: colors.border.strong, paddingLeft: space[3], paddingVertical: space[1] },
   memoText:         { ...typography.body, color: colors.text.primary },
   photoHeader:      { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   sectionTitle:     { ...typography.bodyBold, color: colors.text.primary },
-  addPhotoBtn:      { paddingVertical: space[1], paddingHorizontal: space[3], borderRadius: radius.pill, backgroundColor: colors.accent.primary },
-  addPhotoText:     { ...typography.caption, color: colors.text.inverse },
+  addPhotoBtn:      { paddingVertical: space[1], paddingHorizontal: space[3], borderRadius: radius.md, borderWidth: 1, borderColor: colors.border.strong },
+  addPhotoText:     { ...typography.caption, color: colors.text.primary },
   photoEmpty:       { height: 80, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.bg.subtle, borderRadius: radius.md },
   photoEmptyText:   { ...typography.caption, color: colors.text.muted },
   photoCell:        { flex: 1, aspectRatio: 1, padding: space[1] },

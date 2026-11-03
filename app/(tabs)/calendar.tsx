@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { Plus } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   FlatList,
@@ -28,7 +29,7 @@ import { Skeleton } from '../../design-system/Skeleton';
 import { Spinner } from '../../design-system/Spinner';
 import { useColors } from '../../design-system/ThemeContext';
 import { Colors } from '../../design-system/themes';
-import { black, radius, space, typography } from '../../design-system/tokens';
+import { radius, shadow, space, typography } from '../../design-system/tokens';
 
 type ViewTab = 'calendar' | 'exercise' | 'date' | 'photos';
 type CalendarMode = 'month' | 'week';
@@ -273,7 +274,7 @@ export default function CalendarScreen() {
         onPress={() => router.push('/event/new')}
         accessibilityLabel="새 일정 추가"
       >
-        <Text style={styles.fabText}>＋</Text>
+        <Plus size={24} color={colors.text.inverse} strokeWidth={2} />
       </Pressable>
     </SafeAreaView>
   );
@@ -303,6 +304,5 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   eventInfo:         { flex: 1 },
   eventTitle:        { ...typography.bodyBold, color: colors.text.primary },
   eventSub:          { ...typography.caption, color: colors.text.secondary, marginTop: 2 },
-  fab:               { position: 'absolute', right: space[5], bottom: space[6], width: 56, height: 56, borderRadius: 28, backgroundColor: colors.accent.primary, alignItems: 'center', justifyContent: 'center', shadowColor: black, shadowOpacity: 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 6 },
-  fabText:           { fontSize: 28, color: colors.text.inverse, lineHeight: 32 },
+  fab:               { position: 'absolute', right: space[5], bottom: space[6], width: space[12] + space[1], height: space[12] + space[1], borderRadius: radius.pill, backgroundColor: colors.text.primary, alignItems: 'center', justifyContent: 'center', ...shadow.md },
 });

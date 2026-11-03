@@ -10,7 +10,7 @@ import { Skeleton } from '../../design-system/Skeleton';
 import { useColors } from '../../design-system/ThemeContext';
 import { Colors } from '../../design-system/themes';
 import { radius, space, typography } from '../../design-system/tokens';
-import { groupByYearMonth, TYPE_EMOJI, useSharedStyles } from './_shared';
+import { groupByYearMonth, useSharedStyles } from './_shared';
 
 // 이벤트 ID → 대표 썸네일 URL
 function usePhotoThumbnails(events: CalendarEvent[]): Record<string, string> {
@@ -67,11 +67,11 @@ function PhotoCard({ event, thumbUrl }: { event: CalendarEvent; thumbUrl?: strin
       <View style={[styles.cardInner, { backgroundColor: bg }]}>
         {thumbUrl
           ? <Image source={{ uri: thumbUrl }} style={StyleSheet.absoluteFill} resizeMode="cover" />
-          : <Text style={styles.emoji}>{TYPE_EMOJI[event.type] ?? '📌'}</Text>
+          : <Text style={styles.emoji} numberOfLines={2}>{event.title}</Text>
         }
         {/* 배지 */}
         <View style={styles.badge}>
-          <Text style={styles.badgeText}>📷 {event.photoIds.length}</Text>
+          <Text style={styles.badgeText}>{event.photoIds.length}장</Text>
         </View>
         {/* 하단 오버레이 */}
         <View style={styles.footer}>
@@ -110,7 +110,7 @@ export function PhotoView({ events, loading }: { events: CalendarEvent[]; loadin
     );
   }
   if (events.length === 0) {
-    return <EmptyState title="사진이 없어요" description="일정에 사진을 추가해보세요" />;
+    return <EmptyState title="사진이 없어요" description="일정 상세에서 사진을 올릴 수 있어요" />;
   }
 
   return (
@@ -170,7 +170,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   grid:            { flexDirection: 'row', flexWrap: 'wrap', gap: space[2] },
   card:            { width: '47.5%' },
   cardInner:       { aspectRatio: 1, borderRadius: radius.md, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
-  emoji:           { fontSize: 36 },
+  emoji:           { ...typography.caption, color: colors.text.secondary, paddingHorizontal: space[2], textAlign: 'center' },
 
   badge:           { position: 'absolute', top: space[2], right: space[2], backgroundColor: 'rgba(26,22,20,0.65)', borderRadius: radius.pill, paddingHorizontal: space[2], paddingVertical: 2 },
   badgeText:       { ...typography.tiny, color: colors.text.inverse },

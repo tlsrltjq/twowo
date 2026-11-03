@@ -20,7 +20,7 @@ import { usePartnerProfile } from '../../core/couple';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { useColors } from '../../design-system/ThemeContext';
 import { Colors } from '../../design-system/themes';
-import { radius, space, typography } from '../../design-system/tokens';
+import { hairline, radius, space, typography } from '../../design-system/tokens';
 import { formatDateLabel, getDateKey } from './helpers';
 import { Message, PendingImage,sendImageMessage, sendMessage, subscribeMessages } from './index';
 
@@ -270,15 +270,15 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   header:            {
     paddingHorizontal: space[5],
     paddingVertical: space[4],
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border.subtle,
+    borderBottomWidth: hairline,
+    borderBottomColor: colors.border.strong,
   },
   headerTitle:       { ...typography.title2, color: colors.text.primary },
 
   listContent:       { padding: space[4], gap: space[3], paddingBottom: space[2] },
 
   separator:         { flexDirection: 'row', alignItems: 'center', gap: space[3], marginVertical: space[2] },
-  separatorLine:     { flex: 1, height: 1, backgroundColor: colors.border.subtle },
+  separatorLine:     { flex: 1, height: hairline, backgroundColor: colors.border.subtle },
   separatorLabel:    { ...typography.tiny, color: colors.text.muted },
 
   bubbleRow:         { gap: 4 },
@@ -287,8 +287,8 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   senderName:        { ...typography.tiny, color: colors.text.muted, marginLeft: space[2] },
 
   bubble:            { maxWidth: '75%', borderRadius: radius.lg, paddingHorizontal: space[4], paddingVertical: space[3] },
-  bubbleMine:        { backgroundColor: colors.accent.primary, borderBottomRightRadius: 4 },
-  bubblePartner:     { backgroundColor: colors.bg.surface, borderBottomLeftRadius: 4, borderWidth: 1, borderColor: colors.border.subtle },
+  bubbleMine:        { backgroundColor: colors.accent.primary, borderBottomRightRadius: radius.sm },
+  bubblePartner:     { backgroundColor: colors.bg.surface, borderBottomLeftRadius: radius.sm, borderWidth: hairline * 2, borderColor: colors.border.subtle },
   bubbleText:        { ...typography.body, lineHeight: 22 },
   bubbleTextMine:    { color: colors.text.inverse },
   bubbleTextPartner: { color: colors.text.primary },
@@ -300,17 +300,17 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   retryBtn:          { alignItems: 'center', gap: space[1] },
   retryText:         { ...typography.tiny, color: colors.text.inverse },
 
-  empty:             { flex: 1, alignItems: 'center', justifyContent: 'center', gap: space[3] },
-  emptyText:         { ...typography.body, color: colors.text.muted },
+  empty:             { flex: 1, justifyContent: 'flex-end', padding: space[5] },
+  emptyText:         { ...typography.caption, color: colors.text.muted },
 
   inputBar:          {
     flexDirection: 'row',
     alignItems: 'flex-end',
     paddingHorizontal: space[4],
     paddingVertical: space[3],
-    borderTopWidth: 1,
-    borderTopColor: colors.border.subtle,
-    backgroundColor: colors.bg.surface,
+    borderTopWidth: hairline,
+    borderTopColor: colors.border.strong,
+    backgroundColor: colors.bg.base,
     gap: space[2],
   },
   imageBtn:          { padding: space[2], alignSelf: 'flex-end', marginBottom: 2 },
@@ -318,12 +318,14 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
     flex: 1,
     ...typography.body,
     color: colors.text.primary,
-    backgroundColor: colors.bg.subtle,
-    borderRadius: radius.xl,
+    backgroundColor: colors.bg.surface,
+    borderWidth: hairline * 2,
+    borderColor: colors.border.strong,
+    borderRadius: radius.lg,
     paddingHorizontal: space[4],
     paddingVertical: space[3],
     maxHeight: 120,
   },
-  sendBtn:           { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.accent.primary, alignItems: 'center', justifyContent: 'center' },
+  sendBtn:           { width: 44, height: 44, borderRadius: radius.pill, backgroundColor: colors.text.primary, alignItems: 'center', justifyContent: 'center' },
   sendBtnDisabled:   { backgroundColor: colors.bg.subtle },
 });

@@ -55,7 +55,7 @@ export default function LoginScreen() {
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.flex}>
       <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
         <Text style={styles.title}>둘다좋아</Text>
-        <Text style={styles.subtitle}>함께하는 모든 순간</Text>
+        <Text style={styles.subtitle}>우리 둘의 달력과 기록</Text>
 
         <View style={styles.form}>
           <Controller

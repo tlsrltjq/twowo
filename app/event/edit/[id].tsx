@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { router, useLocalSearchParams } from 'expo-router';
 import { doc, DocumentData } from 'firebase/firestore';
+import { Calendar as CalendarIcon, ChevronUp } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
@@ -167,7 +168,9 @@ export default function EditEventScreen() {
                       {displayText}
                     </Text>
                   </View>
-                  <Text style={styles.dateFieldIcon}>{showDatePicker ? '▲' : '📅'}</Text>
+                  {showDatePicker
+                    ? <ChevronUp size={18} color={colors.text.muted} strokeWidth={1.6} />
+                    : <CalendarIcon size={18} color={colors.text.muted} strokeWidth={1.6} />}
                 </Pressable>
                 {errors.date && <Text style={styles.dateError}>{errors.date.message}</Text>}
                 {showDatePicker && (
@@ -255,8 +258,8 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   cancelText:         { ...typography.body, color: colors.accent.primary },
   body:               { padding: space[5], gap: space[4] },
   typeRow:            { flexDirection: 'row', gap: space[2] },
-  typeChip:           { flex: 1, paddingVertical: space[2], borderRadius: radius.pill, borderWidth: 1, borderColor: colors.border.subtle, alignItems: 'center' },
-  typeChipActive:     { backgroundColor: colors.accent.primary, borderColor: colors.accent.primary },
+  typeChip:           { flex: 1, paddingVertical: space[2], borderRadius: radius.md, borderWidth: 1, borderColor: colors.border.subtle, alignItems: 'center' },
+  typeChipActive:     { backgroundColor: colors.text.primary, borderColor: colors.text.primary },
   typeChipText:       { ...typography.caption, color: colors.text.secondary },
   typeChipTextActive: { ...typography.caption, color: colors.text.inverse, fontFamily: 'Pretendard-SemiBold' },
   infoBox:            { backgroundColor: colors.bg.subtle, borderRadius: radius.md, padding: space[3] },
@@ -267,7 +270,6 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   dateFieldLabel:     { ...typography.tiny, color: colors.text.muted, marginBottom: 2 },
   dateFieldValue:     { ...typography.body, color: colors.text.primary },
   dateFieldPlaceholder: { color: colors.text.muted },
-  dateFieldIcon:      { fontSize: 20 },
   dateError:          { ...typography.tiny, color: colors.status.danger, marginTop: 4, marginLeft: space[1] },
   datePicker:         { width: '100%' as const, backgroundColor: colors.bg.surface },
 });

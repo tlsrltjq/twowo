@@ -175,7 +175,7 @@ export function ExerciseView({
     );
   }
   if (events.length === 0) {
-    return <EmptyState title="운동 기록이 없어요" description="일정 추가 시 '운동' 타입을 선택해보세요" />;
+    return <EmptyState title="운동 기록이 없어요" description="일정을 운동으로 저장하면 여기에 모여요" />;
   }
 
   return (
