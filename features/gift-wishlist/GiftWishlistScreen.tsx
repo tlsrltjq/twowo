@@ -96,8 +96,8 @@ export default function GiftWishlistScreen() {
       {/* 탭 */}
       <View testID={all !== null ? 'gift-wishlist-ready' : undefined} style={styles.tabBar}>
         {([
-          { key: 'partner' as ViewTab, label: `🎁 ${partnerName} 위시리스트` },
-          { key: 'mine'    as ViewTab, label: '✏️ 내 목록' },
+          { key: 'partner' as ViewTab, label: `${partnerName}의 목록` },
+          { key: 'mine'    as ViewTab, label: '내 목록' },
         ]).map(tab => (
           <TouchableOpacity
             key={tab.key}
@@ -127,7 +127,7 @@ export default function GiftWishlistScreen() {
       ) : displayed.length === 0 ? (
         <EmptyState
           title={activeTab === 'partner' ? '상대방 목록이 비어있어요' : '내 목록이 비어있어요'}
-          description={activeTab === 'partner' ? `${partnerName}이(가) 원하는 것을 기다리고 있어요` : '+ 버튼으로 갖고 싶은 것을 추가해보세요'}
+          description={activeTab === 'partner' ? `${partnerName}이(가) 아직 적은 게 없어요` : '+ 버튼으로 갖고 싶은 것을 적을 수 있어요'}
         />
       ) : (
         <FlatList
@@ -159,7 +159,7 @@ export default function GiftWishlistScreen() {
         <KeyboardAvoidingView testID="overlay-wishlist" style={StyleSheet.absoluteFill} behavior={Platform.OS === 'ios' ? 'padding' : undefined} accessibilityViewIsModal>
           <Pressable accessible={false} style={styles.backdrop} onPress={() => setModal(false)}>
             <Pressable accessible={false} style={styles.modalCard} onPress={() => {}}>
-              <Text style={styles.modalTitle}>갖고 싶은 것 추가 🎀</Text>
+              <Text style={styles.modalTitle}>갖고 싶은 것 추가</Text>
 
               <View style={styles.fieldGroup}>
                 <Text style={styles.fieldLabel}>이름 *</Text>
@@ -263,7 +263,7 @@ function WishlistCard({
           onPress={onToggleReceived}
         >
           <Text style={[styles.receiveBtnText, item.received && styles.receiveBtnTextDone]}>
-            {item.received ? '✅ 받았어' : '받았어!'}
+            {item.received ? '받음' : '받았어'}
           </Text>
         </TouchableOpacity>
       )}
@@ -305,7 +305,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   receiveBtnText: { ...typography.tiny, color: colors.text.secondary, fontFamily: 'Pretendard-SemiBold' },
   receiveBtnTextDone: { color: colors.accent.primary },
 
-  fab:          { position: 'absolute', right: space[5], bottom: space[6], width: 56, height: 56, borderRadius: 28, backgroundColor: colors.accent.primary, alignItems: 'center', justifyContent: 'center', shadowColor: black, shadowOpacity: 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 6 },
+  fab:          { position: 'absolute', right: space[5], bottom: space[6], width: 56, height: 56, borderRadius: radius.pill, backgroundColor: colors.text.primary, alignItems: 'center', justifyContent: 'center', shadowColor: black, shadowOpacity: 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 6 },
   fabText:      { fontSize: 28, color: colors.text.inverse, lineHeight: 32 },
 
   backdrop:     { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'center', paddingHorizontal: space[5] },

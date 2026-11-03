@@ -83,7 +83,6 @@ export default function FirstMomentsScreen() {
 
       {/* 요약 배너 */}
       <View style={styles.banner}>
-        <Text style={styles.bannerEmoji}>🌟</Text>
         <Text testID={moments !== null ? 'first-moments-ready' : undefined} style={styles.bannerText}>
           {moments === null ? '...' : `총 ${moments.length}개의 처음`}
         </Text>
@@ -102,7 +101,7 @@ export default function FirstMomentsScreen() {
       ) : moments.length === 0 ? (
         <EmptyState
           title="아직 기록이 없어요"
-          description="처음 함께 한 것들을 기록해보세요"
+          description="둘이 처음 해본 일을 남길 수 있어요"
         />
       ) : (
         <FlatList
@@ -130,7 +129,7 @@ export default function FirstMomentsScreen() {
         <KeyboardAvoidingView testID="overlay-moments" style={StyleSheet.absoluteFill} behavior={Platform.OS === 'ios' ? 'padding' : undefined} accessibilityViewIsModal>
           <Pressable accessible={false} style={styles.backdrop} onPress={() => setModal(false)}>
             <Pressable accessible={false} style={styles.modalCard} onPress={() => {}}>
-              <Text style={styles.modalTitle}>새로운 처음 기록하기 ✨</Text>
+              <Text style={styles.modalTitle}>처음 한 일 기록하기</Text>
 
               <View style={styles.fieldGroup}>
                 <Text style={styles.fieldLabel}>어떤 처음이에요?</Text>
@@ -218,9 +217,6 @@ function MomentCard({
       delayLongPress={400}
       activeOpacity={0.85}
     >
-      <View style={styles.cardLeft}>
-        <Text style={styles.cardEmoji}>✨</Text>
-      </View>
       <View style={styles.cardBody}>
         <Text style={styles.cardTitle}>{moment.title}</Text>
         <Text style={styles.cardDate}>{formatDisplayDate(moment.date)}</Text>
@@ -244,7 +240,6 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   hintText:    { ...typography.tiny, color: colors.text.muted },
 
   banner:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space[2], paddingVertical: space[3], backgroundColor: colors.bg.surface, borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
-  bannerEmoji: { fontSize: 20 },
   bannerText:  { ...typography.body, color: colors.text.secondary, fontFamily: 'Pretendard-SemiBold' },
 
   skeletonContainer: { padding: space[4], gap: space[3] },
@@ -253,14 +248,12 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   listContent:  { padding: space[4], gap: space[3], paddingBottom: space[10] },
 
   card:         { flexDirection: 'row', backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[4], gap: space[3], borderWidth: 1, borderColor: colors.border.subtle },
-  cardLeft:     { width: 36, height: 36, borderRadius: radius.md, backgroundColor: colors.bg.subtle, alignItems: 'center', justifyContent: 'center' },
-  cardEmoji:    { fontSize: 18 },
   cardBody:     { flex: 1, gap: 2 },
   cardTitle:    { ...typography.bodyBold, color: colors.text.primary },
   cardDate:     { ...typography.caption, color: colors.accent.primary },
   cardMemo:     { ...typography.caption, color: colors.text.secondary, marginTop: 2 },
 
-  fab:          { position: 'absolute', right: space[5], bottom: space[6], width: 56, height: 56, borderRadius: 28, backgroundColor: colors.accent.primary, alignItems: 'center', justifyContent: 'center', shadowColor: black, shadowOpacity: 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 6 },
+  fab:          { position: 'absolute', right: space[5], bottom: space[6], width: 56, height: 56, borderRadius: radius.pill, backgroundColor: colors.text.primary, alignItems: 'center', justifyContent: 'center', shadowColor: black, shadowOpacity: 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 6 },
   fabText:      { fontSize: 28, color: colors.text.inverse, lineHeight: 32 },
 
   backdrop:     { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'center', paddingHorizontal: space[5] },

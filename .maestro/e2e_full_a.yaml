@@ -412,7 +412,7 @@ appId: host.exp.Exponent
 # 투표 (라운드 진행 중일 때)
 - runFlow:
     when:
-      visible: "라운드 진행 중"
+      visible: "가고 싶은 곳을 하나 고르세요"
     commands:
       - tapOn: "한강 피크닉 🌸"
       - waitForAnimationToEnd

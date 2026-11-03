@@ -46,9 +46,9 @@ env:
 - tapOn:
     id: "btn-sidebar-open"
 - waitForAnimationToEnd
-- tapOn: "오늘 뭐 먹었어"
+- tapOn: "오늘의 밥"
 - waitForAnimationToEnd
-- assertVisible: "오늘 뭐 먹었어?"
+- assertVisible: "오늘의 밥"
 - takeScreenshot: e2e/screenshots/09-daily-food-screen
 
 - back

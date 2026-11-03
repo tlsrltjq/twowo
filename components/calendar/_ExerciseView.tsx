@@ -257,7 +257,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   heatRow:      { flexDirection: 'row' },
   heatCell:     { flex: 1, alignItems: 'center', paddingVertical: 3 },
   heatDowLabel: { ...typography.tiny, color: colors.text.muted },
-  heatDot:      { width: 32, height: 32, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
+  heatDot:      { width: 32, height: 32, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center' },
   heatDayNum:   { ...typography.tiny, color: colors.text.secondary, fontFamily: 'Pretendard-SemiBold' },
 
   statRow:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', paddingTop: space[2], borderTopWidth: 1, borderTopColor: colors.border.subtle },

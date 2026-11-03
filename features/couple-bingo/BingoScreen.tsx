@@ -203,8 +203,8 @@ export default function BingoScreen() {
   const headerTitle = mode === 'history'        ? '이전 기록'
     : mode === 'history-detail'                 ? '완료된 빙고판'
     : mode === 'setup'                          ? (bingoMode === 'personal' ? '개인 빙고판 만들기' : '함께 빙고판 만들기')
-    : bingoMode === 'personal'                  ? '개인 빙고 ⚔️'
-    : '데이트 빙고 🎯';
+    : bingoMode === 'personal'                  ? '개인 빙고'
+    : '데이트 빙고';
 
   const headerOnBack = mode === 'history-detail' ? () => setMode('history')
     : mode === 'history' || mode === 'setup'     ? () => setMode('game')
@@ -358,7 +358,7 @@ function BingoModeToggle({
         onPress={() => onChange('couple')}
       >
         <Text style={[styles.modeBtnText, value === 'couple' && { color: colors.text.inverse }]}>
-          🤝 함께
+          함께
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
@@ -367,7 +367,7 @@ function BingoModeToggle({
         onPress={() => onChange('personal')}
       >
         <Text style={[styles.modeBtnText, value === 'personal' && { color: colors.text.inverse }]}>
-          ⚔️ 개인
+          개인
         </Text>
       </TouchableOpacity>
     </View>
@@ -417,7 +417,7 @@ function PersonalBingoView({
     return (
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyTitle}>개인 빙고판이 없어요</Text>
-        <Text style={styles.emptySub}>각자 자신만의 빙고판을 만들고{'\n'}먼저 빙고를 달성해보세요!</Text>
+        <Text style={styles.emptySub}>각자 빙고판을 만들고{'\n'}누가 먼저 한 줄을 채우는지 겨뤄요</Text>
         <TouchableOpacity testID="btn-empty-new" style={styles.emptyNewBtn} onPress={onNew}>
           <Text style={styles.emptyNewBtnText}>내 빙고판 만들기</Text>
         </TouchableOpacity>
@@ -542,7 +542,7 @@ function PersonalBingoView({
       )}
       {!isMyTurn && (
         <View style={styles.readonlyFooter}>
-          <Text style={styles.readonlyText}>상대방 보드 — 읽기 전용</Text>
+          <Text style={styles.readonlyText}>상대방 보드 · 보기만 가능</Text>
         </View>
       )}
     </View>
@@ -557,7 +557,7 @@ function Header({
   onBack,
   onNewBoard,
   onHistory,
-  title = '데이트 빙고 🎯',
+  title = '데이트 빙고',
   styles,
   colors,
 }: {
@@ -607,7 +607,7 @@ function EmptyState({
   return (
     <View style={styles.emptyContainer}>
       <Text style={styles.emptyTitle}>진행 중인 빙고판이 없어요</Text>
-      <Text style={styles.emptySub}>새 빙고판을 만들어 커플과 함께 도전해보세요!</Text>
+      <Text style={styles.emptySub}>빙고판을 만들면 둘이 같이 채워 나가요</Text>
       <TouchableOpacity testID="btn-empty-new" style={styles.emptyNewBtn} onPress={onNew}>
         <Text style={styles.emptyNewBtnText}>새 빙고판 만들기</Text>
       </TouchableOpacity>
@@ -810,7 +810,7 @@ function SetupView({
             <Text style={styles.fillBtnText}>기본값</Text>
           </TouchableOpacity>
           <TouchableOpacity testID="btn-shuffle" onPress={() => setItems(prev => shuffleArray([...prev]))} style={[styles.fillBtn, { marginLeft: space[2] }]}>
-            <Text style={styles.fillBtnText}>🔀 섞기</Text>
+            <Text style={styles.fillBtnText}>섞기</Text>
           </TouchableOpacity>
           <TouchableOpacity testID="btn-clear-all" onPress={() => setItems(Array(25).fill(''))} style={[styles.fillBtn, { marginLeft: space[2] }]}>
             <Text style={[styles.fillBtnText, { color: colors.text.muted }]}>비우기</Text>
@@ -911,9 +911,9 @@ function GameView({
     return (
       <ScrollView contentContainerStyle={styles.gameContainer} showsVerticalScrollIndicator={false}>
         <View style={styles.progress}>
-          <Text style={styles.progressText}>게임 진행 중 — 내용 비공개</Text>
+          <Text style={styles.progressText}>진행 중 · 끝나면 내용이 보여요</Text>
           {board.completedLines.length > 0
-            ? <Text style={styles.progressBingo}>🎯 빙고 {board.completedLines.length}줄!</Text>
+            ? <Text style={styles.progressBingo}>빙고 {board.completedLines.length}줄</Text>
             : <Text style={styles.progressText}>빙고 0줄</Text>
           }
         </View>
@@ -931,7 +931,7 @@ function GameView({
       <View style={styles.progress}>
         <Text style={styles.progressText}>{checkedCount} / 25 완료</Text>
         {board.completedLines.length > 0 && (
-          <Text style={styles.progressBingo}>🎯 빙고 {board.completedLines.length}줄!</Text>
+          <Text style={styles.progressBingo}>빙고 {board.completedLines.length}줄</Text>
         )}
       </View>
 
@@ -966,7 +966,7 @@ function GameView({
 
       {board.status === 'completed' && (
         <View style={styles.completedBanner}>
-          <Text style={styles.completedText}>🏆 빙고판 완성!</Text>
+          <Text style={styles.completedText}>빙고판을 다 채웠어요</Text>
         </View>
       )}
     </ScrollView>

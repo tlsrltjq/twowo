@@ -87,7 +87,6 @@ export default function ComplimentJarScreen() {
 
       {/* 저금통 요약 */}
       <View style={styles.jarBanner}>
-        <Text style={styles.jarEmoji}>🫙</Text>
         <Text testID={all !== null && couple !== null ? 'compliment-jar-ready' : undefined} style={styles.jarCount}>
           {all === null ? '...' : `우리가 쌓은 칭찬 ${total}개`}
         </Text>
@@ -96,8 +95,8 @@ export default function ComplimentJarScreen() {
       {/* 탭 */}
       <View style={styles.tabBar}>
         {([
-          { key: 'received' as ViewTab, label: `💝 ${partnerName}에게 받은`, testID: 'tab-compliment-received' },
-          { key: 'sent'     as ViewTab, label: '✏️ 내가 쓴 칭찬', testID: 'tab-compliment-sent' },
+          { key: 'received' as ViewTab, label: `${partnerName}에게 받은`, testID: 'tab-compliment-received' },
+          { key: 'sent'     as ViewTab, label: '내가 쓴 칭찬', testID: 'tab-compliment-sent' },
         ]).map(tab => (
           <TouchableOpacity
             key={tab.key}
@@ -120,7 +119,7 @@ export default function ComplimentJarScreen() {
       ) : displayed.length === 0 ? (
         <EmptyState
           title={activeTab === 'received' ? '아직 받은 칭찬이 없어요' : '아직 쓴 칭찬이 없어요'}
-          description={activeTab === 'received' ? `${partnerName}이(가) 칭찬을 보내면 여기 나타나요` : '+ 버튼을 눌러 칭찬을 써보세요'}
+          description={activeTab === 'received' ? `${partnerName}이(가) 보낸 칭찬이 여기 쌓여요` : '+ 버튼으로 칭찬을 적을 수 있어요'}
         />
       ) : (
         <FlatList
@@ -141,12 +140,12 @@ export default function ComplimentJarScreen() {
         <KeyboardAvoidingView testID="overlay-compliment" style={StyleSheet.absoluteFill} behavior={Platform.OS === 'ios' ? 'padding' : undefined} accessibilityViewIsModal>
           <Pressable accessible={false} style={styles.backdrop} onPress={() => setModal(false)}>
             <Pressable accessible={false} style={styles.modalCard} onPress={() => {}}>
-              <Text style={styles.modalTitle}>칭찬 저금하기 🫙</Text>
+              <Text style={styles.modalTitle}>칭찬 저금하기</Text>
               <TextInput
                 ref={inputRef}
                 testID="input-compliment"
                 style={styles.modalInput}
-                placeholder="상대에게 전하고 싶은 칭찬을 써보세요"
+                placeholder="전하고 싶은 칭찬"
                 placeholderTextColor={colors.text.muted}
                 value={draft}
                 onChangeText={setDraft}
@@ -199,7 +198,6 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   headerTitle: { ...typography.title2, color: colors.text.primary },
 
   jarBanner:   { alignItems: 'center', paddingVertical: space[4], gap: space[2], backgroundColor: colors.bg.surface, borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
-  jarEmoji:    { fontSize: 36 },
   jarCount:    { ...typography.body, color: colors.text.secondary, fontFamily: 'Pretendard-SemiBold' },
 
   tabBar:      { flexDirection: 'row', backgroundColor: colors.bg.surface, borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
@@ -216,7 +214,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   cardText:     { ...typography.body, color: colors.text.primary, lineHeight: 22 },
   cardMeta:     { ...typography.tiny, color: colors.text.muted },
 
-  fab:          { position: 'absolute', right: space[5], bottom: space[6], width: 56, height: 56, borderRadius: 28, backgroundColor: colors.accent.primary, alignItems: 'center', justifyContent: 'center', shadowColor: black, shadowOpacity: 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 6 },
+  fab:          { position: 'absolute', right: space[5], bottom: space[6], width: 56, height: 56, borderRadius: radius.pill, backgroundColor: colors.text.primary, alignItems: 'center', justifyContent: 'center', shadowColor: black, shadowOpacity: 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 6 },
   fabText:      { fontSize: 28, color: colors.text.inverse, lineHeight: 32 },
 
   backdrop:     { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'center', paddingHorizontal: space[5] },

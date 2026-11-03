@@ -36,10 +36,10 @@ import {
 
 // 예시 제안 (탭하면 입력창에 바로 들어감)
 const EXAMPLES = [
-  '한강 피크닉 🌅', '스시 오마카세 🍣', '노래방 🎤', '보드게임 카페 🎲',
-  '드라이브 🚗', '전시회 관람 🎨', '홈파티 🍕', '방탈출 🔐',
-  '영화관 🎬', '카페 투어 ☕', '마사지 💆', '새벽 편의점 🌙',
-  '수영 🏊', '클라이밍 🧗', '야구 직관 ⚾', '빵집 투어 🥐',
+  '한강 피크닉', '스시 오마카세', '노래방', '보드게임 카페',
+  '드라이브', '전시회', '홈파티', '방탈출',
+  '영화관', '카페 투어', '마사지', '새벽 편의점',
+  '수영', '클라이밍', '야구 직관', '빵집 투어',
 ];
 
 type ScreenMode = 'list' | 'history';
@@ -195,7 +195,6 @@ export default function DateDecisionScreen() {
           <View style={styles.center}><Spinner /></View>
         ) : history.length === 0 ? (
           <View style={styles.center}>
-            <Text style={styles.emptyIcon}>🗒</Text>
             <Text style={styles.emptyText}>아직 투표 결과가 없어요</Text>
           </View>
         ) : (
@@ -239,16 +238,14 @@ export default function DateDecisionScreen() {
         <View style={styles.resultsContainer}>
           {isMatch ? (
             <>
-              <Text style={styles.resultEmoji}>🎉</Text>
-              <Text style={styles.resultTitle}>둘 다 같은 걸 골랐어요!</Text>
+              <Text style={styles.resultTitle}>둘 다 같은 곳을 골랐어요</Text>
               <View style={styles.matchCard}>
                 <Text style={styles.matchTitle}>{myCand?.title ?? '?'}</Text>
               </View>
             </>
           ) : (
             <>
-              <Text style={styles.resultEmoji}>🤔</Text>
-              <Text style={styles.resultTitle}>아쉽게 달랐어요</Text>
+              <Text style={styles.resultTitle}>이번엔 서로 달랐어요</Text>
               <View style={styles.noMatchRow}>
                 <ResultCard label="나" title={myCand?.title} styles={styles} />
                 <Text style={styles.vsText}>VS</Text>
@@ -257,7 +254,7 @@ export default function DateDecisionScreen() {
             </>
           )}
           <TouchableOpacity style={styles.confirmBtn} onPress={handleStartRound} disabled={saving}>
-            <Text style={styles.confirmBtnText}>한 번 더 🎲</Text>
+            <Text style={styles.confirmBtnText}>다시 고르기</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.backToListBtn} onPress={() => setLastRevealed(null)}>
             <Text style={styles.backToListText}>후보 목록으로</Text>
@@ -273,7 +270,7 @@ export default function DateDecisionScreen() {
   return (
     <SafeAreaView testID="screen-date-decision" style={styles.safeArea} edges={['top']}>
       <Header
-        title="둘다좋아 💑"
+        title="둘다좋아"
         onBack={() => router.back()}
         onHistory={() => setMode('history')}
         {...(candidates.length > 0 ? { onClear: handleClearAll } : {})}
@@ -283,14 +280,14 @@ export default function DateDecisionScreen() {
 
       {iWaiting && (
         <View style={styles.waitingBanner}>
-          <Text style={styles.waitingText}>✅ 투표 완료 — 상대방 기다리는 중...</Text>
+          <Text style={styles.waitingText}>골랐어요. 상대방을 기다리는 중이에요</Text>
         </View>
       )}
 
       {session && !myVote && (
         <View style={[styles.waitingBanner, { backgroundColor: colors.accent.warm + '20' }]}>
           <Text style={[styles.waitingText, { color: colors.accent.warm }]}>
-            🗳 라운드 진행 중 — 고르고 싶은 걸 탭하세요
+            가고 싶은 곳을 하나 고르세요
           </Text>
         </View>
       )}
@@ -303,9 +300,8 @@ export default function DateDecisionScreen() {
           ListEmptyComponent={
             loading ? null : (
               <View style={styles.empty}>
-                <Text style={styles.emptyIcon}>🗒</Text>
                 <Text style={styles.emptyText}>아직 후보가 없어요</Text>
-                <Text style={styles.emptySubText}>아래에서 둘이 가고 싶은 곳을 추가해보세요</Text>
+                <Text style={styles.emptySubText}>아래에 적은 곳이 후보가 돼요</Text>
               </View>
             )
           }
@@ -352,7 +348,7 @@ export default function DateDecisionScreen() {
                   disabled={saving}
                 >
                   <Text style={styles.startBtnText}>
-                    {saving ? '시작 중...' : '🎲 라운드 시작'}
+                    {saving ? '시작하는 중' : '고르기 시작'}
                   </Text>
                 </TouchableOpacity>
               )}
@@ -457,7 +453,7 @@ function HistoryCard({
       <View style={styles.historyCardHeader}>
         <Text style={styles.historyCardDate}>{dateStr}</Text>
         <Text style={[styles.historyCardMatch, { color: isMatch ? colors.accent.primary : colors.text.muted }]}>
-          {isMatch ? '🎉 매치!' : '🤔 불일치'}
+          {isMatch ? '같음' : '다름'}
         </Text>
       </View>
       <View style={styles.historyCardBody}>
@@ -549,7 +545,7 @@ function CandidateRow({
       </Text>
       {isSelected ? (
         <View style={styles.selectedBadge}>
-          <Text style={styles.selectedBadgeText}>내 선택 ✓</Text>
+          <Text style={styles.selectedBadgeText}>내 선택</Text>
         </View>
       ) : !sessionActive ? (
         <TouchableOpacity onPress={onDelete} style={styles.deleteBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="후보 삭제">
@@ -598,7 +594,6 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   deleteBtn:             { padding: space[2] },
 
   empty:                 { paddingVertical: space[10], alignItems: 'center', gap: space[2] },
-  emptyIcon:             { fontSize: 36 },
   emptyText:             { ...typography.bodyBold, color: colors.text.muted },
   emptySubText:          { ...typography.caption, color: colors.text.muted, textAlign: 'center' },
 
@@ -628,7 +623,6 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
 
   // results
   resultsContainer:      { flex: 1, alignItems: 'center', justifyContent: 'center', padding: space[6], gap: space[5] },
-  resultEmoji:           { fontSize: 64 },
   resultTitle:           { ...typography.title1, color: colors.text.primary, textAlign: 'center' },
   matchCard:             { backgroundColor: colors.bg.surface, borderRadius: radius.xl, padding: space[6], alignItems: 'center', width: '100%', borderWidth: 2, borderColor: colors.accent.primary },
   matchTitle:            { ...typography.title1, color: colors.accent.primary, textAlign: 'center' },

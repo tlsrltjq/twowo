@@ -45,7 +45,7 @@ env:
 - takeScreenshot: e2e/screenshots/10-compliment-modal
 
 # 칭찬 입력
-- tapOn: "상대에게 전하고 싶은 칭찬을 써보세요"
+- tapOn: "전하고 싶은 칭찬"
 - inputText: "E2E 테스트 칭찬입니다"
 - tapOn: "저금하기"
 - waitForAnimationToEnd
@@ -57,7 +57,7 @@ env:
 - tapOn:
     id: "btn-sidebar-open"
 - waitForAnimationToEnd
-- tapOn: "오늘 뭐 먹었어"
+- tapOn: "오늘의 밥"
 - waitForAnimationToEnd
 - takeScreenshot: e2e/screenshots/10-daily-food-enter
 
@@ -90,7 +90,7 @@ env:
 - tapOn:
     label: "처음 기록 추가"
 - waitForAnimationToEnd
-- assertVisible: "새로운 처음 기록하기"
+- assertVisible: "처음 한 일 기록하기"
 - takeScreenshot: e2e/screenshots/10-first-moments-modal
 
 # 제목 입력 (autoFocus이므로 바로 입력)
@@ -110,7 +110,7 @@ env:
 - takeScreenshot: e2e/screenshots/10-gift-wishlist-enter
 
 # 내 목록 탭 진입
-- tapOn: "✏️ 내 목록"
+- tapOn: "내 목록"
 - waitForAnimationToEnd
 - takeScreenshot: e2e/screenshots/10-gift-wishlist-my-tab
 

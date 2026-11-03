@@ -31,14 +31,14 @@ import {
   subscribeTodayMessages,
 } from './index';
 
-const TABS: { key: MessageType; label: string; emoji: string }[] = [
-  { key: 'night',   label: '잘자',      emoji: '🌙' },
-  { key: 'morning', label: '좋은 아침', emoji: '☀️' },
+const TABS: { key: MessageType; label: string }[] = [
+  { key: 'night',   label: '잘자' },
+  { key: 'morning', label: '좋은 아침' },
 ];
 
 const QUICK_PHRASES: Record<MessageType, string[]> = {
-  night:   ['잘자 😴', '꿈에 나와줘 🌙', '오늘 고마워 💕', '좋은 꿈 꿔 🌟', '보고 싶어 😊', '내일 봐 👋', '사랑해 ❤️'],
-  morning: ['좋은 아침 ☀️', '잘 잤어? 😊', '오늘도 화이팅 💪', '보고 싶다 💕', '밥 먹었어? 🍳', '오늘 뭐 해? 😄', '사랑해 ❤️'],
+  night:   ['잘자', '꿈에 나와줘', '오늘 고마워', '좋은 꿈 꿔', '보고 싶어', '내일 봐', '사랑해'],
+  morning: ['좋은 아침', '잘 잤어?', '오늘도 힘내', '보고 싶다', '밥 먹었어?', '오늘 뭐 해?', '사랑해'],
 };
 
 function formatTime(d: Date): string {
@@ -137,7 +137,6 @@ export default function NightMessageScreen() {
           <View style={styles.center}><Spinner /></View>
         ) : history.length === 0 ? (
           <View style={styles.center}>
-            <Text style={styles.emptyIcon}>💌</Text>
             <Text style={styles.emptyText}>아직 지난 메시지가 없어요</Text>
           </View>
         ) : (
@@ -180,7 +179,7 @@ export default function NightMessageScreen() {
             onPress={() => setActiveType(tab.key)}
           >
             <Text style={[styles.tabText, activeType === tab.key && styles.tabTextActive]}>
-              {tab.emoji} {tab.label}
+              {tab.label}
             </Text>
           </TouchableOpacity>
         ))}
@@ -189,7 +188,7 @@ export default function NightMessageScreen() {
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
           {/* 상대방 메시지 */}
-          <Text style={styles.sectionLabel}>💬 {partnerName}의 메시지</Text>
+          <Text style={styles.sectionLabel}>{partnerName}의 메시지</Text>
           {partner === 'loading' ? (
             <Skeleton style={styles.messageSkeleton} />
           ) : partner === null ? (
@@ -205,7 +204,7 @@ export default function NightMessageScreen() {
           )}
 
           {/* 내 메시지 */}
-          <Text style={[styles.sectionLabel, { marginTop: space[5] }]}>✏️ 내 메시지</Text>
+          <Text style={[styles.sectionLabel, { marginTop: space[5] }]}>내 메시지</Text>
           {mine === 'loading' ? (
             <Skeleton style={styles.messageSkeleton} />
           ) : mine !== null ? (
@@ -279,7 +278,7 @@ function HistoryCard({
         <Text style={styles.historyCardDate}>{formatDate(entry.date)}</Text>
         <View style={styles.historyTypeBadge}>
           <Text style={styles.historyTypeBadgeText}>
-            {entry.type === 'night' ? '🌙 잘자' : '☀️ 좋은 아침'}
+            {entry.type === 'night' ? '잘자' : '좋은 아침'}
           </Text>
         </View>
       </View>
@@ -332,7 +331,6 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   emptyCard:   { backgroundColor: colors.bg.subtle, borderRadius: radius.lg, padding: space[5], alignItems: 'center', gap: space[2] },
   emptyText:   { ...typography.body, color: colors.text.secondary },
   emptyHint:   { ...typography.caption, color: colors.text.muted },
-  emptyIcon:   { fontSize: 36 },
 
   messageCard:    { borderRadius: radius.lg, padding: space[4], gap: space[2] },
   partnerCard:    { backgroundColor: colors.bg.surface, borderWidth: 1, borderColor: colors.border.subtle },

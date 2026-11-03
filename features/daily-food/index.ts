@@ -32,13 +32,6 @@ export const MEAL_LABEL: Record<MealType, string> = {
   extra:     '추가',
 };
 
-export const MEAL_EMOJI: Record<MealType, string> = {
-  breakfast: '🍳',
-  lunch:     '🍱',
-  dinner:    '🍽️',
-  snack:     '🍪',
-  extra:     '🍴',
-};
 
 export interface FoodLog {
   id: string;

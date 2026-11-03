@@ -22,7 +22,7 @@ import { Spinner } from '../../design-system/Spinner';
 import { useColors } from '../../design-system/ThemeContext';
 import { Colors } from '../../design-system/themes';
 import { Toast } from '../../design-system/Toast';
-import { black, radius, space, typography } from '../../design-system/tokens';
+import { black, hairline, radius, space, typography } from '../../design-system/tokens';
 import { addSong, deleteSong, subscribePlaylist } from './index';
 import { PlaylistSong } from './schema';
 
@@ -81,7 +81,7 @@ export default function OurPlaylistScreen() {
       });
       resetForm();
       setModalVisible(false);
-      show('노래를 추가했어요 🎵', 'success');
+      show('노래를 담았어요', 'success');
     } catch {
       show('추가에 실패했어요', 'error');
     } finally {
@@ -254,7 +254,7 @@ function SongCard({ song, isMe, styles }: { song: PlaylistSong; isMe: boolean; s
     <View testID="song-card" style={styles.card}>
       <View style={styles.cardTop}>
         <View style={styles.cardInfo}>
-          <Text style={styles.songTitle} numberOfLines={1}>🎵 {song.title}</Text>
+          <Text style={styles.songTitle} numberOfLines={1}>{song.title}</Text>
           <Text style={styles.songArtist} numberOfLines={1}>{song.artist}</Text>
         </View>
         <View style={styles.cardMeta}>
@@ -283,7 +283,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   skeletonWrap:  { gap: space[3], marginTop: space[4] },
   separator:     { height: space[3] },
 
-  card:          { backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[4], gap: space[2], shadowColor: black, shadowOpacity: 0.04, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
+  card:          { backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[4], gap: space[2], borderWidth: hairline * 2, borderColor: colors.border.subtle },
   cardTop:       { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   cardInfo:      { flex: 1, gap: space[1] },
   cardMeta:      { alignItems: 'flex-end', gap: space[1] },
@@ -294,7 +294,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   addedBy:       { ...typography.tiny, color: colors.text.muted },
   songMemo:      { ...typography.caption, color: colors.text.muted, fontStyle: 'italic' },
 
-  fab:           { position: 'absolute', bottom: space[8], right: space[5], width: 52, height: 52, borderRadius: 26, backgroundColor: colors.accent.primary, alignItems: 'center', justifyContent: 'center', shadowColor: black, shadowOpacity: 0.18, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 6 },
+  fab:           { position: 'absolute', bottom: space[8], right: space[5], width: 52, height: 52, borderRadius: radius.pill, backgroundColor: colors.text.primary, alignItems: 'center', justifyContent: 'center', shadowColor: black, shadowOpacity: 0.18, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 6 },
   fabIcon:       { fontSize: 28, color: colors.text.inverse, lineHeight: 34 },
 
   modalSafe:     { flex: 1, backgroundColor: colors.bg.base },

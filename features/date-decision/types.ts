@@ -19,8 +19,8 @@ export interface VoteSession {
 }
 
 export const CATEGORY_LABELS: Record<VoteCategory, string> = {
-  food:     '🍽 식사',
-  activity: '🎯 활동',
-  travel:   '✈️ 여행',
-  etc:      '✨ 기타',
+  food:     '식사',
+  activity: '활동',
+  travel:   '여행',
+  etc:      '기타',
 };

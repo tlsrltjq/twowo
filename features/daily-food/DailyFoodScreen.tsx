@@ -1,6 +1,6 @@
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
-import { ChevronLeft, Clock } from 'lucide-react-native';
+import { Camera, ChevronLeft, Clock } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
@@ -28,7 +28,6 @@ import {
   deleteFood,
   FoodLog,
   getFoodHistory,
-  MEAL_EMOJI,
   MEAL_LABEL,
   MEAL_TYPES,
   MealType,
@@ -190,7 +189,6 @@ export default function DailyFoodScreen() {
           <View style={styles.center}><Spinner /></View>
         ) : byDate.length === 0 ? (
           <View style={styles.center}>
-            <Text style={styles.emptyIcon}>🍽️</Text>
             <Text style={styles.emptyText}>아직 지난 기록이 없어요</Text>
           </View>
         ) : (
@@ -226,7 +224,7 @@ export default function DailyFoodScreen() {
         <TouchableOpacity testID="btn-back" onPress={() => router.back()} style={styles.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
           <ChevronLeft size={24} color={colors.text.primary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>오늘의 밥 🍚</Text>
+        <Text style={styles.headerTitle}>오늘의 밥</Text>
         <TouchableOpacity onPress={() => setMode('history')} style={styles.iconBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityLabel="지난 기록">
           <Clock size={20} color={colors.text.secondary} />
         </TouchableOpacity>
@@ -241,7 +239,7 @@ export default function DailyFoodScreen() {
 
       <ScrollView contentContainerStyle={styles.body}>
         {/* 상대방 — 위 */}
-        <Text style={styles.sectionLabel}>🍽️ {partnerName}의 오늘 밥</Text>
+        <Text style={styles.sectionLabel}>{partnerName}의 오늘 밥</Text>
         {logs === null ? (
           <View style={styles.slotGrid}>
             {[0, 1, 2, 3].map(i => <Skeleton key={i} style={{ width: SLOT_SIZE, height: SLOT_SIZE, borderRadius: radius.xl }} />)}
@@ -265,7 +263,7 @@ export default function DailyFoodScreen() {
         )}
 
         {/* 내 기록 — 아래 */}
-        <Text style={[styles.sectionLabel, { marginTop: space[6] }]}>✏️ 내 오늘 밥</Text>
+        <Text style={[styles.sectionLabel, { marginTop: space[6] }]}>내 오늘 밥</Text>
         {logs === null ? (
           <View style={styles.slotGrid}>
             {[0, 1, 2, 3].map(i => <Skeleton key={i} style={{ width: SLOT_SIZE, height: SLOT_SIZE, borderRadius: radius.xl }} />)}
@@ -310,6 +308,7 @@ function MealSlot({
   onTap?: () => void;
   styles: StylesType;
 }) {
+  const colors = useColors();
   const hasPhoto = !!log?.photoUrl;
   return (
     <TouchableOpacity
@@ -324,9 +323,9 @@ function MealSlot({
         <Image source={{ uri: log!.photoUrl! }} style={styles.slotImage} resizeMode="cover" />
       ) : (
         <>
-          <Text style={styles.slotEmoji}>{MEAL_EMOJI[mealType]}</Text>
+          {!readonly && <Camera size={20} color={colors.text.muted} strokeWidth={1.6} />}
           <Text style={styles.slotLabel}>{MEAL_LABEL[mealType]}</Text>
-          <Text style={styles.slotHint}>{readonly ? '안먹음' : '안먹음'}</Text>
+          <Text style={styles.slotHint}>{readonly ? '없음' : '사진 추가'}</Text>
         </>
       )}
       {hasPhoto && (
@@ -347,6 +346,7 @@ function ExtraRow({
   onDelete: ((log: FoodLog) => void) | undefined;
   styles: StylesType;
 }) {
+  const colors = useColors();
   if (logs.length === 0) return null;
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.extraScroll} contentContainerStyle={styles.extraContent}>
@@ -360,7 +360,7 @@ function ExtraRow({
           {log.photoUrl ? (
             <Image source={{ uri: log.photoUrl }} style={styles.extraThumbImage} resizeMode="cover" />
           ) : (
-            <Text style={{ fontSize: 24 }}>{MEAL_EMOJI.extra}</Text>
+            <Camera size={20} color={colors.text.muted} strokeWidth={1.6} />
           )}
         </TouchableOpacity>
       ))}
@@ -397,7 +397,7 @@ function HistoryDayCard({
                 {log.photoUrl ? (
                   <Image source={{ uri: log.photoUrl }} style={styles.historyThumbImage} resizeMode="cover" />
                 ) : (
-                  <Text style={{ fontSize: 20 }}>{MEAL_EMOJI[log.mealType]}</Text>
+                  <View />
                 )}
                 <Text style={styles.historyThumbLabel}>{MEAL_LABEL[log.mealType]}</Text>
               </View>
@@ -429,7 +429,6 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   slot:       { width: SLOT_SIZE, borderRadius: radius.xl, backgroundColor: colors.bg.surface, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   slotEmpty:  { borderWidth: 1.5, borderColor: colors.border.subtle, borderStyle: 'dashed', gap: 4 },
   slotImage:  { width: '100%', height: '100%' },
-  slotEmoji:  { fontSize: 28 },
   slotLabel:  { ...typography.bodyBold, color: colors.text.secondary },
   slotHint:   { ...typography.tiny, color: colors.text.muted, textAlign: 'center' },
   slotOverlay:      { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(0,0,0,0.35)', paddingVertical: 4, alignItems: 'center' },
@@ -443,7 +442,6 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   addBtn:     { marginTop: space[2], paddingVertical: space[3], alignItems: 'center', borderRadius: radius.lg, borderWidth: 1.5, borderColor: colors.border.subtle, borderStyle: 'dashed' },
   addBtnText: { ...typography.body, color: colors.accent.primary },
 
-  emptyIcon:  { fontSize: 36 },
   emptyText:  { ...typography.bodyBold, color: colors.text.muted },
 
   historyList:        { padding: space[4], gap: space[4], paddingBottom: space[8] },

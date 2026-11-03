@@ -22,7 +22,7 @@ import { Spinner } from '../../design-system/Spinner';
 import { useColors } from '../../design-system/ThemeContext';
 import { Colors } from '../../design-system/themes';
 import { Toast } from '../../design-system/Toast';
-import { black, radius, space, typography } from '../../design-system/tokens';
+import { hairline, radius, space, typography } from '../../design-system/tokens';
 import {
   getPairedGratitudeHistory,
   getTodayGratitude,
@@ -128,7 +128,7 @@ export default function GratitudeScreen() {
       const result = await setTodayGratitude({ coupleId, userId: user.uid, message: message.trim() });
       setMyEntry(result);
       setEditing(false);
-      show('고마움을 전달했어요 🙏', 'success');
+      show('전했어요', 'success');
     } catch (e) {
       if (e instanceof GratitudeLockError) {
         show('오늘만 수정할 수 있어요', 'error');
@@ -162,7 +162,6 @@ export default function GratitudeScreen() {
           <View style={styles.center}><Spinner /></View>
         ) : pairs.length === 0 ? (
           <View style={styles.center}>
-            <Text style={styles.emptyIcon}>🙏</Text>
             <Text style={styles.emptyText}>아직 지난 기록이 없어요</Text>
           </View>
         ) : (
@@ -229,7 +228,7 @@ export default function GratitudeScreen() {
             {showForm ? (
               <>
                 <Text style={styles.fieldLabel}>
-                  오늘 상대방에게 고마운 점을 적어보세요{' '}
+                  오늘 고마웠던 일{' '}
                   <Text style={styles.charCount}>{message.length}/{MAX_LEN}</Text>
                 </Text>
                 <TextInput
@@ -263,7 +262,7 @@ export default function GratitudeScreen() {
               <GratitudeDisplay entry={partnerEntry} testID="partner-gratitude" styles={styles} />
             ) : (
               <View style={styles.partnerEmpty}>
-                <Text style={styles.partnerEmptyText}>아직 입력 전이에요 💭</Text>
+                <Text style={styles.partnerEmptyText}>아직 안 적었어요</Text>
               </View>
             )}
           </View>
@@ -336,7 +335,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   iconBtn:         { padding: space[2], width: 36, alignItems: 'flex-end' },
 
   body:            { padding: space[5], gap: space[4], paddingBottom: space[12] },
-  card:            { backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[5], gap: space[3], shadowColor: black, shadowOpacity: 0.04, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
+  card:            { backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[5], gap: space[3], borderWidth: hairline * 2, borderColor: colors.border.subtle },
   cardHeader:      { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   cardLabel:       { ...typography.bodyBold, color: colors.text.primary },
   editLink:        { ...typography.caption, color: colors.accent.primary },
@@ -349,7 +348,6 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   partnerEmpty:    { paddingVertical: space[5], alignItems: 'center' },
   partnerEmptyText:{ ...typography.body, color: colors.text.muted },
 
-  emptyIcon:       { fontSize: 36 },
   emptyText:       { ...typography.bodyBold, color: colors.text.muted },
 
   // history
