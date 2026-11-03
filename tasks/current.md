@@ -87,7 +87,18 @@
 - [ ] **security-rules 통합 테스트 확대** — 컬렉션당 "타인 차단" 1개씩 추가. 현재 3개뿐인데 rules 352줄이 사실상 백엔드
 - [ ] **subscribeUnreadCount 정확도** — `limit(10)` 후 클라이언트 필터라 10개 초과 시 배지 부정확. 실사용 중 문제되면 서버사이드 카운터로 교체
 
-## 이전 세션에서 멈춘 곳 (2026-06-22 30차)
+## 이전 세션에서 멈춘 곳 (2026-11-03 31차)
+- ✅ UI 톤 개편("AI 느낌" 줄이기, 절제된 편집형) — 커밋 6개(2b9f50c~7f19ba1)
+  - 토큰: 로즈 채도 낮춤·종이색 배경, radius 4/6/10/14, 그림자 약화, `label`·`hairline`, `SectionHeader` 추가, EmptyState 일러스트 제거
+  - 전 화면 UI 이모지·권유형 문구 제거(사용자 입력 내용은 유지), 카드 → 구분선 목록, 일정 유형은 색 점(`useDotColor`)
+  - 문구 원칙: `docs/_archive/design-system.md` "화면 문구·장식 원칙"
+  - tsc·ESLint 통과, Jest 655 통과(기존 `core/auth/signOut.test.ts` ESM 로드 실패 1건은 개편 전부터 동일)
+- ⬜ 시뮬레이터 화면 확인 미실시 — 이 Mac에서 Xcode 라이선스 미동의(`sudo xcodebuild -license`)로 simctl 사용 불가
+- ⬜ Maestro E2E 미실행 — 라벨만 새 문구로 갱신. e2e/10 오늘의 밥 흐름은 개편 전부터 예전 텍스트 입력 방식이라 별도 정리 필요
+- ⚠ `.husky/pre-commit` 실행 권한 없음 → 훅이 무시됨(이번엔 tsc·eslint 수동 실행)
+- ⚠ `docs/specs/home.md` 화면 상태 표는 일정 0개면 영역 숨김이라고 하나 코드는 빈 상태 문구 표시(개편 전부터 불일치, 유지)
+
+## 이전 세션에서 멈춘 곳(이전) (2026-06-22 30차)
 - ✅ CI ESLint 실패 원인 분석 + 전면 수정 완료 (ADR-031)
   - eslint.config.mjs에 .claude/**·**/*.mjs 무시 추가
   - 미사용 colors 파라미터 3종 제거, btn-energy/mood testID 기반 컨디션 선택, HEX→token 교체
