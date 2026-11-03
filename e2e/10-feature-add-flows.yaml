@@ -53,28 +53,29 @@ env:
 
 - back
 
-# ── 3. 오늘 뭐 먹었어 ───────────────────────────────────────────────────
+# ── 3. 오늘의 밥 ───────────────────────────────────────────────────────
+# 끼니별 사진 칸(아침·점심·간식·저녁) 방식. 실제 업로드는 사진 선택기가 필요해
+# 여기서는 내 칸을 눌러 선택지가 뜨는지만 확인하고 취소한다.
 - tapOn:
     id: "btn-sidebar-open"
 - waitForAnimationToEnd
 - tapOn: "오늘의 밥"
-- waitForAnimationToEnd
+- extendedWaitUntil:
+    visible:
+      id: "daily-food-ready"
+    timeout: 15000
+- assertVisible: "내 오늘 밥"
 - takeScreenshot: e2e/screenshots/10-daily-food-enter
 
-# FAB 탭 → 모달 열기
+- scrollUntilVisible:
+    element:
+      id: "slot-mine-lunch"
 - tapOn:
-    label: "식사 기록 추가"
+    id: "slot-mine-lunch"
+- assertVisible: "사진 선택"
+- takeScreenshot: e2e/screenshots/10-daily-food-slot-options
+- tapOn: "취소"
 - waitForAnimationToEnd
-- assertVisible: "뭐 먹었어?"
-- takeScreenshot: e2e/screenshots/10-daily-food-modal
-
-# 점심 선택 후 메뉴 입력
-- tapOn: "점심"
-- tapOn: "메뉴 이름을 입력하세요"
-- inputText: "E2E 테스트 김밥"
-- tapOn: "기록하기"
-- waitForAnimationToEnd
-- takeScreenshot: e2e/screenshots/10-daily-food-saved
 
 - back
 

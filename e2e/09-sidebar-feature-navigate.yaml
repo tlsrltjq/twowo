@@ -42,7 +42,7 @@ env:
 
 - back
 
-# 오늘 뭐 먹었어
+# 오늘의 밥
 - tapOn:
     id: "btn-sidebar-open"
 - waitForAnimationToEnd

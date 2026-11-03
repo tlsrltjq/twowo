@@ -312,6 +312,7 @@ function MealSlot({
   const hasPhoto = !!log?.photoUrl;
   return (
     <TouchableOpacity
+      testID={`slot-${readonly ? 'partner' : 'mine'}-${mealType}`}
       style={[styles.slot, { height: SLOT_SIZE }, !hasPhoto && styles.slotEmpty]}
       onPress={readonly ? undefined : onTap}
       activeOpacity={readonly ? 1 : 0.8}

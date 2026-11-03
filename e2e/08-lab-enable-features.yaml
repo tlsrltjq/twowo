@@ -30,7 +30,7 @@ env:
     id: "switch-compliment-jar"
 - waitForAnimationToEnd
 
-# 오늘 뭐 먹었어 토글 ON
+# 오늘의 밥 토글 ON
 - tapOn:
     id: "switch-daily-food"
 - waitForAnimationToEnd
