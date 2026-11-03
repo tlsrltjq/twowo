@@ -14,7 +14,7 @@ env:
 - tapOn: "실험실"
 - waitForAnimationToEnd
 - scrollToTop
-- tapOn: "화면 열기"
+- tapOn: "열기"
 - waitForAnimationToEnd
 - assertVisible: "자기 전 한 마디"
 - takeScreenshot: e2e/screenshots/10-night-message-enter

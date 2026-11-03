@@ -9,11 +9,12 @@ import { subscribeCouple } from '../../core/couple';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { addDays, getTodayKST, toLocalYMD } from '../../core/utils/date';
 import { Button } from '../../design-system/Button';
+import { SectionHeader } from '../../design-system/SectionHeader';
 import { Spinner } from '../../design-system/Spinner';
 import { useColors } from '../../design-system/ThemeContext';
 import { Colors } from '../../design-system/themes';
 import { Toast } from '../../design-system/Toast';
-import { black, radius, space, typography } from '../../design-system/tokens';
+import { hairline, radius, space, typography } from '../../design-system/tokens';
 import {
   getRecent7Days,
   getTodayMood,
@@ -22,78 +23,69 @@ import {
 } from './index';
 import { Mood, MoodCheck, MoodLockedError } from './schema';
 
-const ENERGY_EMOJIS = ['', '😴', '😑', '🙂', '😊', '🔥'] as const;
 const MOOD_LABELS: Record<Mood, string> = {
-  great: '최고 🌟',
-  good:  '좋아 😊',
-  okay:  '보통 😐',
-  bad:   '별로 😔',
+  great: '최고',
+  good:  '좋음',
+  okay:  '보통',
+  bad:   '별로',
 };
+const MOODS: Mood[] = ['great', 'good', 'okay', 'bad'];
+const ENERGIES = [1, 2, 3, 4, 5] as const;
 const DOW_SHORT = ['일', '월', '화', '수', '목', '금', '토'];
 
 type ToastState = { message: string; type: 'success' | 'error' | 'info'; visible: boolean };
 
-// ── 오늘 미니 카드 ─────────────────────────────────────────────
-function TodayCard({
-  label, check, moodColors, styles,
+function describe(check: MoodCheck): string {
+  return [
+    MOOD_LABELS[check.mood],
+    `에너지 ${check.energy}/5`,
+    check.canMeet ? '만날 수 있음' : '만나기 어려움',
+  ].join(' · ');
+}
+
+// ── 오늘 한 줄 ────────────────────────────────────────────────
+function TodayRow({
+  label, check, styles,
 }: {
   label: string;
   check: MoodCheck | null;
-  moodColors: Record<Mood, string>;
   styles: ReturnType<typeof makeStyles>;
 }) {
   return (
-    <View style={styles.todayCard}>
-      <Text style={styles.todayCardLabel}>{label}</Text>
-      {check ? (
-        <>
-          <Text style={styles.todayCardEnergy}>{ENERGY_EMOJIS[check.energy]}</Text>
-          <View style={[styles.todayMoodBadge, { backgroundColor: moodColors[check.mood] }]}>
-            <Text style={styles.todayMoodBadgeText}>{MOOD_LABELS[check.mood]}</Text>
-          </View>
-          <Text style={styles.todayMeet}>{check.canMeet ? '✅ 만남 가능' : '❌ 어려워요'}</Text>
-          {check.memo ? <Text style={styles.todayMemo} numberOfLines={2}>"{check.memo}"</Text> : null}
-        </>
-      ) : (
-        <Text style={styles.todayEmpty}>아직 입력 전 💭</Text>
-      )}
+    <View style={styles.row}>
+      <Text style={styles.rowLabel}>{label}</Text>
+      <View style={styles.rowBody}>
+        {check ? (
+          <>
+            <Text style={styles.rowValue}>{describe(check)}</Text>
+            {check.memo ? <Text style={styles.rowMemo}>{check.memo}</Text> : null}
+          </>
+        ) : (
+          <Text style={styles.rowMuted}>아직 안 적었어요</Text>
+        )}
+      </View>
     </View>
   );
 }
 
-// ── 하루 컬럼 (7일 차트) ──────────────────────────────────────
+// ── 하루 컬럼 (7일 에너지 막대) ──────────────────────────────
 function DayColumn({
-  date, myCheck, partnerCheck, moodColors, isToday, styles,
+  date, myCheck, partnerCheck, isToday, styles,
 }: {
   date: string;
   myCheck?: MoodCheck;
   partnerCheck?: MoodCheck;
-  moodColors: Record<Mood, string>;
   isToday: boolean;
   styles: ReturnType<typeof makeStyles>;
 }) {
   const d = new Date(date + 'T12:00:00');
+  const barHeight = (check?: MoodCheck) => (check ? (check.energy / 5) * BAR_MAX : BAR_EMPTY);
   return (
-    <View style={[styles.dayCol, isToday && styles.dayColToday]}>
-      {/* 나 버블 */}
-      <View style={[
-        styles.bubble,
-        myCheck
-          ? { backgroundColor: moodColors[myCheck.mood] + 'BB' }
-          : styles.bubbleEmpty,
-      ]}>
-        <Text style={styles.bubbleEmoji}>{myCheck ? ENERGY_EMOJIS[myCheck.energy] : ''}</Text>
+    <View style={styles.dayCol}>
+      <View style={styles.barPair}>
+        <View style={[styles.bar, styles.barMine, { height: barHeight(myCheck) }, !myCheck && styles.barEmpty]} />
+        <View style={[styles.bar, styles.barPartner, { height: barHeight(partnerCheck) }, !partnerCheck && styles.barEmpty]} />
       </View>
-      {/* 상대방 버블 */}
-      <View style={[
-        styles.bubble,
-        partnerCheck
-          ? { backgroundColor: moodColors[partnerCheck.mood] + '55' }
-          : styles.bubbleEmpty,
-      ]}>
-        <Text style={styles.bubbleEmoji}>{partnerCheck ? ENERGY_EMOJIS[partnerCheck.energy] : ''}</Text>
-      </View>
-      {/* 날짜 */}
       <Text style={[styles.dayLabel, isToday && styles.dayLabelToday]}>
         {isToday ? '오늘' : DOW_SHORT[d.getDay()]}
       </Text>
@@ -102,17 +94,41 @@ function DayColumn({
   );
 }
 
+function Segmented<T extends string | number>({
+  options, value, onChange, label, testIDPrefix, styles,
+}: {
+  options: readonly T[];
+  value: T;
+  onChange: (v: T) => void;
+  label: (v: T) => string;
+  testIDPrefix: string;
+  styles: ReturnType<typeof makeStyles>;
+}) {
+  return (
+    <View style={styles.segmented}>
+      {options.map((v, i) => {
+        const active = v === value;
+        return (
+          <TouchableOpacity
+            key={String(v)}
+            testID={`${testIDPrefix}-${v}`}
+            style={[styles.segment, i > 0 && styles.segmentDivider, active && styles.segmentActive]}
+            onPress={() => onChange(v)}
+            accessibilityRole="button"
+            accessibilityState={{ selected: active }}
+          >
+            <Text style={[styles.segmentText, active && styles.segmentTextActive]}>{label(v)}</Text>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+}
+
 // ── 메인 ──────────────────────────────────────────────────────
 export default function MoodScreen() {
   const colors = useColors();
   const styles = useMemo(() => makeStyles(colors), [colors]);
-
-  const MOOD_COLORS: Record<Mood, string> = useMemo(() => ({
-    great: colors.status.success,
-    good:  colors.accent.primary,
-    okay:  colors.accent.warm,
-    bad:   colors.status.danger,
-  }), [colors]);
 
   const { user, coupleId } = useAuthStore();
   const [myMood, setMyMood]                   = useState<MoodCheck | null>(null);
@@ -182,11 +198,11 @@ export default function MoodScreen() {
       const result = await setTodayMood({ coupleId, userId: user.uid, energy, mood, canMeet, memo: memo || undefined });
       setMyMood(result);
       setEditing(false);
-      show('컨디션이 저장됐어요 ✅', 'success');
+      show('저장했어요', 'success');
       const hist = await getRecent7Days(coupleId, user.uid);
       setHistory(hist);
     } catch (e) {
-      if (e instanceof MoodLockedError) show('오늘 컨디션은 이미 잠겼습니다', 'error');
+      if (e instanceof MoodLockedError) show('오늘 컨디션은 이제 바꿀 수 없어요', 'error');
       else show('저장에 실패했어요', 'error');
     } finally {
       setSaving(false);
@@ -221,97 +237,57 @@ export default function MoodScreen() {
         )}
       </View>
 
-      {/* ── 오늘 나 / 상대방 나란히 (저장 후) ── */}
+      {/* ── 오늘 나 / 상대방 (저장 후) ── */}
       {!showForm && (
-        <View style={styles.todayRow}>
-          <TodayCard label="나" check={myMood} moodColors={MOOD_COLORS} styles={styles} />
-          <TodayCard label="상대방" check={partnerMood} moodColors={MOOD_COLORS} styles={styles} />
-        </View>
-      )}
-
-      {/* ── 7일 비교 차트 ── */}
-      {(history.length > 0 || partnerHistory.length > 0) && (
-        <View style={styles.card}>
-          <Text style={styles.cardLabel}>7일 비교</Text>
-          <View style={styles.chartRow}>
-            {last7Days.map(date => (
-              <DayColumn
-                key={date}
-                date={date}
-                {...(myHistMap[date] !== undefined ? { myCheck: myHistMap[date] } : {})}
-                {...(partnerHistMap[date] !== undefined ? { partnerCheck: partnerHistMap[date] } : {})}
-                moodColors={MOOD_COLORS}
-                isToday={date === todayKST}
-                styles={styles}
-              />
-            ))}
-          </View>
-          <View style={styles.chartLegend}>
-            <View style={styles.legendItem}>
-              <View style={[styles.legendDot, { backgroundColor: MOOD_COLORS.good + 'BB' }]} />
-              <Text style={styles.legendText}>나</Text>
-            </View>
-            <View style={styles.legendItem}>
-              <View style={[styles.legendDot, { backgroundColor: MOOD_COLORS.good + '55' }]} />
-              <Text style={styles.legendText}>상대방</Text>
-            </View>
-          </View>
+        <View>
+          <SectionHeader title="오늘" />
+          <TodayRow label="나" check={myMood} styles={styles} />
+          <TodayRow label="상대방" check={partnerMood} styles={styles} />
         </View>
       )}
 
       {/* ── 폼 중일 때 상대방 오늘 컨디션 ── */}
       {showForm && partnerMood && (
-        <View style={styles.card}>
-          <Text style={styles.cardLabel}>상대방 컨디션</Text>
-          <View style={styles.partnerInlineRow}>
-            <Text style={styles.partnerEnergy}>{ENERGY_EMOJIS[partnerMood.energy]}</Text>
-            <View style={[styles.todayMoodBadge, { backgroundColor: MOOD_COLORS[partnerMood.mood] }]}>
-              <Text style={styles.todayMoodBadgeText}>{MOOD_LABELS[partnerMood.mood]}</Text>
-            </View>
-            <Text style={styles.todayMeet}>{partnerMood.canMeet ? '✅ 만남 가능' : '❌ 어려워요'}</Text>
-          </View>
-          {partnerMood.memo ? <Text style={styles.todayMemo}>"{partnerMood.memo}"</Text> : null}
+        <View>
+          <SectionHeader title="상대방 오늘" />
+          <TodayRow label="상대방" check={partnerMood} styles={styles} />
         </View>
       )}
 
       {/* ── 입력 폼 ── */}
       {showForm && (
-        <View style={styles.card}>
-          <Text style={styles.cardLabel}>나의 컨디션</Text>
+        <View style={styles.form}>
+          <SectionHeader title="나의 오늘" />
 
-          <Text style={styles.fieldLabel}>에너지</Text>
-          <View style={styles.energyRow}>
-            {([1, 2, 3, 4, 5] as const).map(v => (
-              <TouchableOpacity
-                key={v}
-                testID={`btn-energy-${v}`}
-                style={[styles.energyBtn, energy === v && styles.energyBtnActive]}
-                onPress={() => setEnergy(v)}
-              >
-                <Text style={styles.energyEmoji}>{ENERGY_EMOJIS[v]}</Text>
-                <Text style={[styles.energyNum, energy === v && styles.energyNumActive]}>{v}</Text>
-              </TouchableOpacity>
-            ))}
+          <View style={styles.field}>
+            <View style={styles.fieldHead}>
+              <Text style={styles.fieldLabel}>에너지</Text>
+              <Text style={styles.fieldHint}>1 지침 · 5 쌩쌩</Text>
+            </View>
+            <Segmented
+              options={ENERGIES}
+              value={energy}
+              onChange={setEnergy}
+              label={v => String(v)}
+              testIDPrefix="btn-energy"
+              styles={styles}
+            />
           </View>
 
-          <Text style={styles.fieldLabel}>기분</Text>
-          <View style={styles.moodRow}>
-            {(['great', 'good', 'okay', 'bad'] as Mood[]).map(m => (
-              <TouchableOpacity
-                key={m}
-                testID={`btn-mood-${m}`}
-                style={[styles.moodChip, mood === m && { backgroundColor: MOOD_COLORS[m] }]}
-                onPress={() => setMood(m)}
-              >
-                <Text style={[styles.moodChipText, mood === m && styles.moodChipTextActive]}>
-                  {MOOD_LABELS[m]}
-                </Text>
-              </TouchableOpacity>
-            ))}
+          <View style={styles.field}>
+            <Text style={styles.fieldLabel}>기분</Text>
+            <Segmented
+              options={MOODS}
+              value={mood}
+              onChange={setMood}
+              label={m => MOOD_LABELS[m]}
+              testIDPrefix="btn-mood"
+              styles={styles}
+            />
           </View>
 
           <View style={styles.meetRow}>
-            <Text style={styles.fieldLabel}>오늘 만남 가능</Text>
+            <Text style={styles.fieldLabel}>오늘 만날 수 있어요</Text>
             <Switch
               value={canMeet}
               onValueChange={setCanMeet}
@@ -320,21 +296,55 @@ export default function MoodScreen() {
             />
           </View>
 
-          <Text style={styles.fieldLabel}>
-            메모 <Text style={styles.memoCount}>{memo.length}/200</Text>
-          </Text>
-          <TextInput
-            style={styles.memoInput}
-            value={memo}
-            onChangeText={t => { if (t.length <= 200) setMemo(t); }}
-            placeholder="오늘 어떤 하루였나요? (선택)"
-            placeholderTextColor={colors.text.muted}
-            multiline
-            maxLength={200}
-          />
+          <View style={styles.field}>
+            <View style={styles.fieldHead}>
+              <Text style={styles.fieldLabel}>메모</Text>
+              <Text style={styles.fieldHint}>{memo.length}/200</Text>
+            </View>
+            <TextInput
+              style={styles.memoInput}
+              value={memo}
+              onChangeText={t => { if (t.length <= 200) setMemo(t); }}
+              placeholder="한 줄 남기기 (선택)"
+              placeholderTextColor={colors.text.muted}
+              multiline
+              maxLength={200}
+            />
+          </View>
 
-          <View style={styles.saveBtn}>
-            <Button testID="btn-mood-save" label={saving ? '저장 중...' : '저장'} onPress={handleSave} disabled={saving} />
+          <Button testID="btn-mood-save" label={saving ? '저장 중' : '저장'} onPress={handleSave} disabled={saving} />
+        </View>
+      )}
+
+      {/* ── 7일 비교 ── */}
+      {(history.length > 0 || partnerHistory.length > 0) && (
+        <View>
+          <SectionHeader
+            title="최근 7일 에너지"
+            right={(
+              <View style={styles.chartLegend}>
+                <View style={styles.legendItem}>
+                  <View style={[styles.legendDot, styles.barMine]} />
+                  <Text style={styles.legendText}>나</Text>
+                </View>
+                <View style={styles.legendItem}>
+                  <View style={[styles.legendDot, styles.barPartner]} />
+                  <Text style={styles.legendText}>상대방</Text>
+                </View>
+              </View>
+            )}
+          />
+          <View style={styles.chartRow}>
+            {last7Days.map(date => (
+              <DayColumn
+                key={date}
+                date={date}
+                {...(myHistMap[date] !== undefined ? { myCheck: myHistMap[date] } : {})}
+                {...(partnerHistMap[date] !== undefined ? { partnerCheck: partnerHistMap[date] } : {})}
+                isToday={date === todayKST}
+                styles={styles}
+              />
+            ))}
           </View>
         </View>
       )}
@@ -350,62 +360,54 @@ export default function MoodScreen() {
   );
 }
 
+const BAR_MAX = space[12] + space[4];
+const BAR_EMPTY = space[1];
+
 const makeStyles = (colors: Colors) => StyleSheet.create({
   safeArea:           { flex: 1, backgroundColor: colors.bg.base },
   container:          { flex: 1 },
-  body:               { padding: space[5], gap: space[4], paddingBottom: space[12] },
+  body:               { paddingHorizontal: space[5], paddingTop: space[4], gap: space[8], paddingBottom: space[12] },
 
-  pageHeader:         { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  screenTitle:        { ...typography.title2, color: colors.text.primary },
+  pageHeader:         { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
+  screenTitle:        { ...typography.title1, color: colors.text.primary },
   editLink:           { ...typography.caption, color: colors.accent.primary },
 
-  card:               { backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[5], gap: space[3], shadowColor: black, shadowOpacity: 0.04, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
-  cardLabel:          { ...typography.bodyBold, color: colors.text.primary },
-
-  // 오늘 나란히 카드
-  todayRow:           { flexDirection: 'row', gap: space[3] },
-  todayCard:          { flex: 1, backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[4], gap: space[2], shadowColor: black, shadowOpacity: 0.04, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
-  todayCardLabel:     { ...typography.tiny, color: colors.text.muted, fontFamily: 'Pretendard-SemiBold' },
-  todayCardEnergy:    { fontSize: 32 },
-  todayMoodBadge:     { alignSelf: 'flex-start', paddingVertical: 2, paddingHorizontal: space[2], borderRadius: radius.pill },
-  todayMoodBadgeText: { fontSize: 11, lineHeight: 16, color: colors.text.inverse, fontFamily: 'Pretendard-SemiBold' },
-  todayMeet:          { ...typography.tiny, color: colors.text.secondary },
-  todayMemo:          { ...typography.tiny, color: colors.text.muted, fontStyle: 'italic' },
-  todayEmpty:         { ...typography.caption, color: colors.text.muted, paddingVertical: space[3] },
-
-  // 파트너 inline (폼 중 표시용)
-  partnerInlineRow:   { flexDirection: 'row', alignItems: 'center', gap: space[3] },
-  partnerEnergy:      { fontSize: 28 },
-
-  // 7일 차트
-  chartRow:           { flexDirection: 'row', justifyContent: 'space-between' },
-  dayCol:             { flex: 1, alignItems: 'center', gap: 4, paddingVertical: space[2], paddingHorizontal: 2, borderRadius: radius.md },
-  dayColToday:        { backgroundColor: colors.bg.subtle },
-  bubble:             { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
-  bubbleEmpty:        { borderWidth: 1, borderColor: colors.border.subtle },
-  bubbleEmoji:        { fontSize: 15 },
-  dayLabel:           { ...typography.tiny, color: colors.text.muted, fontFamily: 'Pretendard-SemiBold' },
-  dayLabelToday:      { color: colors.accent.primary },
-  dayDateLabel:       { fontSize: 9, lineHeight: 12, color: colors.text.muted, fontFamily: 'Pretendard-Regular' },
-  chartLegend:        { flexDirection: 'row', gap: space[4] },
-  legendItem:         { flexDirection: 'row', alignItems: 'center', gap: space[1] },
-  legendDot:          { width: 8, height: 8, borderRadius: 4 },
-  legendText:         { ...typography.tiny, color: colors.text.muted },
+  // 오늘 행
+  row:                { flexDirection: 'row', gap: space[4], paddingVertical: space[3], borderBottomWidth: hairline, borderBottomColor: colors.border.subtle },
+  rowLabel:           { ...typography.caption, color: colors.text.secondary, width: space[12] + space[2] },
+  rowBody:            { flex: 1, gap: space[1] },
+  rowValue:           { ...typography.caption, color: colors.text.primary },
+  rowMemo:            { ...typography.caption, color: colors.text.secondary },
+  rowMuted:           { ...typography.caption, color: colors.text.muted },
 
   // 입력 폼
-  fieldLabel:         { ...typography.caption, color: colors.text.secondary },
-  energyRow:          { flexDirection: 'row', gap: space[2] },
-  energyBtn:          { flex: 1, alignItems: 'center', paddingVertical: space[2], borderRadius: radius.md, borderWidth: 1, borderColor: colors.border.subtle },
-  energyBtnActive:    { borderColor: colors.accent.primary, backgroundColor: colors.bg.subtle },
-  energyEmoji:        { fontSize: 20 },
-  energyNum:          { ...typography.tiny, color: colors.text.muted },
-  energyNumActive:    { color: colors.accent.primary, fontFamily: 'Pretendard-SemiBold' },
-  moodRow:            { flexDirection: 'row', gap: space[2] },
-  moodChip:           { flex: 1, paddingVertical: space[2], alignItems: 'center', borderRadius: radius.pill, borderWidth: 1, borderColor: colors.border.subtle },
-  moodChipText:       { ...typography.caption, color: colors.text.secondary },
-  moodChipTextActive: { color: colors.text.inverse, fontFamily: 'Pretendard-SemiBold' },
+  form:               { gap: space[5] },
+  field:              { gap: space[2] },
+  fieldHead:          { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
+  fieldLabel:         { ...typography.caption, color: colors.text.primary },
+  fieldHint:          { ...typography.tiny, color: colors.text.muted },
+  segmented:          { flexDirection: 'row', borderWidth: hairline * 2, borderColor: colors.border.strong, borderRadius: radius.md, overflow: 'hidden' },
+  segment:            { flex: 1, alignItems: 'center', paddingVertical: space[3], backgroundColor: colors.bg.surface },
+  segmentDivider:     { borderLeftWidth: hairline * 2, borderLeftColor: colors.border.strong },
+  segmentActive:      { backgroundColor: colors.text.primary },
+  segmentText:        { ...typography.caption, color: colors.text.secondary },
+  segmentTextActive:  { color: colors.text.inverse, fontFamily: typography.bodyBold.fontFamily },
   meetRow:            { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  memoInput:          { backgroundColor: colors.bg.subtle, borderRadius: radius.md, padding: space[3], ...typography.body, color: colors.text.primary, minHeight: 72 },
-  memoCount:          { ...typography.tiny, color: colors.text.muted },
-  saveBtn:            { marginTop: space[2] },
+  memoInput:          { backgroundColor: colors.bg.surface, borderWidth: hairline * 2, borderColor: colors.border.strong, borderRadius: radius.md, padding: space[3], ...typography.body, color: colors.text.primary, minHeight: space[12] + space[6] },
+
+  // 7일 막대
+  chartRow:           { flexDirection: 'row', justifyContent: 'space-between', paddingTop: space[4] },
+  dayCol:             { flex: 1, alignItems: 'center', gap: space[1] },
+  barPair:            { flexDirection: 'row', alignItems: 'flex-end', gap: space[1] - 1, height: BAR_MAX },
+  bar:                { width: space[2], borderRadius: radius.sm - 2 },
+  barMine:            { backgroundColor: colors.text.primary },
+  barPartner:         { backgroundColor: colors.accent.primary },
+  barEmpty:           { backgroundColor: colors.border.subtle },
+  dayLabel:           { ...typography.tiny, color: colors.text.muted },
+  dayLabelToday:      { color: colors.accent.primary },
+  dayDateLabel:       { ...typography.tiny, color: colors.text.muted, opacity: 0.7 },
+  chartLegend:        { flexDirection: 'row', gap: space[3] },
+  legendItem:         { flexDirection: 'row', alignItems: 'center', gap: space[1] },
+  legendDot:          { width: space[2], height: space[2], borderRadius: radius.sm - 2 },
+  legendText:         { ...typography.tiny, color: colors.text.muted },
 });

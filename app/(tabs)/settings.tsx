@@ -2,6 +2,7 @@ import * as Linking from 'expo-linking';
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 import { doc, setDoc } from 'firebase/firestore';
+import { ChevronRight } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import {
   Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView,
@@ -19,7 +20,7 @@ import { useThemeStore } from '../../core/stores/theme.store';
 import { getDaysSince } from '../../core/utils/date';
 import { useColors } from '../../design-system/ThemeContext';
 import { ACCENT_META, AccentId, Colors } from '../../design-system/themes';
-import { space, typography } from '../../design-system/tokens';
+import { hairline, radius, space, typography } from '../../design-system/tokens';
 
 const APP_VERSION = appJson.expo.version;
 const SUPPORT_EMAIL = 'psl87531@gmail.com';
@@ -156,7 +157,7 @@ export default function SettingsScreen() {
         <View style={styles.row}>
           <View style={styles.rowLabelGroup}>
             <Text style={styles.rowLabel}>푸시 알림</Text>
-            <Text style={styles.rowSub}>{notifGranted ? '허용됨' : '꺼짐 — 탭하여 설정'}</Text>
+            <Text style={styles.rowSub}>{notifGranted ? '켜져 있어요' : '꺼져 있어요'}</Text>
           </View>
           <Switch
             value={notifGranted}
@@ -170,7 +171,7 @@ export default function SettingsScreen() {
 
       {/* ── 커플 정보 ── */}
       <Section title="커플 정보" colors={colors}>
-        {dDay !== null && <Row label="함께한 날" value={`D+${dDay}일`} styles={styles} />}
+        {dDay !== null && <Row label="함께한 날" value={`${dDay}일`} styles={styles} />}
         {partnerName ? <Row label="상대방" value={partnerName} styles={styles} /> : null}
         <View style={styles.row}>
           <Text style={styles.rowLabel}>기념일</Text>
@@ -194,7 +195,7 @@ export default function SettingsScreen() {
             </View>
           ) : (
             <TouchableOpacity testID="btn-edit-anniversary" onPress={() => { setAnniversaryInput(anniversaryStr); setAnniversaryEditing(true); }}>
-              <Text style={styles.rowValue}>{anniversaryStr || '설정 안 됨'} ✏️</Text>
+              <Text style={styles.rowValue}>{anniversaryStr || '정하지 않음'}  <Text style={styles.rowEdit}>변경</Text></Text>
             </TouchableOpacity>
           )}
         </View>
@@ -216,7 +217,7 @@ export default function SettingsScreen() {
             </View>
           ) : (
             <TouchableOpacity onPress={() => setNicknameEditing(true)}>
-              <Text style={styles.rowValue}>{nickname || user?.email || '-'} ✏️</Text>
+              <Text style={styles.rowValue}>{nickname || user?.email || '-'}  <Text style={styles.rowEdit}>변경</Text></Text>
             </TouchableOpacity>
           )}
         </View>
@@ -280,56 +281,56 @@ function NavRow({ label, onPress, styles, danger, testID }: { label: string; onP
   return (
     <TouchableOpacity testID={testID} style={styles.row} onPress={onPress}>
       <Text style={[styles.rowLabel, danger && { color: colors.status.danger }]}>{label}</Text>
-      <Text style={[styles.rowChevron, danger && { color: colors.status.danger }]}>›</Text>
+      <ChevronRight size={18} color={danger ? colors.status.danger : colors.text.muted} strokeWidth={1.6} />
     </TouchableOpacity>
   );
 }
 
 const makeSectionStyles = (colors: Colors) => StyleSheet.create({
-  section:      { gap: space[2] },
-  sectionTitle: { ...typography.caption, color: colors.text.muted, textTransform: 'uppercase', letterSpacing: 0.5 },
-  sectionBody:  { backgroundColor: colors.bg.surface, borderRadius: 12, overflow: 'hidden' },
+  section:      { gap: 0 },
+  sectionTitle: { ...typography.label, color: colors.text.secondary, paddingBottom: space[2], borderBottomWidth: hairline, borderBottomColor: colors.border.strong },
+  sectionBody:  {},
 });
 
 const makeStyles = (colors: Colors) => StyleSheet.create({
   safeArea:      { flex: 1, backgroundColor: colors.bg.base },
   flex:          { flex: 1 },
   scroll:        { flex: 1 },
-  container:     { padding: space[4], gap: space[5], paddingBottom: 48 },
+  container:     { paddingHorizontal: space[5], paddingTop: space[4], gap: space[8], paddingBottom: space[12] },
 
-  row:           { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: space[4], borderBottomWidth: 0.5, borderBottomColor: colors.border.subtle },
-  rowLabelGroup: { gap: 2 },
+  row:           { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: space[4], borderBottomWidth: hairline, borderBottomColor: colors.border.subtle },
+  rowLabelGroup: { gap: space[1] / 2 },
   rowLabel:      { ...typography.body, color: colors.text.secondary },
   rowSub:        { ...typography.tiny, color: colors.text.muted },
   rowValue:      { ...typography.body, color: colors.text.primary },
-  rowChevron:    { fontSize: 20, color: colors.text.muted },
+  rowEdit:       { ...typography.caption, color: colors.accent.primary },
 
   editRow:       { flexDirection: 'row', alignItems: 'center', gap: space[2], flex: 1, justifyContent: 'flex-end' },
   input:         { ...typography.body, color: colors.text.primary, borderBottomWidth: 1, borderBottomColor: colors.accent.primary, minWidth: 120, paddingVertical: 2 },
-  saveBtn:       { paddingHorizontal: space[3], paddingVertical: space[1], backgroundColor: colors.accent.primary, borderRadius: 6 },
+  saveBtn:       { paddingHorizontal: space[3], paddingVertical: space[1], backgroundColor: colors.text.primary, borderRadius: radius.md },
   saveBtnText:   { ...typography.caption, color: colors.text.inverse },
   cancelBtn:     { paddingHorizontal: space[2], paddingVertical: space[1] },
   cancelBtnText: { ...typography.caption, color: colors.text.muted },
 
-  actionRow:     { padding: space[4] },
-  actionText:    { ...typography.body, color: colors.accent.primary },
+  actionRow:     { paddingVertical: space[4] },
+  actionText:    { ...typography.body, color: colors.text.primary },
 
   dangerDesc:    { ...typography.caption, color: colors.text.muted, padding: space[4], paddingBottom: 0 },
-  dangerBtn:     { margin: space[4], marginTop: space[3], padding: space[4], backgroundColor: colors.status.danger, borderRadius: 10, alignItems: 'center' },
+  dangerBtn:     { margin: space[4], marginTop: space[3], padding: space[4], backgroundColor: colors.status.danger, borderRadius: radius.md, alignItems: 'center' },
   dangerBtnText: { ...typography.body, color: colors.text.inverse, fontFamily: 'Pretendard-SemiBold' },
   deleteBtnOutline: { backgroundColor: 'transparent', borderWidth: 1.5, borderColor: colors.status.danger },
-  divider:       { height: 0.5, backgroundColor: colors.border.subtle, marginHorizontal: space[4] },
+  divider:       { height: hairline, backgroundColor: colors.border.subtle },
 
   reauthBox:     { margin: space[4], marginTop: space[3], gap: space[3] },
   reauthLabel:   { ...typography.caption, color: colors.text.secondary },
-  reauthInput:   { ...typography.body, color: colors.text.primary, backgroundColor: colors.bg.subtle, borderRadius: 8, padding: space[3] },
+  reauthInput:   { ...typography.body, color: colors.text.primary, backgroundColor: colors.bg.subtle, borderRadius: radius.md, padding: space[3] },
   reauthBtnRow:  { flexDirection: 'row', alignItems: 'center', gap: space[3] },
 
-  themeSection:  { padding: space[4], gap: space[4] },
+  themeSection:  { paddingVertical: space[4], gap: space[4] },
   themeLabel:    { ...typography.caption, color: colors.text.secondary },
   accentRow:     { flexDirection: 'row', gap: space[3], flexWrap: 'wrap' },
-  accentCircle:  { width: 32, height: 32, borderRadius: 16 },
-  accentCircleActive: { borderWidth: 3, borderColor: colors.text.primary, transform: [{ scale: 1.15 }] },
+  accentCircle:  { width: space[8], height: space[8], borderRadius: radius.pill },
+  accentCircleActive: { borderWidth: 2, borderColor: colors.text.primary },
   darkRow:       { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   darkLabel:     { ...typography.body, color: colors.text.primary },
 });

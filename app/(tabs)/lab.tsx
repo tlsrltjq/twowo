@@ -1,14 +1,14 @@
 import { Href, router } from 'expo-router';
-import { FlaskConical } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { getRegistry, setFeatureEnabled, useFeatureSettings } from '../../core/features';
 import { useAuthStore } from '../../core/stores/auth.store';
+import { EmptyState } from '../../design-system/EmptyState';
 import { useColors } from '../../design-system/ThemeContext';
 import { Colors } from '../../design-system/themes';
-import { radius, space, typography } from '../../design-system/tokens';
+import { hairline, space, typography } from '../../design-system/tokens';
 
 const FEATURE_ROUTES: Record<string, string> = {
   'couple-bingo':    '/(features)/bingo',
@@ -37,7 +37,7 @@ export default function LabScreen() {
     try {
       await setFeatureEnabled(coupleId, featureId, value);
     } catch {
-      Alert.alert('오류', '기능 설정을 저장하지 못했어요. 다시 시도해주세요');
+      Alert.alert('저장하지 못했어요', '잠시 후 다시 시도해 주세요.');
     } finally {
       setToggling(null);
     }
@@ -47,15 +47,12 @@ export default function LabScreen() {
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.header}>
         <Text style={styles.title}>실험실</Text>
-        <Text style={styles.subtitle}>커플만의 기능을 골라서 켜보세요 — 한쪽이 켜면 양쪽에 반영돼요</Text>
+        <Text style={styles.subtitle}>한 사람이 켜면 둘 다에게 보여요</Text>
       </View>
 
       <ScrollView testID="scroll-lab" contentContainerStyle={styles.body}>
         {experimentalFeatures.length === 0 ? (
-          <View style={styles.empty}>
-            <FlaskConical size={40} color={colors.text.muted} strokeWidth={1.5} />
-            <Text style={styles.emptyText}>준비 중인 기능이 없어요</Text>
-          </View>
+          <EmptyState title="지금은 켤 수 있는 기능이 없어요" />
         ) : (
           experimentalFeatures.map(feature => {
             const enabled  = settings[feature.id] ?? false;
@@ -63,7 +60,7 @@ export default function LabScreen() {
             const isBusy   = toggling === feature.id;
 
             return (
-              <View key={feature.id} style={[styles.card, enabled && styles.cardOn]}>
+              <View key={feature.id} style={styles.card}>
                 <View style={styles.cardTop}>
                   <TouchableOpacity
                     style={styles.cardInfo}
@@ -73,7 +70,7 @@ export default function LabScreen() {
                   >
                     <View style={styles.nameRow}>
                       <Text style={styles.featureName}>{feature.name}</Text>
-                      {enabled && route && <Text style={styles.chevron}>›</Text>}
+                      {enabled && route && <Text style={styles.openLink}>열기</Text>}
                     </View>
                     <Text style={styles.featureDesc}>{feature.description}</Text>
                   </TouchableOpacity>
@@ -98,31 +95,22 @@ export default function LabScreen() {
 
 const makeStyles = (colors: Colors) => StyleSheet.create({
   safeArea:    { flex: 1, backgroundColor: colors.bg.base },
-  header:      { paddingHorizontal: space[5], paddingTop: space[4], paddingBottom: space[3], gap: space[1] },
+  header:      { paddingHorizontal: space[5], paddingTop: space[4], paddingBottom: space[4], gap: space[1], borderBottomWidth: hairline, borderBottomColor: colors.border.strong },
   title:       { ...typography.title1, color: colors.text.primary },
   subtitle:    { ...typography.caption, color: colors.text.secondary },
 
-  body:        { padding: space[4], gap: space[2] },
-
-  empty:       { flex: 1, alignItems: 'center', justifyContent: 'center', gap: space[3], paddingTop: space[10] },
-  emptyText:   { ...typography.body, color: colors.text.muted },
+  body:        { paddingHorizontal: space[5], paddingBottom: space[10] },
 
   card:        {
-    backgroundColor: colors.bg.surface,
-    borderRadius: radius.md,
-    paddingVertical: space[3],
-    paddingHorizontal: space[4],
-    gap: space[2],
-    borderWidth: 1,
-    borderColor: colors.border.subtle,
+    paddingVertical: space[4],
+    borderBottomWidth: hairline,
+    borderBottomColor: colors.border.subtle,
   },
-  cardOn:      { borderColor: colors.accent.primary + '66' },
 
-  cardTop:     { flexDirection: 'row', alignItems: 'center', gap: space[3] },
-  cardInfo:    { flex: 1, gap: 2 },
-  nameRow:     { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  cardTop:     { flexDirection: 'row', alignItems: 'center', gap: space[4] },
+  cardInfo:    { flex: 1, gap: space[1] },
+  nameRow:     { flexDirection: 'row', alignItems: 'baseline', gap: space[2] },
   featureName: { ...typography.body, color: colors.text.primary },
-  chevron:     { fontSize: 16, color: colors.accent.primary, lineHeight: 20 },
-  featureDesc: { ...typography.tiny, color: colors.text.secondary },
-
+  openLink:    { ...typography.caption, color: colors.accent.primary },
+  featureDesc: { ...typography.caption, color: colors.text.secondary },
 });

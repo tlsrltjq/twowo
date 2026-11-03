@@ -15,7 +15,7 @@ env:
 - tapOn: "실험실"
 - waitForAnimationToEnd
 - assertVisible: "실험실"
-- assertVisible: "커플만의 기능을 골라서 켜보세요"
+- assertVisible: "한 사람이 켜면 둘 다에게 보여요"
 - takeScreenshot: e2e/screenshots/08-lab-tab
 
 # 자기 전 한 마디 토글 ON
@@ -47,7 +47,7 @@ env:
 
 - takeScreenshot: e2e/screenshots/08-lab-all-enabled
 
-# 자기 전 한 마디 "화면 열기" 탭으로 이동 확인
+# 자기 전 한 마디 "열기" 탭으로 이동 확인
 - scrollToTop
-- assertVisible: "화면 열기"
+- assertVisible: "열기"
 - takeScreenshot: e2e/screenshots/08-lab-open-btn-visible
