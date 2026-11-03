@@ -4,6 +4,11 @@ import { useEffect, useState } from 'react';
 import { db } from '../config/firebase';
 import { Couple } from './types';
 
+/** 상대 displayName 이 없거나 비어 있으면 '상대방'. 빈 문자열이 그대로 쓰이면 "의 메시지"처럼 이름이 빠져 보인다. */
+export function resolvePartnerName(raw: unknown): string {
+  return typeof raw === 'string' && raw.trim() ? raw.trim() : '상대방';
+}
+
 export function usePartnerProfile(
   coupleId: string | null,
   myUid: string | null,
@@ -39,8 +44,7 @@ export function usePartnerProfile(
     if (!partnerUid) return;
     getDoc(doc(db, 'users', partnerUid))
       .then(snap => {
-        const name = snap.data()?.displayName as string | undefined;
-        setPartnerName(name ?? '상대방');
+        setPartnerName(resolvePartnerName(snap.data()?.displayName));
       })
       .catch(err => setError(err));
   }, [partnerUid]);
