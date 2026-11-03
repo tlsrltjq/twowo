@@ -208,9 +208,9 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
 
   skeletonContainer: { padding: space[4], gap: space[3] },
   skeletonRow:  { height: 72, borderRadius: radius.lg },
-  listContent:  { padding: space[4], gap: space[3] },
+  listContent:  { paddingHorizontal: space[5], paddingBottom: space[12] * 2 },
 
-  card:         { backgroundColor: colors.bg.surface, borderRadius: radius.md, padding: space[4], gap: space[2], borderWidth: hairline * 2, borderColor: colors.border.subtle },
+  card:         { paddingVertical: space[4], gap: space[2], borderBottomWidth: hairline, borderBottomColor: colors.border.subtle },
   cardText:     { ...typography.body, color: colors.text.primary, lineHeight: 22 },
   cardMeta:     { ...typography.tiny, color: colors.text.muted },
 

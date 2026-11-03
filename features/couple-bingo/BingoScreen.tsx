@@ -354,7 +354,7 @@ function BingoModeToggle({
     <View style={styles.modeToggleRow}>
       <TouchableOpacity
         testID="btn-mode-couple"
-        style={[styles.modeBtn, value === 'couple' && { backgroundColor: colors.accent.primary }]}
+        style={[styles.modeBtn, value === 'couple' && { backgroundColor: colors.text.primary }]}
         onPress={() => onChange('couple')}
       >
         <Text style={[styles.modeBtnText, value === 'couple' && { color: colors.text.inverse }]}>
@@ -363,7 +363,7 @@ function BingoModeToggle({
       </TouchableOpacity>
       <TouchableOpacity
         testID="btn-mode-personal"
-        style={[styles.modeBtn, value === 'personal' && { backgroundColor: colors.accent.warm }]}
+        style={[styles.modeBtn, styles.modeBtnDivider, value === 'personal' && { backgroundColor: colors.text.primary }]}
         onPress={() => onChange('personal')}
       >
         <Text style={[styles.modeBtnText, value === 'personal' && { color: colors.text.inverse }]}>
@@ -1001,12 +1001,13 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   iconBtn:           { padding: space[2] },
 
   // mode toggle
-  modeToggleRow:     { flexDirection: 'row', gap: space[2], paddingHorizontal: space[4], paddingVertical: space[3], borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
-  modeBtn:           { flex: 1, paddingVertical: space[3], alignItems: 'center', borderRadius: radius.lg, backgroundColor: colors.bg.subtle },
+  modeToggleRow:     { flexDirection: 'row', marginHorizontal: space[5], marginVertical: space[3], borderWidth: hairline * 2, borderColor: colors.border.strong, borderRadius: radius.md, overflow: 'hidden' },
+  modeBtn:           { flex: 1, paddingVertical: space[2], alignItems: 'center', backgroundColor: colors.bg.surface },
+  modeBtnDivider:    { borderLeftWidth: hairline * 2, borderLeftColor: colors.border.strong },
   modeBtnText:       { ...typography.caption, color: colors.text.secondary, fontFamily: 'Pretendard-SemiBold' },
 
   // scorebar
-  scorebar:          { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: space[3], gap: space[6], backgroundColor: colors.bg.surface },
+  scorebar:          { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: space[3], gap: space[6] },
   scoreItem:         { alignItems: 'center', gap: 2 },
   scoreNum:          { ...typography.title2, fontFamily: 'Pretendard-SemiBold' },
   scoreLabel:        { ...typography.tiny, color: colors.text.muted },

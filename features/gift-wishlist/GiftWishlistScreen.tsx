@@ -285,14 +285,14 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   tabText:     { ...typography.caption, color: colors.text.secondary },
   tabTextActive: { ...typography.caption, color: colors.text.primary, fontFamily: 'Pretendard-SemiBold' },
 
-  hintBar:      { paddingHorizontal: space[4], paddingVertical: space[2] },
+  hintBar:      { paddingHorizontal: space[5], paddingVertical: space[2] },
   hintText:     { ...typography.tiny, color: colors.text.muted },
 
   skeletonContainer: { padding: space[4], gap: space[3] },
   skeletonRow:  { height: 72, borderRadius: radius.lg },
-  listContent:  { padding: space[4], gap: space[3], paddingBottom: space[10] },
+  listContent:  { paddingHorizontal: space[5], paddingBottom: space[12] * 2 },
 
-  card:         { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.bg.surface, borderRadius: radius.md, padding: space[4], gap: space[3], borderWidth: hairline * 2, borderColor: colors.border.subtle },
+  card:         { flexDirection: 'row', alignItems: 'center', paddingVertical: space[4], gap: space[3], borderBottomWidth: hairline, borderBottomColor: colors.border.subtle },
   cardReceived: { opacity: 0.6, backgroundColor: colors.bg.subtle },
   cardBody:     { flex: 1, gap: 2 },
   cardName:     { ...typography.bodyBold, color: colors.text.primary },

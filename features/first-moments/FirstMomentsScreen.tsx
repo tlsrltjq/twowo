@@ -236,7 +236,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   backBtn:     { padding: space[1] },
   headerTitle: { ...typography.title2, color: colors.text.primary },
 
-  hintBar:     { paddingHorizontal: space[4], paddingVertical: space[2] },
+  hintBar:     { paddingHorizontal: space[5], paddingVertical: space[2] },
   hintText:    { ...typography.tiny, color: colors.text.muted },
 
   banner:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space[2], paddingVertical: space[3], borderBottomWidth: hairline, borderBottomColor: colors.border.strong },
@@ -245,12 +245,12 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   skeletonContainer: { padding: space[4], gap: space[3] },
   skeletonRow:  { height: 72, borderRadius: radius.lg },
 
-  listContent:  { padding: space[4], gap: space[3], paddingBottom: space[10] },
+  listContent:  { paddingHorizontal: space[5], paddingBottom: space[12] * 2 },
 
-  card:         { flexDirection: 'row', backgroundColor: colors.bg.surface, borderRadius: radius.md, padding: space[4], gap: space[3], borderWidth: hairline * 2, borderColor: colors.border.subtle },
-  cardBody:     { flex: 1, gap: 2 },
-  cardTitle:    { ...typography.bodyBold, color: colors.text.primary },
-  cardDate:     { ...typography.caption, color: colors.accent.primary },
+  card:         { flexDirection: 'row', paddingVertical: space[4], gap: space[3], borderBottomWidth: hairline, borderBottomColor: colors.border.subtle },
+  cardBody:     { flex: 1, gap: space[1] },
+  cardTitle:    { ...typography.body, color: colors.text.primary },
+  cardDate:     { ...typography.caption, color: colors.text.muted },
   cardMemo:     { ...typography.caption, color: colors.text.secondary, marginTop: 2 },
 
   fab:          { position: 'absolute', right: space[5], bottom: space[6], width: 56, height: 56, borderRadius: radius.pill, backgroundColor: colors.text.primary, alignItems: 'center', justifyContent: 'center', shadowColor: black, shadowOpacity: 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 6 },

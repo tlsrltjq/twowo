@@ -580,17 +580,17 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   headerRight:           { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: space[1], minWidth: 36 },
   iconBtn:               { padding: space[2] },
 
-  waitingBanner:         { backgroundColor: colors.accent.primary + '20', paddingHorizontal: space[4], paddingVertical: space[3] },
-  waitingText:           { ...typography.caption, color: colors.accent.primary },
+  waitingBanner:         { paddingHorizontal: space[5], paddingVertical: space[3], borderBottomWidth: hairline, borderBottomColor: colors.border.subtle },
+  waitingText:           { ...typography.caption, color: colors.text.secondary },
 
-  listContent:           { padding: space[4], gap: space[2], paddingBottom: space[8] },
+  listContent:           { paddingHorizontal: space[5], paddingBottom: space[8] },
 
-  candidateRow:          { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.bg.surface, borderRadius: radius.md, paddingHorizontal: space[4], paddingVertical: space[4], borderWidth: 1.5, borderColor: 'transparent', gap: space[2] },
-  candidateRowSelected:  { borderColor: colors.accent.primary, backgroundColor: colors.accent.primary + '10' },
-  candidateTitle:        { ...typography.bodyBold, color: colors.text.primary, flex: 1 },
-  candidateTitleSelected:{ color: colors.accent.primary },
-  selectedBadge:         { backgroundColor: colors.accent.primary, borderRadius: radius.md, paddingHorizontal: space[3], paddingVertical: space[1] },
-  selectedBadgeText:     { ...typography.tiny, color: colors.text.inverse },
+  candidateRow:          { flexDirection: 'row', alignItems: 'center', paddingVertical: space[4], borderBottomWidth: hairline, borderBottomColor: colors.border.subtle },
+  candidateRowSelected:  {},
+  candidateTitle:        { ...typography.body, color: colors.text.primary, flex: 1 },
+  candidateTitleSelected:{ color: colors.accent.primary, fontFamily: typography.bodyBold.fontFamily },
+  selectedBadge:         {},
+  selectedBadgeText:     { ...typography.caption, color: colors.accent.primary },
   deleteBtn:             { padding: space[2] },
 
   empty:                 { paddingVertical: space[10], alignItems: 'center', gap: space[2] },

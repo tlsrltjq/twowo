@@ -235,7 +235,7 @@ export default function GratitudeScreen() {
                   style={styles.textInput}
                   value={message}
                   onChangeText={t => { if (t.length <= MAX_LEN) setMessage(t); }}
-                  placeholder="오늘 뭔가 고마웠나요? (1~100자)"
+                  placeholder="한 줄로 적기"
                   placeholderTextColor={colors.text.muted}
                   multiline
                   maxLength={MAX_LEN}
@@ -257,7 +257,9 @@ export default function GratitudeScreen() {
 
           {/* 상대방 고마움 카드 */}
           <View style={styles.card}>
-            <Text style={styles.cardLabel}>{partnerName}의 고마움</Text>
+            <View style={styles.cardHeader}>
+              <Text style={styles.cardLabel}>{partnerName}의 고마움</Text>
+            </View>
             {partnerEntry ? (
               <GratitudeDisplay entry={partnerEntry} testID="partner-gratitude" styles={styles} />
             ) : (
@@ -334,19 +336,19 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   headerTitle:     { ...typography.title2, color: colors.text.primary, flex: 1, textAlign: 'center' },
   iconBtn:         { padding: space[2], width: 36, alignItems: 'flex-end' },
 
-  body:            { padding: space[5], gap: space[4], paddingBottom: space[12] },
-  card:            { backgroundColor: colors.bg.surface, borderRadius: radius.md, padding: space[5], gap: space[3], borderWidth: hairline * 2, borderColor: colors.border.subtle },
-  cardHeader:      { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  cardLabel:       { ...typography.bodyBold, color: colors.text.primary },
+  body:            { paddingHorizontal: space[5], paddingTop: space[5], gap: space[8], paddingBottom: space[12] },
+  card:            { gap: space[3] },
+  cardHeader:      { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: space[2], borderBottomWidth: hairline, borderBottomColor: colors.border.strong },
+  cardLabel:       { ...typography.label, color: colors.text.secondary },
   editLink:        { ...typography.caption, color: colors.accent.primary },
   fieldLabel:      { ...typography.caption, color: colors.text.secondary },
   charCount:       { ...typography.tiny, color: colors.text.muted },
-  textInput:       { backgroundColor: colors.bg.subtle, borderRadius: radius.md, padding: space[3], ...typography.body, color: colors.text.primary, minHeight: 88 },
+  textInput:       { backgroundColor: colors.bg.surface, borderWidth: hairline * 2, borderColor: colors.border.strong, borderRadius: radius.md, padding: space[3], ...typography.body, color: colors.text.primary, minHeight: 88 },
   saveBtn:         { marginTop: space[2] },
   displayBox:      { paddingVertical: space[2] },
   displayMessage:  { ...typography.body, color: colors.text.primary, lineHeight: 24, fontStyle: 'italic' },
-  partnerEmpty:    { paddingVertical: space[5], alignItems: 'center' },
-  partnerEmptyText:{ ...typography.body, color: colors.text.muted },
+  partnerEmpty:    { paddingVertical: space[2] },
+  partnerEmptyText:{ ...typography.caption, color: colors.text.muted },
 
   emptyText:       { ...typography.bodyBold, color: colors.text.muted },
 

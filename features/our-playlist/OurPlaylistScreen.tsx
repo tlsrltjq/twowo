@@ -281,9 +281,9 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   container:     { flex: 1 },
   body:          { padding: space[5], paddingBottom: space[12] },
   skeletonWrap:  { gap: space[3], marginTop: space[4] },
-  separator:     { height: space[3] },
+  separator:     { height: 0 },
 
-  card:          { backgroundColor: colors.bg.surface, borderRadius: radius.md, padding: space[4], gap: space[2], borderWidth: hairline * 2, borderColor: colors.border.subtle },
+  card:          { paddingVertical: space[4], gap: space[2], borderBottomWidth: hairline, borderBottomColor: colors.border.subtle },
   cardTop:       { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   cardInfo:      { flex: 1, gap: space[1] },
   cardMeta:      { alignItems: 'flex-end', gap: space[1] },

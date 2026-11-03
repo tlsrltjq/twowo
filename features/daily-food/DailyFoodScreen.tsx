@@ -420,16 +420,16 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   headerTitle:{ ...typography.title2, color: colors.text.primary, flex: 1, textAlign: 'center' },
   iconBtn:    { padding: space[2], width: 36, alignItems: 'flex-end' },
 
-  dateLabel:  { ...typography.caption, color: colors.text.muted, textAlign: 'center', paddingVertical: space[2], backgroundColor: colors.bg.surface, borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
+  dateLabel:  { ...typography.caption, color: colors.text.muted, textAlign: 'center', paddingVertical: space[2], borderBottomWidth: hairline, borderBottomColor: colors.border.subtle },
 
   body:       { padding: space[4], gap: space[3], paddingBottom: space[10] },
   sectionLabel: { ...typography.caption, color: colors.text.muted, fontFamily: 'Pretendard-SemiBold', letterSpacing: 0.5 },
 
   slotGrid:   { flexDirection: 'row', flexWrap: 'wrap', gap: space[3] },
-  slot:       { width: SLOT_SIZE, borderRadius: radius.xl, backgroundColor: colors.bg.surface, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  slotEmpty:  { borderWidth: 1.5, borderColor: colors.border.subtle, borderStyle: 'dashed', gap: 4 },
+  slot:       { width: SLOT_SIZE, borderRadius: radius.md, backgroundColor: colors.bg.surface, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  slotEmpty:  { borderWidth: hairline * 2, borderColor: colors.border.subtle, gap: space[1] },
   slotImage:  { width: '100%', height: '100%' },
-  slotLabel:  { ...typography.bodyBold, color: colors.text.secondary },
+  slotLabel:  { ...typography.caption, color: colors.text.secondary },
   slotHint:   { ...typography.tiny, color: colors.text.muted, textAlign: 'center' },
   slotOverlay:      { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(0,0,0,0.35)', paddingVertical: 4, alignItems: 'center' },
   slotOverlayText:  { ...typography.tiny, color: colors.text.inverse, fontFamily: 'Pretendard-SemiBold' },
@@ -439,7 +439,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   extraThumb:      { width: 72, height: 72, borderRadius: radius.md, backgroundColor: colors.bg.surface, borderWidth: 1, borderColor: colors.border.subtle, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
   extraThumbImage: { width: '100%', height: '100%' },
 
-  addBtn:     { marginTop: space[2], paddingVertical: space[3], alignItems: 'center', borderRadius: radius.lg, borderWidth: 1.5, borderColor: colors.border.subtle, borderStyle: 'dashed' },
+  addBtn:     { marginTop: space[2], paddingVertical: space[3], alignItems: 'center', borderRadius: radius.md, borderWidth: hairline * 2, borderColor: colors.border.strong },
   addBtnText: { ...typography.body, color: colors.accent.primary },
 
   emptyText:  { ...typography.bodyBold, color: colors.text.muted },
