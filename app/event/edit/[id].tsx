@@ -90,7 +90,7 @@ export default function EditEventScreen() {
         placeName: values.placeName || undefined,
         memo:      values.memo || undefined,
       });
-      setToast({ message: '저장됐어요 ✅', type: 'success', visible: true });
+      setToast({ message: '저장했어요', type: 'success', visible: true });
       setTimeout(() => router.back(), 900);
     } catch {
       setToast({ message: '저장에 실패했어요. 다시 시도해주세요', type: 'error', visible: true });
@@ -226,7 +226,7 @@ export default function EditEventScreen() {
 
         {selectedType === 'exercise' && (
           <View style={styles.infoBox}>
-            <Text style={styles.infoText}>💪 운동 세부 정보는 상세 화면에서 추가할 수 있어요</Text>
+            <Text style={styles.infoText}>운동 세부 정보는 상세 화면에서 적을 수 있어요</Text>
           </View>
         )}
 

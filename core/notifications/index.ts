@@ -52,7 +52,7 @@ export async function scheduleMoodReminderIfNeeded(hasMoodToday: boolean): Promi
   await Notifications.scheduleNotificationAsync({
     identifier: MOOD_REMINDER_ID,
     content: {
-      title: '오늘 컨디션을 알려주세요 💌',
+      title: '오늘 컨디션을 아직 안 적었어요',
       body: '상대방이 기다리고 있어요',
     },
     trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: trigger },

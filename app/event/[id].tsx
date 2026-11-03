@@ -1,6 +1,7 @@
 import * as ImagePicker from 'expo-image-picker';
 import { router, useLocalSearchParams } from 'expo-router';
 import { doc } from 'firebase/firestore';
+import { Image as ImageIcon, X } from 'lucide-react-native';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import {
   Alert,
@@ -104,7 +105,7 @@ export default function EventDetailScreen() {
         width:             asset.width,
         height:            asset.height,
       });
-      show('사진이 추가됐어요 📷', 'success');
+      show('사진을 올렸어요', 'success');
     } catch {
       show('사진 업로드에 실패했어요', 'error');
     }
@@ -197,7 +198,7 @@ export default function EventDetailScreen() {
                   <Image source={{ uri: item.thumbUrl }} style={styles.photoThumb} resizeMode="cover" />
                 ) : (
                   <View style={styles.photoPlaceholder}>
-                    <Text>🖼️</Text>
+                    <ImageIcon size={18} color={colors.text.muted} strokeWidth={1.6} />
                   </View>
                 )}
               </Pressable>
@@ -221,7 +222,7 @@ export default function EventDetailScreen() {
       >
         <View style={styles.viewer}>
           <Pressable style={styles.viewerClose} onPress={() => setViewerIndex(null)}>
-            <Text style={styles.viewerCloseText}>✕</Text>
+            <X size={24} color={colors.text.inverse} strokeWidth={1.8} />
           </Pressable>
           <FlatList
             ref={viewerRef}
@@ -242,7 +243,7 @@ export default function EventDetailScreen() {
                   />
                 ) : (
                   <View style={styles.viewerPlaceholder}>
-                    <Text style={styles.viewerPlaceholderText}>🖼️</Text>
+                    <ImageIcon size={32} color={colors.text.inverse} strokeWidth={1.4} />
                   </View>
                 )}
               </View>
@@ -285,10 +286,8 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   photoPlaceholder: { flex: 1, backgroundColor: colors.bg.subtle, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center' },
   viewer:               { flex: 1, backgroundColor: black },
   viewerClose:          { position: 'absolute', top: 56, right: space[5], zIndex: 10, padding: space[2] },
-  viewerCloseText:      { fontSize: 24, color: colors.text.inverse },
   viewerPage:           { width: SCREEN_W, height: SCREEN_H, alignItems: 'center', justifyContent: 'center' },
   viewerImage:          { width: SCREEN_W, height: SCREEN_H },
   viewerPlaceholder:    { alignItems: 'center', justifyContent: 'center' },
-  viewerPlaceholderText: { fontSize: 64 },
   viewerCounter:        { position: 'absolute', bottom: 48, width: '100%', textAlign: 'center', color: colors.text.inverse, ...typography.caption },
 });
