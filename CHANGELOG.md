@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-11-04 | 32차 정리 | docs(tasks): current.md 에 이번 세션 완료 항목과 우선순위별 나중에 할 일(테스트 계정 정리·실사용 계정·무료 실기기 설치·푸시/TestFlight 결정 등)을 정리하고, runbook 8절에 무료 Apple ID 실기기 설치 절차(미실행) 추가.
 ## 2026-11-04 | E2E 계정 정보 제거 | chore(e2e): 공개 저장소의 Maestro 플로우 4개(e2e_full_a/b, screenshot_full_a/b)에 평문으로 있던 테스트 계정 이메일·비밀번호를 환경 변수(MAESTRO_TWOWO_EMAIL_A 등)로 교체하고 .env.example 에 키 안내 추가. 과거 커밋에는 값이 남아 있으므로 테스트 계정 비밀번호 교체 또는 삭제가 필요(미실시).
 ## 2026-11-04 | iOS 개발 빌드 복구 (Xcode 27.2) | fix(ios): expo run:ios 가 Xcode 27.2(Swift 6.4)에서 실패하던 문제. ① expo-modules-jsi 56.0.8 의 C 함수 포인터 컴파일 오류(JavaScriptRuntime.swift:219) → SDK 56 패치 일괄 갱신(expo 56.0.24, expo-modules-jsi 56.0.14, react-native-screens 4.26 등 expo install --fix, RN 0.85.3 유지·새 패키지 없음). ② Xcode 27 의 최소 배포 대상 15.0 미만 Pod(Sentry·lottie·RNSVG·ReachabilitySwift) 오류 → 로컬 config plugin plugins/withPodsMinDeploymentTarget.js 로 Pod 배포 대상을 앱 값(16.4)까지 올림. pod install 은 LANG=en_US.UTF-8 필요. tsc·eslint·단위 143 suites·통합 32/32 통과, iPhone 16 시뮬레이터에서 개발 빌드 로그인 화면까지 확인.
 ## 2026-11-04 | 사진 화면 시뮬레이터 확인 | fix(photos): 일정 사진 뷰어의 닫기 아이콘·쪽수 글씨가 다크 모드에서 검정 배경과 같은 색(text.inverse #111111)이라 안 보이던 문제 → white 토큰. 사진 격자 3열이 flex:1 이라 1~2장일 때 칸이 늘어나던 문제 → 1/3 폭 고정. 채팅 이미지 말풍선의 padding: 0 이 bubble 의 paddingHorizontal/Vertical 에 밀려 사진 둘레에 테두리가 생기던 문제 수정. 회귀 테스트 3건. 시뮬레이터에서 일정 사진 업로드·원본 보기·일정 삭제, 채팅 이미지 전송·표시 확인.

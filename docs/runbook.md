@@ -166,3 +166,28 @@ eas secret:create --scope project --name SENTRY_AUTH_TOKEN --value "your-token"
 - [ ] Firestore Security Rules 마지막 배포 날짜 확인
 - [ ] invitations 컬렉션 문서 수 확인 (TTL 정상 동작 여부)
 - [ ] `firestore.indexes.json`과 실제 콘솔 인덱스 일치 여부
+
+---
+
+## 8. 무료 Apple ID로 실기기 설치 (Apple Developer 가입 전)
+
+> 2026-11-04 작성. **아직 실제로 실행해 보지 않은 절차**다. 처음 설치할 때 확인하며 이 절을 고친다.
+
+**제약**: 설치 후 7일이 지나면 앱이 열리지 않아 다시 설치해야 한다(데이터는 Firebase 에 남음). 무료 팀은 푸시 권한(aps-environment)을 쓸 수 없다. 기기마다 Mac 에 직접 연결해야 한다.
+
+**사용자가 직접 할 일 (최초 1회)**
+1. iPhone 을 케이블로 Mac 에 연결 → 잠금 해제 → "이 컴퓨터를 신뢰" + 기기 암호
+2. Xcode → 설정(Settings) → 계정(Accounts) → `+` → Apple 계정 로그인 (유료 개발자 계정 불필요)
+3. 첫 설치 시도 후 iPhone 설정 → 개인정보 보호 및 보안 → **개발자 모드** 켜기(재시동)
+4. 설치 후 iPhone 설정 → 일반 → VPN 및 기기 관리 → 개발자 앱 **신뢰**
+
+**빌드·설치 (Mac 없이 동작하도록 Release 구성)**
+```bash
+# 연결된 기기 확인
+xcrun devicectl list devices
+# 무료 팀으로 서명해 Release 빌드 설치 (기기 선택·서명 팀은 Xcode 계정 기준)
+npx expo run:ios --device --configuration Release
+```
+- 서명 오류가 푸시 권한 때문이면 무료 설치용으로만 `ios/app/app.entitlements` 의 `aps-environment` 를 빼고 빌드한다(`ios/` 는 git 무시 대상, prebuild 시 다시 생성됨).
+- Sentry 소스맵 업로드 단계가 실패하면 `SENTRY_DISABLE_AUTO_UPLOAD=true` 로 빌드한다.
+- 7일마다: 기기를 연결하고 위 설치 명령을 다시 실행한다.
