@@ -57,7 +57,8 @@
           "image": "./assets/splash-icon.png",
           "resizeMode": "contain"
         }
-      ]
+      ],
+      "./plugins/withPodsMinDeploymentTarget"
     ],
     "experiments": {
       "typedRoutes": true

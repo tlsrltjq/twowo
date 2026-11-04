@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-11-04 | iOS 개발 빌드 복구 (Xcode 27.2) | fix(ios): expo run:ios 가 Xcode 27.2(Swift 6.4)에서 실패하던 문제. ① expo-modules-jsi 56.0.8 의 C 함수 포인터 컴파일 오류(JavaScriptRuntime.swift:219) → SDK 56 패치 일괄 갱신(expo 56.0.24, expo-modules-jsi 56.0.14, react-native-screens 4.26 등 expo install --fix, RN 0.85.3 유지·새 패키지 없음). ② Xcode 27 의 최소 배포 대상 15.0 미만 Pod(Sentry·lottie·RNSVG·ReachabilitySwift) 오류 → 로컬 config plugin plugins/withPodsMinDeploymentTarget.js 로 Pod 배포 대상을 앱 값(16.4)까지 올림. pod install 은 LANG=en_US.UTF-8 필요. tsc·eslint·단위 143 suites·통합 32/32 통과, iPhone 16 시뮬레이터에서 개발 빌드 로그인 화면까지 확인.
 ## 2026-11-04 | 사진 화면 시뮬레이터 확인 | fix(photos): 일정 사진 뷰어의 닫기 아이콘·쪽수 글씨가 다크 모드에서 검정 배경과 같은 색(text.inverse #111111)이라 안 보이던 문제 → white 토큰. 사진 격자 3열이 flex:1 이라 1~2장일 때 칸이 늘어나던 문제 → 1/3 폭 고정. 채팅 이미지 말풍선의 padding: 0 이 bubble 의 paddingHorizontal/Vertical 에 밀려 사진 둘레에 테두리가 생기던 문제 수정. 회귀 테스트 3건. 시뮬레이터에서 일정 사진 업로드·원본 보기·일정 삭제, 채팅 이미지 전송·표시 확인.
 ## 2026-11-04 | 색 개편 전 화면 확인 | fix(chat): 내 말풍선을 포인트 색 대신 먹색(text.primary, 다크에서는 밝은 회색)으로, 입력 안내 문구를 '메시지'로. 일정 추가·수정 폼의 취소 글씨를 회색, 저장 글씨를 accent.ink 로, 안내 문구 간결화. 라이트 전 탭·실험실 9개 화면, 다크 홈·설정·컨디션·캘린더·채팅 시뮬레이터 확인.
 ## 2026-11-04 | 색 개편 보정 | fix(design-system): 포인트 색을 글씨로 쓰는 45곳을 accent.ink(라이트 #C4421C)로 바꿔 흰 바탕 작은 글씨 대비 확보, 스위치 손잡이를 테마와 무관하게 흰색(white 토큰)으로. 라이트·다크 홈·컨디션·캘린더·설정 시뮬레이터 확인.
