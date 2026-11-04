@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-11-03 | couples 문서 읽기 규칙 강화 | fix(firestore-rules): couples get 을 로그인 사용자 전체 → 멤버 또는 합류 대기(멤버 1명) 커플로 제한. 비멤버의 2인 커플 문서 읽기 차단, 초대 join 트랜잭션 유지. security-rules.test.ts 에 멤버·합류대기 읽기 테스트 추가, 헤더 설명 정정. 통합 27/27 통과. 실제 배포 미실시.
 ## 2026-11-03 | 단위 테스트 복구 | test(auth): signOut.test.ts 가 firebase/firestore 실제 ESM 을 불러오다 실패하던 문제 → 공용 mock 적용. 단위 테스트 139/139 통과.
 ## 2026-11-03 | ADR-030 Storage 멤버십 규칙 | fix(storage-rules): isMyCouple 을 isSignedIn 임시값에서 firestore.get() 멤버십 확인으로 교체(타 커플 사진 읽기·쓰기 차단). 에뮬레이터 통합 테스트 storage-rules.test.ts 6건 추가. runbook 에 첫 cross-service 배포·IAM 절차, ADR-030 갱신. 실제 배포 미실시.
 ## 2026-11-03 | E2E 오늘의 밥 흐름 갱신 | test(e2e): e2e/10 오늘의 밥 단계를 옛 텍스트 입력 방식에서 끼니별 사진 칸 방식으로 재작성(내 점심 칸 → 사진 선택 → 취소), 사진 칸 testID(slot-mine|partner-<끼니>) 추가.

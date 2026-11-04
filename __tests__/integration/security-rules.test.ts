@@ -1,13 +1,9 @@
 /**
  * 통합 테스트: Firestore Security Rules 검증
- * 실행: firebase --config firebase.test.json emulators:exec ... "npm run test:integration"
+ * 실행: npm run test:integration:local
  *
- * 주의: 이 파일은 firestore.rules (프로덕션 규칙) 를 로드한 에뮬레이터에서만 의미 있음.
- *       firebase.test.json 은 firestore.rules.test (allow all) 를 사용하므로,
- *       CI 기본 실행에서는 이 테스트가 skip 됨.
- *       프로덕션 규칙 검증은 별도로:
- *         firebase emulators:exec --only firestore --project demo-coupleapp "npm run test:integration"
- *       로 실행 (firebase.json 기본값 = firestore.rules 로드).
+ * initializeTestEnvironment 에 firestore.rules(프로덕션 규칙)를 직접 넣어 평가한다.
+ * firebase.test.json 의 allow-all 규칙과 관계없이 항상 실제 규칙으로 검증된다.
  */
 
 import {
@@ -77,6 +73,26 @@ if (process.env.FIRESTORE_EMULATOR_HOST) {
       // uid-c는 멤버가 아님 → PERMISSION_DENIED 예상
       const outsiderDb = testEnv.authenticatedContext('uid-c').firestore();
       await assertFails(getDoc(doc(outsiderDb, 'couples', 'couple-1')));
+    });
+
+    it('멤버는 자기 커플 문서를 get 할 수 있다', async () => {
+      await testEnv.withSecurityRulesDisabled(async (ctx) => {
+        await setDoc(doc(ctx.firestore(), 'couples', 'couple-1'), {
+          id: 'couple-1', memberIds: ['uid-a', 'uid-b'], status: 'active', createdAt: new Date(),
+        });
+      });
+      const memberDb = testEnv.authenticatedContext('uid-b').firestore();
+      await assertSucceeds(getDoc(doc(memberDb, 'couples', 'couple-1')));
+    });
+
+    it('합류 대기(멤버 1명) 커플은 초대 코드로 들어오는 사람이 get 할 수 있다', async () => {
+      await testEnv.withSecurityRulesDisabled(async (ctx) => {
+        await setDoc(doc(ctx.firestore(), 'couples', 'couple-wait'), {
+          id: 'couple-wait', memberIds: ['uid-a'], status: 'active', createdAt: new Date(),
+        });
+      });
+      const joinerDb = testEnv.authenticatedContext('uid-c').firestore();
+      await assertSucceeds(getDoc(doc(joinerDb, 'couples', 'couple-wait')));
     });
 
     it('invitations list 쿼리 → PERMISSION_DENIED (브루트포스 방지)', async () => {

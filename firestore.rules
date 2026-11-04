@@ -117,12 +117,17 @@ service cloud.firestore {
 
     // ---------- couples ----------
     match /couples/{coupleId} {
-      // ⚠️ Security Rules의 get() 내부 평가 시 resource.data 미노출 이슈 (ADR-030 참고):
-      //   isMyCouple() → get(couples/{coupleId}) → 이 규칙 평가 → resource.data 사용 불가 → 거부.
-      //   임시 조치: isSignedIn()만 요구. coupleId 는 비추측 랜덤 ID 이므로 보안상 허용.
-      //   멤버십 검증은 isMyCouple() 에서 get() 결과의 .data.memberIds 로 수행 (caller 컨텍스트에서는 정상 접근).
-      //   join 대기(1-member) 케이스도 동일하게 isSignedIn() 으로 커버.
-      allow get: if isSignedIn();
+      // 읽기: 멤버이거나, 합류 대기(멤버 1명) 커플일 때만.
+      //   - 초대 코드 join 트랜잭션은 아직 멤버가 아닌 사람이 커플 문서를 읽어야 한다(core/couple joinByCode).
+      //     멤버 1명 커플은 아래 update 규칙상 이미 누구나 합류 가능하므로 읽기를 열어도 노출이 늘지 않는다.
+      //   - 두 명이 연결된 커플은 멤버만 읽는다(memberIds·기념일 등 보호).
+      //   - 없는 문서 읽기는 허용(구독 중 삭제돼도 permission-denied 대신 빈 결과).
+      //   규칙 안의 get()(isMyCouple 등)은 보안 규칙을 거치지 않으므로 이 조건의 영향을 받지 않는다.
+      allow get: if isSignedIn() && (
+        resource == null
+        || request.auth.uid in resource.data.memberIds
+        || resource.data.memberIds.size() == 1
+      );
       allow list: if false; // inviteCode 기반 list 쿼리 금지 (invitations 사용)
 
       // 생성: 본인을 memberIds[0] 로 단독 시작, status active

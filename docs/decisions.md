@@ -266,7 +266,7 @@
 - **재검토 시점**: 공개 출시(8단계) 전. `storage.rules` 의 관련 라인에 `// ADR-030` 주석으로 마킹됨.
 - **갱신 (2026-11-03)**: 해결 경로 (A) 채택 — `storage.rules` 의 `isMyCouple()` 을 `firestore.get()` 기반 멤버십 확인으로 교체(판정 기준은 `firestore.rules` 와 동일: memberIds 포함 여부). 기존 주석의 `roles/datastore.viewer` 는 잘못된 역할이며, 필요한 것은 Storage 서비스 에이전트의 `roles/firebaserules.firestoreServiceAgent`(Firebase 공식 문서). 에뮬레이터 통합 테스트 `__tests__/integration/storage-rules.test.ts` 6건 통과(수정 전에는 타 커플 읽기·쓰기 차단 3건 실패 확인).
   - **미완료**: 실제 프로젝트 배포와 IAM 역할 부여는 하지 않음. 절차는 `docs/runbook.md` 1-2 "Storage Rules 첫 cross-service 배포".
-  - **별건**: `firestore.rules` 의 `couples` 문서 `allow get: if isSignedIn()` 완화는 그대로이며 `security-rules.test.ts` 의 "비멤버 get 차단" 1건이 실패한다. 초대 코드 합류 흐름과 얽혀 있어 따로 다룬다.
+  - **후속 (2026-11-03)**: `firestore.rules` 의 `couples` 문서 읽기 완화(`allow get: if isSignedIn()`)도 정리 — 멤버이거나 합류 대기(멤버 1명) 커플만 읽기 허용. 멤버 1명 커플은 update 규칙상 이미 누구나 합류 가능하므로 노출이 늘지 않고, 초대 코드 join 트랜잭션(비멤버의 `tx.get`)은 그대로 동작. 기존 주석의 "규칙 내부 get() 이 이 규칙을 다시 평가한다"는 설명은 사실과 달라 삭제(규칙 안의 get() 은 보안 규칙을 거치지 않음). 실제 배포는 하지 않음.
 
 ## ADR-031: ESLint v10 Flat Config — eslintrc.json 무시 주의 (2026-06-20)
 - **결정**: 린트 설정의 단일 진실 소스는 `eslint.config.mjs`. `.eslintrc.json` 은 유지는 되어 있으나 ESLint v10이 `eslint.config.mjs` 를 발견하면 레거시 파일을 완전히 무시한다.
