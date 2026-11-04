@@ -86,8 +86,9 @@ export async function setMealPhoto(
   const date = getTodayKST();
   const id = `${coupleId}_${userId}_${date}_${mealType}`;
   const ref = doc(db, 'foodLogs', id);
-  const prev = await getDoc(ref);
-  const prevPhoto = prev.exists() ? (prev.data()?.photoUrl as string | null | undefined) : null;
+  // 이전 사진 정리용 조회. 아직 없는 칸은 foodLogs 규칙(resource.data.coupleId)상 읽기가 거부되므로 없음으로 본다.
+  const prev = await getDoc(ref).catch(() => null);
+  const prevPhoto = prev?.exists() ? (prev.data()?.photoUrl as string | null | undefined) : null;
   const photoUrl = await saveFoodPhoto(coupleId, userId, localUri);
   await setDoc(ref, {
     coupleId,
