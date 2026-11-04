@@ -297,13 +297,13 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   cardBody:     { flex: 1, gap: 2 },
   cardName:     { ...typography.bodyBold, color: colors.text.primary },
   cardNameDone: { textDecorationLine: 'line-through', color: colors.text.muted },
-  cardPrice:    { ...typography.caption, color: colors.accent.primary },
+  cardPrice:    { ...typography.caption, color: colors.accent.ink },
   cardMemo:     { ...typography.caption, color: colors.text.secondary },
 
   receiveBtn:     { paddingHorizontal: space[3], paddingVertical: space[2], borderRadius: radius.md, backgroundColor: colors.bg.subtle, borderWidth: 1, borderColor: colors.border.subtle },
   receiveBtnDone: { backgroundColor: colors.accent.primary + '20', borderColor: colors.accent.primary },
   receiveBtnText: { ...typography.tiny, color: colors.text.secondary, fontFamily: 'Pretendard-SemiBold' },
-  receiveBtnTextDone: { color: colors.accent.primary },
+  receiveBtnTextDone: { color: colors.accent.ink },
 
   fab:          { position: 'absolute', right: space[5], bottom: space[6], width: 56, height: 56, borderRadius: radius.pill, backgroundColor: colors.text.primary, alignItems: 'center', justifyContent: 'center', shadowColor: black, shadowOpacity: 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 6 },
   fabText:      { fontSize: 28, color: colors.text.inverse, lineHeight: 32 },

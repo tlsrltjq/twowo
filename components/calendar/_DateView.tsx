@@ -192,12 +192,12 @@ export function DateView({
 
         <View style={styles.statRow}>
           <View style={styles.statItem}>
-            <Text style={[styles.statNum, { color: colors.accent.primary }]}>{thisMonthCount}</Text>
+            <Text style={[styles.statNum, { color: colors.accent.ink }]}>{thisMonthCount}</Text>
             <Text style={styles.statLabel}>이달 데이트</Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statItem}>
-            <Text style={[styles.statNum, { color: colors.accent.primary }]}>{events.length}</Text>
+            <Text style={[styles.statNum, { color: colors.accent.ink }]}>{events.length}</Text>
             <Text style={styles.statLabel}>전체</Text>
           </View>
           <View style={styles.statDivider} />
@@ -232,7 +232,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
 
   monthNav:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space[4] },
   navBtn:       { padding: space[2] },
-  navArrow:     { fontSize: 22, color: colors.accent.primary, fontFamily: 'Pretendard-SemiBold' },
+  navArrow:     { fontSize: 22, color: colors.accent.ink, fontFamily: 'Pretendard-SemiBold' },
   navArrowDisabled: { color: colors.text.muted },
   monthLabel:   { ...typography.bodyBold, color: colors.text.primary, minWidth: 100, textAlign: 'center' },
 

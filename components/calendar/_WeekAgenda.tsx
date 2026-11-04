@@ -121,7 +121,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   dayLabelRow:     { flexDirection: 'row', alignItems: 'center', gap: space[2] },
   weekdayText:     { ...typography.caption, color: colors.text.muted, width: 14 },
   dateText:        { ...typography.bodyBold, color: colors.text.primary },
-  todayAccent:     { color: colors.accent.primary },
+  todayAccent:     { color: colors.accent.ink },
   todayChip:          { backgroundColor: colors.accent.primary, borderRadius: radius.pill, paddingHorizontal: space[2], paddingVertical: 1 },
   todayChipText:      { ...typography.tiny, color: colors.text.inverse, fontFamily: 'Pretendard-SemiBold' },
   anniversaryChip:    { backgroundColor: colors.accent.coral + '22', borderRadius: radius.pill, paddingHorizontal: space[2], paddingVertical: 1, borderWidth: 1, borderColor: colors.accent.coral + '66' },

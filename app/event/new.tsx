@@ -250,7 +250,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   header:             { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: space[4], borderBottomWidth: 1, borderBottomColor: colors.border.subtle, backgroundColor: colors.bg.surface },
   headerTitle:        { ...typography.title2, color: colors.text.primary },
   cancelBtn:          { width: 60 },
-  cancelText:         { ...typography.body, color: colors.accent.primary },
+  cancelText:         { ...typography.body, color: colors.accent.ink },
   saveText:           { textAlign: 'right', fontFamily: 'Pretendard-SemiBold' },
   disabledText:       { opacity: 0.4 },
   body:               { padding: space[5], gap: space[4] },

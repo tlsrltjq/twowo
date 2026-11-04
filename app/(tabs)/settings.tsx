@@ -20,7 +20,7 @@ import { useThemeStore } from '../../core/stores/theme.store';
 import { getDaysSince } from '../../core/utils/date';
 import { useColors } from '../../design-system/ThemeContext';
 import { ACCENT_META, AccentId, Colors } from '../../design-system/themes';
-import { hairline, radius, space, typography } from '../../design-system/tokens';
+import { hairline, radius, space, typography, white } from '../../design-system/tokens';
 
 const APP_VERSION = appJson.expo.version;
 const SUPPORT_EMAIL = 'psl87531@gmail.com';
@@ -145,7 +145,7 @@ export default function SettingsScreen() {
               value={isDark}
               onValueChange={setDark}
               trackColor={{ false: colors.border.subtle, true: colors.accent.primary }}
-              thumbColor={colors.bg.surface}
+              thumbColor={white}
               ios_backgroundColor={colors.border.subtle}
             />
           </View>
@@ -163,7 +163,7 @@ export default function SettingsScreen() {
             value={notifGranted}
             onValueChange={handleNotifToggle}
             trackColor={{ false: colors.border.subtle, true: colors.accent.primary }}
-            thumbColor={colors.bg.surface}
+            thumbColor={white}
             ios_backgroundColor={colors.border.subtle}
           />
         </View>
@@ -303,7 +303,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   rowLabel:      { ...typography.body, color: colors.text.secondary },
   rowSub:        { ...typography.tiny, color: colors.text.muted },
   rowValue:      { ...typography.body, color: colors.text.primary },
-  rowEdit:       { ...typography.caption, color: colors.accent.primary },
+  rowEdit:       { ...typography.caption, color: colors.accent.ink },
 
   editRow:       { flexDirection: 'row', alignItems: 'center', gap: space[2], flex: 1, justifyContent: 'flex-end' },
   input:         { ...typography.body, color: colors.text.primary, borderBottomWidth: 1, borderBottomColor: colors.accent.primary, minWidth: 120, paddingVertical: 2 },

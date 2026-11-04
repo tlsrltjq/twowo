@@ -1,7 +1,7 @@
 export type Colors = {
   bg:     { base: string; surface: string; subtle: string };
   text:   { primary: string; secondary: string; muted: string; inverse: string };
-  accent: { primary: string; coral: string; warm: string; calm: string };
+  accent: { primary: string; ink: string; coral: string; warm: string; calm: string };
   border: { subtle: string; strong: string };
   status: { success: string; warning: string; danger: string };
   overlay: string;
@@ -36,36 +36,37 @@ const DARK_BASE = {
   overlay: 'rgba(0,0,0,0.6)',
 };
 
-type AccentTokens = { primary: string; coral: string; warm: string; calm: string };
+/** primary = 버튼·탭 등 채움용, ink = 글씨로 쓸 때(흰 바탕에서 작은 글씨도 읽히도록 진하게) */
+type AccentTokens = { primary: string; ink: string; coral: string; warm: string; calm: string };
 
 const ACCENT_PALETTES: Record<AccentId, { light: AccentTokens; dark: AccentTokens }> = {
   orange: {
-    light: { primary: '#F2603A', coral: '#F59A80', warm: '#F2B544', calm: '#A3B8C2' },
-    dark:  { primary: '#FF7A57', coral: '#FFB09A', warm: '#F5C25E', calm: '#9DB4BF' },
+    light: { primary: '#F2603A', ink: '#C4421C', coral: '#F59A80', warm: '#F2B544', calm: '#A3B8C2' },
+    dark:  { primary: '#FF7A57', ink: '#FF7A57', coral: '#FFB09A', warm: '#F5C25E', calm: '#9DB4BF' },
   },
   rose: {
-    light: { primary: '#B5566B', coral: '#D4948A', warm: '#E8B86D', calm: '#A8BDB5' },
-    dark:  { primary: '#DB8B9C', coral: '#E3AFA7', warm: '#FFCC80', calm: '#80CBC4' },
+    light: { primary: '#B5566B', ink: '#A04A5E', coral: '#D4948A', warm: '#E8B86D', calm: '#A8BDB5' },
+    dark:  { primary: '#DB8B9C', ink: '#DB8B9C', coral: '#E3AFA7', warm: '#FFCC80', calm: '#80CBC4' },
   },
   coral: {
-    light: { primary: '#C0645A', coral: '#F4AEAE', warm: '#F0C87A', calm: '#90C5B5' },
-    dark:  { primary: '#E0958C', coral: '#FFCCBC', warm: '#FFE082', calm: '#80DEEA' },
+    light: { primary: '#C0645A', ink: '#A8503F', coral: '#F4AEAE', warm: '#F0C87A', calm: '#90C5B5' },
+    dark:  { primary: '#E0958C', ink: '#E0958C', coral: '#FFCCBC', warm: '#FFE082', calm: '#80DEEA' },
   },
   violet: {
-    light: { primary: '#6E5E96', coral: '#C4B5FD', warm: '#DDD6FE', calm: '#A5B4FC' },
-    dark:  { primary: '#A898CC', coral: '#D4B5FF', warm: '#EDE9FE', calm: '#BFDBFE' },
+    light: { primary: '#6E5E96', ink: '#6E5E96', coral: '#C4B5FD', warm: '#DDD6FE', calm: '#A5B4FC' },
+    dark:  { primary: '#A898CC', ink: '#A898CC', coral: '#D4B5FF', warm: '#EDE9FE', calm: '#BFDBFE' },
   },
   blue: {
-    light: { primary: '#4A6A92', coral: '#93C5FD', warm: '#BAE6FD', calm: '#A5F3FC' },
-    dark:  { primary: '#8FA9CC', coral: '#BAE6FD', warm: '#E0F2FE', calm: '#CCFBF1' },
+    light: { primary: '#4A6A92', ink: '#4A6A92', coral: '#93C5FD', warm: '#BAE6FD', calm: '#A5F3FC' },
+    dark:  { primary: '#8FA9CC', ink: '#8FA9CC', coral: '#BAE6FD', warm: '#E0F2FE', calm: '#CCFBF1' },
   },
   green: {
-    light: { primary: '#4E7F68', coral: '#6EE7B7', warm: '#D1FAE5', calm: '#A7F3D0' },
-    dark:  { primary: '#86B39E', coral: '#86EFAC', warm: '#ECFDF5', calm: '#D1FAE5' },
+    light: { primary: '#4E7F68', ink: '#3F6B57', coral: '#6EE7B7', warm: '#D1FAE5', calm: '#A7F3D0' },
+    dark:  { primary: '#86B39E', ink: '#86B39E', coral: '#86EFAC', warm: '#ECFDF5', calm: '#D1FAE5' },
   },
   amber: {
-    light: { primary: '#A8752E', coral: '#FCD34D', warm: '#FEF3C7', calm: '#FDE68A' },
-    dark:  { primary: '#D3A866', coral: '#FDE68A', warm: '#FEF9C3', calm: '#FEF3C7' },
+    light: { primary: '#A8752E', ink: '#8C5F1F', coral: '#FCD34D', warm: '#FEF3C7', calm: '#FDE68A' },
+    dark:  { primary: '#D3A866', ink: '#D3A866', coral: '#FDE68A', warm: '#FEF9C3', calm: '#FEF3C7' },
   },
 };
 

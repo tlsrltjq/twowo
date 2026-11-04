@@ -300,7 +300,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   modalSafe:     { flex: 1, backgroundColor: colors.bg.base },
   modalHeader:   { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: space[5], paddingVertical: space[4], borderBottomWidth: 1, borderBottomColor: colors.border.subtle },
   modalTitle:    { ...typography.bodyBold, color: colors.text.primary },
-  modalClose:    { ...typography.body, color: colors.accent.primary },
+  modalClose:    { ...typography.body, color: colors.accent.ink },
   modalScroll:   { flex: 1 },
   modalBody:     { padding: space[5], gap: space[3], paddingBottom: space[10] },
   fieldLabel:    { ...typography.caption, color: colors.text.secondary },

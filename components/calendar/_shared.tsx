@@ -159,6 +159,6 @@ const makeSharedStyles = (colors: Colors) => StyleSheet.create({
   personBadgeMe:       {},
   personBadgeOther:    {},
   personBadgeText:     { ...typography.tiny },
-  personBadgeTextMe:   { color: colors.accent.primary },
+  personBadgeTextMe:   { color: colors.accent.ink },
   personBadgeTextOther: { color: colors.text.secondary },
 });

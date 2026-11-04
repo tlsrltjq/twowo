@@ -104,7 +104,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   numberWrapSelected:   { backgroundColor: colors.accent.primary },
   dayNumber:            { ...typography.body, color: colors.text.primary },
   dayNumberSelected:    { color: colors.text.inverse, fontFamily: 'Pretendard-SemiBold' },
-  dayNumberToday:       { color: colors.accent.primary, fontFamily: 'Pretendard-SemiBold' },
+  dayNumberToday:       { color: colors.accent.ink, fontFamily: 'Pretendard-SemiBold' },
   dayNumberDisabled:    { color: colors.text.muted },
   photoWrap:            { width: 36, height: 36, borderRadius: 18, overflow: 'hidden', alignItems: 'center', justifyContent: 'center', backgroundColor: colors.bg.subtle },
   photoWrapToday:       { borderWidth: 2, borderColor: colors.accent.primary },
@@ -113,5 +113,5 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   dayNumberOnPhoto:     { color: colors.text.inverse, fontFamily: 'Pretendard-SemiBold', textShadowColor: 'rgba(0,0,0,0.6)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3 },
   dotsRow:              { flexDirection: 'row', gap: 2, marginTop: 2 },
   dot:                  { width: 5, height: 5, borderRadius: 2.5 },
-  anniversaryLabel:     { fontSize: 8, lineHeight: 10, color: colors.accent.primary, fontFamily: 'Pretendard-SemiBold', marginTop: 1 },
+  anniversaryLabel:     { fontSize: 8, lineHeight: 10, color: colors.accent.ink, fontFamily: 'Pretendard-SemiBold', marginTop: 1 },
 });

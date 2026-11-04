@@ -258,7 +258,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   headerLeft:   { gap: space[1], flex: 1 },
   today:        { ...typography.title1, color: colors.text.primary },
   together:     { ...typography.body, color: colors.text.secondary },
-  togetherNum:  { ...typography.bodyBold, color: colors.accent.primary },
+  togetherNum:  { ...typography.bodyBold, color: colors.accent.ink },
   hamburger:    { padding: space[2], marginTop: space[1] },
 
   section:      { gap: 0 },
@@ -272,11 +272,11 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
     borderBottomColor: colors.border.subtle,
   },
   rowLabel:      { ...typography.caption, color: colors.text.secondary, width: space[12] + space[2] },
-  rowLabelToday: { color: colors.accent.primary, fontFamily: typography.bodyBold.fontFamily },
+  rowLabelToday: { color: colors.accent.ink, fontFamily: typography.bodyBold.fontFamily },
   rowValueWrap:  { flex: 1, alignItems: 'flex-start' },
   rowValue:      { ...typography.caption, color: colors.text.primary, flex: 1 },
   rowMuted:      { ...typography.caption, color: colors.text.muted, flex: 1 },
-  rowLink:       { ...typography.caption, color: colors.accent.primary },
+  rowLink:       { ...typography.caption, color: colors.accent.ink },
 
   eventBody:      { flex: 1, gap: space[1] },
   eventTitleLine: { flexDirection: 'row', alignItems: 'center', gap: space[2] },

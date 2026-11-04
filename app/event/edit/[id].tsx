@@ -255,7 +255,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   header:             { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: space[4], borderBottomWidth: 1, borderBottomColor: colors.border.subtle, backgroundColor: colors.bg.surface },
   headerTitle:        { ...typography.title2, color: colors.text.primary },
   cancelBtn:          { width: 60 },
-  cancelText:         { ...typography.body, color: colors.accent.primary },
+  cancelText:         { ...typography.body, color: colors.accent.ink },
   body:               { padding: space[5], gap: space[4] },
   typeRow:            { flexDirection: 'row', gap: space[2] },
   typeChip:           { flex: 1, paddingVertical: space[2], borderRadius: radius.md, borderWidth: 1, borderColor: colors.border.subtle, alignItems: 'center' },

@@ -122,5 +122,5 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   form:      { gap: space[4] },
   link:      { alignItems: 'center' },
   linkText:  { ...typography.caption, color: colors.text.secondary },
-  linkBold:  { ...typography.caption, color: colors.accent.primary, fontFamily: 'Pretendard-SemiBold' },
+  linkBold:  { ...typography.caption, color: colors.accent.ink, fontFamily: 'Pretendard-SemiBold' },
 });

@@ -160,7 +160,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   safeArea:  { flex: 1, backgroundColor: colors.bg.base },
   header:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space[4], paddingVertical: space[3] },
   backBtn:   { width: 40 },
-  backText:  { fontSize: 28, color: colors.accent.primary, lineHeight: 32 },
+  backText:  { fontSize: 28, color: colors.accent.ink, lineHeight: 32 },
   title:     { ...typography.bodyBold, color: colors.text.primary },
   body:      { padding: space[4], paddingBottom: 48 },
   card:      { backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[5] },

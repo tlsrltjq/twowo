@@ -14,7 +14,7 @@ import { Spinner } from '../../design-system/Spinner';
 import { useColors } from '../../design-system/ThemeContext';
 import { Colors } from '../../design-system/themes';
 import { Toast } from '../../design-system/Toast';
-import { hairline, radius, space, typography } from '../../design-system/tokens';
+import { hairline, radius, space, typography, white } from '../../design-system/tokens';
 import {
   getRecent7Days,
   getTodayMood,
@@ -292,7 +292,7 @@ export default function MoodScreen() {
               value={canMeet}
               onValueChange={setCanMeet}
               trackColor={{ true: colors.accent.primary, false: colors.border.strong }}
-              thumbColor={colors.text.inverse}
+              thumbColor={white}
             />
           </View>
 
@@ -370,7 +370,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
 
   pageHeader:         { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
   screenTitle:        { ...typography.title1, color: colors.text.primary },
-  editLink:           { ...typography.caption, color: colors.accent.primary },
+  editLink:           { ...typography.caption, color: colors.accent.ink },
 
   // 오늘 행
   row:                { flexDirection: 'row', gap: space[4], paddingVertical: space[3], borderBottomWidth: hairline, borderBottomColor: colors.border.subtle },
@@ -404,7 +404,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   barPartner:         { backgroundColor: colors.accent.primary },
   barEmpty:           { backgroundColor: colors.border.subtle },
   dayLabel:           { ...typography.tiny, color: colors.text.muted },
-  dayLabelToday:      { color: colors.accent.primary },
+  dayLabelToday:      { color: colors.accent.ink },
   dayDateLabel:       { ...typography.tiny, color: colors.text.muted, opacity: 0.7 },
   chartLegend:        { flexDirection: 'row', gap: space[3] },
   legendItem:         { flexDirection: 'row', alignItems: 'center', gap: space[1] },

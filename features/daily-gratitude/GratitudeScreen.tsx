@@ -340,7 +340,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   card:            { gap: space[3] },
   cardHeader:      { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: space[2], borderBottomWidth: hairline, borderBottomColor: colors.border.strong },
   cardLabel:       { ...typography.label, color: colors.text.secondary },
-  editLink:        { ...typography.caption, color: colors.accent.primary },
+  editLink:        { ...typography.caption, color: colors.accent.ink },
   fieldLabel:      { ...typography.caption, color: colors.text.secondary },
   charCount:       { ...typography.tiny, color: colors.text.muted },
   textInput:       { backgroundColor: colors.bg.surface, borderWidth: hairline * 2, borderColor: colors.border.strong, borderRadius: radius.md, padding: space[3], ...typography.body, color: colors.text.primary, minHeight: 88 },
@@ -364,5 +364,5 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   pairEmpty:       { ...typography.caption, color: colors.text.muted, textAlign: 'center' },
 
   loadMoreBtn:     { marginTop: space[2], paddingVertical: space[4], alignItems: 'center', borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border.subtle },
-  loadMoreText:    { ...typography.body, color: colors.accent.primary },
+  loadMoreText:    { ...typography.body, color: colors.accent.ink },
 });

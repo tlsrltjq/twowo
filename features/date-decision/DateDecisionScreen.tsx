@@ -588,9 +588,9 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   candidateRow:          { flexDirection: 'row', alignItems: 'center', paddingVertical: space[4], borderBottomWidth: hairline, borderBottomColor: colors.border.subtle },
   candidateRowSelected:  {},
   candidateTitle:        { ...typography.body, color: colors.text.primary, flex: 1 },
-  candidateTitleSelected:{ color: colors.accent.primary, fontFamily: typography.bodyBold.fontFamily },
+  candidateTitleSelected:{ color: colors.accent.ink, fontFamily: typography.bodyBold.fontFamily },
   selectedBadge:         {},
-  selectedBadgeText:     { ...typography.caption, color: colors.accent.primary },
+  selectedBadgeText:     { ...typography.caption, color: colors.accent.ink },
   deleteBtn:             { padding: space[2] },
 
   empty:                 { paddingVertical: space[10], alignItems: 'center', gap: space[2] },
@@ -600,7 +600,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   footer:                { marginTop: space[4], gap: space[4] },
 
   addBtn:                { paddingVertical: space[3], alignItems: 'center' },
-  addBtnText:            { ...typography.body, color: colors.accent.primary },
+  addBtnText:            { ...typography.body, color: colors.accent.ink },
 
   addForm:               { backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[4], gap: space[3] },
   addInput:              { ...typography.body, color: colors.text.primary, backgroundColor: colors.bg.subtle, borderRadius: radius.md, paddingHorizontal: space[4], paddingVertical: space[3] },
@@ -625,7 +625,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   resultsContainer:      { flex: 1, alignItems: 'center', justifyContent: 'center', padding: space[6], gap: space[5] },
   resultTitle:           { ...typography.title1, color: colors.text.primary, textAlign: 'center' },
   matchCard:             { backgroundColor: colors.bg.surface, borderRadius: radius.xl, padding: space[6], alignItems: 'center', width: '100%', borderWidth: 2, borderColor: colors.accent.primary },
-  matchTitle:            { ...typography.title1, color: colors.accent.primary, textAlign: 'center' },
+  matchTitle:            { ...typography.title1, color: colors.accent.ink, textAlign: 'center' },
   noMatchRow:            { flexDirection: 'row', gap: space[3], alignItems: 'center', width: '100%' },
   vsText:                { ...typography.bodyBold, color: colors.text.muted },
   resultCard:            { flex: 1, backgroundColor: colors.bg.surface, borderRadius: radius.lg, padding: space[4], alignItems: 'center', gap: space[1] },

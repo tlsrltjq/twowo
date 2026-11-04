@@ -12,6 +12,7 @@ export const colors = {
   },
   accent: {
     primary: '#F2603A',
+    ink: '#C4421C',
     coral: '#F59A80',
     warm: '#F2B544',
     calm: '#A3B8C2',
@@ -64,6 +65,9 @@ export const radius = {
 
 /** 구분선 두께. 카드 테두리 대신 목록 사이에 쓴다. */
 export const hairline = 0.5 as const;
+
+/** 순수 흰색 — 스위치 손잡이처럼 테마와 무관하게 흰색이어야 하는 곳에만. */
+export const white = '#FFFFFF' as const;
 
 /** 순수 검정 — shadowColor, 풀스크린 오버레이 배경 등에만 사용. 일반 텍스트/배경은 colors.text.* 사용. */
 export const black = '#000000' as const;

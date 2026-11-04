@@ -219,12 +219,12 @@ export function ExerciseView({
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statItem}>
-            <Text style={[styles.statNum, { color: colors.accent.primary }]}>{currentStreak}</Text>
+            <Text style={[styles.statNum, { color: colors.accent.ink }]}>{currentStreak}</Text>
             <Text style={styles.statLabel}>현재 연속</Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statItem}>
-            <Text style={[styles.statNum, { color: colors.accent.primary }]}>{bestStreak}</Text>
+            <Text style={[styles.statNum, { color: colors.accent.ink }]}>{bestStreak}</Text>
             <Text style={styles.statLabel}>최고 연속</Text>
           </View>
         </View>

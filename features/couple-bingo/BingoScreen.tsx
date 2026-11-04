@@ -422,7 +422,7 @@ function PersonalBingoView({
           <Text style={styles.emptyNewBtnText}>내 빙고판 만들기</Text>
         </TouchableOpacity>
         <TouchableOpacity testID="btn-empty-history" onPress={onHistory} style={styles.emptyHistBtn}>
-          <Text style={[styles.emptySub, { color: colors.accent.primary }]}>이전 기록 보기</Text>
+          <Text style={[styles.emptySub, { color: colors.accent.ink }]}>이전 기록 보기</Text>
         </TouchableOpacity>
       </View>
     );
@@ -440,7 +440,7 @@ function PersonalBingoView({
       {/* 점수바 */}
       <View style={styles.scorebar}>
         <View style={styles.scoreItem}>
-          <Text style={[styles.scoreNum, { color: colors.accent.primary }]}>{myLines}</Text>
+          <Text style={[styles.scoreNum, { color: colors.accent.ink }]}>{myLines}</Text>
           <Text style={styles.scoreLabel}>나 (빙고줄)</Text>
         </View>
         <Text style={styles.scoreVs}>VS</Text>
@@ -457,10 +457,10 @@ function PersonalBingoView({
           style={[styles.tab, personalView === 'mine' && { borderBottomColor: colors.accent.primary }]}
           onPress={() => onSetPersonalView('mine')}
         >
-          <Text style={[styles.tabLabel, personalView === 'mine' && { color: colors.accent.primary, fontFamily: 'Pretendard-SemiBold' }]}>
+          <Text style={[styles.tabLabel, personalView === 'mine' && { color: colors.accent.ink, fontFamily: 'Pretendard-SemiBold' }]}>
             나
           </Text>
-          <Text style={[styles.tabProgress, personalView === 'mine' && { color: colors.accent.primary }]}>
+          <Text style={[styles.tabProgress, personalView === 'mine' && { color: colors.accent.ink }]}>
             {myBoards.length > 0 ? `${Object.keys(myBoard?.checkedItems ?? {}).length}/25` : '-'}
           </Text>
         </TouchableOpacity>
@@ -612,7 +612,7 @@ function EmptyState({
         <Text style={styles.emptyNewBtnText}>새 빙고판 만들기</Text>
       </TouchableOpacity>
       <TouchableOpacity testID="btn-empty-history" onPress={onHistory} style={styles.emptyHistBtn}>
-        <Text style={[styles.emptySub, { color: colors.accent.primary }]}>이전 기록 보기</Text>
+        <Text style={[styles.emptySub, { color: colors.accent.ink }]}>이전 기록 보기</Text>
       </TouchableOpacity>
     </View>
   );
@@ -645,10 +645,10 @@ function BoardTabs({
             style={[styles.tab, isActive && { borderBottomColor: colors.accent.primary }]}
             onPress={() => onSelect(i)}
           >
-            <Text style={[styles.tabLabel, isActive && { color: colors.accent.primary, fontFamily: 'Pretendard-SemiBold' }]}>
+            <Text style={[styles.tabLabel, isActive && { color: colors.accent.ink, fontFamily: 'Pretendard-SemiBold' }]}>
               빙고 {i + 1}
             </Text>
-            <Text style={[styles.tabProgress, isActive && { color: colors.accent.primary }]}>
+            <Text style={[styles.tabProgress, isActive && { color: colors.accent.ink }]}>
               {checked}/25
             </Text>
           </TouchableOpacity>
@@ -866,7 +866,7 @@ function GridPreview({ styles, colors }: { styles: StylesType; colors: Colors })
       <View style={styles.previewGrid}>
         {Array.from({ length: 25 }, (_, i) => (
           <View key={i} style={styles.previewCell}>
-            <Text style={[styles.previewCellNum, { color: colors.accent.primary }]}>{i + 1}</Text>
+            <Text style={[styles.previewCellNum, { color: colors.accent.ink }]}>{i + 1}</Text>
           </View>
         ))}
       </View>
@@ -1037,7 +1037,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   historyList:       { padding: space[4], gap: space[3], paddingBottom: space[8] },
   historyCard:       { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: colors.bg.surface, borderRadius: radius.md, padding: space[4], gap: space[3] },
   historyCardLeft:   { flexDirection: 'row', alignItems: 'center', gap: space[3], flex: 1 },
-  historyNum:        { ...typography.title2, color: colors.accent.primary, minWidth: 32 },
+  historyNum:        { ...typography.title2, color: colors.accent.ink, minWidth: 32 },
   historyDate:       { ...typography.bodyBold, color: colors.text.primary },
   historyStats:      { ...typography.caption, color: colors.text.muted, marginTop: 2 },
   historyMiniGrid:   { flexDirection: 'row', flexWrap: 'wrap', width: 36, gap: 2 },
@@ -1048,7 +1048,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   setupToolbarBtns:  { flexDirection: 'row', alignItems: 'center' },
   setupHint:         { ...typography.caption, color: colors.text.muted, flex: 1 },
   fillBtn:           { paddingHorizontal: space[3], paddingVertical: space[2], backgroundColor: colors.bg.subtle, borderRadius: radius.md },
-  fillBtnText:       { ...typography.caption, color: colors.accent.primary },
+  fillBtnText:       { ...typography.caption, color: colors.accent.ink },
   setupList:         { paddingHorizontal: space[4], gap: space[2], paddingBottom: space[4] },
   setupRow:          { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   setupNum:          { ...typography.caption, color: colors.text.muted, width: 24, textAlign: 'right' },

@@ -206,7 +206,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
     gap: space[3],
   },
   codeLabel:   { ...typography.caption, color: colors.text.secondary },
-  codeText:    { ...typography.display, color: colors.accent.primary, letterSpacing: 8 },
+  codeText:    { ...typography.display, color: colors.accent.ink, letterSpacing: 8 },
   expiry:      { ...typography.tiny, color: colors.text.muted },
   waitingText: { ...typography.caption, color: colors.text.secondary, textAlign: 'center' },
   divider:     { flexDirection: 'row', alignItems: 'center', gap: space[3] },

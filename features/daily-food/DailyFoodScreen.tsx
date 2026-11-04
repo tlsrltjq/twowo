@@ -443,7 +443,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   extraThumbImage: { width: '100%', height: '100%' },
 
   addBtn:     { marginTop: space[2], paddingVertical: space[3], alignItems: 'center', borderRadius: radius.md, borderWidth: hairline * 2, borderColor: colors.border.strong },
-  addBtnText: { ...typography.body, color: colors.accent.primary },
+  addBtnText: { ...typography.body, color: colors.accent.ink },
 
   emptyText:  { ...typography.bodyBold, color: colors.text.muted },
 

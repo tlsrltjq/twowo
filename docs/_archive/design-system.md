@@ -30,6 +30,7 @@
 | `text.muted`     | `#8A8A8A` | 비활성/플레이스홀더 |
 | `text.inverse`   | `#FFFFFF` | 컬러 버튼 위 텍스트 |
 | `accent.primary` | `#F2603A` | 주요 CTA, 오늘, 선택된 탭 (코랄 오렌지) |
+| `accent.ink`     | `#C4421C` | 포인트 색을 **글씨**로 쓸 때(링크·오늘·숫자). 흰 바탕 작은 글씨 대비 확보. 다크 모드는 primary 와 같음 |
 | `accent.coral`   | `#F59A80` | 운동 이벤트 점 |
 | `accent.warm`    | `#F2B544` | 데이트 이벤트 점, 빙고 강조 |
 | `accent.calm`    | `#A3B8C2` | 일반 일정 점, 컨디션 good |

@@ -8,7 +8,7 @@ import { useAuthStore } from '../../core/stores/auth.store';
 import { EmptyState } from '../../design-system/EmptyState';
 import { useColors } from '../../design-system/ThemeContext';
 import { Colors } from '../../design-system/themes';
-import { hairline, space, typography } from '../../design-system/tokens';
+import { hairline, space, typography, white } from '../../design-system/tokens';
 
 const FEATURE_ROUTES: Record<string, string> = {
   'couple-bingo':    '/(features)/bingo',
@@ -80,7 +80,7 @@ export default function LabScreen() {
                     onValueChange={v => handleToggle(feature.id, v)}
                     disabled={isBusy}
                     trackColor={{ false: colors.border.subtle, true: colors.accent.primary }}
-                    thumbColor={colors.bg.surface}
+                    thumbColor={white}
                     ios_backgroundColor={colors.border.subtle}
                   />
                 </View>
@@ -111,6 +111,6 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   cardInfo:    { flex: 1, gap: space[1] },
   nameRow:     { flexDirection: 'row', alignItems: 'baseline', gap: space[2] },
   featureName: { ...typography.body, color: colors.text.primary },
-  openLink:    { ...typography.caption, color: colors.accent.primary },
+  openLink:    { ...typography.caption, color: colors.accent.ink },
   featureDesc: { ...typography.caption, color: colors.text.secondary },
 });
