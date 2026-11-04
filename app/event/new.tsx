@@ -130,7 +130,7 @@ export default function NewEventScreen() {
             <TextField
               testID="input-event-title"
               label="제목"
-              placeholder="무슨 일이 있었나요?"
+              placeholder="일정 이름"
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
@@ -195,7 +195,7 @@ export default function NewEventScreen() {
           render={({ field: { onChange, onBlur, value } }) => (
             <TextField
               label="장소"
-              placeholder="어디서 만났나요? (선택)"
+              placeholder="장소 (선택)"
               value={value ?? ''}
               onChangeText={onChange}
               onBlur={onBlur}
@@ -209,7 +209,7 @@ export default function NewEventScreen() {
           render={({ field: { onChange, onBlur, value } }) => (
             <TextField
               label="메모"
-              placeholder="기록하고 싶은 것들 (선택)"
+              placeholder="남겨 둘 말 (선택)"
               value={value ?? ''}
               onChangeText={onChange}
               onBlur={onBlur}
@@ -250,8 +250,8 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   header:             { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: space[4], borderBottomWidth: 1, borderBottomColor: colors.border.subtle, backgroundColor: colors.bg.surface },
   headerTitle:        { ...typography.title2, color: colors.text.primary },
   cancelBtn:          { width: 60 },
-  cancelText:         { ...typography.body, color: colors.accent.ink },
-  saveText:           { textAlign: 'right', fontFamily: 'Pretendard-SemiBold' },
+  cancelText:         { ...typography.body, color: colors.text.secondary },
+  saveText:           { textAlign: 'right', fontFamily: 'Pretendard-SemiBold', color: colors.accent.ink },
   disabledText:       { opacity: 0.4 },
   body:               { padding: space[5], gap: space[4] },
   typeRow:            { flexDirection: 'row', gap: space[2] },

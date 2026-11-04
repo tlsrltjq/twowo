@@ -245,7 +245,7 @@ export default function ChatScreen() {
             style={styles.input}
             value={inputText}
             onChangeText={setInputText}
-            placeholder="메시지를 입력하세요..."
+            placeholder="메시지"
             placeholderTextColor={colors.text.muted}
             multiline
             maxLength={1000}
@@ -288,7 +288,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   senderName:        { ...typography.tiny, color: colors.text.muted, marginLeft: space[2] },
 
   bubble:            { maxWidth: '75%', borderRadius: radius.lg, paddingHorizontal: space[4], paddingVertical: space[3] },
-  bubbleMine:        { backgroundColor: colors.accent.primary, borderBottomRightRadius: radius.sm },
+  bubbleMine:        { backgroundColor: colors.text.primary, borderBottomRightRadius: radius.sm },
   bubblePartner:     { backgroundColor: colors.bg.surface, borderBottomLeftRadius: radius.sm, borderWidth: hairline * 2, borderColor: colors.border.subtle },
   bubbleText:        { ...typography.body, lineHeight: 22 },
   bubbleTextMine:    { color: colors.text.inverse },
