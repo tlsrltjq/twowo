@@ -17,6 +17,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { usePartnerProfile } from '../../core/couple';
+import { PhotoImage } from '../../core/photos/PhotoImage';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { useColors } from '../../design-system/ThemeContext';
 import { Colors } from '../../design-system/themes';
@@ -192,7 +193,7 @@ export default function ChatScreen() {
         {!isMine && <Text style={styles.senderName}>{partnerName}</Text>}
         {msg.imageUrl ? (
           <View style={[styles.bubble, isMine ? styles.bubbleMine : styles.bubblePartner, styles.imageBubble]}>
-            <Image source={{ uri: msg.imageUrl }} style={styles.chatImage} resizeMode="cover" />
+            <PhotoImage source={msg.imageUrl} style={styles.chatImage} placeholderStyle={styles.chatImagePlaceholder} />
           </View>
         ) : (
           <View style={[styles.bubble, isMine ? styles.bubbleMine : styles.bubblePartner]}>
@@ -296,6 +297,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
 
   imageBubble:       { padding: 0, overflow: 'hidden' },
   chatImage:         { width: 200, height: 200 },
+  chatImagePlaceholder: { backgroundColor: colors.bg.subtle },
   imageOverlay:      { ...StyleSheet.absoluteFill, backgroundColor: 'rgba(0,0,0,0.35)', alignItems: 'center', justifyContent: 'center' },
   retryBtn:          { alignItems: 'center', gap: space[1] },
   retryText:         { ...typography.tiny, color: colors.text.inverse },

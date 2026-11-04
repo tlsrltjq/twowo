@@ -1,74 +1,13 @@
-import { File } from 'expo-file-system';
-import * as ImageManipulator from 'expo-image-manipulator';
+// 일정 사진 업로드 (ADR-032: Cloud Storage 대신 Firestore 에 저장)
 import { arrayUnion, doc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
 
 import { auth, db } from '../config/firebase';
+import { encodeJpeg, savePhotoData, toDataUrl } from '../photos';
 
 const MAX_PHOTOS = 20;
-const BUCKET = process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET!;
-const STORAGE_BASE = `https://firebasestorage.googleapis.com/v0/b/${BUCKET}/o`;
 
 function newPhotoId(): string {
   return Math.random().toString(36).slice(2) + Date.now().toString(36);
-}
-
-async function compress(
-  uri: string,
-  maxSide: number,
-  quality: number,
-  origW?: number,
-  origH?: number,
-): Promise<{ uri: string; width: number; height: number }> {
-  const ops: ImageManipulator.Action[] = [];
-
-  if (origW && origH) {
-    const longer = Math.max(origW, origH);
-    if (longer > maxSide) {
-      if (origH > origW) ops.push({ resize: { height: maxSide } });
-      else                ops.push({ resize: { width:  maxSide } });
-    }
-  } else {
-    ops.push({ resize: { width: maxSide } });
-  }
-
-  const result = await ImageManipulator.manipulateAsync(
-    uri,
-    ops,
-    { compress: quality, format: ImageManipulator.SaveFormat.JPEG },
-  );
-  return result;
-}
-
-/**
- * JPEG 파일을 Storage REST API 로 올리고 다운로드 URL 을 돌려준다.
- * firebase/storage 의 uploadBytes 는 RN 에서 ArrayBuffer 로 Blob 을 만들다 실패하므로
- * 사진 업로드는 모두 이 함수를 쓴다(일정 사진·채팅 이미지·오늘의 밥).
- */
-export async function uploadJpegFile(storagePath: string, fileUri: string): Promise<string> {
-  const token = await auth.currentUser!.getIdToken();
-  const encodedName = encodeURIComponent(storagePath);
-  const url = `${STORAGE_BASE}?uploadType=media&name=${encodedName}`;
-
-  const file = new File(fileUri);
-  const bytes = await file.bytes();
-
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type':  'image/jpeg',
-      'Authorization': `Firebase ${token}`,
-    },
-    body: bytes,
-  });
-
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Storage ${response.status}: ${text.slice(0, 300)}`);
-  }
-
-  const data = await response.json() as { downloadTokens?: string };
-  const dlToken = data.downloadTokens ?? '';
-  return `${STORAGE_BASE}/${encodedName}?alt=media&token=${dlToken}`;
 }
 
 // BR-5: 20장 초과 시 거부
@@ -78,44 +17,39 @@ export function guardPhotoLimit(currentCount: number): void {
   }
 }
 
-// BR-6: 원본 1440px/0.75, 썸네일 400px/0.6. EXIF 제거(manipulateAsync 사용).
-// BR-7: Storage 원본 → 썸네일 → Firestore photos → calendarEvents.photoIds 순서
+// BR-6: 큰 이미지 1280px/0.7, 썸네일 400px/0.6. EXIF 제거(manipulateAsync 재인코딩).
+// BR-7: 큰 이미지(photoData) → photos 문서(썸네일 포함) → calendarEvents.photoIds 순서
 export async function uploadPhoto(
   localUri: string,
   ctx: { coupleId: string; eventId: string; currentPhotoCount: number; width?: number; height?: number },
 ): Promise<{ photoId: string; originalUrl: string; thumbUrl: string }> {
   guardPhotoLimit(ctx.currentPhotoCount);
 
+  const uid = auth.currentUser!.uid;
   const photoId = newPhotoId();
-  const base = `couples/${ctx.coupleId}/events/${ctx.eventId}/${photoId}`;
+  const size = { width: ctx.width, height: ctx.height };
 
-  const { width: origW, height: origH } = ctx;
-  const original = await compress(localUri, 1440, 0.75, origW, origH);
-  const thumb    = await compress(localUri, 400,  0.6,  origW, origH);
-
-  const originalPath = `${base}_original.jpg`;
-  const thumbPath    = `${base}_thumb.jpg`;
-
-  const [originalUrl, thumbUrl] = await Promise.all([
-    uploadJpegFile(originalPath, original.uri), // ①
-    uploadJpegFile(thumbPath, thumb.uri),        // ②
+  const [original, thumb] = await Promise.all([
+    encodeJpeg(localUri, { maxSide: 1280, quality: 0.7, ...size }),
+    encodeJpeg(localUri, { maxSide: 400, quality: 0.6, maxChars: 120_000, ...size }),
   ]);
 
-  // ③ 문서 ID = photoId 로 고정 → getDoc(doc(db,'photos',photoId)) 직접 조회 가능
+  const originalUrl = await savePhotoData(ctx.coupleId, uid, original); // ①
+  const thumbUrl = toDataUrl(thumb.base64);
+
+  // ② 문서 ID = photoId 로 고정 → getDoc(doc(db,'photos',photoId)) 직접 조회 가능
   await setDoc(doc(db, 'photos', photoId), {
-    id:            photoId,
-    eventId:       ctx.eventId,
-    coupleId:      ctx.coupleId,
-    storagePath:   originalPath,
-    thumbnailPath: thumbPath,
+    id:        photoId,
+    eventId:   ctx.eventId,
+    coupleId:  ctx.coupleId,
     originalUrl,
     thumbUrl,
-    width:         original.width,
-    height:        original.height,
-    createdAt:     serverTimestamp(),
+    width:     original.width,
+    height:    original.height,
+    createdAt: serverTimestamp(),
   });
 
-  await updateDoc(doc(db, 'calendarEvents', ctx.eventId), { // ④
+  await updateDoc(doc(db, 'calendarEvents', ctx.eventId), { // ③
     photoIds:  arrayUnion(photoId),
     updatedAt: serverTimestamp(),
   });

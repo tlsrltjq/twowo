@@ -174,6 +174,19 @@ service cloud.firestore {
         allow update: if false;
         allow delete: if false;
       }
+
+      // ---------- photoData (ADR-032: 사진을 Firestore 에 base64 로 저장) ----------
+      // 큰 이미지 한 장 = 문서 하나. 다른 문서는 'fsphoto:{coupleId}/{photoId}' 로 참조한다.
+      match /photoData/{photoId} {
+        allow get: if isMyCouple(coupleId);
+        allow list: if false;
+        allow create: if isMyCouple(coupleId)
+                      && request.resource.data.createdBy == request.auth.uid
+                      && request.resource.data.data is string
+                      && request.resource.data.data.size() <= 900000;
+        allow update: if false;
+        allow delete: if isMyCouple(coupleId);
+      }
     }
 
     // ---------- invitations (초대 코드 임시 보관) ----------

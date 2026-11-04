@@ -95,6 +95,47 @@ if (process.env.FIRESTORE_EMULATOR_HOST) {
       await assertSucceeds(getDoc(doc(joinerDb, 'couples', 'couple-wait')));
     });
 
+    // ─── ADR-032: couples/{coupleId}/photoData ────────────────────────────────
+    describe('photoData (Firestore 사진 저장)', () => {
+      beforeEach(async () => {
+        await testEnv.withSecurityRulesDisabled(async (ctx) => {
+          const db = ctx.firestore();
+          await setDoc(doc(db, 'couples', 'couple-p'), { id: 'couple-p', memberIds: ['uid-a', 'uid-b'], status: 'active', createdAt: new Date() });
+          await setDoc(doc(db, 'couples/couple-p/photoData', 'existing'), { data: 'QUJD', width: 1, height: 1, createdBy: 'uid-a', createdAt: new Date() });
+        });
+      });
+      const photo = (uid: string, data = 'QUJD') => ({ data, width: 10, height: 10, createdBy: uid, createdAt: new Date() });
+
+      it('멤버는 자기 이름으로 사진을 저장할 수 있다', async () => {
+        const db = testEnv.authenticatedContext('uid-a').firestore();
+        await assertSucceeds(setDoc(doc(db, 'couples/couple-p/photoData', 'new1'), photo('uid-a')));
+      });
+
+      it('createdBy 를 남으로 적으면 거부', async () => {
+        const db = testEnv.authenticatedContext('uid-a').firestore();
+        await assertFails(setDoc(doc(db, 'couples/couple-p/photoData', 'new2'), photo('uid-b')));
+      });
+
+      it('비멤버는 저장·읽기 모두 거부', async () => {
+        const db = testEnv.authenticatedContext('uid-x').firestore();
+        await assertFails(setDoc(doc(db, 'couples/couple-p/photoData', 'new3'), photo('uid-x')));
+        await assertFails(getDoc(doc(db, 'couples/couple-p/photoData', 'existing')));
+      });
+
+      it('멤버는 읽고 지울 수 있다, 수정·목록은 거부', async () => {
+        const db = testEnv.authenticatedContext('uid-b').firestore();
+        await assertSucceeds(getDoc(doc(db, 'couples/couple-p/photoData', 'existing')));
+        await assertFails(updateDoc(doc(db, 'couples/couple-p/photoData', 'existing'), { data: 'WFla' }));
+        await assertFails(getDocs(collection(db, 'couples/couple-p/photoData')));
+        await assertSucceeds(deleteDoc(doc(db, 'couples/couple-p/photoData', 'existing')));
+      });
+
+      it('base64 상한(90만 자)을 넘으면 거부', async () => {
+        const db = testEnv.authenticatedContext('uid-a').firestore();
+        await assertFails(setDoc(doc(db, 'couples/couple-p/photoData', 'big'), photo('uid-a', 'A'.repeat(900_001))));
+      });
+    });
+
     it('invitations list 쿼리 → PERMISSION_DENIED (브루트포스 방지)', async () => {
       await testEnv.withSecurityRulesDisabled(async (ctx) => {
         await setDoc(doc(ctx.firestore(), 'invitations', 'ABC123'), {

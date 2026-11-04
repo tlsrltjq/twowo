@@ -56,6 +56,8 @@ jest.mock('../index', () => ({
   sendImageMessage:  jest.fn(),
 }));
 
+jest.mock('../../../core/photos/PhotoImage', () => ({ PhotoImage: () => null }));
+
 jest.mock('../../../core/stores/auth.store', () => ({
   useAuthStore: () => ({ user: { uid: 'u1', email: 'a@b.com' }, coupleId: 'c1' }),
 }));

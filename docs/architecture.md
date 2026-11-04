@@ -111,14 +111,26 @@ updatedAt: Timestamp
 id: string
 eventId: string
 coupleId: string
-storagePath: string       // Firebase Storage 원본 경로
-thumbnailPath: string     // 압축 썸네일 경로 (리스트 표시용)
-originalUrl: string       // Storage 다운로드 URL (원본)
-thumbUrl: string          // Storage 다운로드 URL (썸네일)
+originalUrl: string       // 큰 이미지 참조 'fsphoto:{coupleId}/{photoId}' (ADR-032). 예전 데이터는 Storage URL
+thumbUrl: string          // 썸네일 data URL 'data:image/jpeg;base64,…' (≈400px, 리스트 표시용)
+storagePath?: string      // (구) Storage 원본 경로 — ADR-032 이전 데이터에만 존재
+thumbnailPath?: string    // (구) Storage 썸네일 경로
 width: number             // 원본 가로 px (compress 후 실측)
 height: number            // 원본 세로 px
 createdAt: Timestamp
 ```
+
+### couples/{coupleId}/photoData (서브컬렉션, ADR-032)
+```
+data: string              // base64 JPEG (data URL 접두어 없음, 90만 자 이하)
+width: number
+height: number
+createdBy: string         // 올린 사람 uid
+createdAt: Timestamp
+```
+> 큰 이미지 한 장 = 문서 하나. 다른 문서는 'fsphoto:{coupleId}/{photoId}' 참조로 가리킨다.
+> 일정 사진 원본, 채팅 이미지, 오늘의 밥 사진이 여기 저장된다. 썸네일은 부모 문서에 data URL 로 직접 저장.
+> Security Rule: get/create/delete 는 isMyCouple(coupleId), create 는 createdBy == 본인, update·list 금지.
 
 ### featureSettings
 ```
@@ -137,20 +149,19 @@ createdAt: Timestamp
 > 서브컬렉션으로 coupleId를 부모에서 상속. 최신 50개만 onSnapshot 구독.
 > Security Rule: isMyCouple(coupleId) + senderId == 본인 uid.
 
-## 사진 업로드 전략
-- **라이브러리 선택** (expo-image-picker): 선택 후 expo-image-manipulator로 압축
-  - 긴 쪽(가로/세로 중 더 긴 쪽)이 1440px 초과 시에만 축소 — 작은 이미지는 업스케일 없음
-  - quality: 0.75 (원본), 0.6 (썸네일)
-- **EXIF(GPS 등) 제거 필수**(1차 MVP, ADR-018): manipulateAsync JPEG 재인코딩 시 자동 제거 → 위치정보 Storage 유출 차단 (개인정보 보호).
-- **썸네일 자동 생성**: 업로드 시 400px 썸네일 별도 저장 → 그리드/리스트 로딩 속도 확보
-- Storage 경로 규칙: `couples/{coupleId}/events/{eventId}/{photoId}_original.jpg`
-- 썸네일 경로: `couples/{coupleId}/events/{eventId}/{photoId}_thumb.jpg`
+## 사진 업로드 전략 (ADR-032: Firestore 저장)
+- **라이브러리 선택** (expo-image-picker): 선택 후 expo-image-manipulator 로 압축하며 `base64: true` 로 바로 인코딩
+  - 큰 이미지: 긴 변 1280px 이하, 품질 0.7 → base64 90만 자를 넘으면 품질·크기를 단계적으로 낮춤 (`core/photos`)
+  - 썸네일: 긴 변 400px, 품질 0.6 → 부모 문서(`photos.thumbUrl`)에 data URL 로 직접 저장
+- **EXIF(GPS 등) 제거 필수**(1차 MVP, ADR-018): manipulateAsync JPEG 재인코딩 시 자동 제거.
+- 큰 이미지는 `couples/{coupleId}/photoData/{photoId}` 에 저장하고 참조 `fsphoto:{coupleId}/{photoId}` 를 필드에 둔다.
+- 화면은 `core/photos` 의 `PhotoImage`(참조·data URL·http URL 모두 처리)로 그린다.
 
 ### 사진/이벤트 삭제 시 정리 규칙
-- **이벤트 삭제 시**: 해당 이벤트의 `photoIds[]` 에 든 모든 `photos` 문서 + Storage 객체(원본 + 썸네일) 함께 삭제. `core/calendar/deleteEvent.ts` 가 트랜잭션 + Storage 일괄 삭제까지 책임진다. 부분 실패 시 재시도 큐는 다음 앱 실행 때 비움.
-- **개별 사진 삭제 시**: photos 문서 삭제 + 해당 Storage 객체 2개(원본/썸네일) 삭제 + 이벤트의 `photoIds` 배열에서 제거.
-- **커플 해제 30일 경과 시**(6단계 Scheduled Function): `couples/{coupleId}/` Storage 폴더 전체 일괄 삭제.
-- 어떤 경로에서도 Storage 객체가 Firestore 메타데이터 없이 떠다니지 않도록 — 메타데이터 기준 청소, "고아 파일" 은 만들지 않는다.
+- **개별 사진 삭제 시**: `photos` 문서 + 참조된 `photoData` 문서 삭제 + 이벤트의 `photoIds` 배열에서 제거.
+- **이벤트 삭제 시**: 해당 이벤트의 `photoIds[]` 에 든 모든 `photos` 문서와 그 `photoData` 를 함께 삭제.
+- (구) Storage 객체 삭제는 ADR-032 이전 데이터에만 시도하며 실패해도 무시한다(결제 계정 종료로 접근 불가).
+- **커플 해제 30일 경과 시**: Scheduled Function(Blaze 필요)이 동작하지 않으므로 현재는 자동 정리 없음.
 
 
 ## 캘린더 뷰 구조
@@ -272,3 +283,4 @@ coupleId 있음? → 메인 화면
 - moodChecks 는 본인 userId 문서만 create/update 가능.
 - couples / featureSettings / moodChecks 는 클라이언트 delete 금지 (30일 유예 + Scheduled Function 만).
 - Storage `couples/{coupleId}/...` 경로는 동일 coupleId 사용자만, 이미지 MIME + 10MB 이하.
+- `couples/{coupleId}/photoData` 는 동일 커플 멤버만 get/create/delete, update·list 금지, base64 크기 상한 (ADR-032).

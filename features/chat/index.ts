@@ -1,4 +1,3 @@
-import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import {
   addDoc,
   collection,
@@ -14,7 +13,7 @@ import {
 } from 'firebase/firestore';
 
 import { db } from '../../core/config/firebase';
-import { uploadJpegFile } from '../../core/storage';
+import { encodeJpeg, savePhotoData } from '../../core/photos';
 import type { Message } from './types';
 
 export type { Message };
@@ -76,17 +75,10 @@ export async function sendImageMessage(
   senderId: string,
   localUri: string,
 ): Promise<void> {
-  // 압축 (max 1080px)
-  const compressed = await manipulateAsync(
-    localUri,
-    [{ resize: { width: 1080 } }],
-    { compress: 0.75, format: SaveFormat.JPEG },
-  );
-
-  // 문서 ID 미리 생성 → Storage 경로와 일치
+  // ADR-032: 긴 변 1080px JPEG 를 photoData 에 저장하고 참조를 imageUrl 에 둔다
+  const encoded = await encodeJpeg(localUri, { maxSide: 1080, quality: 0.7 });
   const msgRef = doc(collection(db, 'couples', coupleId, 'messages'));
-  const storagePath = `couples/${coupleId}/chat/${msgRef.id}.jpg`;
-  const downloadURL = await uploadJpegFile(storagePath, compressed.uri);
+  const downloadURL = await savePhotoData(coupleId, senderId, encoded);
 
   await setDoc(msgRef, {
     senderId,

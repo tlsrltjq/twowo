@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-11-04 | 사진 Firestore 저장 (ADR-032) | feat(photos): Storage 결제 계정 종료로 사진을 Firestore base64 로 저장. core/photos 모듈·PhotoImage 추가, 일정 사진·채팅 이미지·오늘의 밥 저장/표시·삭제 교체, photoData 보안 규칙·통합 테스트, architecture·ADR 갱신. 규칙 운영 배포 전.
 ## 2026-11-04 | 사진 업로드 RN 오류 수정·규칙 배포 | fix(storage): 채팅 이미지·오늘의 밥 업로드를 uploadBytes(RN 에서 ArrayBuffer Blob 생성 실패) 대신 core/storage uploadJpegFile(REST)로. 회귀 테스트 추가. Firestore·Storage 규칙 pair-38a4e 배포·IAM 부여. Storage 는 결제 계정 닫힘(402)으로 업로드 불가 확인.
 ## 2026-11-03 | couples 문서 읽기 규칙 강화 | fix(firestore-rules): couples get 을 로그인 사용자 전체 → 멤버 또는 합류 대기(멤버 1명) 커플로 제한. 비멤버의 2인 커플 문서 읽기 차단, 초대 join 트랜잭션 유지. security-rules.test.ts 에 멤버·합류대기 읽기 테스트 추가, 헤더 설명 정정. 통합 27/27 통과. 실제 배포 미실시.
 ## 2026-11-03 | 단위 테스트 복구 | test(auth): signOut.test.ts 가 firebase/firestore 실제 ESM 을 불러오다 실패하던 문제 → 공용 mock 적용. 단위 테스트 139/139 통과.

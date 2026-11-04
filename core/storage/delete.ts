@@ -2,6 +2,7 @@ import { arrayRemove, collection, deleteDoc, doc, getDocs, query, serverTimestam
 import { deleteObject, ref } from 'firebase/storage';
 
 import { db, storage } from '../config/firebase';
+import { deletePhotoData } from '../photos';
 
 export async function deletePhoto(photoId: string): Promise<void> {
   const snap = await getDocs(
@@ -10,15 +11,19 @@ export async function deletePhoto(photoId: string): Promise<void> {
   if (snap.empty) return;
 
   const photoDoc = snap.docs[0]!;
-  const { storagePath, thumbnailPath, eventId } = photoDoc.data() as {
-    storagePath: string;
-    thumbnailPath: string;
+  const { originalUrl, storagePath, thumbnailPath, eventId } = photoDoc.data() as {
+    originalUrl?: string;
+    storagePath?: string;
+    thumbnailPath?: string;
     eventId: string;
   };
 
+  // ADR-032: photoData 문서 삭제. 이전 데이터만 Storage 삭제를 시도하고 실패는 무시한다.
   await Promise.allSettled([
-    deleteObject(ref(storage, storagePath)),
-    deleteObject(ref(storage, thumbnailPath)),
+    deletePhotoData(originalUrl),
+    ...[storagePath, thumbnailPath]
+      .filter((p): p is string => !!p)
+      .map(p => deleteObject(ref(storage, p))),
   ]);
   await deleteDoc(photoDoc.ref);
   await updateDoc(doc(db, 'calendarEvents', eventId), {

@@ -279,3 +279,15 @@
   5. import 순서 → `simple-import-sort` warning (`--max-warnings=0`) — `npx eslint --fix`.
 - **재발 방지**: 코드 변경 커밋 전 `npx eslint . --max-warnings=0` 필수 (CLAUDE.md 커밋 체크리스트 반영).
 - **로컬 제외 경로**: `.claude/**`(agent worktree), `**/*.mjs`(개발 스크립트)는 `eslint.config.mjs` ignores에 등록됨. `.gitignore` 에도 `.claude/` 추가.
+
+## ADR-032: 사진을 Cloud Storage 대신 Firestore 에 저장 (2026-11-04)
+- **결정**: 일정 사진·채팅 이미지·오늘의 밥 사진을 Firestore 에 base64 JPEG 로 저장한다. 목록용 썸네일(≈400px)은 기존 필드에 `data:image/jpeg;base64,…` 로 직접 넣고, 큰 이미지는 `couples/{coupleId}/photoData/{photoId}` 문서에 따로 저장한 뒤 기존 필드에는 `fsphoto:{coupleId}/{photoId}` 참조만 둔다.
+- **배경**: Cloud Storage for Firebase 는 2026-02-03 부터 Blaze(결제 계정) 필수. 프로젝트 결제 계정(무료 체험)이 종료돼 Storage 가 402 로 모든 업로드를 거부한다. 버킷이 asia-northeast3 라 Blaze 무료 할당(us 리전 한정)도 적용되지 않는다. 사용자는 카드 등록 없이 운영하기로 결정.
+- **근거**: Firestore 무료(Spark) 할당 — 저장 1GiB, 읽기 5만/일, 쓰기 2만/일, 전송 10GiB/월 — 은 두 명 사용량에 충분하다. 보안 규칙도 기존 Firestore 멤버십 검증을 그대로 쓴다.
+- **제약**:
+  - Firestore 문서 한도 1MiB → 큰 이미지는 긴 변 1280px 이하·JPEG 품질을 낮춰 base64 90만 자 이하로 맞춘다(넘으면 품질·크기를 단계적으로 낮춤).
+  - 화질은 Storage 시절(1440px/0.75)보다 낮다.
+  - 기존 Storage 에 올라간 사진은 결제 계정이 닫혀 읽을 수 없다(이전 불가).
+  - Cloud Functions(원격 푸시·30일 유예 정리)도 Blaze 필요 → 동작하지 않는다. 1차 범위인 로컬 알림만 유지.
+- **되돌리기**: 결제 계정을 다시 연결하면 `core/photos` 의 저장 함수만 Storage 업로드로 바꾸면 된다. 화면은 `PhotoImage`/참조 해석을 거치므로 영향이 작다.
+

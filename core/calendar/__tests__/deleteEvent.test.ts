@@ -45,6 +45,20 @@ describe('[BR-8] deleteEvent — 이벤트 삭제 시 photos + Storage 일괄 �
     expect(deletedPaths).toContain('couples/c1/photos/p2_thumb.jpg');
   });
 
+  test('[ADR-032] Firestore 사진 → photoData 문서까지 삭제, Storage 호출 없음', async () => {
+    seedMockDb('calendarEvents/evt4', { title: '데이트', coupleId: 'c1' });
+    seedMockDb('photos/p4', { eventId: 'evt4', coupleId: 'c1', originalUrl: 'fsphoto:c1/d4', thumbUrl: 'data:image/jpeg;base64,QQ==' });
+    seedMockDb('couples/c1/photoData/d4', { data: 'QUJD' });
+
+    await deleteEvent('evt4');
+
+    const db = getMockDb();
+    expect(db.has('calendarEvents/evt4')).toBe(false);
+    expect(db.has('photos/p4')).toBe(false);
+    expect(db.has('couples/c1/photoData/d4')).toBe(false);
+    expect(deleteObject).not.toHaveBeenCalled();
+  });
+
   test('Storage 삭제 실패해도 (allSettled) calendarEvents 문서 삭제됨', async () => {
     (deleteObject as jest.Mock).mockRejectedValueOnce(new Error('storage error'));
     seedMockDb('calendarEvents/evt3', { title: '운동', coupleId: 'c1' });

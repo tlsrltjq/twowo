@@ -22,6 +22,7 @@ import { CalendarEvent } from '../../core/calendar/schema';
 import { db } from '../../core/config/firebase';
 import { useFirestoreDoc } from '../../core/firestore-hooks';
 import { EventPhoto, useEventPhotos } from '../../core/memory';
+import { PhotoImage } from '../../core/photos/PhotoImage';
 import { guardPhotoLimit, uploadPhoto } from '../../core/storage';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { Spinner } from '../../design-system/Spinner';
@@ -236,11 +237,7 @@ export default function EventDetailScreen() {
             renderItem={({ item }) => (
               <View style={styles.viewerPage}>
                 {item.originalUrl ? (
-                  <Image
-                    source={{ uri: item.originalUrl }}
-                    style={styles.viewerImage}
-                    resizeMode="contain"
-                  />
+                  <PhotoImage source={item.originalUrl} style={styles.viewerImage} resizeMode="contain" />
                 ) : (
                   <View style={styles.viewerPlaceholder}>
                     <ImageIcon size={32} color={colors.text.inverse} strokeWidth={1.4} />

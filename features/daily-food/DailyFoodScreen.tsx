@@ -7,7 +7,6 @@ import {
   Alert,
   Dimensions,
   FlatList,
-  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -17,6 +16,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { usePartnerProfile } from '../../core/couple';
+import { PhotoImage } from '../../core/photos/PhotoImage';
 import { useAuthStore } from '../../core/stores/auth.store';
 import { Skeleton } from '../../design-system/Skeleton';
 import { Spinner } from '../../design-system/Spinner';
@@ -322,7 +322,7 @@ function MealSlot({
       {uploading ? (
         <ActivityIndicator />
       ) : hasPhoto ? (
-        <Image source={{ uri: log!.photoUrl! }} style={styles.slotImage} resizeMode="cover" />
+        <PhotoImage source={log!.photoUrl} style={styles.slotImage} placeholderStyle={styles.photoPlaceholder} />
       ) : (
         <>
           {!readonly && <Camera size={20} color={colors.text.muted} strokeWidth={1.6} />}
@@ -360,7 +360,7 @@ function ExtraRow({
           delayLongPress={400}
         >
           {log.photoUrl ? (
-            <Image source={{ uri: log.photoUrl }} style={styles.extraThumbImage} resizeMode="cover" />
+            <PhotoImage source={log.photoUrl} style={styles.extraThumbImage} placeholderStyle={styles.photoPlaceholder} />
           ) : (
             <Camera size={20} color={colors.text.muted} strokeWidth={1.6} />
           )}
@@ -397,7 +397,7 @@ function HistoryDayCard({
             {list.map(log => (
               <View key={log.id} style={styles.historyThumb}>
                 {log.photoUrl ? (
-                  <Image source={{ uri: log.photoUrl }} style={styles.historyThumbImage} resizeMode="cover" />
+                  <PhotoImage source={log.photoUrl} style={styles.historyThumbImage} placeholderStyle={styles.photoPlaceholder} />
                 ) : (
                   <View />
                 )}
@@ -431,6 +431,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   slot:       { width: SLOT_SIZE, borderRadius: radius.md, backgroundColor: colors.bg.surface, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   slotEmpty:  { borderWidth: hairline * 2, borderColor: colors.border.subtle, gap: space[1] },
   slotImage:  { width: '100%', height: '100%' },
+  photoPlaceholder: { backgroundColor: colors.bg.subtle },
   slotLabel:  { ...typography.caption, color: colors.text.secondary },
   slotHint:   { ...typography.tiny, color: colors.text.muted, textAlign: 'center' },
   slotOverlay:      { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(0,0,0,0.35)', paddingVertical: 4, alignItems: 'center' },

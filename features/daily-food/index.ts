@@ -1,10 +1,10 @@
-import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import {
   addDoc,
   collection,
   deleteDoc,
   doc,
   DocumentData,
+  getDoc,
   getDocs,
   limit,
   onSnapshot,
@@ -16,7 +16,7 @@ import {
 } from 'firebase/firestore';
 
 import { db } from '../../core/config/firebase';
-import { uploadJpegFile } from '../../core/storage';
+import { deletePhotoData, encodeJpeg, savePhotoData } from '../../core/photos';
 import { getTodayKST } from '../../core/utils/date';
 
 export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'extra';
@@ -68,13 +68,10 @@ export function suggestMealType(): MealType {
 
 // ─── photo upload helper ──────────────────────────────────────────────────────
 
-async function uploadFoodPhoto(localUri: string, storagePath: string): Promise<string> {
-  const compressed = await manipulateAsync(
-    localUri,
-    [{ resize: { width: 800 } }],
-    { compress: 0.75, format: SaveFormat.JPEG },
-  );
-  return uploadJpegFile(storagePath, compressed.uri);
+// ADR-032: 긴 변 800px JPEG 를 photoData 에 저장하고 참조를 photoUrl 에 둔다
+async function saveFoodPhoto(coupleId: string, userId: string, localUri: string): Promise<string> {
+  const encoded = await encodeJpeg(localUri, { maxSide: 800, quality: 0.75 });
+  return savePhotoData(coupleId, userId, encoded);
 }
 
 // ─── mutations ────────────────────────────────────────────────────────────────
@@ -87,10 +84,12 @@ export async function setMealPhoto(
   localUri: string,
 ): Promise<void> {
   const date = getTodayKST();
-  const path = `couples/${coupleId}/food/${date}_${userId}_${mealType}.jpg`;
-  const photoUrl = await uploadFoodPhoto(localUri, path);
   const id = `${coupleId}_${userId}_${date}_${mealType}`;
-  await setDoc(doc(db, 'foodLogs', id), {
+  const ref = doc(db, 'foodLogs', id);
+  const prev = await getDoc(ref);
+  const prevPhoto = prev.exists() ? (prev.data()?.photoUrl as string | null | undefined) : null;
+  const photoUrl = await saveFoodPhoto(coupleId, userId, localUri);
+  await setDoc(ref, {
     coupleId,
     userId,
     date,
@@ -99,6 +98,8 @@ export async function setMealPhoto(
     photoUrl,
     loggedAt:  serverTimestamp(),
   });
+  // 같은 끼니 칸을 다시 찍으면 이전 사진 데이터는 지운다
+  await deletePhotoData(prevPhoto).catch(() => undefined);
 }
 
 // 추가 사진 (addDoc, 여러 개 허용)
@@ -108,9 +109,7 @@ export async function addExtraPhoto(
   localUri: string,
 ): Promise<void> {
   const date = getTodayKST();
-  const ts   = Date.now();
-  const path = `couples/${coupleId}/food/${date}_${userId}_extra_${ts}.jpg`;
-  const photoUrl = await uploadFoodPhoto(localUri, path);
+  const photoUrl = await saveFoodPhoto(coupleId, userId, localUri);
   await addDoc(collection(db, 'foodLogs'), {
     coupleId,
     userId,
@@ -150,7 +149,11 @@ export async function logFood(
 
 // BR-DF5: 삭제 (내 기록만 — 보안 규칙에서 userId 검증)
 export async function deleteFood(id: string): Promise<void> {
-  await deleteDoc(doc(db, 'foodLogs', id));
+  const ref = doc(db, 'foodLogs', id);
+  const snap = await getDoc(ref);
+  const photoUrl = snap.exists() ? (snap.data()?.photoUrl as string | null | undefined) : null;
+  await deleteDoc(ref);
+  await deletePhotoData(photoUrl).catch(() => undefined);
 }
 
 // ─── subscriptions / queries ──────────────────────────────────────────────────
