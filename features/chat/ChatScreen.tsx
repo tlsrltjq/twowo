@@ -192,7 +192,7 @@ export default function ChatScreen() {
       <View style={[styles.bubbleRow, isMine ? styles.bubbleRowRight : styles.bubbleRowLeft]}>
         {!isMine && <Text style={styles.senderName}>{partnerName}</Text>}
         {msg.imageUrl ? (
-          <View style={[styles.bubble, isMine ? styles.bubbleMine : styles.bubblePartner, styles.imageBubble]}>
+          <View testID="chat-image-bubble" style={[styles.bubble, isMine ? styles.bubbleMine : styles.bubblePartner, styles.imageBubble]}>
             <PhotoImage source={msg.imageUrl} style={styles.chatImage} placeholderStyle={styles.chatImagePlaceholder} />
           </View>
         ) : (
@@ -295,7 +295,8 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   bubbleTextPartner: { color: colors.text.primary },
   timestamp:         { ...typography.tiny, color: colors.text.muted, marginHorizontal: space[2] },
 
-  imageBubble:       { padding: 0, overflow: 'hidden' },
+  // bubble 의 paddingHorizontal/Vertical 을 직접 0 으로 덮는다 (padding 만 쓰면 더 구체적인 속성이 이긴다)
+  imageBubble:       { paddingHorizontal: 0, paddingVertical: 0, overflow: 'hidden' },
   chatImage:         { width: 200, height: 200 },
   chatImagePlaceholder: { backgroundColor: colors.bg.subtle },
   imageOverlay:      { ...StyleSheet.absoluteFill, backgroundColor: 'rgba(0,0,0,0.35)', alignItems: 'center', justifyContent: 'center' },

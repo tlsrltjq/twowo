@@ -29,7 +29,7 @@ import { Spinner } from '../../design-system/Spinner';
 import { useColors } from '../../design-system/ThemeContext';
 import { Colors } from '../../design-system/themes';
 import { Toast } from '../../design-system/Toast';
-import { black, radius, space, typography } from '../../design-system/tokens';
+import { black, radius, space, typography, white } from '../../design-system/tokens';
 
 const SCREEN_W = Dimensions.get('window').width;
 const SCREEN_H = Dimensions.get('window').height;
@@ -223,7 +223,7 @@ export default function EventDetailScreen() {
       >
         <View style={styles.viewer}>
           <Pressable testID="btn-viewer-close" accessibilityLabel="사진 닫기" style={styles.viewerClose} onPress={() => setViewerIndex(null)}>
-            <X size={24} color={colors.text.inverse} strokeWidth={1.8} />
+            <X size={24} color={white} strokeWidth={1.8} />
           </Pressable>
           <FlatList
             ref={viewerRef}
@@ -240,7 +240,7 @@ export default function EventDetailScreen() {
                   <PhotoImage source={item.originalUrl} style={styles.viewerImage} resizeMode="contain" />
                 ) : (
                   <View style={styles.viewerPlaceholder}>
-                    <ImageIcon size={32} color={colors.text.inverse} strokeWidth={1.4} />
+                    <ImageIcon size={32} color={white} strokeWidth={1.4} />
                   </View>
                 )}
               </View>
@@ -278,7 +278,7 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   addPhotoText:     { ...typography.caption, color: colors.text.primary },
   photoEmpty:       { height: 80, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.bg.subtle, borderRadius: radius.md },
   photoEmptyText:   { ...typography.caption, color: colors.text.muted },
-  photoCell:        { flex: 1, aspectRatio: 1, padding: space[1] },
+  photoCell:        { width: '33.333%', aspectRatio: 1, padding: space[1] },
   photoThumb:       { flex: 1, borderRadius: radius.sm },
   photoPlaceholder: { flex: 1, backgroundColor: colors.bg.subtle, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center' },
   viewer:               { flex: 1, backgroundColor: black },
@@ -286,5 +286,5 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   viewerPage:           { width: SCREEN_W, height: SCREEN_H, alignItems: 'center', justifyContent: 'center' },
   viewerImage:          { width: SCREEN_W, height: SCREEN_H },
   viewerPlaceholder:    { alignItems: 'center', justifyContent: 'center' },
-  viewerCounter:        { position: 'absolute', bottom: 48, width: '100%', textAlign: 'center', color: colors.text.inverse, ...typography.caption },
+  viewerCounter:        { position: 'absolute', bottom: 48, width: '100%', textAlign: 'center', color: white, ...typography.caption },
 });
