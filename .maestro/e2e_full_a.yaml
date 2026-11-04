@@ -64,10 +64,10 @@ appId: host.exp.Exponent
       - takeScreenshot: "A_01_login_screen"
       - tapOn:
           id: "input-email"
-      - inputText: "test_a_1781871829@mailinator.com"
+      - inputText: "${MAESTRO_TWOWO_EMAIL_A}"
       - tapOn:
           id: "input-password"
-      - inputText: "Test@1234"
+      - inputText: "${MAESTRO_TWOWO_PASSWORD_A}"
       - tapOn: "로그인"
       - runFlow:
           when:

@@ -61,10 +61,10 @@ appId: host.exp.Exponent
     commands:
       - tapOn:
           id: "input-email"
-      - inputText: "test_b_1781871829@mailinator.com"
+      - inputText: "${MAESTRO_TWOWO_EMAIL_B}"
       - tapOn:
           id: "input-password"
-      - inputText: "Test@1234"
+      - inputText: "${MAESTRO_TWOWO_PASSWORD_B}"
       - tapOn: "로그인"
       - runFlow:
           when:
