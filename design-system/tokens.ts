@@ -1,31 +1,31 @@
 export const colors = {
   bg: {
-    base: '#FAF8F5',
+    base: '#FFFFFF',
     surface: '#FFFFFF',
-    subtle: '#F1EDE8',
+    subtle: '#F5F5F5',
   },
   text: {
-    primary: '#1C1917',
-    secondary: '#5F5853',
-    muted: '#9A928B',
+    primary: '#111111',
+    secondary: '#5C5C5C',
+    muted: '#8A8A8A',
     inverse: '#FFFFFF',
   },
   accent: {
-    primary: '#B5566B',
-    coral: '#D4948A',
-    warm: '#E8B86D',
-    calm: '#A8BDB5',
+    primary: '#F2603A',
+    coral: '#F59A80',
+    warm: '#F2B544',
+    calm: '#A3B8C2',
   },
   border: {
-    subtle: '#E7E2DC',
-    strong: '#CCC4BB',
+    subtle: '#EBEBEB',
+    strong: '#D6D6D6',
   },
   status: {
-    success: '#7BA88F',
-    warning: '#D4A05C',
-    danger: '#C77575',
+    success: '#3F8F5B',
+    warning: '#D9902B',
+    danger: '#D64545',
   },
-  overlay: 'rgba(28,25,23,0.4)',
+  overlay: 'rgba(17,17,17,0.4)',
 } as const;
 
 export const typography = {

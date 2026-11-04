@@ -18,27 +18,27 @@
 ---
 
 ## 색상 팔레트
-**원칙**: 너무 강한 핑크는 피한다. 중립에 가까운 종이색 베이스에 채도를 낮춘 로즈를 꼭 필요한 곳(현재 선택, 주요 버튼, 오늘)에만 쓴다.
+**원칙**: 노란 기 없는 흑백 바탕(흰색·무채색 회색·먹색)에 포인트 색 하나(코랄 오렌지)를 꼭 필요한 곳(주요 버튼, 오늘, 선택된 탭, 함께한 날 숫자)에만 쓴다. 선택 상태(세그먼트 등)는 먹색으로 표시한다. (2026-11-04 종이색+로즈 → 흑백+코랄 오렌지)
 
 | 토큰 | 값 | 용도 |
 |------|----|------|
-| `bg.base`        | `#FAF8F5` | 앱 배경 (종이색) |
+| `bg.base`        | `#FFFFFF` | 앱 배경 (흰색) |
 | `bg.surface`     | `#FFFFFF` | 카드, 시트 배경 |
-| `bg.subtle`      | `#F1EDE8` | 비활성 영역, 회색 톤 카드 |
-| `text.primary`   | `#1C1917` | 본문, 헤더 |
-| `text.secondary` | `#5F5853` | 보조 문구, 라벨 |
-| `text.muted`     | `#9A928B` | 비활성/플레이스홀더 |
+| `bg.subtle`      | `#F5F5F5` | 비활성 영역, 회색 톤 카드 |
+| `text.primary`   | `#111111` | 본문, 헤더 |
+| `text.secondary` | `#5C5C5C` | 보조 문구, 라벨 |
+| `text.muted`     | `#8A8A8A` | 비활성/플레이스홀더 |
 | `text.inverse`   | `#FFFFFF` | 컬러 버튼 위 텍스트 |
-| `accent.primary` | `#B5566B` | 주요 CTA, 현재 선택, 오늘 (채도 낮춘 로즈) |
-| `accent.coral`   | `#D4948A` | 운동 이벤트 점 |
-| `accent.warm`    | `#E8B86D` | 데이트 이벤트 점, 빙고 강조 |
-| `accent.calm`    | `#A8BDB5` | 일반 일정 점, 컨디션 good |
-| `border.subtle`  | `#E7E2DC` | 목록 구분선 |
-| `border.strong`  | `#CCC4BB` | 입력 필드, 섹션 머리말 구분선 |
-| `status.success` | `#7BA88F` | 성공 토스트 |
-| `status.warning` | `#D4A05C` | 경고 |
-| `status.danger`  | `#C77575` | 위험(해제, 삭제) |
-| `overlay`        | `rgba(28,25,23,0.4)` | 모달 배경 |
+| `accent.primary` | `#F2603A` | 주요 CTA, 오늘, 선택된 탭 (코랄 오렌지) |
+| `accent.coral`   | `#F59A80` | 운동 이벤트 점 |
+| `accent.warm`    | `#F2B544` | 데이트 이벤트 점, 빙고 강조 |
+| `accent.calm`    | `#A3B8C2` | 일반 일정 점, 컨디션 good |
+| `border.subtle`  | `#EBEBEB` | 목록 구분선 |
+| `border.strong`  | `#D6D6D6` | 입력 필드, 섹션 머리말 구분선 |
+| `status.success` | `#3F8F5B` | 성공 토스트 |
+| `status.warning` | `#D9902B` | 경고 |
+| `status.danger`  | `#D64545` | 위험(해제, 삭제) |
+| `overlay`        | `rgba(17,17,17,0.4)` | 모달 배경 |
 
 이벤트 타입별 점 색상 (캘린더 스펙 BR-9 참조):
 - date → `accent.warm`

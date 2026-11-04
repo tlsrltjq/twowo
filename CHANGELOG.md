@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-11-04 | 색 개편: 흑백 + 코랄 오렌지 | refactor(design-system): 종이색+로즈 → 흰 바탕·무채색 회색·먹색 글씨 + 코랄 오렌지(#F2603A) 포인트. 다크 모드 무채색화, 기본 테마 orange 추가(저장된 rose 기본값은 v1 마이그레이션으로 이동, 테스트 4건), 앱 아이콘·스플래시 코랄 오렌지로 재생성.
 ## 2026-11-04 | 사진 Firestore 저장 운영 확인 | fix(daily-food): 빈 끼니 칸의 이전 사진 조회가 foodLogs 규칙상 거부돼 저장이 실패하던 문제 → 조회 실패는 이전 사진 없음으로 처리. photoData 규칙 운영 배포, 시뮬레이터에서 저장·표시·삭제 확인.
 ## 2026-11-04 | 사진 Firestore 저장 (ADR-032) | feat(photos): Storage 결제 계정 종료로 사진을 Firestore base64 로 저장. core/photos 모듈·PhotoImage 추가, 일정 사진·채팅 이미지·오늘의 밥 저장/표시·삭제 교체, photoData 보안 규칙·통합 테스트, architecture·ADR 갱신. 규칙 운영 배포 전.
 ## 2026-11-04 | 사진 업로드 RN 오류 수정·규칙 배포 | fix(storage): 채팅 이미지·오늘의 밥 업로드를 uploadBytes(RN 에서 ArrayBuffer Blob 생성 실패) 대신 core/storage uploadJpegFile(REST)로. 회귀 테스트 추가. Firestore·Storage 규칙 pair-38a4e 배포·IAM 부여. Storage 는 결제 계정 닫힘(402)으로 업로드 불가 확인.

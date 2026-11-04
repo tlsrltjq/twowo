@@ -7,9 +7,10 @@ export type Colors = {
   overlay: string;
 };
 
-export type AccentId = 'rose' | 'coral' | 'violet' | 'blue' | 'green' | 'amber';
+export type AccentId = 'orange' | 'rose' | 'coral' | 'violet' | 'blue' | 'green' | 'amber';
 
 export const ACCENT_META: Record<AccentId, { label: string; preview: string }> = {
+  orange: { label: '코랄 오렌지', preview: '#F2603A' },
   rose:   { label: '로즈',     preview: '#B5566B' },
   coral:  { label: '코랄',     preview: '#C0645A' },
   violet: { label: '바이올렛', preview: '#6E5E96' },
@@ -18,25 +19,30 @@ export const ACCENT_META: Record<AccentId, { label: string; preview: string }> =
   amber:  { label: '앰버',     preview: '#A8752E' },
 };
 
+// 흑백 바탕(노란 기 없는 무채색) + 포인트 색 하나 (2026-11 개편)
 const LIGHT_BASE = {
-  bg:     { base: '#FAF8F5', surface: '#FFFFFF', subtle: '#F1EDE8' },
-  text:   { primary: '#1C1917', secondary: '#5F5853', muted: '#9A928B', inverse: '#FFFFFF' },
-  border: { subtle: '#E7E2DC', strong: '#CCC4BB' },
-  status: { success: '#7BA88F', warning: '#D4A05C', danger: '#C77575' },
-  overlay: 'rgba(28,25,23,0.4)',
+  bg:     { base: '#FFFFFF', surface: '#FFFFFF', subtle: '#F5F5F5' },
+  text:   { primary: '#111111', secondary: '#5C5C5C', muted: '#8A8A8A', inverse: '#FFFFFF' },
+  border: { subtle: '#EBEBEB', strong: '#D6D6D6' },
+  status: { success: '#3F8F5B', warning: '#D9902B', danger: '#D64545' },
+  overlay: 'rgba(17,17,17,0.4)',
 };
 
 const DARK_BASE = {
-  bg:     { base: '#1C1C1E', surface: '#2C2C2E', subtle: '#3A3A3C' },
-  text:   { primary: '#EBEBF5', secondary: '#AEAEB2', muted: '#636366', inverse: '#1C1C1E' },
-  border: { subtle: '#38383A', strong: '#545458' },
-  status: { success: '#30D158', warning: '#FFD60A', danger: '#FF453A' },
+  bg:     { base: '#111111', surface: '#1A1A1A', subtle: '#262626' },
+  text:   { primary: '#F2F2F2', secondary: '#B3B3B3', muted: '#7A7A7A', inverse: '#111111' },
+  border: { subtle: '#2A2A2A', strong: '#3D3D3D' },
+  status: { success: '#5FB07D', warning: '#E8A94A', danger: '#F06A6A' },
   overlay: 'rgba(0,0,0,0.6)',
 };
 
 type AccentTokens = { primary: string; coral: string; warm: string; calm: string };
 
 const ACCENT_PALETTES: Record<AccentId, { light: AccentTokens; dark: AccentTokens }> = {
+  orange: {
+    light: { primary: '#F2603A', coral: '#F59A80', warm: '#F2B544', calm: '#A3B8C2' },
+    dark:  { primary: '#FF7A57', coral: '#FFB09A', warm: '#F5C25E', calm: '#9DB4BF' },
+  },
   rose: {
     light: { primary: '#B5566B', coral: '#D4948A', warm: '#E8B86D', calm: '#A8BDB5' },
     dark:  { primary: '#DB8B9C', coral: '#E3AFA7', warm: '#FFCC80', calm: '#80CBC4' },
@@ -65,7 +71,7 @@ const ACCENT_PALETTES: Record<AccentId, { light: AccentTokens; dark: AccentToken
 
 export type ThemeConfig = { accentId: AccentId; isDark: boolean };
 
-export const DEFAULT_THEME: ThemeConfig = { accentId: 'rose', isDark: false };
+export const DEFAULT_THEME: ThemeConfig = { accentId: 'orange', isDark: false };
 
 export function buildColors({ accentId, isDark }: ThemeConfig): Colors {
   const base   = isDark ? DARK_BASE   : LIGHT_BASE;
