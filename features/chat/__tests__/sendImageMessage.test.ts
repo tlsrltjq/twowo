@@ -2,6 +2,7 @@ import { resetMockDb } from '../../../__mocks__/firebase';
 
 const mockManipulate    = jest.fn();
 const mockUploadBytes   = jest.fn();
+const mockUploadJpegFile = jest.fn();
 const mockGetDownloadURL = jest.fn();
 const mockStorageRef    = jest.fn();
 
@@ -16,6 +17,9 @@ jest.mock('firebase/storage', () => ({
   getDownloadURL: (r: unknown) => mockGetDownloadURL(r),
 }));
 jest.mock('../../../core/config/firebase', () => ({ db: {}, storage: {} }));
+jest.mock('../../../core/storage', () => ({
+  uploadJpegFile: (path: string, uri: string) => mockUploadJpegFile(path, uri),
+}));
 
 global.fetch = jest.fn(async () => ({ blob: jest.fn(async () => new Blob()) })) as unknown as typeof fetch;
 
@@ -27,6 +31,7 @@ beforeEach(() => {
   mockManipulate.mockResolvedValue({ uri: 'file://compressed.jpg', width: 800, height: 600 });
   mockUploadBytes.mockResolvedValue({});
   mockGetDownloadURL.mockResolvedValue('https://storage.example.com/img.jpg');
+  mockUploadJpegFile.mockResolvedValue('https://storage.example.com/img.jpg');
   mockStorageRef.mockReturnValue({ _path: 'mock-path' });
 });
 
@@ -40,10 +45,16 @@ describe('sendImageMessage', () => {
     );
   });
 
-  it('[BR-6] Storage 경로 — couples/{coupleId}/chat/{messageId}.jpg', async () => {
+  it('[BR-6] Storage 경로 — couples/{coupleId}/chat/{messageId}.jpg, 압축본을 올린다', async () => {
     await sendImageMessage('couple1', 'u1', 'file://img.jpg');
-    const path: string = mockStorageRef.mock.calls[0]?.[1] as string;
+    const [path, uri] = mockUploadJpegFile.mock.calls[0] as [string, string];
     expect(path).toMatch(/^couples\/couple1\/chat\/.+\.jpg$/);
+    expect(uri).toBe('file://compressed.jpg');
+  });
+
+  it('[회귀] firebase uploadBytes 를 쓰지 않는다 — RN 에서 ArrayBuffer Blob 생성 오류로 실패', async () => {
+    await sendImageMessage('couple1', 'u1', 'file://img.jpg');
+    expect(mockUploadBytes).not.toHaveBeenCalled();
   });
 
   it('[BR-6] Firestore 메시지 문서에 imageUrl + senderId 저장', async () => {

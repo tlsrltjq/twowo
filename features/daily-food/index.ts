@@ -14,9 +14,9 @@ import {
   setDoc,
   where,
 } from 'firebase/firestore';
-import { getDownloadURL, ref as storageRef, uploadBytes } from 'firebase/storage';
 
-import { db, storage } from '../../core/config/firebase';
+import { db } from '../../core/config/firebase';
+import { uploadJpegFile } from '../../core/storage';
 import { getTodayKST } from '../../core/utils/date';
 
 export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'extra';
@@ -74,11 +74,7 @@ async function uploadFoodPhoto(localUri: string, storagePath: string): Promise<s
     [{ resize: { width: 800 } }],
     { compress: 0.75, format: SaveFormat.JPEG },
   );
-  const resp = await fetch(compressed.uri);
-  const blob = await resp.blob();
-  const ref = storageRef(storage, storagePath);
-  await uploadBytes(ref, blob, { contentType: 'image/jpeg' });
-  return getDownloadURL(ref);
+  return uploadJpegFile(storagePath, compressed.uri);
 }
 
 // ─── mutations ────────────────────────────────────────────────────────────────

@@ -127,7 +127,8 @@ export default function DailyFoodScreen() {
       } else {
         await setMealPhoto(coupleId, user.uid, mealType, uri);
       }
-    } catch {
+    } catch (e) {
+      console.error('[daily-food] 사진 업로드 실패', e);
       Alert.alert('오류', '사진 업로드에 실패했어요. 다시 시도해주세요');
     } finally {
       setUploading(prev => ({ ...prev, [key]: false }));

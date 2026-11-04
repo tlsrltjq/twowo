@@ -39,7 +39,12 @@ async function compress(
   return result;
 }
 
-async function restUpload(storagePath: string, fileUri: string): Promise<string> {
+/**
+ * JPEG 파일을 Storage REST API 로 올리고 다운로드 URL 을 돌려준다.
+ * firebase/storage 의 uploadBytes 는 RN 에서 ArrayBuffer 로 Blob 을 만들다 실패하므로
+ * 사진 업로드는 모두 이 함수를 쓴다(일정 사진·채팅 이미지·오늘의 밥).
+ */
+export async function uploadJpegFile(storagePath: string, fileUri: string): Promise<string> {
   const token = await auth.currentUser!.getIdToken();
   const encodedName = encodeURIComponent(storagePath);
   const url = `${STORAGE_BASE}?uploadType=media&name=${encodedName}`;
@@ -92,8 +97,8 @@ export async function uploadPhoto(
   const thumbPath    = `${base}_thumb.jpg`;
 
   const [originalUrl, thumbUrl] = await Promise.all([
-    restUpload(originalPath, original.uri), // ①
-    restUpload(thumbPath, thumb.uri),        // ②
+    uploadJpegFile(originalPath, original.uri), // ①
+    uploadJpegFile(thumbPath, thumb.uri),        // ②
   ]);
 
   // ③ 문서 ID = photoId 로 고정 → getDoc(doc(db,'photos',photoId)) 직접 조회 가능

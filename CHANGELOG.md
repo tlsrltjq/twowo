@@ -5,6 +5,7 @@
 
 ---
 
+## 2026-11-04 | 사진 업로드 RN 오류 수정·규칙 배포 | fix(storage): 채팅 이미지·오늘의 밥 업로드를 uploadBytes(RN 에서 ArrayBuffer Blob 생성 실패) 대신 core/storage uploadJpegFile(REST)로. 회귀 테스트 추가. Firestore·Storage 규칙 pair-38a4e 배포·IAM 부여. Storage 는 결제 계정 닫힘(402)으로 업로드 불가 확인.
 ## 2026-11-03 | couples 문서 읽기 규칙 강화 | fix(firestore-rules): couples get 을 로그인 사용자 전체 → 멤버 또는 합류 대기(멤버 1명) 커플로 제한. 비멤버의 2인 커플 문서 읽기 차단, 초대 join 트랜잭션 유지. security-rules.test.ts 에 멤버·합류대기 읽기 테스트 추가, 헤더 설명 정정. 통합 27/27 통과. 실제 배포 미실시.
 ## 2026-11-03 | 단위 테스트 복구 | test(auth): signOut.test.ts 가 firebase/firestore 실제 ESM 을 불러오다 실패하던 문제 → 공용 mock 적용. 단위 테스트 139/139 통과.
 ## 2026-11-03 | ADR-030 Storage 멤버십 규칙 | fix(storage-rules): isMyCouple 을 isSignedIn 임시값에서 firestore.get() 멤버십 확인으로 교체(타 커플 사진 읽기·쓰기 차단). 에뮬레이터 통합 테스트 storage-rules.test.ts 6건 추가. runbook 에 첫 cross-service 배포·IAM 절차, ADR-030 갱신. 실제 배포 미실시.

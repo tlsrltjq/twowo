@@ -97,6 +97,9 @@
 - ✅ ADR-030 Storage 규칙: `firestore.get()` 멤버십 확인으로 교체, 에뮬레이터 테스트 6건 통과 — ⬜ **실제 배포·IAM 역할 부여 미실시**(runbook 1-2 절차)
 - ✅ firestore.rules `couples` get: 멤버 또는 합류 대기(1명) 커플만 허용으로 강화, 통합 테스트 27/27·단위 139/139 통과 — ⬜ **실제 배포 미실시**(runbook 1-2, Storage 규칙과 함께)
 - ⬜ 개발 빌드 실패: 현재 Xcode 에서 `expo-modules-jsi` Swift 컴파일 오류(JavaScriptRuntime.swift:219) + Pods 최소 iOS 버전 경고 — Expo SDK 업그레이드 필요, 새 아이콘의 홈 화면 확인 보류
+- ✅ 2026-11-04 Firestore·Storage 규칙 운영 배포(pair-38a4e), Storage 서비스 에이전트 IAM 역할 부여. Firestore 읽기(홈 커플 정보)는 새 규칙에서 정상 확인
+- ✅ 채팅 이미지·오늘의 밥 사진 업로드가 RN 에서 `uploadBytes` Blob 오류(Creating blobs from 'ArrayBuffer'…)로 실패 → 일정 사진과 같은 REST 업로드(`core/storage` uploadJpegFile)로 통일
+- ⚠ **결제 계정 닫힘**: Storage 업로드가 `402 billing account … disabled in state closed` 로 거부됨. Storage 규칙의 실제 동작 확인·사진 기능·Cloud Functions(원격 푸시·30일 유예 정리)는 결제 재활성화 전까지 동작 불가. HARNESS 의 "Blaze 활성화 완료" 표기와 다름
 - ⬜ Maestro E2E 미실행 — 라벨만 새 문구로 갱신. e2e/10 오늘의 밥 흐름은 개편 전부터 예전 텍스트 입력 방식이라 별도 정리 필요
 - ✅ 커밋 훅 복구: `core.hooksPath`가 `.husky`(실행 권한 없는 원본)를 가리켜 무시되던 문제 → `npx husky`로 `.husky/_` 재설정. 타입 오류 커밋 차단 확인. 새 clone 은 `npm install`(prepare) 시 자동 설정
 - ⚠ `docs/specs/home.md` 화면 상태 표는 일정 0개면 영역 숨김이라고 하나 코드는 빈 상태 문구 표시(개편 전부터 불일치, 유지)

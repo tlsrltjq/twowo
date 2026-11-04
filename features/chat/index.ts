@@ -12,9 +12,9 @@ import {
   Timestamp,
   where,
 } from 'firebase/firestore';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
-import { db, storage } from '../../core/config/firebase';
+import { db } from '../../core/config/firebase';
+import { uploadJpegFile } from '../../core/storage';
 import type { Message } from './types';
 
 export type { Message };
@@ -86,12 +86,7 @@ export async function sendImageMessage(
   // 문서 ID 미리 생성 → Storage 경로와 일치
   const msgRef = doc(collection(db, 'couples', coupleId, 'messages'));
   const storagePath = `couples/${coupleId}/chat/${msgRef.id}.jpg`;
-  const storageRef = ref(storage, storagePath);
-
-  const resp = await fetch(compressed.uri);
-  const blob = await resp.blob();
-  await uploadBytes(storageRef, blob, { contentType: 'image/jpeg' });
-  const downloadURL = await getDownloadURL(storageRef);
+  const downloadURL = await uploadJpegFile(storagePath, compressed.uri);
 
   await setDoc(msgRef, {
     senderId,
