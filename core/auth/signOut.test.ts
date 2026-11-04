@@ -11,7 +11,9 @@ jest.mock('firebase/auth', () => ({
   sendPasswordResetEmail: jest.fn(),
   updateProfile: jest.fn(),
 }));
-jest.mock('../config/firebase', () => ({ auth: { _mockAuth: true } }));
+// core/auth/index.ts 가 firebase/firestore 도 불러오므로 공용 mock 으로 대체 (실제 ESM 모듈 로드 방지)
+jest.mock('firebase/firestore', () => require('../../__mocks__/firebase'));
+jest.mock('../config/firebase', () => ({ auth: { _mockAuth: true }, db: {} }));
 
 beforeEach(() => {
   mockFirebaseSignOut.mockClear();
